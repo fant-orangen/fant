@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <section class="homepage">
+    <h1>Velkommen til fant!</h1>
+    <p>Markedsplass for salg og kjøp av varer</p>
+  </section>
 </template>
+
+<style scoped>
+</style>
