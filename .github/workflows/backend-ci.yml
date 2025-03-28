@@ -2,8 +2,16 @@ name: Backend CI
 
 on:
   push:
-    branches: [ "main" ]
-    paths: [ 'backend/**' ]
+    branches:
+      - "main"
+    paths:
+      - "backend/**"
+
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "backend/**"
 
 jobs:
   test:
@@ -13,7 +21,7 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4.7.0
         with:
-          java-version: '21'
+          java-version: 21
       - run: cd backend && mvn test  # Fail early if tests break
 
   install:
@@ -24,5 +32,5 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4.7.0
         with:
-          java-version: '21'
+          java-version: 21
       - run: cd backend && mvn clean install -DskipTests
