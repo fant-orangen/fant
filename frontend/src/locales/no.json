@@ -1,4 +1,19 @@
 {
     "APP_WELCOME": "Velkommen til fant!",
-    "APP_LANGUAGE_CHANGE": "Bytt språk"
+    "APP_LANGUAGE_CHANGE": "Bytt språk",
+    "category": {
+        "travel" : "Reise",
+        "appliance" : "Hvitevarer",
+        "boat" : "Båt",
+        "book" : "Bøker",
+        "cameras" : "Kamera",
+        "cars" : "Bil",
+        "clothes" : "Klær",
+        "computers" : "Datamaskin",
+        "furniture" : "Møbel",
+        "motorcycle" : "Motorsykkel",
+        "phone" : "Mobiltelefon",
+        "art" : "Kunst"
+
+    }
 }
