@@ -30,6 +30,7 @@
     "@vitest/eslint-plugin": "^1.1.36",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.5.0",
+    "@vue/runtime-core": "^3.5.13",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "cypress": "^14.1.0",

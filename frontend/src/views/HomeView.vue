@@ -4,7 +4,7 @@
 
 <template>
   <section class="homepage">
-    <h1>Velkommen til fant!</h1>
+    <h1>{{ $t('APP_WELCOME') }}</h1>
     <p>Markedsplass for salg og kjøp av varer</p>
   </section>
 </template>

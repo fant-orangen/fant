@@ -19,6 +19,11 @@ const router = createRouter({
       name: 'browse',
       component: () => import('../views/ItemView.vue'), // or ItemListView
     },
+    {
+      path: '/language-selector',
+      name: 'language-selector',
+      component: () => import('../views/NavbarLangugeSelectorView.vue'),
+    },
 
   ],
 })
