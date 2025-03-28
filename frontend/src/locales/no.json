@@ -16,5 +16,6 @@
         "art" : "Kunst"
 
     },
-    "REGISTRATION_HEADER" : "Registrer Bruker"
+    "REGISTRATION_HEADER" : "Registrer Bruker",
+    "REGISTRATION_BUTTON" : "Registrer"
 }

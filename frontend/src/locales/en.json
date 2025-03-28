@@ -16,5 +16,6 @@
         "art" : "Art"
 
     },
-    "REGISTRATION_HEADER" : "Register User"
+    "REGISTRATION_HEADER" : "Register User",
+    "REGISTRATION_BUTTON" : "Register"
 }
