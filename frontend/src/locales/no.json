@@ -15,5 +15,6 @@
         "phone" : "Mobiltelefon",
         "art" : "Kunst"
 
-    }
+    },
+    "REGISTRATION_HEADER" : "Registrer Bruker"
 }

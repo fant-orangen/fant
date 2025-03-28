@@ -15,5 +15,6 @@
         "phone" : "Phones",
         "art" : "Art"
 
-    }
+    },
+    "REGISTRATION_HEADER" : "Register User"
 }
