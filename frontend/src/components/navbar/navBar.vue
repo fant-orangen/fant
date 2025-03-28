@@ -1,16 +1,13 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
   <header class="nav">
     <div class="logo">
-      <RouterLink to="/browse"></RouterLink>
-      </div>
-    <nav>
-      <RouterLink to="Home"></RouterLink>
+      <RouterLink to="/">fant<span class="dot">.</span></RouterLink>
+    </div>
+    <nav class="links">
+      <RouterLink to="/">Hjem</RouterLink>
+      <RouterLink to="/browse">Utforsk</RouterLink>
+      <RouterLink to="/login">Logg inn</RouterLink>
     </nav>
-
   </header>
 </template>
 
@@ -19,13 +16,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  padding: 1.2rem 2rem;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+  font-family: 'Segoe UI', sans-serif;
 }
-.nav .logo a {
+
+.logo a {
+  font-size: 2rem;
   font-weight: bold;
-  color: black;
+  color: blue;
+  text-decoration: none;
 }
-nav a {
+
+.logo .dot {
+  color: blue;
+}
+
+nav.links {
+  display: flex;
+  gap: 2rem;
+}
+
+nav.links a {
+  text-decoration: none;
   color: #333;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+nav.links a.router-link-exact-active {
+  color: blue;
+  font-weight: bold;
 }
 </style>
