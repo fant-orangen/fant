@@ -1,19 +1,19 @@
-/*package stud.ntnu.backend.model;
+package stud.ntnu.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "users")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class User {
+  @Entity
+  @Table(name = "users")
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  public class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
   @Column(nullable = false, unique = true)
   private String username;
@@ -47,4 +47,4 @@ public class User {
   void onUpdate() {
     updatedAt = java.time.LocalDateTime.now();
   }
-}*/
+}
