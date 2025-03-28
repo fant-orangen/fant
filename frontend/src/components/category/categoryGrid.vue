@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 import CategoryButton from "@/components/category/categoryButton.vue";
-import torgIcon from '@/assets/icons/torgIcon.svg'
 import travelIcon from '@/assets/icons/travelIcon.svg'
 import applianceIcon from '@/assets/icons/applianceIcon.svg'
 import boatIcon from '@/assets/icons/boatIcon.svg'
@@ -14,23 +15,23 @@ import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg'
 import phoneIcon from '@/assets/icons/phoneIcon.svg'
 import artIcon from '@/assets/icons/artIcon.svg'
 
+const { t } = useI18n()
 
 
 const categories = [
-  { label: "Torg", icon: torgIcon },
-  { label: "Reise", icon: travelIcon },
-  { label: "Hvitevarer", icon: applianceIcon },
-  { label: "Båt", icon: boatIcon },
-  { label: "Bok", icon: bookIcon },
-  { label: "Kamera", icon: cameraIcon },
-  { label: "Bil", icon: carIcon },
-  { label: "Klær", icon: clothesIcon },
-  { label: "Datamaskin", icon: computerIcon },
-  { label: "Møbel", icon: furnitureIcon },
-  { label: "Motorsykkel", icon: motorcycleIcon },
-  { label: "Mobiltelefon", icon: phoneIcon },
-  { label: "Kunst", icon: artIcon },
-  { label: "Reise", icon: travelIcon }
+
+  { labelKey: "category.appliance", icon: applianceIcon },
+  { labelKey: "category.boat", icon: boatIcon },
+  { labelKey: "category.book", icon: bookIcon },
+  { labelKey: "category.cameras", icon: cameraIcon },
+  { labelKey: "category.cars", icon: carIcon },
+  { labelKey: "category.clothes", icon: clothesIcon },
+  { labelKey: "category.computers", icon: computerIcon },
+  { labelKey: "category.furniture", icon: furnitureIcon },
+  { labelKey: "category.motorcycle", icon: motorcycleIcon },
+  { labelKey: "category.phone", icon: phoneIcon },
+  { labelKey: "category.art", icon: artIcon },
+  { labelKey: "category.travel", icon: travelIcon }
 
 ]
 
@@ -45,10 +46,10 @@ function handleFunction(label: string) {
   <div class="category-grid">
     <CategoryButton
     v-for="category in categories"
-    :key="category.label"
-    :label="category.label"
+    :key="category.labelKey"
+    :label="t(category.labelKey)"
     :icon="category.icon"
-    @click="handleFunction(category.label)"/>
+    @click="handleFunction(category.labelKey)"/>
   </div>
 
 </template>

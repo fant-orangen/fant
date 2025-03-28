@@ -1,4 +1,19 @@
 {
     "APP_WELCOME": "Welcome to fant!",
-    "APP_LANGUAGE_CHANGE": "Change language"
+    "APP_LANGUAGE_CHANGE": "Change language",
+    "category": {
+        "travel" : "Travel",
+        "appliance" : "Appliances",
+        "boat" : "Boats",
+        "book" : "Books",
+        "cameras" : "Cameras",
+        "cars" : "Cars",
+        "clothes" : "Clothes",
+        "computers" : "Computers",
+        "furniture" : "Furniture",
+        "motorcycle" : "Motorcycles",
+        "phone" : "Phones",
+        "art" : "Art"
+
+    }
 }
