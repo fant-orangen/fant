@@ -1,4 +1,6 @@
 import './assets/main.css'
+import '@/assets/styles/categoryButtons.css'
+import '@/assets/styles/categoryGrid.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

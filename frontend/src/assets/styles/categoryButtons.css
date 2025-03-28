@@ -1,0 +1,18 @@
+.category-button {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.category-button:hover{
+  transform: scale(1.1);
+}
+.icon {
+  width: 48px;
+  height: 48px;
+}
+.label {
+  color: #222222;
+}
