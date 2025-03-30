@@ -11,10 +11,10 @@ name: Java CI with Maven
 on:
   push:
     branches: [ "dev", "main"]
-    paths: [ "backend/**" ]
+    paths: ["frontend/**", ".github/workflows/backend.yml"]
   pull_request:
     branches: [ "dev", "main" ]
-    paths: [ "backend/**" ]
+    paths: ["frontend/**", ".github/workflows/backend.yml"]
 
 jobs:
   build:
