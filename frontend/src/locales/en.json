@@ -24,5 +24,8 @@
     "REGISTRATION_EMAIL": "E-Mail",
     "REGISTRATION_FIRSTNAME": "First Name",
     "REGISTRATION_LASTNAME": "Surname",
-    "REGISTRATION_BIRTHDATE": "Birth Date"
+    "REGISTRATION_BIRTHDATE": "Birth Date",
+
+    "LOGIN_LOGIN": "Log In",
+    "NEW_USER_QUESTION": "New User?"
 }

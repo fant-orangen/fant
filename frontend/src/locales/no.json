@@ -24,5 +24,8 @@
     "REGISTRATION_EMAIL": "E-Post",
     "REGISTRATION_FIRSTNAME": "Fornavn",
     "REGISTRATION_LASTNAME": "Etternavn",
-    "REGISTRATION_BIRTHDATE": "Fødselsdag"
+    "REGISTRATION_BIRTHDATE": "Fødselsdag",
+
+    "LOGIN_LOGIN": "Logg Inn",
+    "NEW_USER_QUESTION": "Ny Bruker?"
 }
