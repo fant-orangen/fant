@@ -46,15 +46,15 @@ async function registerUser() {
   <div class="form-container">
     <h1>Registration</h1>
     <form @submit.prevent="registerUser">
-      <input v-model="username" placeholder="$t('REGISTRATION_USERNAME')" />
-      <input v-model="password" type="password" placeholder="$t('REGISTRATION_PASSWORD')" />
-      <input v-model="email" placeholder="$t('REGISTRATION_EMAIL')" />
-      <input v-model="firstName" placeholder="$t('REGISTRATION_FIRSTNAME')" />
-      <input v-model="lastName" placeholder="$t('REGISTRATION_LASTNAME')" />
-      <input v-model="birthDate" placeholder="$t('REGISTRATION_BIRTHDATE')" />
-      <button type="submit">{{ 'REGISTRATION_BUTTON' }}}</button>
+      <input v-model="username" :placeholder="$t('REGISTRATION_USERNAME')" />
+      <input v-model="password" type="password" :placeholder="$t('REGISTRATION_PASSWORD')" />
+      <input v-model="email" :placeholder="$t('REGISTRATION_EMAIL')" />
+      <input v-model="firstName" :placeholder="$t('REGISTRATION_FIRSTNAME')" />
+      <input v-model="lastName" :placeholder="$t('REGISTRATION_LASTNAME')" />
+      <input v-model="birthDate" :placeholder="$t('REGISTRATION_BIRTHDATE')" />
+      <button type="submit">{{ $t('REGISTRATION_BUTTON') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
-    <router-link to="/login">{{'REGISTRATION_ACCOUNT_QUESTION'}}</router-link>
+    <router-link to="/login">{{ $t('REGISTRATION_ACCOUNT_QUESTION') }}</router-link>
   </div>
 </template>

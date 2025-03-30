@@ -34,15 +34,15 @@ async function login() {
 
 <template>
   <div class="form-container">
-    <h1>{{ 'LOGIN_LOGIN' }}</h1>
+    <h1>{{ $t('LOGIN_LOGIN') }}</h1>
     <form @sugmit.prevent="login">
-      <input v-model="username" placeholder="$t('REGISTRATION_USERNAME')"/>
-      <input v-model="password" type="password" placeholder="$t('REGISTRATION_PASSWORD')" />
-      <button type="submit">{{ 'LOGIN_LOGIN' }}}</button>
+      <input v-model="username" :placeholder="$t('REGISTRATION_USERNAME')"/>
+      <input v-model="password" type="password" :placeholder="$t('REGISTRATION_PASSWORD')" />
+      <button type="submit">{{ $t('LOGIN_LOGIN') }}</button>
 
     </form>
     <p v-if="error" class="error">{{ error }}</p>
-    <router-link to="/register">{{ 'NEW_USER_QUESTION' }}</router-link>
+    <router-link to="/register">{{ $t('NEW_USER_QUESTION') }}</router-link>
 
   </div>
 </template>
