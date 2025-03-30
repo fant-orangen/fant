@@ -17,5 +17,12 @@
 
     },
     "REGISTRATION_HEADER" : "Register User",
-    "REGISTRATION_BUTTON" : "Register"
+    "REGISTRATION_BUTTON" : "Register",
+    "REGISTRATION_ACCOUNT_QUESTION": "Do you have an account?",
+    "REGISTRATION_USERNAME": "Username",
+    "REGISTRATION_PASSWORD": "Password",
+    "REGISTRATION_EMAIL": "E-Mail",
+    "REGISTRATION_FIRSTNAME": "First Name",
+    "REGISTRATION_LASTNAME": "Surname",
+    "REGISTRATION_BIRTHDATE": "Birth Date"
 }
