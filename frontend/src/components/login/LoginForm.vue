@@ -35,7 +35,7 @@ async function login() {
 <template>
   <div class="form-container">
     <h1>{{ $t('LOGIN_LOGIN') }}</h1>
-    <form @sugmit.prevent="login">
+    <form class="form" @submit.prevent="login">
       <input v-model="username" :placeholder="$t('REGISTRATION_USERNAME')"/>
       <input v-model="password" type="password" :placeholder="$t('REGISTRATION_PASSWORD')" />
       <button type="submit">{{ $t('LOGIN_LOGIN') }}</button>
