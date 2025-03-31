@@ -19,7 +19,7 @@ const router = createRouter({
     {
       path: '/browse',
       name: 'browse',
-      component: () => import('../views/ItemView.vue'), // or ItemListView
+      component: () => import('../views/ItemView.vue'),
     },
     {
       path: '/language-selector',
@@ -31,8 +31,8 @@ const router = createRouter({
       path: '/login', component: LoginView
     },
     {
-      path: '/register', component: RegistrationView
-
+      path: '/register', component: RegistrationView},
+    {
       path: '/create-listing/start',
       name: 'create-listing-start',
       component: () => import('../views/createListingsView/MarkedListingView.vue'),
