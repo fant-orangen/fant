@@ -1,33 +1,39 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useUserStore } from "@/stores/UserStore.ts";
-import { useRouter } from "vue-router";
-import { isAxiosError } from 'axios';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/UserStore'
+import { isAxiosError } from 'axios'
+import TextInput from '@/components/input/TextInput.vue'
 
-const userStore = useUserStore();
-const router = useRouter();
+const username = ref('')
+const password = ref('')
+const error = ref('')
+const isLoading = ref(false)
 
+const userStore = useUserStore()
+const router = useRouter()
 
-const username = ref('');
-const password = ref('');
-const error = ref('');
-const isLoading = ref(false);
-
+/**
+ * Handles the login process.
+ * It calls the verifyLogin action from the UserStore with the username and password.
+ * On successful login, the user is redirected to the homepage.
+ * Errors are caught and displayed to the user.
+ */
 async function login() {
-  error.value = "";
-  isLoading.value = true;
+  error.value = ''
+  isLoading.value = true
 
   try {
-    await userStore.verifyLogin(username.value, password.value);
-    router.push('/');
-  } catch (err: unknown){
+    await userStore.verifyLogin(username.value, password.value)
+    router.push('/')
+  } catch (err: unknown) {
     if (isAxiosError(err)) {
-      error.value = err.response?.data?.message ?? "Login Failed";
+      error.value = err.response?.data?.message ?? 'Login Failed'
     } else {
-      error.value = "Unknown Error During Login";
+      error.value = 'Unknown error during login'
     }
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 </script>
@@ -36,14 +42,24 @@ async function login() {
   <div class="form-container">
     <h1>{{ $t('LOGIN_LOGIN') }}</h1>
     <form class="form" @submit.prevent="login">
-      <input v-model="username" :placeholder="$t('REGISTRATION_USERNAME')"/>
-      <input v-model="password" type="password" :placeholder="$t('REGISTRATION_PASSWORD')" />
-      <button type="submit">{{ $t('LOGIN_LOGIN') }}</button>
+      <!-- Use TextInput component for username -->
+      <TextInput
+        id="username"
+        v-model="username"
+        :label="$t('REGISTRATION_USERNAME')"
+        :placeholder="$t('REGISTRATION_USERNAME')"
+      />
 
+      <TextInput
+        id="password"
+        v-model="password"
+        type="password"
+        :label="$t('REGISTRATION_PASSWORD')"
+        :placeholder="$t('REGISTRATION_PASSWORD')"
+      />
+      <button type="submit" :disabled="isLoading">{{ $t('LOGIN_LOGIN') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
     <router-link to="/register">{{ $t('NEW_USER_QUESTION') }}</router-link>
-
   </div>
 </template>
-

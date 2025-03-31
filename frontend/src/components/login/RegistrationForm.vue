@@ -1,21 +1,27 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/UserStore.ts'
+import { useUserStore } from '@/stores/UserStore'
 import { isAxiosError } from 'axios'
+import TextInput from '@/components/input/TextInput.vue'
 
-const userStore = useUserStore();
-const router = useRouter();
+const username = ref('')
+const password = ref('')
+const email = ref('')
+const firstName = ref('')
+const lastName = ref('')
+const phoneNumber = ref('')
 
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const firstName = ref('');
-const lastName = ref('');
-const birthDate = ref('');
-const error = ref('');
-const isLoading = ref(false);
+const error = ref('')
+const isLoading = ref(false)
 
+const userStore = useUserStore()
+const router = useRouter()
+
+/**
+ * Handles the registration process by sending user data to the backend.
+ * On success, the user is automatically logged in and redirected to the homepage.
+ */
 async function registerUser() {
   error.value = ''
   isLoading.value = true
@@ -27,14 +33,14 @@ async function registerUser() {
       email: email.value,
       firstName: firstName.value,
       lastName: lastName.value,
-      birthDate: birthDate.value,
+      birthDate: phoneNumber.value
     })
-    router.push('/');
+    router.push('/')
   } catch (err: unknown) {
     if (isAxiosError(err)) {
       error.value = err.response?.data?.message ?? 'Registration Failed'
     } else {
-      error.value = 'Unknown error under registration'
+      error.value = 'Unknown error during registration'
     }
   } finally {
     isLoading.value = false
@@ -44,24 +50,51 @@ async function registerUser() {
 
 <template>
   <div class="form-container">
-    <h1>Registration</h1>
+    <h1>{{ $t('REGISTRATION_HEADER') }}</h1>
     <form class="form" @submit.prevent="registerUser">
-
-      <input v-model="username"
-             :placeholder="$t('REGISTRATION_USERNAME')" />
-      <input v-model="password" type="password"
-             :placeholder="$t('REGISTRATION_PASSWORD')" />
-      <input v-model="email"
-             :placeholder="$t('REGISTRATION_EMAIL')" />
-      <input v-model="firstName"
-             :placeholder="$t('REGISTRATION_FIRSTNAME')" />
-      <input v-model="lastName"
-             :placeholder="$t('REGISTRATION_LASTNAME')" />
-      <input v-model="birthDate"
-             :placeholder="$t('REGISTRATION_BIRTHDATE')" />
-      <button type="submit">{{ $t('REGISTRATION_BUTTON') }}</button>
+      <TextInput
+        id="username"
+        v-model="username"
+        :label="$t('REGISTRATION_USERNAME')"
+        :placeholder="$t('REGISTRATION_USERNAME')"
+      />
+      <TextInput
+        id="password"
+        v-model="password"
+        type="password"
+        :label="$t('REGISTRATION_PASSWORD')"
+        :placeholder="$t('REGISTRATION_PASSWORD')"
+      />
+      <TextInput
+        id="email"
+        v-model="email"
+        type="email"
+        :label="$t('REGISTRATION_EMAIL')"
+        :placeholder="$t('REGISTRATION_EMAIL')"
+      />
+      <TextInput
+        id="firstName"
+        v-model="firstName"
+        :label="$t('REGISTRATION_FIRSTNAME')"
+        :placeholder="$t('REGISTRATION_FIRSTNAME')"
+      />
+      <TextInput
+        id="lastName"
+        v-model="lastName"
+        :label="$t('REGISTRATION_LASTNAME')"
+        :placeholder="$t('REGISTRATION_LASTNAME')"
+      />
+      <TextInput
+        id="phoneNumber"
+        v-model="phoneNumber"
+        type="tel"
+        :label="$t('REGISTRATION_PHONENUMBER')"
+        :placeholder="$t('REGISTRATION_PHONENUMBER')"
+      />
+      <button type="submit" :disabled="isLoading">{{ $t('REGISTRATION_BUTTON') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
     <router-link to="/login">{{ $t('REGISTRATION_ACCOUNT_QUESTION') }}</router-link>
   </div>
 </template>
+
