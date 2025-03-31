@@ -6,15 +6,20 @@
 
 .thumbnail--full-width {
   width: 100%;
-  max-width: 700px; /* Maximum width */
+  max-width: 800px; /* Maximum width */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  padding: 10px; /* Add padding */
+  margin: 10px 0; /* Add margin */
 }
 
 .thumbnail--half-width {
   width: 50%;
+  max-width: 400px; /* Maximum width */
 }
 
 .thumbnail--quarter-width {
   width: 25%;
+  max-width: 200px; /* Maximum width */
 }
 
 .thumbnail--double-height {
@@ -90,14 +95,14 @@ textarea,
 select {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 15px;
+  margin: 5px 0;
 }
 /* Base styles */
 .button {
   width: 100%; /* Full width */
   max-width: 400px; /* Maximum width */
-  margin: 10px;
+  margin: 5px;
   padding: 10px 20px;
   box-sizing: border-box;
 }
