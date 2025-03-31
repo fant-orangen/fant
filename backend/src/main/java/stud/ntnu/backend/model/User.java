@@ -1,50 +1,46 @@
 package stud.ntnu.backend.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+  import jakarta.persistence.*;
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+
+  import java.time.LocalDateTime;
 
   @Entity
   @Table(name = "users")
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
-  @Builder
   public class User {
+      @Id
+      @GeneratedValue(strategy = GenerationType.IDENTITY)
+      private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+      private String username;
+      private String email;
 
-  @Column(nullable = false, unique = true)
-  private String username;
+      @Column(name = "password_hash")
+      private String passwordHash;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+      @Enumerated(EnumType.STRING)
+      private Role role;
 
-  @Column(nullable = false)
-  private String passwordHash;
+      @Column(name = "first_name")
+      private String firstName;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private Role role;
+      @Column(name = "last_name")
+      private String lastName;
 
-  private String firstName;
-  private String lastName;
-  private String phone;
+      private String phone;
 
-  @Column(nullable = false, updatable = false)
-  private java.time.LocalDateTime createdAt;
+      @Column(name = "created_at")
+      private LocalDateTime createdAt;
 
-  @Column(nullable = false)
-  private java.time.LocalDateTime updatedAt;
+      @Column(name = "updated_at")
+      private LocalDateTime updatedAt;
 
-  @PrePersist
-  void onCreate() {
-    createdAt = updatedAt = java.time.LocalDateTime.now();
+      public enum Role {
+          USER, ADMIN
+      }
   }
-
-  @PreUpdate
-  void onUpdate() {
-    updatedAt = java.time.LocalDateTime.now();
-  }
-}
