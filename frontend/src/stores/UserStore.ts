@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { fetchToken } from '@/services/api/authService.ts';
-import { register } from "@/services/api/userService.ts";
+import { fetchToken } from '@/services/api/authService';
+import { register } from "@/services/api/userService";
 import {computed, ref} from "vue";
 
 
