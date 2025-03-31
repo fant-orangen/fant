@@ -27,7 +27,7 @@ const router = createRouter({
     {
       path: '/create-listing/start',
       name: 'create-listing-start',
-      component: () => import('../views/createListingsView/MarkedListingView.vue'),
+      component: () => import('../views/createListingsView/MarketListingView.vue'),
     }
 
   ],
