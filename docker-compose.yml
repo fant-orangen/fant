@@ -1,0 +1,23 @@
+version: '3'
+services:
+  backend:
+    container_name: backend
+    build: /backend
+    ports:
+      - "8080:8080"
+    networks:
+      - backend_bridge
+    restart: always
+
+  frontend:
+    container_name: frontend
+    build: /frontend
+    ports:
+      - "80:80"
+    networks:
+      - backend_bridge
+    restart: always
+
+networks:
+  backend_bridge:
+    driver: bridge
