@@ -1,6 +1,6 @@
 import { setActivePinia, createPinia } from 'pinia'
-import { useUserStore } from '@/stores/UserStore'
-import * as authService from '@/services/api/authService'
+import { useUserStore } from '../../../stores/UserStore'
+import * as authService from '../../../services/api/authService'
 import { beforeEach, describe, it, expect, vi } from 'vitest'
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 
