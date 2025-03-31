@@ -13,14 +13,34 @@ import stud.ntnu.backend.data.AuthRequestDto;
 import stud.ntnu.backend.data.AuthResponseDto;
 import stud.ntnu.backend.util.JwtUtil;
 
+/**
+ * <h2>AuthController</h2>
+ * <p>Controller for handling authentication requests.</p>
+ */
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+    /**
+     * <h3>Authentication Manager</h3>
+     * <p>Manages authentication processes.</p>
+     */
     private final AuthenticationManager authenticationManager;
+
+    /**
+     * <h3>JWT Utility</h3>
+     * <p>Utility class for generating and validating JWT tokens.</p>
+     */
     private final JwtUtil jwtUtil;
 
+    /**
+     * <h3>Generate JWT Token</h3>
+     * <p>Authenticates the user and generates a JWT token if authentication is successful.</p>
+     *
+     * @param request the authentication request containing username and password
+     * @return a response entity containing the status and the generated JWT token
+     */
     @PostMapping("/token")
     public ResponseEntity<AuthResponseDto> getToken(@RequestBody AuthRequestDto request) {
         try {

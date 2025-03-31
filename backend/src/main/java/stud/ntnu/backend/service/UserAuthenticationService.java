@@ -14,14 +14,39 @@ import stud.ntnu.backend.repository.UserRepository;
 
 import java.util.Collections;
 
+/**
+ * <h2>UserAuthenticationService</h2>
+ * <p>Service responsible for authenticating users by loading their details from the database.</p>
+ * <p>Implements Spring Security's {@link UserDetailsService} interface to integrate
+ * with the authentication framework.</p>
+ */
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserAuthenticationService implements UserDetailsService {
 
+    /**
+     * <h3>User repository for accessing user data</h3>
+     */
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
+    /**
+     * <h3>Password encoder for hashing and verification</h3>
+     */
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    /**
+     * <h3>Logger for diagnostic information</h3>
+     */
+    Logger logger = LoggerFactory.getLogger(UserAuthenticationService.class); // TODO: remove logger?
+
+    /**
+     * <h3>Loads a user's details by username</h3>
+     * <p>Retrieves a user from the database and converts it to Spring Security's UserDetails object.</p>
+     *
+     * @param username the username identifying the user whose data is required
+     * @return a fully populated UserDetails object
+     * @throws UsernameNotFoundException if the user could not be found
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
