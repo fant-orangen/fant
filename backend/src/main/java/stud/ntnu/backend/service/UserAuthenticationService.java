@@ -51,6 +51,8 @@ public class UserAuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        // Unnecessary debugging code TODO: Remove this later
         String passwordHash = passwordEncoder.encode("password123");
         logger.info("Hash of password123: " + passwordHash);
         return new org.springframework.security.core.userdetails.User(

@@ -16,13 +16,36 @@ import stud.ntnu.backend.util.JwtUtil;
 
 import java.io.IOException;
 
+/**
+ * <h2>JwtAuthFilter</h2>
+ * <p>Filter for processing JWT authentication in incoming HTTP requests.</p>
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    /**
+     * <h3>UserDetailsService</h3>
+     * <p>Service for loading user-specific data. The class UserAuthenticationService is used.</p>
+     */
     private final UserDetailsService userDetailsService;
+
+    /**
+     * <h3>JWT Utility</h3>
+     * <p>Utility class for generating and validating JWT tokens.</p>
+     */
     private final JwtUtil jwtUtil;
 
+    /**
+     * <h3>Filter incoming requests</h3>
+     * <p>Filters each incoming request to check for a valid JWT token in the Authorization header.</p>
+     *
+     * @param request the HTTP request
+     * @param response the HTTP response
+     * @param filterChain the filter chain
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
