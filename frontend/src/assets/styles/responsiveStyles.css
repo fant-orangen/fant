@@ -1,0 +1,108 @@
+/* Additional responsive styles for other elements */
+.thumbnail {
+  display: inline-block;
+  margin: 10px;
+}
+
+.thumbnail--full-width {
+  width: 100%;
+  max-width: 800px; /* Maximum width */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  padding: 10px; /* Add padding */
+  margin: 10px 0; /* Add margin */
+}
+
+.thumbnail--half-width {
+  width: 50%;
+  max-width: 400px; /* Maximum width */
+}
+
+.thumbnail--quarter-width {
+  width: 25%;
+  max-width: 200px; /* Maximum width */
+}
+
+.thumbnail--double-height {
+  height: 200%;
+}
+
+
+/*Adjustment the width when based on the screen size changes*/
+@media (max-width: 1200px) {
+  .thumbnail--half-width {
+    width: 100%;
+  }
+  .thumbnail--quarter-width {
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .thumbnail--half-width,
+  .thumbnail--quarter-width {
+    width: 100%;
+  }
+  .thumbnail--double-height {
+    height: 150px; /* Adjust as needed */
+  }
+}
+
+@media (max-width: 480px) {
+  .thumbnail {
+    width: 100%;
+    margin: 5px 0;
+  }
+  .thumbnail--double-height {
+    height: 100px; /* Adjust as needed */
+  }
+}
+
+/* Grid layout. Based on the screen size it dynamically adjust the grid. Need to set class to
+thumbnail-container to use this function*/
+.thumbnail-container {
+  display: grid;
+  gap: 10px; /* Optional: Adds spacing between grid items */
+}
+
+@media (min-width: 1200px) {
+  .thumbnail-container {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for large screens */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .thumbnail-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for medium screens */
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .thumbnail-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
+  }
+}
+
+@media (max-width: 479px) {
+  .thumbnail-container {
+    grid-template-columns: 1fr; /* 1 column for extra small screens */
+  }
+}
+
+/* Responsive styles for text and input fields */
+input[type="text"],
+input[type="file"],
+textarea,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px;
+  margin: 5px 0;
+}
+/* Base styles */
+.button {
+  width: 100%; /* Full width */
+  max-width: 400px; /* Maximum width */
+  margin: 5px;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}

@@ -1,7 +1,8 @@
 <template>
   <div class="listing-form">
-    <h2>{{ $t('APP_LISTING_CREATE_NEW') }}</h2>
-    <form @submit.prevent="submitListing">
+    <form @submit.prevent="submitListing" class="form-container">
+      <h1>{{ $t('APP_LISTING_CREATE_NEW') }}</h1>
+      <hr class="divider" />
       <!-- Headline -->
       <TextInput
         id="headline"
@@ -9,6 +10,7 @@
         v-model="listing.headline"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_HEADER_PLACEHOLDER')"
+        class="thumbnail thumbnail--full-width"
       />
 
       <!-- Description -->
@@ -18,6 +20,9 @@
         v-model="listing.description"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_DESCRIPTION_PLACEHOLDER')"
+        class="thumbnail thumbnail--full-width"
+        multiline
+        :rows="3"
       />
 
       <!-- Category -->
@@ -28,6 +33,7 @@
         :options="categories"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_CATEGORY_PLACEHOLDER')"
+        class="thumbnail thumbnail--full-width"
       />
 
       <!-- Price -->
@@ -37,6 +43,7 @@
         v-model="listing.price"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_PRICE_PLACEHOLDER')"
+        class="thumbnail thumbnail--half-width"
       />
 
       <!-- Postal Code -->
@@ -46,6 +53,7 @@
         v-model="listing.postalCode"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_POSTAL_CODE_PLACEHOLDER')"
+        class="thumbnail thumbnail--quarter-width"
       />
 
       <!-- Images -->
@@ -54,9 +62,10 @@
         :label="$t('APP_LISTING_CREATE_NEW_IMAGES_LABEL')"
         @update:files="handleImageUpload"
         multiple
+        class="thumbnail thumbnail--full-width"
       />
 
-      <button type="submit">{{ $t('APP_LISTING_CREATE_NEW_SUBMIT_BUTTON') }}</button>
+      <button type="submit" class="button">{{ $t('APP_LISTING_CREATE_NEW_SUBMIT_BUTTON') }}</button>
     </form>
   </div>
 </template>
@@ -125,3 +134,25 @@ export default {
 };
 </script>
 
+<style>
+@import '@/assets/styles/responsiveStyles.css'; /* This will still be global */
+</style>
+
+<style scoped>
+.listing-form {
+  justify-content: center;
+  align-items: center;
+}
+.form-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column; /* Stack items vertically */
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.divider {
+  width: 100%;
+  border: 1px solid #ccc;
+  margin: 10px 0;
+}
+</style>
