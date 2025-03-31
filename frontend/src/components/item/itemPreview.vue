@@ -53,7 +53,6 @@ function toggleFavorite() {
   object-fit: cover; /* Ensure the image covers the container without stretching */
 }
 
-
 .heart-icon {
   position: absolute;
   top: 10px;
@@ -79,6 +78,7 @@ function toggleFavorite() {
 .item-title {
   font-size: 1.2em;
   margin: 10px 0;
+  color: black;
 }
 
 .item-price {
