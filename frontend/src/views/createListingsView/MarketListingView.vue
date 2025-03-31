@@ -21,6 +21,8 @@
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_DESCRIPTION_PLACEHOLDER')"
         class="thumbnail thumbnail--full-width"
+        multiline
+        :rows="3"
       />
 
       <!-- Category -->
@@ -41,7 +43,7 @@
         v-model="listing.price"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_PRICE_PLACEHOLDER')"
-        class="thumbnail thumbnail--full-width"
+        class="thumbnail thumbnail--half-width"
       />
 
       <!-- Postal Code -->
@@ -51,7 +53,7 @@
         v-model="listing.postalCode"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_POSTAL_CODE_PLACEHOLDER')"
-        class="thumbnail thumbnail--full-width"
+        class="thumbnail thumbnail--quarter-width"
       />
 
       <!-- Images -->
