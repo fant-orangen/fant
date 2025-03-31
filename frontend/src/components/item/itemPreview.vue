@@ -35,6 +35,7 @@ function toggleFavorite() {
   margin: 10px;
   text-align: center;
   position: relative;
+  border-radius: 10px;
 }
 
 .image-container {
@@ -78,7 +79,6 @@ function toggleFavorite() {
 .item-title {
   font-size: 1.2em;
   margin: 10px 0;
-  color: black;
 }
 
 .item-price {
