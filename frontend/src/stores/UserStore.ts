@@ -3,7 +3,6 @@ import { fetchToken } from '@/services/api/AuthService.ts';
 import { register } from "@/services/api/UserService.ts";
 import {computed, ref} from "vue";
 
-
 export const useUserStore = defineStore("user", () => {
   const token = ref<string | null>(null);
   const username = ref<string | null>(null);
