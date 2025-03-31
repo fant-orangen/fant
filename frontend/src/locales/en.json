@@ -1,0 +1,31 @@
+{
+    "APP_WELCOME": "Welcome to fant!",
+    "APP_LANGUAGE_CHANGE": "Change language",
+    "category": {
+        "travel" : "Travel",
+        "appliance" : "Appliances",
+        "boat" : "Boats",
+        "book" : "Books",
+        "cameras" : "Cameras",
+        "cars" : "Cars",
+        "clothes" : "Clothes",
+        "computers" : "Computers",
+        "furniture" : "Furniture",
+        "motorcycle" : "Motorcycles",
+        "phone" : "Phones",
+        "art" : "Art"
+
+    },
+    "REGISTRATION_HEADER" : "Register User",
+    "REGISTRATION_BUTTON" : "Register",
+    "REGISTRATION_ACCOUNT_QUESTION": "Do you have an account?",
+    "REGISTRATION_USERNAME": "Username",
+    "REGISTRATION_PASSWORD": "Password",
+    "REGISTRATION_EMAIL": "E-Mail",
+    "REGISTRATION_FIRSTNAME": "First Name",
+    "REGISTRATION_LASTNAME": "Surname",
+    "REGISTRATION_BIRTHDATE": "Birth Date",
+
+    "LOGIN_LOGIN": "Log In",
+    "NEW_USER_QUESTION": "New User?"
+}

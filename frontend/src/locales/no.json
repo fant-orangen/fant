@@ -1,0 +1,31 @@
+{
+    "APP_WELCOME": "Velkommen til fant!",
+    "APP_LANGUAGE_CHANGE": "Bytt språk",
+    "category": {
+        "travel" : "Reise",
+        "appliance" : "Hvitevarer",
+        "boat" : "Båt",
+        "book" : "Bøker",
+        "cameras" : "Kamera",
+        "cars" : "Bil",
+        "clothes" : "Klær",
+        "computers" : "Datamaskin",
+        "furniture" : "Møbel",
+        "motorcycle" : "Motorsykkel",
+        "phone" : "Mobiltelefon",
+        "art" : "Kunst"
+
+    },
+    "REGISTRATION_HEADER" : "Registrer Bruker",
+    "REGISTRATION_BUTTON" : "Registrer",
+    "REGISTRATION_ACCOUNT_QUESTION": "Har du en konto?",
+    "REGISTRATION_USERNAME": "Brukernavn",
+    "REGISTRATION_PASSWORD": "Passord",
+    "REGISTRATION_EMAIL": "E-Post",
+    "REGISTRATION_FIRSTNAME": "Fornavn",
+    "REGISTRATION_LASTNAME": "Etternavn",
+    "REGISTRATION_BIRTHDATE": "Fødselsdag",
+
+    "LOGIN_LOGIN": "Logg Inn",
+    "NEW_USER_QUESTION": "Ny Bruker?"
+}

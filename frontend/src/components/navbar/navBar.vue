@@ -7,6 +7,7 @@
       <RouterLink to="/">Hjem</RouterLink>
       <RouterLink to="/browse">Utforsk</RouterLink>
       <RouterLink to="/login">Logg inn</RouterLink>
+      <RouterLink to="/register">Registrer</RouterLink>
     </nav>
   </header>
 </template>
@@ -50,3 +51,5 @@ nav.links a.router-link-exact-active {
   font-weight: bold;
 }
 </style>
+<script setup lang="ts">
+</script>

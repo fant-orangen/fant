@@ -1,0 +1,14 @@
+.form-container {
+  max-width: 500px;
+  margin: auto;
+}
+.error {
+  color: red;
+  margin:auto;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+}
