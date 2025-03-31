@@ -7,7 +7,7 @@
       <RouterLink to="/">Hjem</RouterLink>
       <RouterLink to="/browse">Utforsk</RouterLink>
       <RouterLink to="/login">Logg inn</RouterLink>
-      <RouterLink to="/register">Registrer</RouterLink>
+      <RouterLink to="/create-listing/start">{{ $t('APP_LISTING_CREATE_NEW') }}</RouterLink>
     </nav>
   </header>
 </template>
