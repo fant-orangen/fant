@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 
-// Define an interface for your items (customize it based on your API)
+
 interface Item {
   id: string | number;
   title: string;
   imageUrl: string;
   price: number;
-  // add more fields as needed (e.g., description, category, etc.)
+
 }
 
-// Define the props accepted by this component
 const { items } = defineProps<{ items: Item[] }>()
 </script>
 
