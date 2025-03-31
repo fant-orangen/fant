@@ -67,6 +67,8 @@ thumbnail-container to use this function*/
 @media (min-width: 1200px) {
   .thumbnail-container {
     grid-template-columns: repeat(4, 1fr); /* 4 columns for large screens */
+    max-width: 1600px; /* Maximum width for the container */
+    margin: 0 auto; /* Center the container */
   }
 }
 
