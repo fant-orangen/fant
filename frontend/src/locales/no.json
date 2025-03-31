@@ -49,6 +49,13 @@
 
     "APP_LISTING_CREATE_NEW_SUBMIT_BUTTON": "Opprett annonse",
     "APP_LISTING_UPLOAD_FILE": "legg til fil",
-    "APP_LISTING_UPLOADED_FILE": "vedlagt fil"
+    "APP_LISTING_UPLOADED_FILE": "vedlagt fil",
+
+    "REGISTRATION_NAVBAR": "Registrer",
+    "LOGIN_NAVBAR": "Logg Inn",
+    "HOME_NAVBAR" : "Hjem",
+    "AD_NAVBAR": "Ny Annonse",
+    "BROWSE_NAVBAR": "Utforsk",
+    "LANGUAGE_NAVBAR": "Språk"
 
 }

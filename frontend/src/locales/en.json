@@ -44,6 +44,14 @@
 "REGISTRATION_LASTNAME": "Surname",
 "REGISTRATION_PHONENUMBER": "Phone Number",
 "LOGIN_LOGIN": "Log In",
-"NEW_USER_QUESTION": "New User?"
+"NEW_USER_QUESTION": "New User?",
+
+
+    "REGISTRATION_NAVBAR": "Register",
+    "LOGIN_NAVBAR": "Log In",
+    "HOME_NAVBAR" : "Home",
+    "AD_NAVBAR": "New Ad",
+    "BROWSE_NAVBAR": "Explore",
+    "LANGUAGE_NAVBAR": "Language"
 
 }
