@@ -17,6 +17,20 @@
 
     },
 
+    "REGISTRATION_HEADER" : "Registrer Bruker",
+    "REGISTRATION_BUTTON" : "Registrer",
+    "REGISTRATION_ACCOUNT_QUESTION": "Har du en konto?",
+    "REGISTRATION_USERNAME": "Brukernavn",
+    "REGISTRATION_PASSWORD": "Passord",
+    "REGISTRATION_EMAIL": "E-Post",
+    "REGISTRATION_FIRSTNAME": "Fornavn",
+    "REGISTRATION_LASTNAME": "Etternavn",
+    "REGISTRATION_BIRTHDATE": "Fødselsdag",
+
+    "LOGIN_LOGIN": "Logg Inn",
+    "NEW_USER_QUESTION": "Ny Bruker?"
+
+
     "APP_LISTING_CREATE_NEW": "Ny annonse",
     "APP_LISTING_CREATE_NEW_HEADER_LABEL": "Overskrift",
     "APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL":"Beskrivelse",
@@ -35,4 +49,5 @@
     "APP_LISTING_CREATE_NEW_SUBMIT_BUTTON": "Opprett annonse",
     "APP_LISTING_UPLOAD_FILE": "legg til fil",
     "APP_LISTING_UPLOADED_FILE": "vedlagt fil"
+
 }
