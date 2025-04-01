@@ -8,6 +8,7 @@ import { computed, ref } from "vue";
  *  Handles login, registration, and logout, and it persists the JWT token and username.
  *
  */
+
 export const useUserStore = defineStore("user", () => {
   // Reactive state to store the JWT token and username.
   const token = ref<string | null>(null);
