@@ -1,17 +1,27 @@
 import { defineStore } from 'pinia';
 import { fetchToken } from '@/services/api/authService';
-import { register } from "@/services/api/userService";
-import { computed, ref } from "vue";
+import { register } from '@/services/api/userService';
+import { computed, ref } from 'vue';
+import api from '@/services/api/axiosInstance';
 
 /**
- *  UserStore manages user authentication state.
- *  Handles login, registration, and logout, and it persists the JWT token and username.
- *
+ * UserStore manages user authentication and profile state.
+ * It handles login, registration, profile fetching/updating, and logout.
+ * The store persists the JWT token, username, and user profile.
  */
 export const useUserStore = defineStore("user", () => {
-  // Reactive state to store the JWT token and username.
+  // Reactive state for authentication.
   const token = ref<string | null>(null);
   const username = ref<string | null>(null);
+
+  // Reactive state for the user profile.
+  // Fields here should match what your backend returns for a user profile.
+  const profile = ref({
+    email: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: ''
+  });
 
   /**
    * Updates the store state with token and username if the login response is successful.
@@ -39,19 +49,17 @@ export const useUserStore = defineStore("user", () => {
    */
   async function verifyLogin(user: string, password: string) {
     const response = await fetchToken({ username: user, password: password });
-    // Check if HTTP status code is 200.
-    if (response.status !== 200){
+    if (response.status !== 200) {
       throw new Error("Login Info Error");
     }
-    // Extract the JWT token from the JSON body
     const tokenStr = response.data as string;
     login(response.status, tokenStr, user);
   }
 
   /**
-   * Register a new user and automatically log them in.
+   * Registers a new user and automatically logs them in.
    *
-   * @param userData
+   * @param userData - An object containing registration details.
    */
   async function registerUser(userData: {
     username: string;
@@ -59,21 +67,43 @@ export const useUserStore = defineStore("user", () => {
     email: string;
     firstName: string;
     lastName: string;
-    birthDate: string;
+    birthDate: string; // If backend still expects birthDate during registration.
   }) {
     await register(userData);
     await verifyLogin(userData.username, userData.password);
   }
 
   /**
-   * Logs out the current user by clearing token and username.
+   * Fetches the current user's profile from the backend.
+   *
+   * The backend endpoint (e.g., '/users/profile') should return an object containing user profile details.
+   */
+  async function fetchProfile() {
+    const response = await api.get('/users/profile');
+    profile.value = response.data;
+  }
+
+  /**
+   * Updates the user's profile by sending updated data to the backend.
+   *
+   * @param updatedProfile - An object with the updated profile details.
+   * @returns A promise that resolves when the profile has been updated.
+   */
+  async function updateProfile(updatedProfile: typeof profile.value) {
+    const response = await api.put('/users/profile', updatedProfile);
+    profile.value = response.data;
+  }
+
+  /**
+   * Logs out the current user by clearing the token, username, and profile data.
    */
   function logout() {
     token.value = null;
     username.value = null;
+    profile.value = { email: '', firstName: '', lastName: '', phoneNumber: '' };
   }
 
-  // Computed getters for accessing the state.
+  // Computed getters for accessing state reactively.
   const loggedIn = computed(() => token.value !== null);
   const getUsername = computed(() => username.value);
   const getToken = computed(() => token.value);
@@ -81,13 +111,15 @@ export const useUserStore = defineStore("user", () => {
   return {
     token,
     username,
+    profile,
     login,
     verifyLogin,
     registerUser,
+    fetchProfile,
+    updateProfile,
     logout,
     loggedIn,
     getUsername,
     getToken
   };
 });
-
