@@ -6,6 +6,7 @@ import ProfileView from "@/views/ProfileView.vue";
 import FavoritesView from "@/views/profile/FavoritesView.vue";
 import ProfileLayout from "@/views/profile/ProfileLayout.vue";
 import ProfileOverview from '@/views/profile/ProfileOverview.vue';
+import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
 
 const routes = [
   {
@@ -62,21 +63,26 @@ const routes = [
 
   {
     path: '/profile',
-    component: ProfileLayout,
-    meta: { requiresAuth: true },
+    component: ProfileLayout, // Use the layout component
+    meta: { requiresAuth: true }, // Ensure user must be logged in
     children: [
       {
-        path: '',
+        path: '', // Default child route (e.g., /profile)
         name: 'profile-overview',
-        component: ProfileOverview
+        component: ProfileOverview,
       },
       {
-        path: 'favorites',
-        name: 'profile-favorites',
-        component: FavoritesView
+        path: 'listings', // e.g., /profile/listings
+        name: 'profile-listings',
+        component: ProfileAdsView,
       },
-      // ... more sub-routes like "my-ads", "settings", etc.
-    ]
+      {
+        path: 'favorites', // e.g., /profile/favorites
+        name: 'profile-favorites',
+        component: FavoritesView,
+      },
+      // Add other profile sub-routes like settings, etc.
+    ],
   }
 
 ]
