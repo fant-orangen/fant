@@ -66,10 +66,4 @@ function contactSeller() {
   flex-direction: column;
   gap: 0.5rem;
 }
-
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
 </style>
