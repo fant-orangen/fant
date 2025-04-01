@@ -3,7 +3,10 @@
     <h2>Manage Categories</h2>
     <form @submit.prevent="handleSubmit">
       <input v-model="form.label" placeholder="Category Label" required />
-      <input v-model="form.icon" placeholder="Category Icon URL" required />
+      <select v-model="form.icon">
+        <option v-for="icon in availableIcons" :key="icon.path" :value="icon.path">{{ icon.name }}</option>
+      </select>
+      <input v-model="customIconUrl" placeholder="Or enter custom Icon URL" @input="updateIconUrl" />
       <button type="submit">{{ isEditing ? 'Update' : 'Add' }} Category</button>
     </form>
     <ul>
@@ -11,78 +14,91 @@
         <span>{{ category.label }}</span>
         <img :src="category.icon" :alt="category.label" class="icon" />
         <button @click="editCategory(category)">Edit</button>
-        <button @click="deleteCategory(category.id)">Delete</button>
+        <button @click="removeCategory(category.id)">Delete</button>
       </li>
     </ul>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import applianceIcon from "@/assets/icons/applianceIcon.svg";
-import boatIcon from "@/assets/icons/boatIcon.svg";
-import bookIcon from "@/assets/icons/bookIcon.svg";
-import cameraIcon from "@/assets/icons/cameraIcon.svg";
-import carIcon from "@/assets/icons/carIcon.svg";
-import clothesIcon from "@/assets/icons/clothesIcon.svg";
-import computerIcon from "@/assets/icons/computerIcon.svg";
-import furnitureIcon from "@/assets/icons/furnitureIcon.svg";
-import motorcycleIcon from "@/assets/icons/motorcycleIcon.svg";
-import phoneIcon from "@/assets/icons/phoneIcon.svg";
-import artIcon from "@/assets/icons/artIcon.svg";
-import travelIcon from "@/assets/icons/travelIcon.svg";
+import { ref, onMounted } from 'vue';
+import type { Category } from '@/models/Category';
+import { fetchCategories, addCategory, updateCategory, deleteCategory } from '@/services/CategoryService.ts';
 
-interface Category {
-  id: number;
-  label: string;
-  icon: string;
-}
+import travelIcon from '@/assets/icons/travelIcon.svg';
+import applianceIcon from '@/assets/icons/applianceIcon.svg';
+import boatIcon from '@/assets/icons/boatIcon.svg';
+import bookIcon from '@/assets/icons/bookIcon.svg';
+import cameraIcon from '@/assets/icons/cameraIcon.svg';
+import carIcon from '@/assets/icons/carIcon.svg';
+import clothesIcon from '@/assets/icons/clothesIcon.svg';
+import computerIcon from '@/assets/icons/computerIcon.svg';
+import furnitureIcon from '@/assets/icons/furnitureIcon.svg';
+import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
+import phoneIcon from '@/assets/icons/phoneIcon.svg';
+import artIcon from '@/assets/icons/artIcon.svg';
 
-const categories = ref<Category[]>([
-  { id: 1, label: "appliance", icon: applianceIcon },
-  { id: 2, label: "boat", icon: boatIcon },
-  { id: 3, label: "book", icon: bookIcon },
-  { id: 4, label: "cameras", icon: cameraIcon },
-  { id: 5, label: "cars", icon: carIcon },
-  { id: 6, label: "clothes", icon: clothesIcon },
-  { id: 7, label: "computers", icon: computerIcon },
-  { id: 8, label: "furniture", icon: furnitureIcon },
-  { id: 9, label: "motorcycle", icon: motorcycleIcon },
-  { id: 10, label: "phone", icon: phoneIcon },
-  { id: 11, label: "art", icon: artIcon },
-  { id: 12, label: "travel", icon: travelIcon }
-  // Add initial categories here
+const categories = ref<Category[]>([]);
+const form = ref<Category>({ id: '0', label: '', icon: '' });
+const customIconUrl = ref('');
+const isEditing = ref(false);
+const availableIcons = ref<{ name: string, path: string }[]>([
+  { name: 'Travel', path: travelIcon },
+  { name: 'Appliance', path: applianceIcon },
+  { name: 'Boat', path: boatIcon },
+  { name: 'Book', path: bookIcon },
+  { name: 'Camera', path: cameraIcon },
+  { name: 'Car', path: carIcon },
+  { name: 'Clothes', path: clothesIcon },
+  { name: 'Computer', path: computerIcon },
+  { name: 'Furniture', path: furnitureIcon },
+  { name: 'Motorcycle', path: motorcycleIcon },
+  { name: 'Phone', path: phoneIcon },
+  { name: 'Art', path: artIcon },
 ]);
 
-const form = ref<Category>({ id: 0, label: '', icon: '' });
-const isEditing = ref(false);
+async function loadCategories() {
+  categories.value = await fetchCategories();
+}
 
-function handleSubmit() {
+async function handleSubmit() {
   if (isEditing.value) {
-    const index = categories.value.findIndex(cat => cat.id === form.value.id);
-    if (index !== -1) {
-      categories.value[index] = { ...form.value };
-    }
+    await updateCategory(form.value.id, { label: form.value.label, icon: form.value.icon });
   } else {
-    form.value.id = Date.now();
-    categories.value.push({ ...form.value });
+    const highestId = Math.max(...categories.value.map(category => Number(category.id)));
+    form.value.id = (highestId + 1).toString();
+    await addCategory(form.value);
   }
   resetForm();
+  await loadCategories();
 }
 
 function editCategory(category: Category) {
   form.value = { ...category };
+  customIconUrl.value = category.icon;
   isEditing.value = true;
 }
 
-function deleteCategory(id: number) {
-  categories.value = categories.value.filter(cat => cat.id !== id);
+async function removeCategory(id: string) {
+  await deleteCategory(id);
+  await loadCategories();
 }
 
 function resetForm() {
-  form.value = { id: 0, label: '', icon: '' };
+  form.value = { id: '0', label: '', icon: '' };
+  customIconUrl.value = '';
   isEditing.value = false;
 }
+
+function updateIconUrl() {
+  if (customIconUrl.value) {
+    form.value.icon = customIconUrl.value;
+  } else {
+    form.value.icon = ''; // Reset if no URL is provided
+  }
+}
+
+onMounted(loadCategories);
 </script>
 
 <style scoped>
