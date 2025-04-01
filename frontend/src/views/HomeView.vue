@@ -12,7 +12,7 @@ import CategoryGrid from "@/components/category/categoryGrid.vue";
 import ItemPreview from "@/components/item/itemPreview.vue";
 import { useRouter } from "vue-router";
 import { ref, onMounted } from 'vue';
-import { fetchPreviewItems } from '@/services/itemService/itemPreviewService';
+import { fetchPreviewItems } from '@/services/itemService.ts';
 import type { ItemPreviewType } from '@/models/Item';
 
 const router = useRouter();
