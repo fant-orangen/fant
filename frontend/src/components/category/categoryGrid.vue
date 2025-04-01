@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-import CategoryButton from "@/components/category/categoryButton.vue";
+import CategoryButton from "@/components/category/categoryButton.vue"
 import travelIcon from '@/assets/icons/travelIcon.svg'
 import applianceIcon from '@/assets/icons/applianceIcon.svg'
 import boatIcon from '@/assets/icons/boatIcon.svg'

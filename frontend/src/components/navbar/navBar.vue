@@ -4,9 +4,12 @@
       <RouterLink to="/">fant<span class="dot">.</span></RouterLink>
     </div>
     <nav class="links">
-      <RouterLink to="/">Hjem</RouterLink>
-      <RouterLink to="/browse">Utforsk</RouterLink>
-      <RouterLink to="/login">Logg inn</RouterLink>
+      <RouterLink to="/">{{ $t('HOME_NAVBAR') }}</RouterLink>
+      <RouterLink to="/browse">{{ $t('BROWSE_NAVBAR') }}</RouterLink>
+      <RouterLink to="/login">{{ $t('LOGIN_NAVBAR') }}</RouterLink>
+      <RouterLink to="/register">{{ $t('REGISTRATION_NAVBAR') }}</RouterLink>
+      <RouterLink to="/language-selector">{{ $t('LANGUAGE_NAVBAR') }}</RouterLink>
+
       <RouterLink to="/create-listing/start">{{ $t('APP_LISTING_CREATE_NEW') }}</RouterLink>
     </nav>
   </header>
