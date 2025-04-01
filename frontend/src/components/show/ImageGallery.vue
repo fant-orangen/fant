@@ -36,12 +36,19 @@ function nextPage() {
 </script>
 
 <style scoped>
+.gallery-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative;
+}
+
 .gallery {
   display: flex;
-  position: relative;
-  margin-top: 2rem;
-  width: 20vw;
-  height: 20vw;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
