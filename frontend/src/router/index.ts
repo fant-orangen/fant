@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
 import ItemDetailView from "@/views/ItemDetailView.vue";
+import CategoryEditView from "@/views/Administrator/CategoryEditView.vue";
 
 const routes = [
   {
@@ -53,6 +54,13 @@ const routes = [
     name: 'create-listing-start',
     component: () => import('../views/createListingsView/MarketListingView.vue'),
     meta: { title: 'Create Listing - Fant', requiresAuth: true }
+  },
+
+  {
+    path: '/administrator/category',
+    name: 'administrator-category',
+    component: CategoryEditView,
+    meta: { title: 'Administrator - category - Fant'}
   },
 
   // Dynamic Route for CategoryView.vue
