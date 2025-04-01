@@ -1,5 +1,6 @@
 package stud.ntnu.backend.service;
 
+   import java.util.List;
    import lombok.RequiredArgsConstructor;
    import org.slf4j.Logger;
    import org.slf4j.LoggerFactory;
@@ -23,6 +24,10 @@ package stud.ntnu.backend.service;
        private final UserRepository userRepository;
 
        private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+       public List<User> findAll() {
+         return userRepository.findAll();
+       }
 
        /**
         * <h3> Find user by username. </h3>
