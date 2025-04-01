@@ -3,6 +3,9 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
 import ProfileView from "@/views/ProfileView.vue";
+import FavoritesView from "@/views/profile/FavoritesView.vue";
+import ProfileLayout from "@/views/profile/ProfileLayout.vue";
+import ProfileOverview from '@/views/profile/ProfileOverview.vue';
 
 const routes = [
   {
@@ -59,10 +62,21 @@ const routes = [
 
   {
     path: '/profile',
-    name: 'profile',
-    component: ProfileView,
-    meta: { title: 'Profile - Fant' }
-
+    component: ProfileLayout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'profile-overview',
+        component: ProfileOverview
+      },
+      {
+        path: 'favorites',
+        name: 'profile-favorites',
+        component: FavoritesView
+      },
+      // ... more sub-routes like "my-ads", "settings", etc.
+    ]
   }
 
 ]
