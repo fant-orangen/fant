@@ -4,13 +4,11 @@ import { useUserStore } from '@/stores/UserStore';
 import { useI18n } from 'vue-i18n';
 
 // --- Import your actual icon components here ---
-// Example: Import the Heart Icon component
 import IconHeart from '@/components/icons/IconHeart.vue';
-// TODO: Import other icons like IconProfile, IconListings, etc.
-// import IconProfile from '@/components/icons/IconProfile.vue';
-// import IconListings from '@/components/icons/IconListings.vue';
+import IconProfile from '@/components/icons/IconProfile.vue'; // Import the new icon
+import IconListings from '@/components/icons/IconListings.vue'; // Import the new icon
 import IconVipps from '@/components/icons/IconVipps.vue';
-// import IconVerified from '@/components/icons/IconVerified.vue';
+// import IconVerified from '@/components/icons/IconVerified.vue'; // Keep if needed for Vipps verified state
 
 const userStore = useUserStore();
 const { t } = useI18n();
@@ -18,37 +16,34 @@ const loadingProfile = ref(false);
 const profileError = ref('');
 
 // --- Placeholder Data ---
-// TODO: Replace with real data fetching/logic
 const userRating = computed(() => '9,7');
 const ratingCount = computed(() => 5);
 const vippsVerified = computed(() => false);
 // --- End Placeholder Data ---
 
-// Define navigation tiles - Updated 'icon' for Favorites
+// Define navigation tiles - Updated 'icon' properties
 const profileTiles = ref([
   {
-    titleKey: 'PROFILE_TILE_MY_ACCOUNT_TITLE',
+    titleKey: 'MY_ACCOUNT_TITLE',
     descriptionKey: 'PROFILE_TILE_MY_ACCOUNT_DESC',
     routeName: 'profile-overview',
-    // icon: IconProfile, // TODO: Replace null with imported IconProfile
-    icon: null,
+    icon: IconProfile, // Use the imported IconProfile component
   },
   {
-    titleKey: 'PROFILE_TILE_MY_LISTINGS_TITLE',
+    titleKey: 'MY_LISTINGS',
     descriptionKey: 'PROFILE_TILE_MY_LISTINGS_DESC',
     routeName: 'profile-listings',
-    // icon: IconListings, // TODO: Replace null with imported IconListings
-    icon: null,
+    icon: IconListings, // Use the imported IconListings component
   },
   {
-    titleKey: 'PROFILE_TILE_FAVORITES_TITLE',
+    titleKey: 'MY_FAVORITES',
     descriptionKey: 'PROFILE_TILE_FAVORITES_DESC',
     routeName: 'profile-favorites',
-    icon: IconHeart, // Use the imported IconHeart component reference
+    icon: IconHeart, // Keep using IconHeart
   },
 ]);
 
-// Fetch profile data when the layout mounts
+// Fetch profile data when the layout mounts (no changes needed here)
 async function loadInitialProfile() {
   if (!userStore.profile?.email && userStore.loggedIn) {
     loadingProfile.value = true;
@@ -68,7 +63,7 @@ onMounted(() => {
   loadInitialProfile();
 });
 
-// Renamed function for Vipps
+// Vipps function (no changes needed here)
 function verifyWithVipps() {
   console.log('Initiating Vipps verification...');
   // TODO: Add actual Vipps integration logic here
@@ -90,10 +85,8 @@ function verifyWithVipps() {
       </div>
     </header>
 
-    {/* Vipps Verification Section - Updated classes and keys */}
     <section class="vipps-section" v-if="!vippsVerified">
-      {/* <component :is="IconVipps" class="vipps-icon" /> */} {/* TODO: Use actual Vipps icon */}
-      <div class="vipps-icon">📱</div> {/* Placeholder */}
+      <component :is="IconVipps" class="vipps-icon" />
       <div class="vipps-text">
         <h3>{{ t('PROFILE_VIPPS_PROMPT_TITLE') }}</h3>
         <p>{{ t('PROFILE_VIPPS_PROMPT_DESC') }}</p>
@@ -122,10 +115,7 @@ function verifyWithVipps() {
         active-class="active-tile"
       >
         <div class="profile-tile">
-          {/* Use dynamic component rendering for icons */}
           <component v-if="tile.icon" :is="tile.icon" class="tile-icon" aria-hidden="true" />
-          {/* Fallback placeholder if needed */}
-          <div></div>
           <h3>{{ t(tile.titleKey) }}</h3>
           <p>{{ t(tile.descriptionKey) }}</p>
         </div>
@@ -140,7 +130,7 @@ function verifyWithVipps() {
 </template>
 
 <style scoped>
-/* Styles remain the same as the previous version */
+/* Styles remain the same */
 .profile-layout {
   max-width: 960px;
   margin: 2rem auto;
@@ -284,14 +274,8 @@ function verifyWithVipps() {
   margin-bottom: 0.5rem;
   color: #555; /* Example default color */
 }
-/* Fallback placeholder style */
-.tile-icon-placeholder {
-  width: 32px;
-  height: 32px;
-  background-color: #eee;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-}
+/* Fallback placeholder style - can likely remove if all icons are implemented */
+/* .tile-icon-placeholder { ... } */
 
 .profile-tile h3 {
   margin: 0;

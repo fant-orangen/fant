@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-
+// Currently unused
 // Initialize i18n and router
 const { t } = useI18n();
 const router = useRouter();
@@ -14,7 +14,7 @@ const router = useRouter();
  */
 const cards = ref([
   {
-    title: t('PROFILE_MY_FAVORITES'),
+    title: t('MY_FAVORITES'),
     description: t('PROFILE_MY_FAVORITES_DESC'),
     routeName: 'profile-favorites'
   },

@@ -20,13 +20,13 @@
     "REGISTRATION_HEADER" : "Registrer Bruker",
     "REGISTRATION_BUTTON" : "Registrer",
     "REGISTRATION_ACCOUNT_QUESTION": "Har du en konto?",
-    "REGISTRATION_USERNAME": "Brukernavn",
-    "REGISTRATION_PASSWORD": "Passord",
-    "REGISTRATION_EMAIL": "E-Post",
-    "REGISTRATION_FIRSTNAME": "Fornavn",
-    "REGISTRATION_LASTNAME": "Etternavn",
-    "REGISTRATION_BIRTHDATE": "Fødselsdag",
-    "REGISTRATION_PHONENUMBER": "Telefonnummer",
+    "USERNAME": "Brukernavn",
+    "PASSWORD": "Passord",
+    "EMAIL": "E-Post",
+    "FIRSTNAME": "Fornavn",
+    "LASTNAME": "Etternavn",
+    "BIRTHDATE": "Fødselsdag",
+    "PHONENUMBER": "Telefonnummer",
 
     "LOGIN_LOGIN": "Logg Inn",
     "NEW_USER_QUESTION": "Ny Bruker?",
@@ -56,7 +56,23 @@
     "HOME_NAVBAR" : "Hjem",
     "AD_NAVBAR": "Ny Annonse",
     "BROWSE_NAVBAR": "Utforsk",
-    "LANGUAGE_NAVBAR": "Språk"
+    "LANGUAGE_NAVBAR": "Språk",
+
+    "PROFILE_TILE_MY_ACCOUNT_TITLE": "Profil",
+    "PROFILE_INFO_UNAVAILABLE": "Profilinformasjon Utilgjengelig",
+    "PROFILE_UPDATE_BUTTON": "Oppdater Profil",
+    "PROFILE_UPDATE_ERROR": "Profiloppdateringsfeil",
+    "MY_FAVORITES": "Mine Favoritter",
+    "PROFILE_MY_FAVORITES_DESC": "Mine Favoritter - Beskrivelse",
+    "MY_ACCOUNT_TITLE": "Min Konto",
+    "PROFILE_TILE_MY_ACCOUNT_DESC": "Vis Kontodetaljer",
+    "MY_LISTINGS": "Mine Annonser",
+    "PROFILE_TILE_MY_LISTINGS_DESC": "Vis Annonser",
+    "PROFILE_TILE_FAVORITES_DESC": "Vis Favoritter",
+    "PROFILE_VERIFY_VIPPS_BUTTON": "Verifiser Vipps",
+    "PROFILE_VIPPS_PROMPT_TITLE": "Raske Kjøp med Vipps",
+    "PROFILE_VIPPS_PROMPT_DESC": "Aktiver din Vipps-konto for raske of trygger betalinger"
+
 
 
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="profile-ads-view">
-    <h2>My Listings</h2>
+    <h2>{{ $t('MY_LISTINGS') }}</h2>
 
     <div v-if="isLoading" class="loading-indicator">
       <p>Loading your items...</p>
@@ -17,7 +17,7 @@
           :alt="item.title"
           class="item-image"
           @error="handleImageError"
-        >
+        />
         <div class="item-details">
           <h3>{{ item.title }}</h3>
           <p class="item-price">Price: {{ item.price }} kr</p>
@@ -28,52 +28,51 @@
     <div v-else class="no-items-message">
       <p>You haven't listed any items yet.</p>
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
 // Adjust path as necessary if you create a user-specific fetch function
-import { fetchPreviewItems } from '@/services/itemService/itemPreviewService';
-import type { ItemPreviewType } from '@/models/Item'; //
+import { fetchPreviewItems } from '@/services/itemService/itemPreviewService'
+import type { ItemPreviewType } from '@/models/Item' //
 // Optional: Import a dedicated card component
 // import ItemPreviewCard from '@/components/ItemPreviewCard.vue';
 
-const userItems = ref<ItemPreviewType[]>([]);
-const isLoading = ref(false);
-const error = ref<string | null>(null);
+const userItems = ref<ItemPreviewType[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
 
 // Function to fetch items - REMEMBER TO MODIFY for user-specific items
 async function loadUserItems() {
-  isLoading.value = true;
-  error.value = null;
+  isLoading.value = true
+  error.value = null
   try {
     // TODO: Replace fetchPreviewItems with a function that fetches items
     //       specific to the logged-in user (e.g., fetchMyItems()).
     //       This requires backend changes and a new service function.
-    console.log("Fetching items... (Using placeholder function)"); // Added log
-    userItems.value = await fetchPreviewItems();
-    console.log("Items fetched:", userItems.value); // Added log
+    console.log('Fetching items... (Using placeholder function)') // Added log
+    userItems.value = await fetchPreviewItems()
+    console.log('Items fetched:', userItems.value) // Added log
   } catch (err) {
-    console.error("Failed to load user items:", err);
-    error.value = "Could not load your items. Please try again later.";
-    userItems.value = []; // Clear items on error
+    console.error('Failed to load user items:', err)
+    error.value = 'Could not load your items. Please try again later.'
+    userItems.value = [] // Clear items on error
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
 // Handle cases where an image fails to load
 function handleImageError(event: Event) {
-  const imgElement = event.target as HTMLImageElement;
-  imgElement.src = '/placeholder-image.png'; // Path to your placeholder image
+  const imgElement = event.target as HTMLImageElement
+  imgElement.src = '/placeholder-image.png' // Path to your placeholder image
 }
 
 // Fetch items when the component is mounted
 onMounted(() => {
-  loadUserItems();
-});
+  loadUserItems()
+})
 </script>
 
 <style scoped>
@@ -142,5 +141,4 @@ onMounted(() => {
   color: hsla(160, 100%, 37%, 1); /* Vue green */
   margin-bottom: 0;
 }
-
 </style>

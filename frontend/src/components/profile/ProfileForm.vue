@@ -60,11 +60,10 @@ async function handleProfileUpdate() {
     // Call the store action
     await userStore.updateProfile(updatedProfile);
     updateSuccess.value = true;
-    // Optionally hide success message after a delay
+    // Hide success message after a delay
     setTimeout(() => updateSuccess.value = false, 3000);
   } catch (err) {
     console.error('Failed to update profile:', err);
-    // Provide a user-friendly error message
     updateError.value = t('PROFILE_UPDATE_ERROR'); // Ensure key exists
   } finally {
     isUpdating.value = false;
@@ -77,8 +76,8 @@ async function handleProfileUpdate() {
     <TextInput
       id="email"
       v-model="email"
-      :label="$t('PROFILE_EMAIL')"
-      :placeholder="$t('PROFILE_EMAIL_PLACEHOLDER')"
+      :label="$t('EMAIL')"
+      :placeholder="$t('EMAIL')"
       type="email"
       required
       :disabled="isUpdating"
@@ -86,16 +85,16 @@ async function handleProfileUpdate() {
     <TextInput
       id="firstName"
       v-model="firstName"
-      :label="$t('PROFILE_FIRSTNAME')"
-      :placeholder="$t('PROFILE_FIRSTNAME_PLACEHOLDER')"
+      :label="$t('FIRSTNAME')"
+      :placeholder="$t('FIRSTNAME')"
       required
       :disabled="isUpdating"
     />
     <TextInput
       id="lastName"
       v-model="lastName"
-      :label="$t('PROFILE_LASTNAME')"
-      :placeholder="$t('PROFILE_LASTNAME_PLACEHOLDER')"
+      :label="$t('LASTNAME')"
+      :placeholder="$t('LASTNAME')"
       required
       :disabled="isUpdating"
     />
@@ -103,8 +102,8 @@ async function handleProfileUpdate() {
       id="phoneNumber"
       v-model="phoneNumber"
       type="tel"
-      :label="$t('PROFILE_PHONENUMBER')"
-      :placeholder="$t('PROFILE_PHONENUMBER_PLACEHOLDER')"
+      :label="$t('PHONENUMBER')"
+      :placeholder="$t('PHONENUMBER')"
       :disabled="isUpdating"
     />
 

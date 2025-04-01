@@ -43,7 +43,7 @@ onMounted(() => {
 
 <template>
   <div class="profile-favorites-view">
-    <h2>My Favorites</h2>
+    <h2>{{ $t('MY_FAVORITES') }}</h2>
 
     <div v-if="isLoading" class="loading-indicator">
       <p>Loading your favorite items...</p>

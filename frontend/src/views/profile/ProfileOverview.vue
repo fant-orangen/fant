@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/UserStore';
-import ProfileForm from '@/components/profile/ProfileForm.vue'; // Check path
+import ProfileForm from '@/components/profile/ProfileForm.vue';
 import { useI18n } from 'vue-i18n';
 
 const userStore = useUserStore();
 const { t } = useI18n();
-
-// No need to fetch here anymore if layout does it.
-// Profile data comes directly from the store.
 
 </script>
 
@@ -28,7 +25,7 @@ const { t } = useI18n();
 .profile-overview {
   /* Add specific styles if needed, or rely on layout */
   padding: 1rem;
-  background-color: #f9f9f9; /* Example background */
+  background-color: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #eee;
 }
