@@ -62,29 +62,34 @@ thumbnail-container to use this function*/
 .thumbnail-container {
   display: grid;
   gap: 10px; /* Optional: Adds spacing between grid items */
+  margin: 0 auto; /* Center the container horizontally */
 }
 
 @media (min-width: 1200px) {
   .thumbnail-container {
     grid-template-columns: repeat(4, 1fr); /* 4 columns for large screens */
+    max-width: 1200px; /* Maximum width for the container */
   }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
   .thumbnail-container {
     grid-template-columns: repeat(3, 1fr); /* 3 columns for medium screens */
+    max-width: 768px;
   }
 }
 
 @media (min-width: 480px) and (max-width: 767px) {
   .thumbnail-container {
     grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
+    max-width: 480px;
   }
 }
 
 @media (max-width: 479px) {
   .thumbnail-container {
     grid-template-columns: 1fr; /* 1 column for extra small screens */
+    max-width: 779px;
   }
 }
 
