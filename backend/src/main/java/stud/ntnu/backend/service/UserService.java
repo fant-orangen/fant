@@ -25,6 +25,11 @@ package stud.ntnu.backend.service;
 
        private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
+     /**
+      * <h3>Find all users in the repository.</h3>
+      *
+      * @return All users as list.
+      */
        public List<User> findAll() {
          return userRepository.findAll();
        }
