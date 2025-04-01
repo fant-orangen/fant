@@ -12,9 +12,10 @@ const routes = [
     meta: { title: 'Home - Fant' }
   },
   {
-    path: '/item-detail',
+    path: '/item-detail/:id',
     name: 'item-detail',
     component: ItemDetailView,
+    props: true,
     meta: { title: 'Item - Fant' }
   },
   {
