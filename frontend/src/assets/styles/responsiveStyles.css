@@ -79,17 +79,36 @@ thumbnail-container to use this function*/
   }
 }
 
-@media (min-width: 480px) and (max-width: 767px) {
+@media (min-width: 600px) and (max-width: 767px) {
   .thumbnail-container {
     grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
     max-width: 480px;
   }
 }
 
-@media (max-width: 479px) {
+@media (max-width: 600px) {
   .thumbnail-container {
     grid-template-columns: 1fr; /* 1 column for extra small screens */
     max-width: 779px;
+  }
+}
+.item-detail-container {
+  display: grid;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+@media (min-width: 600px) and (max-width: 1000px) {
+  .item-detail-container {
+    grid-template-columns: 1fr; /* 1 column for medium screens */
+    max-width: 800px; /* Maximum width for the container */
+  }
+}
+
+@media (min-width: 1000px) {
+  .item-detail-container {
+    grid-template-columns: 1fr 1fr; /* 2 columns for large screens */
+    max-width: 1200px; /* Maximum width for the container */
   }
 }
 
