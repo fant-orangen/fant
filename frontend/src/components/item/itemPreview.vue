@@ -1,10 +1,8 @@
 <template>
-  <div class="item-preview">
+  <div class="item-preview" @click="handleClick">
     <div class="image-container">
       <img :src="item.imageUrl" :alt="item.title" class="item-image" />
-      <div class="heart-icon" @click="toggleFavorite">
-        <img :src="isFavorite ? heartRedIcon : heartIcon" alt="Heart Icon" />
-      </div>
+      <HeartIcon class="heart-icon"/>
       <div class="price-overlay">
         <p class="item-price">{{ item.price + " kr" }}</p>
       </div>
@@ -14,17 +12,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { defineProps } from 'vue';
-import type { ItemPreviewType } from '@/models/Item';
-import heartIcon from '@/assets/icons/heart.svg';
-import heartRedIcon from '@/assets/icons/heart-red.svg';
+import type { ItemPreviewType, ItemDetailsType } from '@/models/Item';
+import HeartIcon from '@/components/toggle/HeartIcon.vue'; // Ensure the correct path
+import { fetchItem } from '@/services/itemService.ts';
+import router from "@/router";
+
 
 const props = defineProps<{ item: ItemPreviewType }>();
-const isFavorite = ref(false);
-
-function toggleFavorite() {
-  isFavorite.value = !isFavorite.value;
+async function handleClick() {
+  try {
+    const itemDetails: ItemDetailsType = await fetchItem(props.item.id);
+    console.log('Item details:', itemDetails);
+    router.push({ name: 'item-detail', params: { id: props.item.id } });
+  } catch (error) {
+    console.error('Error fetching item details:', error);
+  }
 }
 </script>
 
@@ -36,6 +39,7 @@ function toggleFavorite() {
   text-align: center;
   position: relative;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .image-container {
@@ -54,18 +58,6 @@ function toggleFavorite() {
   object-fit: cover; /* Ensure the image covers the container without stretching */
 }
 
-.heart-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-.heart-icon img {
-  width: 24px;
-  height: 24px;
-}
-
 .price-overlay {
   position: absolute;
   bottom: 0;
@@ -79,6 +71,12 @@ function toggleFavorite() {
 .item-title {
   font-size: 1.2em;
   margin: 10px 0;
+}
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1; /* Ensure the heart icon is in front of the image */
 }
 
 .item-price {
