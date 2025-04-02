@@ -12,6 +12,7 @@ import ProfileLayout from "@/views/profile/ProfileLayout.vue";
 import ProfileOverview from '@/views/profile/ProfileOverview.vue';
 import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
 import FavoritesView from "@/views/profile/FavoritesView.vue";
+import MapView from "@/views/MapView.vue";
 // --- End Profile imports ---
 
 const routes = [
@@ -77,6 +78,13 @@ const routes = [
     component: () => import('../views/CategoryView.vue'),
     props: true,
     meta: { title: 'Category - Fant' }
+  },
+  {
+    path: '/map',
+    name: 'map',
+    component: MapView,
+    props: true,
+    meta: { title: 'Map - Fant' }
   },
 
   // --- ADDED Profile Routes ---
