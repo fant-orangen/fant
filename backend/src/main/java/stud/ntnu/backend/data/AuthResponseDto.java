@@ -15,7 +15,7 @@ public class AuthResponseDto {
   /**
    * <h3> The status of the response. </h3>
     */
-  private int status;
+  //private int status;
 
   /**
    * <h3> The token. </h3>
