@@ -37,13 +37,13 @@
     "REGISTRATION_HEADER": "Register User",
     "REGISTRATION_BUTTON": "Register",
     "REGISTRATION_ACCOUNT_QUESTION": "Do you have an account?",
-    "REGISTRATION_USERNAME": "Username",
-    "REGISTRATION_PASSWORD": "Password",
-    "REGISTRATION_EMAIL": "E-Mail",
-    "REGISTRATION_FIRSTNAME": "First Name",
-    "REGISTRATION_LASTNAME": "Surname",
-    "REGISTRATION_PHONENUMBER": "Phone Number",
-    "LOGIN_LOGIN": "Log In",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "EMAIL": "E-Mail",
+    "FIRSTNAME": "First Name",
+    "LASTNAME": "Surname",
+    "PHONENUMBER": "Phone Number",
+    "LOGIN": "Log In",
     "NEW_USER_QUESTION": "New User?",
 
 
@@ -52,5 +52,22 @@
     "HOME_NAVBAR" : "Home",
     "AD_NAVBAR": "New Ad",
     "BROWSE_NAVBAR": "Explore",
-    "LANGUAGE_NAVBAR": "Language"
+    "LANGUAGE_NAVBAR": "Language",
+
+    "PROFILE_TILE_MY_ACCOUNT_TITLE": "Profile",
+    "PROFILE_INFO_UNAVAILABLE": "Profile Info Unavailable",
+    "PROFILE_UPDATE_BUTTON": "Update Profile",
+    "PROFILE_UPDATE_ERROR": "Profile Update Error",
+    "MY_FAVORITES": "My Favorites",
+    "PROFILE_MY_FAVORITES_DESC": "My Favorites - Description",
+    "MY_ACCOUNT_TITLE": "My Account",
+    "PROFILE_TILE_MY_ACCOUNT_DESC": "View Account Details",
+    "MY_LISTINGS": "My Listings",
+    "PROFILE_TILE_MY_LISTINGS_DESC": "View Listings",
+    "PROFILE_TILE_FAVORITES_DESC": "View Favorites",
+    "PROFILE_VERIFY_VIPPS_BUTTON": "Verify Vipps",
+    "PROFILE_VIPPS_PROMPT_TITLE": "Quick Purchases with Vipps",
+    "PROFILE_VIPPS_PROMPT_DESC": "Activate your Vipps account for quick and safe payments",
+    "PROFILE_RATINGS_LABEL": "Ratings"
+
 }
