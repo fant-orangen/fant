@@ -15,7 +15,7 @@ public class AuthRequestDto {
   /**
    * <h3> The username of the user.</h3>
    */
-  private String username;
+  private String email;
 
   /**
    * <h3> The password of the user.</h3>

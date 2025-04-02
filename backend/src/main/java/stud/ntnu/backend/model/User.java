@@ -13,11 +13,8 @@ package stud.ntnu.backend.model;
   @NoArgsConstructor
   @AllArgsConstructor
   public class User {
-      @Id
-      @GeneratedValue(strategy = GenerationType.IDENTITY)
-      private Long id;
 
-      private String username;
+      @Id
       private String email;
 
       @Column(name = "password_hash")
@@ -32,6 +29,8 @@ package stud.ntnu.backend.model;
       @Column(name = "last_name")
       private String lastName;
 
+      private String username;
+
       private String phone;
 
       @Column(name = "created_at")
@@ -39,8 +38,4 @@ package stud.ntnu.backend.model;
 
       @Column(name = "updated_at")
       private LocalDateTime updatedAt;
-
-      public enum Role {
-          USER, ADMIN
-      }
   }

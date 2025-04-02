@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.AuthRequestDto;
 import stud.ntnu.backend.data.AuthResponseDto;
+import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.service.UserService;
 import stud.ntnu.backend.util.JwtUtil;
 
 /**
@@ -34,32 +36,38 @@ public class AuthController {
      */
     private final JwtUtil jwtUtil;
 
+    private final UserService userService;
+
     /**
-     * <h3>Generate JWT Token</h3>
+     * <h3>Authenticate the user</h3>
      * <p>Authenticates the user and generates a JWT token if authentication is successful.</p>
      *
      * @param request the authentication request containing username and password
      * @return a response entity containing the status and the generated JWT token
      */
-    @PostMapping("/token")
-    public ResponseEntity<AuthResponseDto> getToken(@RequestBody AuthRequestDto request) {
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto request) {
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                    request.getUsername(),
+                    request.getEmail(),
                     request.getPassword()
                 )
             );
 
-            String token = jwtUtil.generateToken(request.getUsername());
-            return ResponseEntity.ok(new AuthResponseDto(200, token));
+            String token = jwtUtil.generateToken(request.getEmail());
+            return ResponseEntity.ok(new AuthResponseDto(token));
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401)
-                .body(new AuthResponseDto(401, null));
+                .body(new AuthResponseDto(null));
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                .body(new AuthResponseDto(500, null));
+                .body(new AuthResponseDto(null));
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponseDto> register(@RequestBody AuthRequestDto request) {
     }
 }

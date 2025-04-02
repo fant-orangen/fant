@@ -36,12 +36,12 @@ public class JwtUtil {
      * <h3>Generate a JWT token</h3>
      * <p>Creates a JWT token for the given username.</p>
      *
-     * @param username the username for which the token is generated
+     * @param email the email for which the token is generated
      * @return the generated JWT token
      */
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        return createToken(claims, email);
     }
 
     /**
@@ -72,7 +72,7 @@ public class JwtUtil {
      * @param token the JWT token
      * @return the username extracted from the token
      */
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -136,7 +136,7 @@ public class JwtUtil {
      * @return true if the token is valid, false otherwise
      */
     public Boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
+        final String extractedUsername = extractEmail(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 }

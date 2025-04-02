@@ -4,8 +4,10 @@ package stud.ntnu.backend.service;
    import lombok.RequiredArgsConstructor;
    import org.slf4j.Logger;
    import org.slf4j.LoggerFactory;
+   import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
    import org.springframework.stereotype.Service;
-   import stud.ntnu.backend.data.UserDto;
+   import stud.ntnu.backend.data.AuthRequestDto;
+   import stud.ntnu.backend.data.UserRegistrationDto;
    import stud.ntnu.backend.model.User;
    import stud.ntnu.backend.repository.UserRepository;
 
@@ -22,6 +24,8 @@ package stud.ntnu.backend.service;
         * <h3> The UserRepository. </h3>
         */
        private final UserRepository userRepository;
+
+     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
        private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -50,11 +54,19 @@ package stud.ntnu.backend.service;
         * @param id The id of the user.
         * @return The user with the given id.
         */
-       public UserDto getUserById(Long id) {
+       public UserRegistrationDto getUserById(Long id) {
            logger.info("fetching user with id: {} ", id);
            User user = userRepository.findById(id)
                    .orElseThrow(() -> new RuntimeException("User not found"));
            return mapToDto(user);
+       }
+
+       public User createUser(AuthRequestDto authRequestDto) {
+         logger.info("creating user: {}", authRequestDto);
+         User user = new User();
+         user.setEmail(authRequestDto.getEmail());
+         user.setPasswordHash(passwordEncoder.encode(authRequestDto.getPassword()));
+         return userRepository.save(user);
        }
 
        /**
@@ -63,8 +75,8 @@ package stud.ntnu.backend.service;
         * @param user The User entity.
         * @return The UserDto.
         */
-       private UserDto mapToDto(User user) {
-           UserDto dto = new UserDto();
+       private UserRegistrationDto mapToDto(User user) {
+           UserRegistrationDto dto = new UserRegistrationDto();
            // Map user properties to DTO
            // (Implementation depends on your UserDto structure)
            return dto;

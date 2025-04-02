@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.UserDto;
+import stud.ntnu.backend.data.UserRegistrationDto;
 import stud.ntnu.backend.service.UserService;
 
 /**
@@ -28,7 +28,7 @@ public class UserController {
    * @return The user with the given id.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+  public ResponseEntity<UserRegistrationDto> getUserById(@PathVariable Long id) {
     return ResponseEntity.ok(userService.getUserById(id));
   }
 }
