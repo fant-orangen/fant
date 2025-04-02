@@ -16,8 +16,6 @@ const loadingProfile = ref(false);
 const profileError = ref('');
 
 // --- Placeholder Data ---
-const userRating = computed(() => '9,7');
-const ratingCount = computed(() => 5);
 const vippsVerified = computed(() => false);
 // --- End Placeholder Data ---
 
@@ -27,19 +25,19 @@ const profileTiles = ref([
     titleKey: 'MY_ACCOUNT_TITLE',
     descriptionKey: 'PROFILE_TILE_MY_ACCOUNT_DESC',
     routeName: 'profile-overview',
-    icon: IconProfile, // Use the imported IconProfile component
+    icon: IconProfile,
   },
   {
     titleKey: 'MY_LISTINGS',
     descriptionKey: 'PROFILE_TILE_MY_LISTINGS_DESC',
     routeName: 'profile-listings',
-    icon: IconListings, // Use the imported IconListings component
+    icon: IconListings,
   },
   {
     titleKey: 'MY_FAVORITES',
     descriptionKey: 'PROFILE_TILE_FAVORITES_DESC',
     routeName: 'profile-favorites',
-    icon: IconHeart, // Keep using IconHeart
+    icon: IconHeart,
   },
 ]);
 
@@ -71,19 +69,9 @@ function verifyWithVipps() {
 </script>
 
 <template>
+
   <section class="profile-layout">
-    <header class="profile-header">
-      <div class="user-details">
-        <div class="avatar-placeholder"></div> {/* TODO: Replace with real avatar */}
-        <div class="user-info">
-          <h2 v-if="userStore.username">{{ userStore.username }}</h2>
-          <p v-if="userStore.profile?.email">{{ userStore.profile.email }}</p>
-          <p class="rating">
-            {{ userRating }} ({{ ratingCount }} {{ t('PROFILE_RATINGS_LABEL') }})
-          </p>
-        </div>
-      </div>
-    </header>
+
 
     <section class="vipps-section" v-if="!vippsVerified">
       <component :is="IconVipps" class="vipps-icon" />
@@ -195,7 +183,8 @@ function verifyWithVipps() {
 }
 
 .vipps-icon {
-  font-size: 1.5rem;
+  width: 100px;
+  height: 100px;
 }
 
 .vipps-text h3 {
@@ -267,15 +256,12 @@ function verifyWithVipps() {
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
-/* Style for actual icon components */
 .tile-icon {
   width: 32px;
   height: 32px;
   margin-bottom: 0.5rem;
-  color: #555; /* Example default color */
+  color: #555;
 }
-/* Fallback placeholder style - can likely remove if all icons are implemented */
-/* .tile-icon-placeholder { ... } */
 
 .profile-tile h3 {
   margin: 0;

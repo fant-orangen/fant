@@ -67,6 +67,7 @@
     "PROFILE_TILE_FAVORITES_DESC": "View Favorites",
     "PROFILE_VERIFY_VIPPS_BUTTON": "Verify Vipps",
     "PROFILE_VIPPS_PROMPT_TITLE": "Quick Purchases with Vipps",
-    "PROFILE_VIPPS_PROMPT_DESC": "Activate your Vipps account for quick and safe payments"
+    "PROFILE_VIPPS_PROMPT_DESC": "Activate your Vipps account for quick and safe payments",
+    "PROFILE_RATINGS_LABEL": "Ratings"
 
 }
