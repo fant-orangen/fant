@@ -10,7 +10,7 @@
         <p><strong>Price:</strong> {{ item.price }} kr</p>
         <button @click="contactSeller" class="button">Contact Seller</button>
         <p>{{ item.description }}</p>
-        <p>{{ item.location }}</p>
+        <p>{{ "Location would have been here." }}</p>
         <p><strong>Contact:</strong> {{ item.contact }}</p>
       </div>
     </div>
