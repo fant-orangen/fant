@@ -12,7 +12,7 @@ export interface ItemDetailsType {
   description: string;
   category: string;
   price: number;
-  location: string;
+  // location: string;
   contact: string;
   imageUrls: string[];
 }

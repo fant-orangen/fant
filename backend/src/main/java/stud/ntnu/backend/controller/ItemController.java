@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.ItemPreviewDto;
+import stud.ntnu.backend.data.ItemDetailsDto;
 import stud.ntnu.backend.service.ItemService;
 
 import java.util.List;
@@ -47,5 +48,16 @@ public class ItemController {
   @GetMapping("/all")
   public ResponseEntity<List<ItemPreviewDto>> getAllItems() {
     return ResponseEntity.ok(itemService.getAllItemPreviews());
+  }
+
+  /**
+   * <h3>Get item details by ID.</h3>
+   *
+   * @param id The ID of the item.
+   * @return The item details.
+   */
+  @GetMapping("/details")
+  public ResponseEntity<ItemDetailsDto> getItemDetails(Long id) {
+    return ResponseEntity.ok(itemService.getItemDetailsById(id));
   }
 }

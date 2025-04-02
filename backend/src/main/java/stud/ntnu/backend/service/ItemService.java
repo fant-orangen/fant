@@ -2,6 +2,7 @@ package stud.ntnu.backend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import stud.ntnu.backend.data.ItemDetailsDto;
 import stud.ntnu.backend.data.ItemPreviewDto;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.ItemImage;
@@ -59,6 +60,49 @@ public class ItemService {
         .title(item.getBriefDescription())
         .price(item.getPrice())
         .imageUrl(imageUrl)
+        .build();
+  }
+
+  /**
+   * <h3>Retrieve detailed information for a specific item</h3>
+   * <p>Fetches a single item by its ID and transforms it into a comprehensive
+   * details DTO containing all relevant information for display.</p>
+   *
+   * @param id the unique identifier of the item to retrieve
+   * @return an {@link ItemDetailsDto} containing all details of the requested item
+   * @throws RuntimeException if the item with the given ID is not found
+   */
+  public ItemDetailsDto getItemDetailsById(Long id) {
+    Item item = itemRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+
+    return mapToItemDetailsDto(item);
+  }
+
+  /**
+   * <h3>Map an Item entity to its detailed DTO</h3>
+   * <p>Transforms a complete {@link Item} entity into a comprehensive
+   * {@link ItemDetailsDto} containing all relevant display data.</p>
+   *
+   * @param item the item entity to transform
+   * @return an {@link ItemDetailsDto} containing the item's complete information
+   */
+  private ItemDetailsDto mapToItemDetailsDto(Item item) {
+    List<String> imageUrls = item.getImages() != null ?
+        item.getImages().stream()
+            .sorted(Comparator.comparing(ItemImage::getPosition))
+            .map(ItemImage::getImageUrl)
+            .collect(Collectors.toList()) :
+        List.of();
+
+    return ItemDetailsDto.builder()
+        .id(item.getId())
+        .title(item.getBriefDescription())
+        .description(item.getFullDescription())
+        .category(item.getCategory() != null ? item.getCategory().getName() : "")
+        .price(item.getPrice())
+        .contact(item.getSeller() != null ? item.getSeller().getUsername() : "")
+        .imageUrls(imageUrls)
         .build();
   }
 
