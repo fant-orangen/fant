@@ -13,6 +13,8 @@ import ProfileOverview from '@/views/profile/ProfileOverview.vue';
 import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
 import FavoritesView from "@/views/profile/FavoritesView.vue";
 import MapView from "@/views/MapView.vue";
+import ConversationView from "@/views/messaging/ConversationView.vue";
+import InboxView from "@/views/messaging/InboxView.vue";
 // --- End Profile imports ---
 
 const routes = [
@@ -87,34 +89,47 @@ const routes = [
     meta: { title: 'Map - Fant' }
   },
 
-  // --- ADDED Profile Routes ---
+  {
+    path: '/messages',
+    name: 'messages-inbox',
+    component: InboxView,
+    meta: { title: "Message Overview - Fant"}
+  },
+
+  {
+    path: '/messages/:conversationId',
+    name: 'messages-conversation',
+    component: ConversationView,
+    meta: { title: "Conversation - Fant"}
+  },
+
   {
     path: '/profile',
-    component: ProfileLayout, // Use the layout component for all profile children
-    meta: { requiresAuth: true }, // Ensure user must be logged in to access profile pages
+    component: ProfileLayout,
+    meta: { requiresAuth: true },
     children: [
       {
-        path: '', // Default child route, maps to /profile
+        path: '',
         name: 'profile-overview',
         component: ProfileOverview,
-        meta: { title: 'Profile Overview - Fant' } // Added title
+        meta: { title: 'Profile Overview - Fant' }
       },
       {
-        path: 'listings', // Maps to /profile/listings
+        path: 'listings',
         name: 'profile-listings',
         component: ProfileAdsView,
-        meta: { title: 'My Listings - Fant' } // Added title
+        meta: { title: 'My Listings - Fant' }
       },
       {
-        path: 'favorites', // Maps to /profile/favorites
+        path: 'favorites',
         name: 'profile-favorites',
         component: FavoritesView,
-        meta: { title: 'My Favorites - Fant' } // Added title
+        meta: { title: 'My Favorites - Fant' }
       },
-      // Add other profile sub-routes like settings here if needed
+
     ],
   }
-  // --- END Profile Routes ---
+
 
 ]
 
