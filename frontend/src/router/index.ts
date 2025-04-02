@@ -1,13 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
+// Import Views used in multiple places directly
 import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
-import FavoritesView from "@/views/profile/FavoritesView.vue";
-import ProfileLayout from "@/views/profile/ProfileLayout.vue";
-import ProfileOverview from '@/views/profile/ProfileOverview.vue';
-import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
+import ItemDetailView from "@/views/ItemDetailView.vue"; // Added from version 1
+import CategoryEditView from "@/views/Administrator/CategoryEditView.vue"; // Added from version 1
+
+// Import Profile related views (consider importing ProfileLayout directly too if preferred)
+import ProfileLayout from "@/views/profile/ProfileLayout.vue"; // Added from version 2
+import ProfileOverview from '@/views/profile/ProfileOverview.vue'; // Added from version 2
+import ProfileAdsView from "@/views/profile/ProfileAdsView.vue"; // Added from version 2
+import FavoritesView from "@/views/profile/FavoritesView.vue"; // Added from version 2
 
 const routes = [
+  // --- Common Routes (from both versions) ---
   {
     path: '/',
     name: 'home',
@@ -17,6 +24,7 @@ const routes = [
   {
     path: '/about',
     name: 'about',
+    // Using dynamic import for less common views
     component: () => import('../views/AboutView.vue'),
     meta: { title: 'About - Fant' }
   },
@@ -50,46 +58,61 @@ const routes = [
     component: () => import('../views/createListingsView/MarketListingView.vue'),
     meta: { title: 'Create Listing - Fant', requiresAuth: true }
   },
-
-  // Dynamic Route for CategoryView.vue
   {
-    path: '/category/:categoryKey',
+    path: '/category/:categoryKey', // Dynamic Route for CategoryView.vue
     name: 'category',
     component: () => import('../views/CategoryView.vue'),
     props: true,
     meta: { title: 'Category - Fant' }
   },
 
+  // --- Routes added from Version 1 ---
+  {
+    path: '/item-detail/:id',
+    name: 'item-detail',
+    component: ItemDetailView,
+    props: true,
+    meta: { title: 'Item - Fant' }
+  },
+  {
+    path: '/administrator/category',
+    name: 'administrator-category',
+    component: CategoryEditView,
+    meta: { title: 'Administrator - category - Fant'} // Consider adding requiresAuth: true, requiresAdmin: true ?
+  },
+
+  // --- Routes added from Version 2 ---
   {
     path: '/profile',
     component: ProfileLayout, // Use the layout component
     meta: { requiresAuth: true }, // Ensure user must be logged in
     children: [
       {
-        path: '', // Default child route (e.g., /profile)
+        path: '', // Default child route (e.g., /profile) maps to /profile
         name: 'profile-overview',
         component: ProfileOverview,
       },
       {
-        path: 'listings', // e.g., /profile/listings
+        path: 'listings', // Maps to /profile/listings
         name: 'profile-listings',
         component: ProfileAdsView,
       },
       {
-        path: 'favorites', // e.g., /profile/favorites
+        path: 'favorites', // Maps to /profile/favorites
         name: 'profile-favorites',
         component: FavoritesView,
       },
-      // Add other profile sub-routes like settings, etc.
+      // Add other profile sub-routes like settings, etc. here if needed
     ],
   }
-
 ]
+
 // Scroll to top when route changes
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
+  routes, // Use the combined routes array
   scrollBehavior() {
+    // always scroll to top
     return { top: 0 }
   }
 })
