@@ -7,6 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import MapComponent from '@/components/map/MapComponent.vue'; // Import the map component
+import MapComponent from '@/components/map/MapComponent.vue';
 
 </script>
