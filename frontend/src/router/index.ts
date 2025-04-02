@@ -2,11 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
-import ProfileView from "@/views/ProfileView.vue";
-import FavoritesView from "@/views/profile/FavoritesView.vue";
-import ProfileLayout from "@/views/profile/ProfileLayout.vue";
-import ProfileOverview from '@/views/profile/ProfileOverview.vue';
-import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
+import ItemDetailView from "@/views/ItemDetailView.vue";
+import CategoryEditView from "@/views/Administrator/CategoryEditView.vue";
 
 const routes = [
   {
@@ -14,6 +11,13 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { title: 'Home - Fant' }
+  },
+  {
+    path: '/item-detail/:id',
+    name: 'item-detail',
+    component: ItemDetailView,
+    props: true,
+    meta: { title: 'Item - Fant' }
   },
   {
     path: '/about',
@@ -52,6 +56,13 @@ const routes = [
     meta: { title: 'Create Listing - Fant', requiresAuth: true }
   },
 
+  {
+    path: '/administrator/category',
+    name: 'administrator-category',
+    component: CategoryEditView,
+    meta: { title: 'Administrator - category - Fant'}
+  },
+
   // Dynamic Route for CategoryView.vue
   {
     path: '/category/:categoryKey',
@@ -59,30 +70,6 @@ const routes = [
     component: () => import('../views/CategoryView.vue'),
     props: true,
     meta: { title: 'Category - Fant' }
-  },
-
-  {
-    path: '/profile',
-    component: ProfileLayout, // Use the layout component
-    meta: { requiresAuth: true }, // Ensure user must be logged in
-    children: [
-      {
-        path: '', // Default child route (e.g., /profile)
-        name: 'profile-overview',
-        component: ProfileOverview,
-      },
-      {
-        path: 'listings', // e.g., /profile/listings
-        name: 'profile-listings',
-        component: ProfileAdsView,
-      },
-      {
-        path: 'favorites', // e.g., /profile/favorites
-        name: 'profile-favorites',
-        component: FavoritesView,
-      },
-      // Add other profile sub-routes like settings, etc.
-    ],
   }
 
 ]
