@@ -1,5 +1,7 @@
 package stud.ntnu.backend.data;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +15,14 @@ import lombok.NoArgsConstructor;
 public class AuthRequestDto {
 
   /**
-   * <h3> The username of the user.</h3>
+   * <h3> The email of the user.</h3>
    */
+  @NotBlank(message = "Email is required")
   private String email;
 
   /**
    * <h3> The password of the user.</h3>
    */
+  @NotBlank(message = "Password is required")
   private String password;
 }

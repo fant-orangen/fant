@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class AuthResponseDto {
-
   /**
    * <h3> The token. </h3>
    */
-  private String data; // Contains the JWT token
+  private String token; // Contains the JWT token
 }
