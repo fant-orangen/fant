@@ -24,7 +24,7 @@ export async function fetchItem(itemId: string | number): Promise<ItemDetailsTyp
   try {
     // NOTE: This endpoint likely needs updating for your actual API
     // Using relative path and assuming endpoint like /items/{itemId} or similar
-    const response = await api.get<ItemDetailsType>(`/items/${itemId}`);
+    const response = await api.get<ItemDetailsType>(`http://localhost:3000/item-detail/${itemId}`);
     console.log(response.data, "here is data for item", itemId); // Log fetched data
     return response.data;
   } catch (error) {
