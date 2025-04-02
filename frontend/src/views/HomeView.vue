@@ -13,15 +13,21 @@ import ItemPreview from "@/components/item/itemPreview.vue";
 import { useRouter } from "vue-router";
 import { ref, onMounted } from 'vue';
 import { fetchPreviewItems } from '@/services/itemService.ts';
+import {fetchPreviewItemsByCategoryId} from "@/services/itemService.ts"
 import type { ItemPreviewType } from '@/models/Item';
 
 const router = useRouter();
 const items = ref<ItemPreviewType[]>([]);
 
-function onCategoryClick(categoryKey: string) {
-  router.push({ name: 'category', params: { categoryKey } });
+async function onCategoryClick(categoryId: string) {
+  try {
+    console.log("category clickk:", categoryId);
+    items.value = [];
+    items.value = await fetchPreviewItemsByCategoryId(categoryId);
+  } catch (error) {
+    console.error('Error fetching items:', error);
+  }
 }
-
 onMounted(async () => {
   try {
     items.value = await fetchPreviewItems();
