@@ -1,9 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
+// Import existing Views
 import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
 import ItemDetailView from "@/views/ItemDetailView.vue";
 import CategoryEditView from "@/views/Administrator/CategoryEditView.vue";
+
+// --- Import Profile related views ---
+import ProfileLayout from "@/views/profile/ProfileLayout.vue";
+import ProfileOverview from '@/views/profile/ProfileOverview.vue';
+import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
+import FavoritesView from "@/views/profile/FavoritesView.vue";
+// --- End Profile imports ---
 
 const routes = [
   {
@@ -55,14 +64,12 @@ const routes = [
     component: () => import('../views/createListingsView/MarketListingView.vue'),
     meta: { title: 'Create Listing - Fant', requiresAuth: true }
   },
-
   {
     path: '/administrator/category',
     name: 'administrator-category',
     component: CategoryEditView,
-    meta: { title: 'Administrator - category - Fant'}
+    meta: { title: 'Administrator - category - Fant'} // Consider adding requiresAuth, requiresAdmin?
   },
-
   // Dynamic Route for CategoryView.vue
   {
     path: '/category/:categoryKey',
@@ -70,21 +77,53 @@ const routes = [
     component: () => import('../views/CategoryView.vue'),
     props: true,
     meta: { title: 'Category - Fant' }
+  },
+
+  // --- ADDED Profile Routes ---
+  {
+    path: '/profile',
+    component: ProfileLayout, // Use the layout component for all profile children
+    meta: { requiresAuth: true }, // Ensure user must be logged in to access profile pages
+    children: [
+      {
+        path: '', // Default child route, maps to /profile
+        name: 'profile-overview',
+        component: ProfileOverview,
+        meta: { title: 'Profile Overview - Fant' } // Added title
+      },
+      {
+        path: 'listings', // Maps to /profile/listings
+        name: 'profile-listings',
+        component: ProfileAdsView,
+        meta: { title: 'My Listings - Fant' } // Added title
+      },
+      {
+        path: 'favorites', // Maps to /profile/favorites
+        name: 'profile-favorites',
+        component: FavoritesView,
+        meta: { title: 'My Favorites - Fant' } // Added title
+      },
+      // Add other profile sub-routes like settings here if needed
+    ],
   }
+  // --- END Profile Routes ---
 
 ]
+
 // Scroll to top when route changes
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior() {
+    // always scroll to top
     return { top: 0 }
   }
 })
 
 // Update the document title based on the route's meta title
 router.afterEach((to) => {
-  document.title = to.meta.title as string || 'Fant'
+  // Use the title from the matched route's meta field
+  document.title = to.meta.title as string || 'Fant';
 })
 
 export default router
