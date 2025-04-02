@@ -1,5 +1,6 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.AuthRequestDto;
 import stud.ntnu.backend.data.AuthResponseDto;
+import stud.ntnu.backend.data.UserRegistrationDto;
+import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.service.UserService;
 import stud.ntnu.backend.util.JwtUtil;
 
 /**
@@ -43,10 +47,13 @@ public class AuthController {
    */
   private final JwtUtil jwtUtil;
 
+  private final UserService userService;
+
   private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   /**
    * <h3>Generate JWT Token</h3>
+
    * <p>Authenticates the user and generates a JWT token if authentication is successful.</p>
    *
    * @param request the authentication request containing username and password
@@ -63,27 +70,22 @@ public class AuthController {
               schema = @Schema(implementation = AuthResponseDto.class))),
       @ApiResponse(responseCode = "500", description = "Internal server error",
           content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = AuthResponseDto.class)))
-  })
-  @PostMapping("/token")
-  public ResponseEntity<AuthResponseDto> getToken(
-      @io.swagger.v3.oas.annotations.parameters.RequestBody(
-          description = "Authentication request with username and password",
-          required = true,
-          content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
-      ) @RequestBody AuthRequestDto request) {
+              schema = @Schema(implementation = AuthResponseDto.class)))})
+  @PostMapping("/login")
+  public ResponseEntity<AuthResponseDto> login(@Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Authentication request with username and password",
+      required = true,
+      content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
+  ) AuthRequestDto request) {
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
-              request.getUsername(),
+              request.getEmail(),
               request.getPassword()
           )
       );
 
-      String token = jwtUtil.generateToken(request.getUsername());
-
-      logger.info("Token: {}", token);
-      return ResponseEntity.ok(new AuthResponseDto(token));
+      return ResponseEntity.ok(new AuthResponseDto(jwtUtil.generateToken(request.getEmail())));
 
     } catch (BadCredentialsException e) {
       return ResponseEntity.status(401)
@@ -92,5 +94,10 @@ public class AuthController {
       return ResponseEntity.status(500)
           .body(new AuthResponseDto(null));
     }
+  }
+  @PostMapping("/register")
+  public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody UserRegistrationDto request) {
+    return ResponseEntity.ok(
+        new AuthResponseDto(jwtUtil.generateToken(userService.createUser(request).getEmail())));
   }
 }

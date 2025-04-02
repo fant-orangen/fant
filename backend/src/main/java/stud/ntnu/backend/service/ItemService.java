@@ -101,7 +101,7 @@ public class ItemService {
         .description(item.getFullDescription())
         .category(item.getCategory() != null ? item.getCategory().getName() : "")
         .price(item.getPrice())
-        .contact(item.getSeller() != null ? item.getSeller().getUsername() : "")
+        .contact(item.getSeller() != null ? item.getSeller().getDisplayName() : "")
         .imageUrls(imageUrls)
         .build();
   }

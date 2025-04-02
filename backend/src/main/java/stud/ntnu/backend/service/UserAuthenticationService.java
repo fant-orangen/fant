@@ -40,23 +40,23 @@ public class UserAuthenticationService implements UserDetailsService {
     Logger logger = LoggerFactory.getLogger(UserAuthenticationService.class); // TODO: remove logger?
 
     /**
-     * <h3>Loads a user's details by username</h3>
+     * <h3>Loads a user's details by email</h3>
      * <p>Retrieves a user from the database and converts it to Spring Security's UserDetails object.</p>
      *
-     * @param username the username identifying the user whose data is required
+     * @param email the email identifying the user whose data is required
      * @return a fully populated UserDetails object
      * @throws UsernameNotFoundException if the user could not be found
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Unnecessary debugging code TODO: Remove this later
         String passwordHash = passwordEncoder.encode("password123");
         logger.info("Hash of password123: " + passwordHash);
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user.getEmail(),
                 user.getPasswordHash(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
         );

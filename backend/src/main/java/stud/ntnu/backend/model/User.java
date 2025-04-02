@@ -1,6 +1,8 @@
 package stud.ntnu.backend.model;
 
+  import com.fasterxml.jackson.annotation.JsonIgnore;
   import jakarta.persistence.*;
+  import jakarta.validation.constraints.Email;
   import lombok.AllArgsConstructor;
   import lombok.Data;
   import lombok.NoArgsConstructor;
@@ -17,11 +19,16 @@ package stud.ntnu.backend.model;
       @GeneratedValue(strategy = GenerationType.IDENTITY)
       private Long id;
 
-      private String username;
-      private String email;
+      @Column(nullable = false, unique = true)
+      @Email(message = "Email should be valid")
+      private String email;  // Primary identifier
 
-      @Column(name = "password_hash")
+      @JsonIgnore
+      @Column(nullable = false, name = "password_hash")
       private String passwordHash;
+
+      @Column(nullable = false, name = "display_name")
+      private String displayName;
 
       @Enumerated(EnumType.STRING)
       private Role role;
@@ -39,8 +46,4 @@ package stud.ntnu.backend.model;
 
       @Column(name = "updated_at")
       private LocalDateTime updatedAt;
-
-      public enum Role {
-          USER, ADMIN
-      }
   }
