@@ -16,7 +16,7 @@ async function loadFavoriteItems() {
   error.value = null;
   try {
     // --- CALL THE REAL API SERVICE ---
-    favoriteItems.value = await fetchFavoriteItems();
+    // favoriteItems.value = await fetchFavoriteItems();
     // --- END API CALL ---
 
     console.log("Favorite items fetched from API:", favoriteItems.value);
