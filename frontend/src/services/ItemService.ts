@@ -11,7 +11,9 @@ export interface PaginatedItemsResponse {
 // Existing function to fetch all preview items (potentially needs pagination update too)
 export async function fetchPreviewItems(): Promise<ItemPreviewType[]> {
   try {
-    const response = await api.get<ItemPreviewType[]>('http://localhost:3000/items');
+    const response = await api.get<ItemPreviewType[]>('/items/all'); //
+    console.log("url: " + api.defaults.baseURL + "/items/all");
+    console.log("Data:" + response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching items:', error);
