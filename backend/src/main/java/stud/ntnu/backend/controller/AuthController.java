@@ -59,7 +59,6 @@ public class AuthController {
    * @param request the authentication request containing username and password
    * @return a response entity containing the status and the generated JWT token
    */
-  @PostMapping("/login")
   @Operation(summary = "Authenticate user",
       description = "Authenticates a user with username and password and returns a JWT token")
   @ApiResponses(value = {
@@ -71,14 +70,13 @@ public class AuthController {
               schema = @Schema(implementation = AuthResponseDto.class))),
       @ApiResponse(responseCode = "500", description = "Internal server error",
           content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = AuthResponseDto.class)))
+              schema = @Schema(implementation = AuthResponseDto.class)))})
   @PostMapping("/login")
-  public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto request)(
-      @io.swagger.v3.oas.annotations.parameters.RequestBody(
-          description = "Authentication request with username and password",
-          required = true,
-          content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
-      ) @RequestBody AuthRequestDto request) {
+  public ResponseEntity<AuthResponseDto> login(@Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Authentication request with username and password",
+      required = true,
+      content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
+  ) AuthRequestDto request) {
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
