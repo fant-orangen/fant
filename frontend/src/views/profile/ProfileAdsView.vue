@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 // Adjust path as necessary if you create a user-specific fetch function
-import { fetchPreviewItems } from '@/services/itemService/itemPreviewService'
+import { fetchPreviewItems } from '@/services/ItemService.ts'
 import type { ItemPreviewType } from '@/models/Item' //
 // Optional: Import a dedicated card component
 // import ItemPreviewCard from '@/components/ItemPreviewCard.vue';

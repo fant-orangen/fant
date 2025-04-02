@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { fetchPreviewItems, fetchPreviewItemsByCategoryId } from '@/services/itemService.ts';
+import { fetchPreviewItems, fetchPreviewItemsByCategoryId } from '@/services/ItemService.ts';
 import type { ItemPreviewType } from '@/models/Item';
 import ItemPreview from "@/components/item/ItemPreview.vue";
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { fetchFavoriteItems } from '@/services/itemService/itemPreviewService';
+import { fetchFavoriteItems } from '@/services/ItemService.ts';
 import type { ItemPreviewType } from '@/models/Item'; //
 
 // Optional: Import a dedicated card component
@@ -16,7 +16,7 @@ async function loadFavoriteItems() {
   error.value = null;
   try {
     // --- CALL THE REAL API SERVICE ---
-    favoriteItems.value = await fetchFavoriteItems();
+    // favoriteItems.value = await fetchFavoriteItems();
     // --- END API CALL ---
 
     console.log("Favorite items fetched from API:", favoriteItems.value);
