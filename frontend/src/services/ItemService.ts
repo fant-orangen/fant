@@ -43,7 +43,6 @@ export async function fetchPreviewItemsByCategoryId(categoryId: string): Promise
   }
 }
 
-// --- ADDED FUNCTION FOR FAVORITES (with pagination) ---
 /**
  * Fetches a paginated list of favorite items for the logged-in user.
  * Assumes the backend endpoint /api/users/me/favorites supports pagination.
@@ -66,4 +65,4 @@ export async function fetchFavoriteItems(page: number, limit: number): Promise<P
     throw error;
   }
 }
-// --- END ADDED FUNCTION ---
+

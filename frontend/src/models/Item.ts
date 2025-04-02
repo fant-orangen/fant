@@ -4,6 +4,8 @@ export interface ItemPreviewType {
   imageUrl: string;
   price: number;
   categoryId: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface ItemDetailsType {
@@ -15,4 +17,6 @@ export interface ItemDetailsType {
   location: string;
   contact: string;
   imageUrls: string[];
+  latitude?: number;
+  longitude?: number;
 }

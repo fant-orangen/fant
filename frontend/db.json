@@ -5,21 +5,27 @@
       "title": "Item 1 is the best item and is not going anywhere eeeeeeee eeeee eeeeeeeee eeeee eeeeeee eeeeee eeeee eeeeee eeee",
       "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
       "price": 100,
-      "categoryId": "3"
+      "categoryId": "3",
+      "latitude": 59.9139,
+      "longitude": 10.7522
     },
     {
       "id": "2",
       "title": "Item 2gggggg ggggg ggggg gggg ggg",
       "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
       "price": 200,
-      "categoryId": "1"
+      "categoryId": "1",
+      "latitude": 60.3913,
+      "longitude": 5.3221
     },
     {
       "id": "3",
       "title": "Item 3",
       "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg",
       "price": 150,
-      "categoryId": "1"
+      "categoryId": "1",
+      "latitude": 63.3913,
+      "longitude": 8.3221
     },
     {
       "id": "4",
