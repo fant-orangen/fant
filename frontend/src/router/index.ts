@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
-import ProfileView from "@/views/ProfileView.vue";
 import FavoritesView from "@/views/profile/FavoritesView.vue";
 import ProfileLayout from "@/views/profile/ProfileLayout.vue";
 import ProfileOverview from '@/views/profile/ProfileOverview.vue';
