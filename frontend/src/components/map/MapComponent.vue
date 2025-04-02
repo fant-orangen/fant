@@ -4,27 +4,13 @@ import 'leaflet/dist/leaflet.css'; // Required Leaflet CSS for proper map displa
 import L from 'leaflet';
 import { fetchPreviewItems } from '@/services/ItemService';
 import type { ItemPreviewType } from '@/models/Item';
-
-/**
- * Component Props
- * @property {string} height - Optional CSS height for the map container (defaults to '700px')
- * @property {string} width - Optional CSS width for the map container (defaults to '100%')
- * @property {number} initialLatitude - Optional starting latitude (defaults to 60.39, near Bergen, Norway)
- * @property {number} initialLongitude - Optional starting longitude (defaults to 5.32, near Bergen, Norway)
- * @property {number} initialZoom - Optional initial zoom level (defaults to 7)
- */
-const props = defineProps<{
-  height?: string;
-  width?: string;
-  initialLatitude?: number;
-  initialLongitude?: number;
-  initialZoom?: number;
-}>();
+import type { MapComponentProps } from '@/models/MapComponent.ts';
+// Define the props using the imported type
+const props = defineProps<MapComponentProps>();
 
 /**
  * Component References
  * @property {HTMLElement | null} mapContainer - Reference to the DOM element containing the map
- * @property {L.Map | null} map - Reference to the Leaflet map instance
  * @property {L.Marker[]} markers - Array to store and track all item markers
  * @property {ItemPreviewType[]} items - Array to store fetched items with location data
  */
@@ -38,8 +24,6 @@ const items = ref<ItemPreviewType[]>([]);
  *
  * This function sets up the map with either the default or user-provided coordinates,
  * adds the OpenStreetMap tile layer, and triggers the loading of item markers.
- *
- * @returns {void}
  */
 function initializeMap() {
   if (!mapContainer.value) return;
@@ -70,8 +54,6 @@ function initializeMap() {
  * 2. Clears any existing markers from the map
  * 3. Creates new markers for all items that have valid coordinates
  * 4. Configures each marker with a popup containing item details and image
- *
- * @returns {Promise<void>}
  */
 async function loadItemsWithCoordinates() {
   try {
@@ -90,16 +72,19 @@ async function loadItemsWithCoordinates() {
     items.value.forEach(item => {
       // Check if the item has valid latitude and longitude values
       if (item && item.latitude != null && item.longitude != null && map.value) {
-        // Prepare image HTML content if available, otherwise use empty string
+        // Prepare image HTML content if available with improved centering
         const imageUrlContent = item.imageUrl
-          ? `<img src="${item.imageUrl}" alt="${item.title || 'Item image'}" style="max-width: 100px; max-height: 100px; display: block; margin-top: 5px; margin-bottom: 5px;">`
+          ? `<div class="popup-image-container" style="width: 100%; text-align: center; margin: 8px 0;">
+               <img src="${item.imageUrl}" alt="${item.title || 'Item image'}"
+                style="max-width: 100px; max-height: 100px; margin: 0 auto; display: block;">
+             </div>`
           : '';
 
         // Create a marker at the item's coordinates with a styled popup showing item details
         const marker = L.marker([item.latitude, item.longitude])
         .addTo(map.value as L.Map)
         .bindPopup(`
-            <div style="text-align: center;">
+            <div class="popup-content" style="text-align: center; width: 100%;">
               <strong>${item.title || 'No Title'}</strong><br>
               Price: ${item.price ?? 'N/A'} kr
               ${imageUrlContent}
@@ -131,7 +116,7 @@ watch(() => [props.initialLatitude, props.initialLongitude, props.initialZoom],
 );
 
 /**
- * Setup the map and event listeners when the component is mounted
+ * Set up the map and event listeners when the component is mounted
  *
  * This lifecycle hook handles:
  * 1. Initial map creation
@@ -165,14 +150,14 @@ onMounted(() => {
   <div
     ref="mapContainer"
     class="map-container"
-    :style="{ height: height || '700px', width: width || '100%' }"
+    :style="{ height: height || '800px', width: width || '100%' }"
   ></div>
 </template>
 
 <style scoped>
 /* Styling for the map container */
 .map-container {
-  min-height: 700px; /* Ensures a minimum height even on small screens */
+  min-height: 800px; /* Ensures a minimum height even on small screens */
   border-radius: 8px; /* Rounded corners for better aesthetics */
   overflow: hidden; /* Prevents content from overflowing the rounded corners */
   border: 1px solid #ddd; /* Light border to define the map area */

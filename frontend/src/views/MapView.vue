@@ -1,7 +1,6 @@
 <template>
   <div class="map-view">
-    <h1>{{ $t('MAP') }}</h1>
-    <p class="map-description">Explore items available in different locations</p>
+    <p class="map-description"></p>
     <MapComponent />
   </div>
 </template>
