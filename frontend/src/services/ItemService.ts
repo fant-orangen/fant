@@ -11,11 +11,12 @@ export interface PaginatedItemsResponse {
 // Existing function to fetch all preview items (potentially needs pagination update too)
 export async function fetchPreviewItems(): Promise<ItemPreviewType[]> {
   try {
-    // NOTE: This endpoint likely needs updating for your actual API or pagination
-    const response = await api.get<ItemPreviewType[]>('/items'); // Using relative path assuming '/api' base
+    const response = await api.get<ItemPreviewType[]>('/items/all'); //
+    console.log("url: " + api.defaults.baseURL + "/items/all");
+    console.log("Data:" + response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching preview items:', error);
+    console.error('Error fetching items:', error);
     throw error;
   }
 }
@@ -25,7 +26,7 @@ export async function fetchItem(itemId: string | number): Promise<ItemDetailsTyp
   try {
     // NOTE: This endpoint likely needs updating for your actual API
     // Using relative path and assuming endpoint like /items/{itemId} or similar
-    const response = await api.get<ItemDetailsType>(`/items/${itemId}`);
+    const response = await api.get<ItemDetailsType>(`/items/details/${itemId}`);
     console.log(response.data, "here is data for item", itemId); // Log fetched data
     return response.data;
   } catch (error) {
@@ -34,7 +35,16 @@ export async function fetchItem(itemId: string | number): Promise<ItemDetailsTyp
   }
 }
 
-// --- ADDED FUNCTION FOR FAVORITES (with pagination) ---
+export async function fetchPreviewItemsByCategoryId(categoryId: string): Promise<ItemPreviewType[]> {
+  try {
+    const response = await api.get<ItemPreviewType[]>(`/items/category/${categoryId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching items for category ID ${categoryId}:`, error);
+    throw error;
+  }
+}
+
 /**
  * Fetches a paginated list of favorite items for the logged-in user.
  * Assumes the backend endpoint /api/users/me/favorites supports pagination.
@@ -57,4 +67,4 @@ export async function fetchFavoriteItems(page: number, limit: number): Promise<P
     throw error;
   }
 }
-// --- END ADDED FUNCTION ---
+

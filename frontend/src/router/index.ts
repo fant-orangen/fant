@@ -62,7 +62,7 @@ const routes = [
   {
     path: '/create-listing/start',
     name: 'create-listing-start',
-    component: () => import('../views/createListingsView/MarketListingView.vue'),
+    component: () => import('../views/NewListingView.vue'),
     meta: { title: 'Create Listing - Fant', requiresAuth: true }
   },
   {

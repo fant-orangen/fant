@@ -7,3 +7,9 @@ VALUES ('jakob@mail.com', 'jakob', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV
 
 INSERT INTO categories (name, description)
 VALUES ('Test', 'Test');
+
+INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at)
+VALUES (1, 1, 'Test', 'Test', 500.00, 'ACTIVE', NOW(), NOW());
+
+INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at)
+VALUES (1, 1, 'Test', 'Test', 200.00, 'ACTIVE', NOW(), NOW());

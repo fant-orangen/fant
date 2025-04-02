@@ -30,7 +30,7 @@
         id="category"
         :label="$t('APP_LISTING_CREATE_NEW_CATEGORY_LABEL')"
         v-model="listing.category"
-        :options="categories"
+        :options="categoryLabels"
         required
         :placeholder="$t('APP_LISTING_CREATE_NEW_CATEGORY_PLACEHOLDER')"
         class="thumbnail thumbnail--full-width"
@@ -72,9 +72,11 @@
 
 <script lang="ts">
 import axios from 'axios';
+import { ref, onMounted } from 'vue';
 import TextInput from '@/components/input/TextInput.vue';
 import SelectInput from '@/components/input/SelectInput.vue';
 import FileInput from '@/components/input/FileInput.vue';
+import { fetchCategories } from '@/services/CategoryService.ts';
 
 export default {
   components: {
@@ -82,31 +84,37 @@ export default {
     SelectInput,
     FileInput,
   },
-  data() {
-    return {
-      listing: {
-        headline: '',
-        description: '',
-        category: '',
-        price: '',
-        postalCode: '',
-        images: [] as File[],
-      },
-      categories: ['Electronics', 'Furniture', 'Vehicles', 'Clothing', 'Real Estate'],
-    };
-  },
-  methods: {
-    handleImageUpload(files: File[]) {
-      this.listing.images = files;
-    },
-    async submitListing() {
+  setup() {
+    const listing = ref({
+      headline: '',
+      description: '',
+      category: '',
+      price: '',
+      postalCode: '',
+      images: [] as File[],
+    });
+    const categories = ref<{ id: string, label: string, icon: string }[]>([]);
+    const categoryLabels = ref<string[]>([]);
+
+    async function loadCategories() {
+      categories.value = await fetchCategories();
+      categoryLabels.value = categories.value.map(category => category.label);
+    }
+
+    onMounted(loadCategories);
+
+    function handleImageUpload(files: File[]) {
+      listing.value.images = files;
+    }
+
+    async function submitListing() {
       const formData = new FormData();
-      formData.append('headline', this.listing.headline);
-      formData.append('description', this.listing.description);
-      formData.append('category', this.listing.category);
-      formData.append('price', this.listing.price);
-      formData.append('postalCode', this.listing.postalCode);
-      this.listing.images.forEach((file, index) => {
+      formData.append('headline', listing.value.headline);
+      formData.append('description', listing.value.description);
+      formData.append('category', listing.value.category);
+      formData.append('price', listing.value.price);
+      formData.append('postalCode', listing.value.postalCode);
+      listing.value.images.forEach((file, index) => {
         formData.append(`images[${index}]`, file);
       });
 
@@ -117,19 +125,27 @@ export default {
           },
         });
         console.log('Listing Submitted:', response.data);
-        this.resetForm();
+        resetForm();
       } catch (error) {
         console.error('Error submitting listing:', error);
       }
-    },
-    resetForm() {
-      this.listing.headline = '';
-      this.listing.description = '';
-      this.listing.category = '';
-      this.listing.price = '';
-      this.listing.postalCode = '';
-      this.listing.images = [];
-    },
+    }
+
+    function resetForm() {
+      listing.value.headline = '';
+      listing.value.description = '';
+      listing.value.category = '';
+      listing.value.price = '';
+      listing.value.postalCode = '';
+      listing.value.images = [];
+    }
+
+    return {
+      listing,
+      categoryLabels,
+      handleImageUpload,
+      submitListing,
+    };
   },
 };
 </script>
