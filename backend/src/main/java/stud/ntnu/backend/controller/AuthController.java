@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -40,6 +42,8 @@ public class AuthController {
    * <p>Utility class for generating and validating JWT tokens.</p>
    */
   private final JwtUtil jwtUtil;
+
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   /**
    * <h3>Generate JWT Token</h3>
@@ -77,14 +81,16 @@ public class AuthController {
       );
 
       String token = jwtUtil.generateToken(request.getUsername());
-      return ResponseEntity.ok(new AuthResponseDto(200, token));
+
+      logger.info("Token: {}", token);
+      return ResponseEntity.ok(new AuthResponseDto(token));
 
     } catch (BadCredentialsException e) {
       return ResponseEntity.status(401)
-          .body(new AuthResponseDto(401, null));
+          .body(new AuthResponseDto(null));
     } catch (Exception e) {
       return ResponseEntity.status(500)
-          .body(new AuthResponseDto(500, null));
+          .body(new AuthResponseDto(null));
     }
   }
 }
