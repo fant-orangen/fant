@@ -215,5 +215,128 @@
       "label": "planes",
       "icon": "https://static1.simpleflyingimages.com/wordpress/wp-content/uploads/2023/09/oskar_bider_1913_bern-1.jpg?q=50&fit=crop&w=1140&h=&dpr=1.5"
     }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "username": "alice"
+    },
+    {
+      "id": "2",
+      "username": "jakob"
+    },
+    {
+      "id": "3",
+      "username": "charlie"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg1",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "jakob"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Hi Jakob, is Item 1 still available?",
+      "sentDate": "2025-04-01T10:00:00Z"
+    },
+    {
+      "id": "msg2",
+      "sender": {
+        "id": "2",
+        "username": "jakob"
+      },
+      "receiver": {
+        "id": "1",
+        "username": "alice"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Hi Alice! Yes, it is.",
+      "sentDate": "2025-04-01T10:05:00Z"
+    },
+    {
+      "id": "msg3",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "jakob"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Great! Can I pick it up tomorrow?",
+      "sentDate": "2025-04-01T10:06:00Z"
+    },
+    {
+      "id": "msg4",
+      "sender": {
+        "id": "2",
+        "username": "jakob"
+      },
+      "receiver": {
+        "id": "1",
+        "username": "alice"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Sure, sounds good.",
+      "sentDate": "2025-04-01T10:15:00Z"
+    },
+    {
+      "id": "msg5",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "charlie"
+      },
+      "messageContent": "Hey Charlie, how's it going?",
+      "sentDate": "2025-04-02T11:00:00Z"
+    },
+    {
+      "id": "msg6",
+      "sender": {
+        "id": "3",
+        "username": "charlie"
+      },
+      "receiver": {
+        "id": "1",
+        "username": "alice"
+      },
+      "messageContent": "Hey Alice! All good here, you?",
+      "sentDate": "2025-04-02T11:02:00Z"
+    },
+    {
+      "id": "0d56",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
+      "messageContent": "Hello",
+      "sentDate": "2025-04-02T15:15:12.467Z"
+    }
   ]
 }
