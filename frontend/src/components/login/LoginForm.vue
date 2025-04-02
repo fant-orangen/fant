@@ -46,18 +46,18 @@ async function login() {
       <TextInput
         id="username"
         v-model="username"
-        :label="$t('REGISTRATION_USERNAME')"
-        :placeholder="$t('REGISTRATION_USERNAME')"
+        :label="$t('USERNAME')"
+        :placeholder="$t('USERNAME')"
       />
 
       <TextInput
         id="password"
         v-model="password"
         type="password"
-        :label="$t('REGISTRATION_PASSWORD')"
-        :placeholder="$t('REGISTRATION_PASSWORD')"
+        :label="$t('PASSWORD')"
+        :placeholder="$t('PASSWORD')"
       />
-      <button type="submit" :disabled="isLoading">{{ $t('LOGIN_LOGIN') }}</button>
+      <button type="submit" :disabled="isLoading">{{ $t('LOGIN') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
     <router-link to="/register">{{ $t('NEW_USER_QUESTION') }}</router-link>

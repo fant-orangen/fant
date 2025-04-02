@@ -9,6 +9,7 @@
       <RouterLink to="/login">{{ $t('LOGIN_NAVBAR') }}</RouterLink>
       <RouterLink to="/register">{{ $t('REGISTRATION_NAVBAR') }}</RouterLink>
       <RouterLink to="/language-selector">{{ $t('LANGUAGE_NAVBAR') }}</RouterLink>
+      <RouterLink to="/profile">{{ $t('PROFILE_TILE_MY_ACCOUNT_TITLE') }}</RouterLink>
 
       <RouterLink to="/create-listing/start">{{ $t('APP_LISTING_CREATE_NEW') }}</RouterLink>
     </nav>

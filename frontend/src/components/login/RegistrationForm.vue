@@ -55,41 +55,41 @@ async function registerUser() {
       <TextInput
         id="username"
         v-model="username"
-        :label="$t('REGISTRATION_USERNAME')"
-        :placeholder="$t('REGISTRATION_USERNAME')"
+        :label="$t('USERNAME')"
+        :placeholder="$t('USERNAME')"
       />
       <TextInput
         id="password"
         v-model="password"
         type="password"
-        :label="$t('REGISTRATION_PASSWORD')"
-        :placeholder="$t('REGISTRATION_PASSWORD')"
+        :label="$t('PASSWORD')"
+        :placeholder="$t('PASSWORD')"
       />
       <TextInput
         id="email"
         v-model="email"
         type="email"
-        :label="$t('REGISTRATION_EMAIL')"
-        :placeholder="$t('REGISTRATION_EMAIL')"
+        :label="$t('EMAIL')"
+        :placeholder="$t('EMAIL')"
       />
       <TextInput
         id="firstName"
         v-model="firstName"
-        :label="$t('REGISTRATION_FIRSTNAME')"
-        :placeholder="$t('REGISTRATION_FIRSTNAME')"
+        :label="$t('FIRSTNAME')"
+        :placeholder="$t('FIRSTNAME')"
       />
       <TextInput
         id="lastName"
         v-model="lastName"
-        :label="$t('REGISTRATION_LASTNAME')"
-        :placeholder="$t('REGISTRATION_LASTNAME')"
+        :label="$t('LASTNAME')"
+        :placeholder="$t('LASTNAME')"
       />
       <TextInput
         id="phoneNumber"
         v-model="phoneNumber"
         type="tel"
-        :label="$t('REGISTRATION_PHONENUMBER')"
-        :placeholder="$t('REGISTRATION_PHONENUMBER')"
+        :label="$t('PHONENUMBER')"
+        :placeholder="$t('PHONENUMBER')"
       />
       <button type="submit" :disabled="isLoading">{{ $t('REGISTRATION_BUTTON') }}</button>
     </form>
