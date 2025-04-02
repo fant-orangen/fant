@@ -37,7 +37,7 @@ export async function fetchItem(itemId: string | number): Promise<ItemDetailsTyp
 
 export async function fetchPreviewItemsByCategoryId(categoryId: string): Promise<ItemPreviewType[]> {
   try {
-    const response = await api.get<ItemPreviewType[]>(`http://localhost:3000/items?categoryId=${categoryId}`);
+    const response = await api.get<ItemPreviewType[]>(`/items/category/${categoryId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching items for category ID ${categoryId}:`, error);

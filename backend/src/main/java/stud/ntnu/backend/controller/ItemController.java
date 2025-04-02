@@ -61,4 +61,9 @@ public class ItemController {
   public ResponseEntity<ItemDetailsDto> getItemDetails(@PathVariable Long id) {
     return ResponseEntity.ok(itemService.getItemDetailsById(id)); // TODO: add error handling
   }
+
+  @GetMapping("/category/{category}")
+  public ResponseEntity<List<ItemPreviewDto>> getItemsByCategory(@PathVariable Long category) {
+    return ResponseEntity.ok(itemService.getItemsByCategory(category)); // TODO: add error handling
+  }
 }

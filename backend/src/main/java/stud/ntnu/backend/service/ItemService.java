@@ -107,6 +107,21 @@ public class ItemService {
   }
 
   /**
+   * <h3>Retrieve items by category ID</h3>
+   * <p>Fetches items that belong to a specific category and transforms them into
+   * lightweight preview DTOs containing only essential information.</p>
+   *
+   * @param categoryId the ID of the category to filter items by
+   * @return a list of {@link ItemPreviewDto} objects containing preview information for items in the requested category
+   */
+  public List<ItemPreviewDto> getItemsByCategory(Long categoryId) {
+      List<Item> items = itemRepository.findByCategoryId(categoryId);
+      return items.stream()
+          .map(this::mapToItemPreviewDto)
+          .collect(Collectors.toList());
+  }
+
+  /**
    * <h3>Extract the URL of the first image for an item</h3>
    * <p>Finds the image with the lowest position value from the item's
    * associated images and returns its URL.</p>
