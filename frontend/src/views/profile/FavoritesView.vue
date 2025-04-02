@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { fetchFavoriteItems } from '@/services/itemService';
+import { fetchFavoriteItems } from '@/services/ItemService.ts';
 import type { ItemPreviewType } from '@/models/Item'; //
 
 // Optional: Import a dedicated card component

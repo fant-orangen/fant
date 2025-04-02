@@ -1,38 +1,22 @@
 <template>
   <section class="homepage">
     <CategoryGrid @select="onCategoryClick" />
-    <div class="item-previews thumbnail-container">
-      <ItemPreview v-for="item in items" :key="item.id" :item="item" />
-    </div>
+    <CategoryItemList :categoryId="selectedCategoryId" />
   </section>
 </template>
 
 <script setup lang="ts">
 import CategoryGrid from "@/components/category/categoryGrid.vue";
-import ItemPreview from "@/components/item/itemPreview.vue";
-import { useRouter } from "vue-router";
-import { ref, onMounted } from 'vue';
-import { fetchPreviewItems } from '@/services/itemService.ts';
-import type { ItemPreviewType } from '@/models/Item';
+import CategoryItemList from "@/components/item/CategoryItemList.vue";
+import { ref } from 'vue';
 
-const router = useRouter();
-const items = ref<ItemPreviewType[]>([]);
+const selectedCategoryId = ref<string | null>(null);
 
-function onCategoryClick(categoryKey: string) {
-  router.push({ name: 'category', params: { categoryKey } });
+function onCategoryClick(categoryId: string) {
+  selectedCategoryId.value = categoryId;
 }
-
-onMounted(async () => {
-  try {
-    items.value = await fetchPreviewItems();
-  } catch (error) {
-    console.error('Error fetching items:', error);
-  }
-});
 </script>
+
 <style>
 @import '@/assets/styles/responsiveStyles.css'; /* This will still be global */
-</style>
-<style scoped>
-
 </style>

@@ -15,7 +15,7 @@
 import { defineProps } from 'vue';
 import type { ItemPreviewType, ItemDetailsType } from '@/models/Item';
 import HeartIcon from '@/components/toggle/HeartIcon.vue'; // Ensure the correct path
-import { fetchItem } from '@/services/itemService.ts';
+import { fetchItem } from '@/services/ItemService.ts';
 import router from "@/router";
 
 

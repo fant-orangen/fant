@@ -11,11 +11,10 @@ export interface PaginatedItemsResponse {
 // Existing function to fetch all preview items (potentially needs pagination update too)
 export async function fetchPreviewItems(): Promise<ItemPreviewType[]> {
   try {
-    // NOTE: This endpoint likely needs updating for your actual API or pagination
-    const response = await api.get<ItemPreviewType[]>('/items'); // Using relative path assuming '/api' base
+    const response = await api.get<ItemPreviewType[]>('http://localhost:3000/items');
     return response.data;
   } catch (error) {
-    console.error('Error fetching preview items:', error);
+    console.error('Error fetching items:', error);
     throw error;
   }
 }
@@ -30,6 +29,16 @@ export async function fetchItem(itemId: string | number): Promise<ItemDetailsTyp
     return response.data;
   } catch (error) {
     console.error(`Error fetching item with ID ${itemId}:`, error);
+    throw error;
+  }
+}
+
+export async function fetchPreviewItemsByCategoryId(categoryId: string): Promise<ItemPreviewType[]> {
+  try {
+    const response = await api.get<ItemPreviewType[]>(`http://localhost:3000/items?categoryId=${categoryId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching items for category ID ${categoryId}:`, error);
     throw error;
   }
 }

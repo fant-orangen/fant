@@ -25,7 +25,7 @@ import { ref, onMounted, defineProps } from 'vue';
 import ImageGallery from '@/components/show/ImageGallery.vue';
 import HeartIcon from '@/components/toggle/HeartIcon.vue';
 import type { ItemDetailsType } from '@/models/Item';
-import { fetchItem } from '@/services/itemService.ts';
+import { fetchItem } from '@/services/ItemService.ts';
 
 const props = defineProps<{ itemId: string | number }>();
 const item = ref<ItemDetailsType | null>(null);
