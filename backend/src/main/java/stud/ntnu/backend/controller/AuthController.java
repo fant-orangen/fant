@@ -79,7 +79,6 @@ public class AuthController {
           content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
       ) AuthRequestDto request) {
 
-
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(

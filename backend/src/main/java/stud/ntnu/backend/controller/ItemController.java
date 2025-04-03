@@ -10,11 +10,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.ItemPreviewDto;
 import stud.ntnu.backend.data.ItemDetailsDto;
+import stud.ntnu.backend.data.RecommendedItemsRequestDto;
 import stud.ntnu.backend.service.ItemService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.data.ItemViewRequestDto;
+import stud.ntnu.backend.service.UserService;
 
 import java.util.List;
 
@@ -32,6 +40,8 @@ public class ItemController {
    * <h3>The ItemService.</h3>
    */
   private final ItemService itemService;
+
+  private final UserService userService;
 
   /**
    * <h3>Get all items preview information.</h3>
@@ -71,5 +81,30 @@ public class ItemController {
   @GetMapping("/category/{category}")
   public ResponseEntity<List<ItemPreviewDto>> getItemsByCategory(@PathVariable Long category) {
     return ResponseEntity.ok(itemService.getItemsByCategory(category)); // TODO: add error handling
+  }
+
+
+  @PostMapping("/view/post/{id}")
+  public ResponseEntity<Void> recordItemView(@PathVariable Long id) {
+    // Get currently authenticated user email
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    // Let the service handle user lookup
+    itemService.recordView(id, email);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/view/recommended_items")
+  public ResponseEntity<List<ItemPreviewDto>> getRecommendedItems(
+      @RequestBody RecommendedItemsRequestDto requestDto) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    return ResponseEntity.ok(
+        itemService.getItemsByDistribution(requestDto.getDistribution(), requestDto.getLimit())
+    );
+
   }
 }
