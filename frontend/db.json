@@ -239,13 +239,13 @@
       },
       "receiver": {
         "id": "2",
-        "username": "jakob"
+        "username": "peter"
       },
       "item": {
         "id": "1",
         "title": "Item 1"
       },
-      "messageContent": "Hi Jakob, is Item 1 still available?",
+      "messageContent": "Hi Peter, is the iPhone still available?",
       "sentDate": "2025-04-01T10:00:00Z"
     },
     {
@@ -279,7 +279,7 @@
         "id": "1",
         "title": "Item 1"
       },
-      "messageContent": "Great! Can I pick it up tomorrow?",
+      "messageContent": "Great! I'm willing to bid $300",
       "sentDate": "2025-04-01T10:06:00Z"
     },
     {
@@ -335,8 +335,34 @@
         "id": "3",
         "username": "User 3"
       },
+      "messageContent": "?",
+      "sentDate": "2025-04-02T15:18:12.467Z"
+    },
+    {
+      "id": "0d56",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
       "messageContent": "Hello",
-      "sentDate": "2025-04-02T15:15:12.467Z"
+      "sentDate": "2025-04-02T17:15:12.467Z"
+    },
+    {
+      "id": "eb97",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
+      "messageContent": "Hello",
+      "sentDate": "2025-04-03T07:21:54.689Z"
     }
   ]
 }
