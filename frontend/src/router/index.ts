@@ -32,12 +32,6 @@ const routes = [
     meta: { title: 'Item - Fant' }
   },
   {
-    path: '/language-selector',
-    name: 'language-selector',
-    component: () => import('../views/NavbarLanguageSelectorView.vue'),
-    meta: { title: 'Select Language - Fant' }
-  },
-  {
     path: '/login',
     name: 'login',
     component: LoginView,
