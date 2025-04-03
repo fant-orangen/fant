@@ -76,7 +76,7 @@ import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
 }
 
 /* Tablet styles */
-@media (min-width: 768px) and (max-width: 1199px) {
+@media (min-width: 810px) and (max-width: 1199px) {
   .mobile-nav {
     display: none;
   }
@@ -86,7 +86,7 @@ import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
 }
 
 /* Mobile styles */
-@media (max-width: 767px) {
+@media (max-width: 810px) {
   .desktop-nav {
     display: none;
   }
