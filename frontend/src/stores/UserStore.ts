@@ -36,6 +36,7 @@ export const useUserStore = defineStore("user", () => {
     //console.log("string: " + tokenStr);
     if (status === 200) {
       token.value = tokenStr;
+      console.log("Token" + tokenStr);
 
       username.value = user;
     } else {
@@ -59,7 +60,7 @@ export const useUserStore = defineStore("user", () => {
 
       // Extract token from response.data.data (the structure returned by backend)
       let tokenStr: string;
-      tokenStr = response.data;
+      tokenStr = response.data.token;
 
       console.log("Token type:", typeof tokenStr);
 
