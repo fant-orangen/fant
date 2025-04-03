@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.ItemPreviewDto;
 import stud.ntnu.backend.data.ItemDetailsDto;
+import stud.ntnu.backend.data.RecommendedItemsRequestDto;
 import stud.ntnu.backend.service.ItemService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,6 +83,7 @@ public class ItemController {
     return ResponseEntity.ok(itemService.getItemsByCategory(category)); // TODO: add error handling
   }
 
+
   @PostMapping("/view/post/{id}")
   public ResponseEntity<Void> recordItemView(@PathVariable Long id) {
     // Get currently authenticated user email
@@ -92,5 +94,17 @@ public class ItemController {
     itemService.recordView(id, email);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/view/recommended_items")
+  public ResponseEntity<List<ItemPreviewDto>> getRecommendedItems(
+      @RequestBody RecommendedItemsRequestDto requestDto) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    return ResponseEntity.ok(
+        itemService.getItemsByDistribution(requestDto.getDistribution(), requestDto.getLimit())
+    );
+
   }
 }

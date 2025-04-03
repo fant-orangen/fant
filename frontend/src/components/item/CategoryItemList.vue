@@ -19,6 +19,7 @@ async function fetchItems() {
     if (props.categoryId) {
       items.value = await fetchPreviewItemsByCategoryId(props.categoryId);
     } else {
+      // Insert new code here
       items.value = await fetchPreviewItems();
     }
   } catch (error) {
