@@ -1,12 +1,21 @@
 package stud.ntnu.backend.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.ItemDetailsDto;
 import stud.ntnu.backend.data.ItemPreviewDto;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.ItemImage;
+import stud.ntnu.backend.model.ItemView;
+import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.ItemRepository;
+import stud.ntnu.backend.repository.ItemViewRepository;
+import stud.ntnu.backend.repository.UserRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,6 +37,10 @@ public class ItemService {
    * <p>JPA repository that provides database operations for items.</p>
    */
   private final ItemRepository itemRepository;
+
+  private final ItemViewRepository itemViewRepository;
+
+  private final UserRepository userRepository;
 
   /**
    * <h3>Retrieve all items in preview format</h3>
@@ -114,13 +127,14 @@ public class ItemService {
    * lightweight preview DTOs containing only essential information.</p>
    *
    * @param categoryId the ID of the category to filter items by
-   * @return a list of {@link ItemPreviewDto} objects containing preview information for items in the requested category
+   * @return a list of {@link ItemPreviewDto} objects containing preview information for items in
+   * the requested category
    */
   public List<ItemPreviewDto> getItemsByCategory(Long categoryId) {
-      List<Item> items = itemRepository.findByCategoryId(categoryId);
-      return items.stream()
-          .map(this::mapToItemPreviewDto)
-          .collect(Collectors.toList());
+    List<Item> items = itemRepository.findByCategoryId(categoryId);
+    return items.stream()
+        .map(this::mapToItemPreviewDto)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -140,5 +154,109 @@ public class ItemService {
         .min(Comparator.comparing(ItemImage::getPosition))
         .map(ItemImage::getImageUrl)
         .orElse(null);
+  }
+
+  /**
+   * Record a view of an item by a user
+   *
+   * @param itemId    the ID of the viewed item
+   * @param userEmail the email of the user viewing the item
+   */
+  public void recordView(Long itemId, String userEmail) {
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
+
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+
+    ItemView itemView = new ItemView();
+    itemView.setItem(item);
+    itemView.setUser(user);
+
+    itemViewRepository.save(itemView);
+  }
+
+  /**
+   * <h3>Get items based on a category probability distribution</h3>
+   * <p>Returns a list of items randomly selected according to the provided category
+   * distribution.</p>
+   * TODO: consider splitting this function into multiple smaller functions for better readability
+   *
+   * @param distribution Map of category IDs to their probabilities
+   * @param limit        Maximum number of items to return
+   * @return List of item previews selected based on the distribution
+   */
+  public List<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
+      Integer limit) {
+    // Default limit if not provided or invalid
+    int itemLimit = (limit != null && limit > 0) ? Math.min(limit, 1000) : 1000;
+
+    Map<Long, List<Item>> categoryItemsMap = new HashMap<>();
+    List<ItemPreviewDto> result = new ArrayList<>();
+    Random random = new Random();
+
+    // Group all items by category
+    for (String categoryIdStr : distribution.keySet()) {
+      try {
+        Long categoryId = Long.parseLong(categoryIdStr);
+        List<Item> items = itemRepository.findByCategoryId(categoryId);
+        if (!items.isEmpty()) {
+          categoryItemsMap.put(categoryId, items);
+        }
+      } catch (NumberFormatException e) {
+        // Skip invalid category IDs
+        continue;
+      }
+    }
+
+    // If no valid categories or all categories empty, return empty list
+    if (categoryItemsMap.isEmpty()) {
+      return result;
+    }
+
+    // Calculate number of items to select from each category based on distribution
+    Map<Long, Integer> categoryItemCounts = new HashMap<>();
+    for (Map.Entry<String, Double> entry : distribution.entrySet()) {
+      try {
+        Long categoryId = Long.parseLong(entry.getKey());
+        if (categoryItemsMap.containsKey(categoryId)) {
+          int itemCount = (int) Math.ceil(itemLimit * entry.getValue());
+          categoryItemCounts.put(categoryId, itemCount);
+        }
+      } catch (NumberFormatException e) {
+        continue;
+      }
+    }
+
+    // Random selection process
+    for (Map.Entry<Long, Integer> entry : categoryItemCounts.entrySet()) {
+      Long categoryId = entry.getKey();
+      int itemCount = entry.getValue();
+      List<Item> categoryItems = categoryItemsMap.get(categoryId);
+
+      // Select random items from this category
+      for (int i = 0; i < itemCount && result.size() < itemLimit; i++) {
+        if (categoryItems.isEmpty()) {
+          break;
+        }
+
+        int randomIndex = random.nextInt(categoryItems.size());
+        Item selectedItem = categoryItems.get(randomIndex);
+
+        // Add to results and remove to avoid duplicates
+        result.add(mapToItemPreviewDto(selectedItem));
+        categoryItems.remove(randomIndex);
+      }
+    }
+
+    // Shuffle the final results for better randomness
+    Collections.shuffle(result);
+
+    // Ensure we don't exceed the limit
+    if (result.size() > itemLimit) {
+      return result.subList(0, itemLimit);
+    }
+
+    return result;
   }
 }
