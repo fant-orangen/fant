@@ -25,7 +25,7 @@ import { ref, onMounted, defineProps } from 'vue';
 import ImageGallery from '@/components/show/ImageGallery.vue';
 import HeartIcon from '@/components/toggle/HeartIcon.vue';
 import type { ItemDetailsType } from '@/models/Item';
-import { fetchItem } from '@/services/ItemService.ts';
+import { fetchItem, recordItemView } from '@/services/ItemService.ts'
 
 const props = defineProps<{ itemId: string | number }>();
 const item = ref<ItemDetailsType | null>(null);
@@ -37,22 +37,15 @@ onMounted(async () => {
       item.value = Array.isArray(fetchedItem) ? fetchedItem[0] : fetchedItem;
       console.log("item value ", item.value);
 
-      await recordItemView(props.itemId);
+      // Call the service directly
+      const response = await recordItemView(props.itemId); // Record that the user viewed this item
+      console.log(`Response from the backend: ${response.status}`);
+
     } catch (error) {
       console.error('Error fetching item details:', error);
     }
   }
 });
-
-async function recordItemView(id: string | number) {
-  try {
-    console.log(`Item ${id} was viewed`);
-    // When ready to implement with backend:
-    // await api.post(`/items/${id}/view`);
-  } catch (error) {
-    console.error('Failed to record item view:', error);
-  }
-}
 
 function contactSeller() {
   // Implement contact seller functionality
