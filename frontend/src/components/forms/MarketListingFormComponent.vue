@@ -77,6 +77,7 @@ import TextInput from '@/components/input/TextInput.vue';
 import SelectInput from '@/components/input/SelectInput.vue';
 import FileInput from '@/components/input/FileInput.vue';
 import { fetchCategories } from '@/services/CategoryService.ts';
+import type { Category } from '@/models/Category';
 
 export default {
   components: {
@@ -93,12 +94,12 @@ export default {
       postalCode: '',
       images: [] as File[],
     });
-    const categories = ref<{ id: string, label: string, icon: string }[]>([]);
+    const categories = ref<Category[]>([]);
     const categoryLabels = ref<string[]>([]);
 
     async function loadCategories() {
       categories.value = await fetchCategories();
-      categoryLabels.value = categories.value.map(category => category.label);
+      categoryLabels.value = categories.value.map(category => category.name);
     }
 
     onMounted(loadCategories);
