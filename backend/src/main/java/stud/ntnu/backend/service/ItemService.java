@@ -6,7 +6,11 @@ import stud.ntnu.backend.data.ItemDetailsDto;
 import stud.ntnu.backend.data.ItemPreviewDto;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.ItemImage;
+import stud.ntnu.backend.model.ItemView;
+import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.ItemRepository;
+import stud.ntnu.backend.repository.ItemViewRepository;
+import stud.ntnu.backend.repository.UserRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,6 +32,10 @@ public class ItemService {
    * <p>JPA repository that provides database operations for items.</p>
    */
   private final ItemRepository itemRepository;
+
+  private final ItemViewRepository itemViewRepository;
+
+  private final UserRepository userRepository;
 
   /**
    * <h3>Retrieve all items in preview format</h3>
@@ -114,13 +122,14 @@ public class ItemService {
    * lightweight preview DTOs containing only essential information.</p>
    *
    * @param categoryId the ID of the category to filter items by
-   * @return a list of {@link ItemPreviewDto} objects containing preview information for items in the requested category
+   * @return a list of {@link ItemPreviewDto} objects containing preview information for items in
+   * the requested category
    */
   public List<ItemPreviewDto> getItemsByCategory(Long categoryId) {
-      List<Item> items = itemRepository.findByCategoryId(categoryId);
-      return items.stream()
-          .map(this::mapToItemPreviewDto)
-          .collect(Collectors.toList());
+    List<Item> items = itemRepository.findByCategoryId(categoryId);
+    return items.stream()
+        .map(this::mapToItemPreviewDto)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -140,5 +149,25 @@ public class ItemService {
         .min(Comparator.comparing(ItemImage::getPosition))
         .map(ItemImage::getImageUrl)
         .orElse(null);
+  }
+
+  /**
+   * Record a view of an item by a user
+   *
+   * @param itemId the ID of the viewed item
+   * @param userEmail the email of the user viewing the item
+   */
+  public void recordView(Long itemId, String userEmail) {
+      Item item = itemRepository.findById(itemId)
+          .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
+
+      User user = userRepository.findByEmail(userEmail)
+          .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+
+      ItemView itemView = new ItemView();
+      itemView.setItem(item);
+      itemView.setUser(user);
+
+      itemViewRepository.save(itemView);
   }
 }

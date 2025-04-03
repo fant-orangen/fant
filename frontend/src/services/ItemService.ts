@@ -46,6 +46,25 @@ export async function fetchPreviewItemsByCategoryId(categoryId: string): Promise
 }
 
 /**
+ * Records that a user viewed an item.
+ * The user is automatically identified through the authentication token.
+ *
+ * @param itemId - The ID of the viewed item
+ * @returns Promise that resolves when the view has been recorded
+ */
+export async function recordItemView(itemId: string | number): Promise<void> {
+  try {
+    // Send the item ID to the backend
+    // The user ID will be extracted from the JWT token by the backend
+    await api.post(`/items/view/post/${itemId}`);
+    console.log(`View recorded for item ${itemId}`);
+  } catch (error) {
+    // Log the error but don't throw it to avoid disrupting the user experience
+    console.error(`Failed to record view for item ${itemId}:`, error);
+  }
+}
+
+/**
  * Fetches a paginated list of favorite items for the logged-in user.
  * Assumes the backend endpoint /api/users/me/favorites supports pagination.
  * @param page - The page number to fetch (e.g., 1-based)
