@@ -158,7 +158,7 @@ onMounted(() => {
 .conversation-view {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 100px); /* Example height, adjust as needed */
+  height: calc(100vh - 100px);
   border: 1px solid #eee;
   margin: 1rem;
   border-radius: 8px;
@@ -178,7 +178,7 @@ onMounted(() => {
   flex-grow: 1;
   overflow-y: auto;
   padding: 1rem;
-  background-color: #f0f0f0; /* Light background for message area */
+  background-color: #f0f0f0;
 }
 .message-bubble-wrapper {
   display: flex;
@@ -192,17 +192,17 @@ onMounted(() => {
 }
 .message-bubble {
   max-width: 70%;
-  padding: 0.5rem 0.8rem;
-  border-radius: 15px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
   position: relative;
 }
 .message-bubble-wrapper.sent .message-bubble {
-  background-color: #007bff; /* Your sent message color */
+  background-color: #007bff;
   color: white;
   border-bottom-right-radius: 5px;
 }
 .message-bubble-wrapper.received .message-bubble {
-  background-color: #e5e5ea; /* Received message color */
+  background-color: #e5e5ea;
   color: black;
   border-bottom-left-radius: 5px;
 }
@@ -212,7 +212,7 @@ onMounted(() => {
 }
 .message-timestamp {
   font-size: 0.7em;
-  color: #999; /* Adjust color based on bubble */
+  color: #999;
   display: block;
   text-align: right;
   margin-top: 0.2rem;
@@ -231,10 +231,10 @@ onMounted(() => {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 15px;
-  resize: none; /* Prevent resizing */
+  resize: none;
   margin-right: 0.5rem;
-  min-height: 40px; /* Adjust */
-  max-height: 100px; /* Adjust */
+  min-height: 40px;
+  max-height: 100px;
 }
 .message-input-area button {
   padding: 0.5rem 1rem;

@@ -73,7 +73,7 @@ function truncate(text: string, length = 50) {
 
 <style scoped>
 .inbox-view {
-  padding: 1rem;
+  padding: 0.7rem;
 }
 .conversation-list {
   list-style: none;
@@ -84,13 +84,13 @@ function truncate(text: string, length = 50) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 1.5rem;
   border-bottom: 1px solid #eee;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 .conversation-item:hover {
-  background-color: #f9f9f9;
+  background-color: #1111;
 }
 .convo-details {
   flex-grow: 1;
@@ -127,7 +127,7 @@ function truncate(text: string, length = 50) {
 }
 .conversation-item.has-unread .other-user,
 .conversation-item.has-unread .last-message-snippet {
-  font-weight: bold; /* Example: make unread convos bold */
+  font-weight: bold;
 }
 .loading, .error, .empty-inbox {
   text-align: center;
