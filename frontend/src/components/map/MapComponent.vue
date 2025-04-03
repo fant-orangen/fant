@@ -5,8 +5,10 @@ import L from 'leaflet';
 import { fetchPreviewItems } from '@/services/ItemService';
 import type { ItemPreviewType } from '@/models/Item';
 import type { MapComponentProps } from '@/models/MapComponent.ts';
+import { useI18n } from "vue-i18n";
 // Define the props using the imported type
 const props = defineProps<MapComponentProps>();
+const { t } = useI18n();
 
 /**
  * Component References
@@ -78,15 +80,17 @@ async function loadItemsWithCoordinates() {
 
         // Construct the link path
         const itemDetailPath = `/item-detail/${item.id}`;
+        const viewDetailsText = t('VIEW_DETAILS');
+        const priceText = t('PRICE');
 
         const marker = L.marker([item.latitude, item.longitude])
         .addTo(map.value as L.Map)
         .bindPopup(`
-             <div class="popup-content" style="text-align: center; padding: 5px;"> <strong>${item.title || 'No Title'}</strong><br>
-               Price: ${item.price ?? 'N/A'} kr
+             <div class="popup-content" style="text-align: center; padding: 5px;"> <strong>${item.title}</strong><br>
+               ${priceText}: ${item.price ?? 'N/A'} kr
                ${imageUrlContent}
                <a href="${itemDetailPath}" target="_blank" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff;">
-                 View Details
+                 ${viewDetailsText}
                </a>
              </div>
            `);
