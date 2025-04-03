@@ -36,6 +36,10 @@ async function login() {
     isLoading.value = false
   }
 }
+
+function navigateToRegister() {
+  router.push('/register')
+}
 </script>
 
 <template>
@@ -58,6 +62,7 @@ async function login() {
         :placeholder="$t('PASSWORD')"
       />
       <button type="submit" :disabled="isLoading">{{ $t('LOGIN') }}</button>
+      <button type="button" @click="navigateToRegister">{{ $t('REGISTER') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
     <router-link to="/register">{{ $t('NEW_USER_QUESTION') }}</router-link>
