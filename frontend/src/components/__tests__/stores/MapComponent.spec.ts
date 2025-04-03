@@ -19,4 +19,11 @@ describe('MapComponent.vue', () => {
     const wrapper = mount(MapComponent);
     expect(wrapper.find('.map-container').exists()).toBe(true);
   });
+
+  it('initializes map on mount', async () => {
+    itemService.fetchPreviewItems.mockResolvedValue([]);
+    const wrapper = mount(MapComponent);
+    await wrapper.vm.$nectTick();
+    expect(itemService.fetchPreviewItems).toHaveBeenCalled();
+  })
 })
