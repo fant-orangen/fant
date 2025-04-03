@@ -2,8 +2,8 @@
   <div class="category-edit">
     <h2>Manage Categories</h2>
     <form @submit.prevent="handleSubmit">
-      <input v-model="form.label" placeholder="Category Label" required />
-      <select v-model="form.icon">
+      <input v-model="form.name" placeholder="Category Label" required />
+      <select v-model="form.description">
         <option v-for="icon in availableIcons" :key="icon.path" :value="icon.path">{{ icon.name }}</option>
       </select>
       <input v-model="customIconUrl" placeholder="Or enter custom Icon URL" @input="updateIconUrl" />
@@ -11,8 +11,8 @@
     </form>
     <ul>
       <li v-for="category in categories" :key="category.id">
-        <span>{{ category.label }}</span>
-        <img :src="category.icon" :alt="category.label" class="icon" />
+        <span>{{ category.name }}</span>
+        <img :src="category.description" :alt="category.name" class="icon" />
         <button @click="editCategory(category)">Edit</button>
         <button @click="removeCategory(category.id)">Delete</button>
       </li>
@@ -39,7 +39,12 @@ import phoneIcon from '@/assets/icons/phoneIcon.svg';
 import artIcon from '@/assets/icons/artIcon.svg';
 
 const categories = ref<Category[]>([]);
-const form = ref<Category>({ id: '0', label: '', icon: '' });
+const form = ref<Category>({
+  id: '0',
+  name: '',
+  description: '',
+  parent: null
+});
 const customIconUrl = ref('');
 const isEditing = ref(false);
 const availableIcons = ref<{ name: string, path: string }[]>([
@@ -63,7 +68,7 @@ async function loadCategories() {
 
 async function handleSubmit() {
   if (isEditing.value) {
-    await updateCategory(form.value.id, { label: form.value.label, icon: form.value.icon });
+    await updateCategory(form.value.id, { label: form.value.name, icon: form.value.description });
   } else {
     const highestId = Math.max(...categories.value.map(category => Number(category.id)));
     form.value.id = (highestId + 1).toString();
@@ -75,7 +80,7 @@ async function handleSubmit() {
 
 function editCategory(category: Category) {
   form.value = { ...category };
-  customIconUrl.value = category.icon;
+  customIconUrl.value = category.description;
   isEditing.value = true;
 }
 
@@ -85,16 +90,16 @@ async function removeCategory(id: string) {
 }
 
 function resetForm() {
-  form.value = { id: '0', label: '', icon: '' };
+  form.value = { id: '0', name: '', description: '' };
   customIconUrl.value = '';
   isEditing.value = false;
 }
 
 function updateIconUrl() {
   if (customIconUrl.value) {
-    form.value.icon = customIconUrl.value;
+    form.value.description = customIconUrl.value;
   } else {
-    form.value.icon = ''; // Reset if no URL is provided
+    form.value.description = ''; // Reset if no URL is provided
   }
 }
 
