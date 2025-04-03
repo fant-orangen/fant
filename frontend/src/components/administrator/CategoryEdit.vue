@@ -39,7 +39,12 @@ import phoneIcon from '@/assets/icons/phoneIcon.svg';
 import artIcon from '@/assets/icons/artIcon.svg';
 
 const categories = ref<Category[]>([]);
-const form = ref<Category>({ id: '0', name: '', description: '' });
+const form = ref<Category>({
+  id: '0',
+  name: '',
+  description: '',
+  parent: null
+});
 const customIconUrl = ref('');
 const isEditing = ref(false);
 const availableIcons = ref<{ name: string, path: string }[]>([
