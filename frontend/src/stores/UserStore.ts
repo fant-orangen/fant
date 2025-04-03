@@ -31,8 +31,13 @@ export const useUserStore = defineStore("user", () => {
    * @throws {Error} If the login status is not 200.
    */
   function login(status: number, tokenStr: string, user: string) {
+    //console.log(status);
+    console.log("test");
+    //console.log("string: " + tokenStr);
     if (status === 200) {
       token.value = tokenStr;
+      console.log("Token" + tokenStr);
+
       username.value = user;
     } else {
       throw new Error("Login Info Error");
@@ -48,12 +53,26 @@ export const useUserStore = defineStore("user", () => {
    * @throws {Error} If login is unsuccessful.
    */
   async function verifyLogin(user: string, password: string) {
-    const response = await fetchToken({ username: user, password: password });
-    if (response.status !== 200) {
-      throw new Error("Login Info Error");
+    try {
+      console.log(`Starting login for user: ${user}`);
+      const response = await fetchToken({ username: user, password: password });
+      console.log("Login response:", response.data);
+
+      // Extract token from response.data.data (the structure returned by backend)
+      let tokenStr: string;
+      tokenStr = response.data.token;
+
+      console.log("Token type:", typeof tokenStr);
+
+      if (response.status !== 200 || !tokenStr) {
+        throw new Error("Login Info Error");
+      }
+
+      login(response.status, tokenStr, user);
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
     }
-    const tokenStr = response.data as string;
-    login(response.status, tokenStr, user);
   }
 
   /**
