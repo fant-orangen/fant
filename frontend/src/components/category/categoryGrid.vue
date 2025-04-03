@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import type { Category } from '@/models/Category';
 import CategoryButton from "@/components/category/categoryButton.vue";
 import { fetchCategories } from '@/services/CategoryService.ts';
 
-const categories = ref<{id: string,  label: string, icon: string }[]>([]);
+const categories = ref<Category[]>([]);
 
 const emit = defineEmits<(e: 'select', categoryLabel: string) => void>();
 
@@ -22,8 +23,8 @@ onMounted(loadCategories);
     <CategoryButton
       v-for="category in categories"
       :key="category.id"
-      :label="category.label"
-      :icon="category.icon"
+      :label="category.name"
+      :icon="category.description"
       @click="handleFunction(category.id)"
     />
   </div>
