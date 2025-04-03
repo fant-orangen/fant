@@ -62,4 +62,19 @@ public class RecommendationService {
 
     return new CategoryRecommendationDto(distribution);
   }
+
+  /**
+   * <h3>Get the total number of item views for a user</h3>
+   * <p>Counts the total number of items viewed by the specified user.</p>
+   *
+   * @param email Email of the user
+   * @return Total number of item views
+   */
+  public int getUserViewCount(String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+    List<ItemView> userViews = itemViewRepository.findByUserId(user.getId());
+    return userViews.size();
+  }
 }
