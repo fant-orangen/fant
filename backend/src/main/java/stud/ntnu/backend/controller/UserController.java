@@ -1,5 +1,6 @@
 package stud.ntnu.backend.controller;
 
+import java.security.Principal;
 import java.util.Optional;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,12 +53,11 @@ public class UserController {
   @GetMapping("/{id}")
   public ResponseEntity<UserResponseDto> getUserById(
       @Parameter(description = "ID of the user to be retrieved", required = true) @PathVariable Long id) {
-    return ResponseEntity.ok(userService.getUserById(id));
+    return ResponseEntity.ok(userService.getUserResponseById(id));
   }
 
   @GetMapping("/profile")
-  public ResponseEntity<Optional<User>> getCurrentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return ResponseEntity.ok(userService.findByEmail(authentication.getName()));
+  public ResponseEntity<User> getCurrentUser(Principal principal) {
+    return ResponseEntity.ok(userService.getCurrentUser(principal));
   }
 }
