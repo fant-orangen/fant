@@ -57,15 +57,15 @@ export const useUserStore = defineStore("user", () => {
       const response = await fetchToken({ username: user, password: password });
       console.log("Login response:", response.data);
 
-      // Extract token from response.data
+      // Extract token from response.data.data (the structure returned by backend)
       let tokenStr: string;
-      // Direct string format
-      tokenStr = response.data.data as string;
+      tokenStr = response.data;
+
+      console.log("Token type:", typeof tokenStr);
 
       if (response.status !== 200 || !tokenStr) {
         throw new Error("Login Info Error");
       }
-      console.log("Token: " + tokenStr);
 
       login(response.status, tokenStr, user);
     } catch (error) {
