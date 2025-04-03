@@ -74,7 +74,18 @@
     "PROFILE_VIPPS_PROMPT_DESC": "Aktiver din Vipps-konto for raske of trygger betalinger",
     "PROFILE_RATINGS_LABEL": "Evalueringer",
 
-    "MAP": "Kart"
+    "MAP": "Kart",
+    "INBOX_NAVBAR": "Meldinger",
+
+    "BACK_TO_INBOX": "Tilbake til Inbox",
+    "LOADING_MESSAGES": "Laster Meldinger",
+    "CHAT_WITH": "Samtale med ",
+    "TYPE_MESSAGE": "Skriv din beskjed...",
+    "SENDING": "Sender",
+    "SEND": "Send",
+
+    "INBOX": "Inbox",
+    "NO_CONVERSATIONS_YET": "Ingen samtaler enda"
 
 
 
