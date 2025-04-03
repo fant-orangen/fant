@@ -29,6 +29,11 @@ public class ItemService {
    */
   private final ItemRepository itemRepository;
 
+  public Item findById(Long id) {
+    return itemRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+  }
+
   /**
    * <h3>Retrieve all items in preview format</h3>
    * <p>Fetches all items from the database and transforms them into
@@ -117,10 +122,10 @@ public class ItemService {
    * @return a list of {@link ItemPreviewDto} objects containing preview information for items in the requested category
    */
   public List<ItemPreviewDto> getItemsByCategory(Long categoryId) {
-      List<Item> items = itemRepository.findByCategoryId(categoryId);
-      return items.stream()
-          .map(this::mapToItemPreviewDto)
-          .collect(Collectors.toList());
+    List<Item> items = itemRepository.findByCategoryId(categoryId);
+    return items.stream()
+        .map(this::mapToItemPreviewDto)
+        .collect(Collectors.toList());
   }
 
   /**
