@@ -13,6 +13,7 @@ import stud.ntnu.backend.repository.CategoryRepository;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
+
   /**
    * <h3> The CategoryRepository. </h3>
    */

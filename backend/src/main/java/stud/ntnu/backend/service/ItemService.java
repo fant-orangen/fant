@@ -152,20 +152,20 @@ public class ItemService {
   /**
    * Record a view of an item by a user
    *
-   * @param itemId the ID of the viewed item
+   * @param itemId    the ID of the viewed item
    * @param userEmail the email of the user viewing the item
    */
   public void recordView(Long itemId, String userEmail) {
-      Item item = itemRepository.findById(itemId)
-          .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
 
-      User user = userRepository.findByEmail(userEmail)
-          .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
 
-      ItemView itemView = new ItemView();
-      itemView.setItem(item);
-      itemView.setUser(user);
+    ItemView itemView = new ItemView();
+    itemView.setItem(item);
+    itemView.setUser(user);
 
-      itemViewRepository.save(itemView);
+    itemViewRepository.save(itemView);
   }
 }
