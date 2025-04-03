@@ -8,5 +8,5 @@ export async function register(userData: {
   lastName: string;
   birthDate: string;
 }) {
-  return await axios.post('/api/users/register', userData)
+  return await axios.post('/api/auth/register', userData)
 }
