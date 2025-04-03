@@ -32,18 +32,6 @@ const routes = [
     meta: { title: 'Item - Fant' }
   },
   {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue'),
-    meta: { title: 'About - Fant' }
-  },
-  {
-    path: '/browse',
-    name: 'browse',
-    component: () => import('../views/ItemView.vue'),
-    meta: { title: 'Browse Listings - Fant' }
-  },
-  {
     path: '/language-selector',
     name: 'language-selector',
     component: () => import('../views/NavbarLanguageSelectorView.vue'),
