@@ -3,63 +3,20 @@
     <div class="logo">
       <RouterLink to="/">fant<span class="domain">.no</span></RouterLink>
     </div>
-    <nav class="links">
-      <div class="main-links">
-        <RouterLink to="/map">
-          <IconWithText :icon-src="mapIcon" :text="$t('MAP')" />
-        </RouterLink>
-        <RouterLink to="/create-listing/start">
-          <IconWithText :icon-src="addIcon" :text="$t('APP_LISTING_CREATE_NEW')" />
-        </RouterLink>
-      </div>
-      <div class="user-links">
-        <NavbarLanguageSelector />
-        <template v-if="loggedIn">
-          <RouterLink to="/messages">
-            <IconWithText
-              :icon-src="hasNewMessages ? notificationNewIcon : notificationIcon"
-              :text="$t('INBOX_NAVBAR')"
-            />
-          </RouterLink>
-          <RouterLink to="/profile">
-            <IconWithText :icon-src="userIcon" :text="$t('PROFILE_TILE_MY_ACCOUNT_TITLE')" />
-          </RouterLink>
-          <button class="logout-btn" @click="handleLogout">{{ $t('APP_LOGOUT') }}</button>
-        </template>
-        <template v-else>
-          <RouterLink to="/login">{{ $t('LOGIN_NAVBAR') }}</RouterLink>
-        </template>
-      </div>
-    </nav>
+
+    <!-- Navigation container -->
+    <div class="nav-container">
+      <!-- Wide screen navigation -->
+      <WideScreenNavBar class="desktop-nav" />
+      <!-- Mobile hamburger menu -->
+      <HamburgerDropDownMenu class="mobile-nav" />
+    </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/UserStore';
-import NavbarLanguageSelector from './LanguageSelector.vue';
-import IconWithText from '@/components/icons/IconWithText.vue';
-
-// Import icons
-import userIcon from '@/assets/icons/user.svg';
-import addIcon from '@/assets/icons/add.svg';
-import notificationNewIcon from '@/assets/icons/notificationNew.svg';
-import notificationIcon from '@/assets/icons/notification.svg';
-import mapIcon from '@/assets/icons/map.svg';
-
-const router = useRouter();
-const userStore = useUserStore();
-const { loggedIn } = storeToRefs(userStore);
-
-// You can add this computed property based on your message store
-const hasNewMessages = ref(false);
-
-const handleLogout = () => {
-  userStore.logout();
-  router.push('/login');
-};
+import WideScreenNavBar from './WideScreenNavBar.vue';
+import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
 </script>
 
 <style scoped>
@@ -70,6 +27,8 @@ const handleLogout = () => {
   padding: 1rem 2rem;
   background-color: #fff;
   border-bottom: 1px solid #eee;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .logo a {
@@ -100,52 +59,54 @@ const handleLogout = () => {
   color: #000000;
 }
 
-.links {
+.nav-container {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  justify-content: flex-end;
 }
 
-.main-links, .user-links {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+/* Desktop styles */
+@media (min-width: 1200px) {
+  .mobile-nav {
+    display: none;
+  }
+  .desktop-nav {
+    display: flex;
+  }
 }
 
-nav.links a {
-  text-decoration: none;
-  color: #333;
-  font-size: 1rem;
-  font-weight: 500;
-  position: relative;
-  background-color: white;
+/* Tablet styles */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .mobile-nav {
+    display: none;
+  }
+  .desktop-nav {
+    display: flex;
+  }
 }
 
-nav.links a::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: #333;
-  transition: width 0.2s ease-in-out;
+/* Mobile styles */
+@media (max-width: 767px) {
+  .desktop-nav {
+    display: none;
+  }
+  .mobile-nav {
+    display: block;
+  }
+
+  .nav {
+    padding: 1rem;
+  }
 }
 
-nav.links a:hover::after,
-nav.links a.router-link-active::after {
-  width: 100%;
-}
+/* Extra small screens */
+@media (max-width: 480px) {
+  .nav {
+    padding: 0.75rem;
+  }
 
-.logout-btn {
-  background: none;
-  border: none;
-  color: #333;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  font-family: inherit;
+  .logo a {
+    font-size: 1.25rem;
+  }
 }
 </style>
