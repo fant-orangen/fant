@@ -70,28 +70,27 @@ async function loadItemsWithCoordinates() {
 
     // Add new markers for each item that has valid coordinates
     items.value.forEach(item => {
-      // Check if the item has valid latitude and longitude values
-      if (item && item.latitude != null && item.longitude != null && map.value) {
-        // Prepare image HTML content if available with improved centering
+      // Ensure item, coordinates, id, and map exist
+      if (item && item.id != null && item.latitude != null && item.longitude != null && map.value) {
         const imageUrlContent = item.imageUrl
-          ? `<div class="popup-image-container" style="width: 100%; text-align: center; margin: 8px 0;">
-               <img src="${item.imageUrl}" alt="${item.title || 'Item image'}"
-                style="max-width: 100px; max-height: 100px; margin: 0 auto; display: block;">
-             </div>`
+          ? `<img src="${item.imageUrl}" alt="${item.title || 'Item image'}" style="max-width: 100px; max-height: 100px; display: block; margin: 5px auto;">` // Added auto margin
           : '';
 
-        // Create a marker at the item's coordinates with a styled popup showing item details
+        // Construct the link path
+        const itemDetailPath = `/item-detail/${item.id}`;
+
         const marker = L.marker([item.latitude, item.longitude])
         .addTo(map.value as L.Map)
         .bindPopup(`
-            <div class="popup-content" style="text-align: center; width: 100%;">
-              <strong>${item.title || 'No Title'}</strong><br>
-              Price: ${item.price ?? 'N/A'} kr
-              ${imageUrlContent}
-            </div>
-          `);
+             <div class="popup-content" style="text-align: center; padding: 5px;"> <strong>${item.title || 'No Title'}</strong><br>
+               Price: ${item.price ?? 'N/A'} kr
+               ${imageUrlContent}
+               <a href="${itemDetailPath}" target="_blank" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff;">
+                 View Details
+               </a>
+             </div>
+           `);
 
-        // Store the marker reference to enable later cleanup
         markers.value.push(marker);
       }
     });
