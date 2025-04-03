@@ -57,15 +57,6 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #fff;
-  border-bottom: 1px solid #eee;
-}
-
 .logo a {
   text-decoration: none;
   font-size: 1.5rem;
@@ -88,10 +79,6 @@ const handleLogout = () => {
 
 .logo a:hover::after {
   width: 100%;
-}
-
-.domain {
-  color: #000000;
 }
 
 .links {
