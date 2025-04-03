@@ -34,4 +34,11 @@ describe('UserStore', () => {
     expect(store.loggedIn).toBe(true);
   })
 
+  it('login action throws error on non-200 status', () => {
+    const store = useUserStore();
+    expect(() => store.login(401,'','')).toThrowError("Login Info Error");
+  });
+
+
+
 })
