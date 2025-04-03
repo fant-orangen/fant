@@ -52,15 +52,20 @@ export async function fetchPreviewItemsByCategoryId(categoryId: string): Promise
  * @param itemId - The ID of the viewed item
  * @returns Promise that resolves when the view has been recorded
  */
-export async function recordItemView(itemId: string | number): Promise<void> {
+export async function recordItemView(itemId: string | number): Promise<{ status: number }> {
   try {
-    // Send the item ID to the backend
-    // The user ID will be extracted from the JWT token by the backend
-    await api.post(`/items/view/post/${itemId}`);
+    // Send the item ID to the backend and capture the response
+    const response = await api.post(`/items/view/post/${itemId}`);
     console.log(`View recorded for item ${itemId}`);
+
+    // Return the status code from the response
+    return { status: response.status };
   } catch (error) {
-    // Log the error but don't throw it to avoid disrupting the user experience
+    // Log the error but still return something to avoid disrupting UI flow
     console.error(`Failed to record view for item ${itemId}:`, error);
+
+    // Generic error code if we couldn't get a proper status
+    return { status: 500 };
   }
 }
 
