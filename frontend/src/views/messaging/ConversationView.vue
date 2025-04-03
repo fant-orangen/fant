@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import type { Message, MessageUser } from '@/models/Message'; // Use your defined types
+import type { Message, MessageUser } from '@/models/Message';
 // Uses the simplified service
 import { fetchMessages, sendMessage } from '@/services/MessageService.ts';
 // Removed UserStore import
@@ -38,8 +38,8 @@ async function loadMessages() {
     // Attempt to set otherUser based on fetched messages
     if (messages.value.length > 0) {
       const firstMessage = messages.value[0];
-      // This logic still needs currentUserId, which should be hardcoded "1" here
-      const currentUserId = "1"; // Define the hardcoded ID here or keep from component scope
+      // Hardcoded current user
+      const currentUserId = "1";
       otherUser.value = firstMessage.sender.id === currentUserId
         ? firstMessage.receiver
         : firstMessage.sender;
@@ -65,7 +65,8 @@ async function handleSendMessage() {
   sending.value = true;
   error.value = null;
   try {
-    const recipientId = conversationId.value; // The other user is the recipient
+    // The other user is recipient
+    const recipientId = conversationId.value;
     const sentMessage = await sendMessage(recipientId, newMessageContent.value);
     messages.value.push(sentMessage);
     newMessageContent.value = '';
@@ -80,7 +81,7 @@ async function handleSendMessage() {
 
 // Determine if a message was sent by the "current" hardcoded user
 function isMyMessage(message: Message): boolean {
-  // Now compares message sender ID ("1", "2", etc.) with the hardcoded currentUserId ("1")
+  // Compares message sender ID with the hardcoded currentUserId ("1")
   return message.sender.id === currentUserId;
 }
 
@@ -117,11 +118,11 @@ onMounted(() => {
 <template>
   <div class="conversation-view">
     <div class="header">
-      <router-link to="/messages">Back to Inbox</router-link>
-      <h2 v-if="otherUser">Chat with {{ otherUser.username }}</h2>
+      <router-link to="/messages">{{ $t('BACK_TO_INBOX') }}</router-link>
+      <h2 v-if="otherUser">{{ $t('CHAT_WITH') }}{{ otherUser.username }}</h2>
     </div>
 
-    <div v-if="loading" class="loading">Loading messages...</div>
+    <div v-if="loading" class="loading">{{ $t('LOADING_MESSAGES') }}</div>
     <div v-else-if="error" class="error">{{ error }}</div>
 
     <div v-else class="messages-container" ref="messagesContainerRef">
@@ -139,14 +140,14 @@ onMounted(() => {
     </div>
 
     <div class="message-input-area">
-       <textarea
-         v-model="newMessageContent"
-         placeholder="Type your message..."
-         @keyup.enter.prevent="handleSendMessage"
-         :disabled="sending"
-       ></textarea>
+  <textarea
+    v-model="newMessageContent"
+    :placeholder="$t('TYPE_MESSAGE')"
+    @keyup.enter.prevent="handleSendMessage"
+    :disabled="sending"
+  ></textarea>
       <button @click="handleSendMessage" :disabled="!newMessageContent.trim() || sending">
-        {{ sending ? 'Sending...' : 'Send' }}
+        {{ $t('SEND') }}
       </button>
     </div>
   </div>
@@ -161,6 +162,7 @@ onMounted(() => {
   margin: 1rem;
   border-radius: 8px;
   overflow: hidden;
+  max-width: 800px;
 }
 .header {
   padding: 0.5rem 1rem;
@@ -195,12 +197,12 @@ onMounted(() => {
   position: relative;
 }
 .message-bubble-wrapper.sent .message-bubble {
-  background-color: #20a830;
+  background: linear-gradient(to bottom, #20a830, #187f27);
   color: white;
   border-bottom-right-radius: 5px;
 }
 .message-bubble-wrapper.received .message-bubble {
-  background-color: #72b1d6;
+  background: linear-gradient(to bottom, #72b1d6, #5d9bb6);
   color: black;
   border-bottom-left-radius: 5px;
 }
@@ -210,7 +212,7 @@ onMounted(() => {
 }
 .message-timestamp {
   font-size: 0.7em;
-  color: #999;
+  color: #021b1c;
   display: block;
   text-align: right;
   margin-top: 0.2rem;

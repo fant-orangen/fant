@@ -71,6 +71,14 @@
     "PROFILE_RATINGS_LABEL": "Ratings",
 
     "MAP": "Map",
-    "INBOX_NAVBAR": "Messages"
+    "INBOX_NAVBAR": "Messages",
+    "BACK_TO_INBOX": "Back to Inbox",
+    "LOADING_MESSAGES": "Loading Messages",
+    "CHAT_WITH": "Chat with ",
+    "TYPE_MESSAGE": "Type your message...",
+    "SENDING": "Sending",
+    "SEND": "Send",
 
+    "INBOX": "Inbox",
+    "NO_CONVERSATIONS_YET": "No conversations yet"
 }

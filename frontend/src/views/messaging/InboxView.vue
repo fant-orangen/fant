@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import type { ConversationPreview } from '@/models/Message'; // Use your defined types
 // Assume you create this service and functions
-import { fetchConversations } from '@/services/messageService';
+import { fetchConversations } from '@/services/MessageService';
 
 const router = useRouter();
 const conversations = ref<ConversationPreview[]>([]);
@@ -42,11 +42,11 @@ function truncate(text: string, length = 50) {
 
 <template>
   <div class="inbox-view">
-    <h1>Inbox</h1>
+    <h1>{{ $t('INBOX') }}</h1>
     <div v-if="loading" class="loading">Loading conversations...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else-if="conversations.length === 0" class="empty-inbox">
-      No conversations yet.
+      {{ $t('NO_CONVERSATIONS_YET') }}
     </div>
     <ul v-else class="conversation-list">
       <li
@@ -81,6 +81,7 @@ function truncate(text: string, length = 50) {
   margin: 0;
 }
 .conversation-item {
+  background: linear-gradient(to bottom, #ffffff, #dedede);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -90,9 +91,10 @@ function truncate(text: string, length = 50) {
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.5s ease;
+  max-width: 600px;
 }
 .conversation-item:hover {
-  background-color: #1111;
+  background: linear-gradient(to bottom, #ffffff, #b5b5b5);
 }
 .convo-details {
   flex-grow: 1;

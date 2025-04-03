@@ -75,7 +75,17 @@
     "PROFILE_RATINGS_LABEL": "Evalueringer",
 
     "MAP": "Kart",
-    "INBOX_NAVBAR": "Meldinger"
+    "INBOX_NAVBAR": "Meldinger",
+
+    "BACK_TO_INBOX": "Tilbake til Inbox",
+    "LOADING_MESSAGES": "Laster Meldinger",
+    "CHAT_WITH": "Samtale med ",
+    "TYPE_MESSAGE": "Skriv din beskjed...",
+    "SENDING": "Sender",
+    "SEND": "Send",
+
+    "INBOX": "Inbox",
+    "NO_CONVERSATIONS_YET": "Ingen samtaler enda"
 
 
 
