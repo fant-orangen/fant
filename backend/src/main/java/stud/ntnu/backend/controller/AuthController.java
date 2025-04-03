@@ -53,7 +53,7 @@ public class AuthController {
 
   /**
    * <h3>Generate JWT Token</h3>
-
+   *
    * <p>Authenticates the user and generates a JWT token if authentication is successful.</p>
    *
    * @param request the authentication request containing username and password
@@ -72,11 +72,14 @@ public class AuthController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = AuthResponseDto.class)))})
   @PostMapping("/login")
-  public ResponseEntity<AuthResponseDto> login(@Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(
-      description = "Authentication request with username and password",
-      required = true,
-      content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
-  ) AuthRequestDto request) {
+  public ResponseEntity<AuthResponseDto> login(
+      @Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
+          description = "Authentication request with username and password",
+          required = true,
+          content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
+      ) AuthRequestDto request) {
+
+
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
@@ -95,6 +98,7 @@ public class AuthController {
           .body(new AuthResponseDto(null));
     }
   }
+
   @PostMapping("/register")
   public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody UserRegistrationDto request) {
     return ResponseEntity.ok(
