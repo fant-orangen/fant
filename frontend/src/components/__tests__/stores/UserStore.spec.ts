@@ -54,4 +54,36 @@ describe('UserStore', () => {
     expect(store.loggedIn).toBe(false);
   })
 
+  it('verifyLogin successfully updates state on valid credentials', async ()=> {
+    const store = useUserStore();
+    const authService = await import('@/services/api/authService');
+    const mockToken = 'mock_jwt_token';
+
+    // Setup mock for fetchToken
+    authService.fetchToken = vi.fn().mockResolvedValue({
+      status: 200,
+      data: { token: mockToken }
+    });
+
+    await store.verifyLogin('testuser@example.com', 'password123');
+
+    expect(authService.fetchToken).toHaveBeenCalledWith({ username: 'testuser@example.com', password: 'password123'});
+    expect(store.token).toBe(mockToken);
+    expect(store.username).toBe('testuser@example.com');
+    expect(store.loggedIn).toBe(true);
+  });
+
+  it('verifyLogin handles errors', async () => {
+    const store = useUserStore();
+    const authService = await import('@/services/api/authService');
+
+    authService.fetchToken = vi.fn().mockRejectedValue(new Error("Invalid credentials"));
+
+    await expect(store.verifyLogin('wronguser@example.com','incorrectpassword')).rejects.toThrow("Invalid credentials");
+
+    expect(store.token).toBeNull();
+    expect(store.username).toBeNull();
+
+  })
+
 })
