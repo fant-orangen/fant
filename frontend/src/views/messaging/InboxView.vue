@@ -85,9 +85,11 @@ function truncate(text: string, length = 50) {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-top: 1px solid snow;
+  border-bottom: 1px solid gray;
+  border-radius: 20px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.5s ease;
 }
 .conversation-item:hover {
   background-color: #1111;

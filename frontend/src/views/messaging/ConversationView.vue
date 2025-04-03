@@ -2,12 +2,12 @@
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import type { Message, MessageUser } from '@/models/Message'; // Use your defined types
-// Assume you create this service and functions
-import { fetchMessages, sendMessage, /* maybe fetchConversationDetails */ } from '@/services/messageService';
-import { useUserStore } from '@/stores/UserStore'; // [cite: uploaded:frontend 2/frontend/src/stores/UserStore.ts]
+// Uses the simplified service
+import { fetchMessages, sendMessage } from '@/services/MessageService.ts';
+// Removed UserStore import
 
 const route = useRoute();
-const userStore = useUserStore();
+// Removed userStore definition
 
 const messages = ref<Message[]>([]);
 const newMessageContent = ref('');
@@ -17,11 +17,11 @@ const error = ref<string | null>(null);
 const sending = ref(false);
 const messagesContainerRef = ref<HTMLElement | null>(null); // For auto-scrolling
 
-// Get conversationId from route params
+// Get conversationId (which is the other user's ID in this context) from route params
 const conversationId = computed(() => route.params.conversationId as string);
-// Get current user ID (make sure UserStore provides this)
-const currentUserId = computed(() => userStore.profile.id || userStore.username); // Adjust based on what UserStore provides
 
+// Define the "current user" perspective using the hardcoded ID
+const currentUserId = "1"; // Represents "alice" in dummy data
 
 // Fetch messages when component mounts or conversationId changes
 async function loadMessages() {
@@ -32,13 +32,22 @@ async function loadMessages() {
   loading.value = true;
   error.value = null;
   try {
-    // This function needs to be implemented in messageService.ts
-    // It might also return the 'otherUser' details
+    // FIX: Call fetchMessages with only one argument (the other user's ID)
     messages.value = await fetchMessages(conversationId.value);
-    // TODO: Fetch otherUser details if not included in fetchMessages response
-    // e.g., otherUser.value = await fetchConversationDetails(conversationId.value);
 
-    // Scroll to bottom after messages load
+    // Attempt to set otherUser based on fetched messages
+    if (messages.value.length > 0) {
+      const firstMessage = messages.value[0];
+      // This logic still needs currentUserId, which should be hardcoded "1" here
+      const currentUserId = "1"; // Define the hardcoded ID here or keep from component scope
+      otherUser.value = firstMessage.sender.id === currentUserId
+        ? firstMessage.receiver
+        : firstMessage.sender;
+    } else {
+      // Fallback if no messages
+      otherUser.value = { id: conversationId.value, username: `User ${conversationId.value}` };
+    }
+
     scrollToBottom();
 
   } catch (err) {
@@ -50,52 +59,41 @@ async function loadMessages() {
   }
 }
 
-// Send a new message
+// Send a new message (uses hardcoded sender via sendMessage)
 async function handleSendMessage() {
   if (!newMessageContent.value.trim() || sending.value || !conversationId.value) return;
-
   sending.value = true;
-  error.value = null; // Clear previous errors
-
+  error.value = null;
   try {
-    // This function needs to be implemented in messageService.ts
-    // It needs the ID of the recipient (which might be the conversationId depending on backend logic)
-    // Or you might need to fetch the recipient ID based on conversationId first
-    const recipientId = conversationId.value; // Placeholder - adjust as needed!
+    const recipientId = conversationId.value; // The other user is the recipient
     const sentMessage = await sendMessage(recipientId, newMessageContent.value);
-
-    // Add the sent message to the list optimistically (or re-fetch)
     messages.value.push(sentMessage);
-    newMessageContent.value = ''; // Clear input
-
-    // Scroll to bottom after sending
+    newMessageContent.value = '';
     scrollToBottom();
-
   } catch (err) {
     console.error(`ConversationView: Failed to send message:`, err);
-    error.value = "Failed to send message."; // Display send error
+    error.value = "Failed to send message.";
   } finally {
     sending.value = false;
   }
 }
 
-// Determine if a message was sent by the current user
+// Determine if a message was sent by the "current" hardcoded user
 function isMyMessage(message: Message): boolean {
-  // Compare message sender ID with the logged-in user's ID
-  // Adjust based on how you store/get the current user's ID
-  return message.sender.id === currentUserId.value;
+  // Now compares message sender ID ("1", "2", etc.) with the hardcoded currentUserId ("1")
+  return message.sender.id === currentUserId;
 }
 
-// Format timestamp (example)
+// Format timestamp (example - unchanged)
 function formatTimestamp(date: string | Date): string {
   if (!date) return '';
   const d = typeof date === 'string' ? new Date(date) : date;
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// Auto-scroll to bottom of messages
+// Auto-scroll to bottom of messages (unchanged)
 function scrollToBottom() {
-  nextTick(() => { // Ensure DOM is updated before scrolling
+  nextTick(() => {
     const container = messagesContainerRef.value;
     if (container) {
       container.scrollTop = container.scrollHeight;
@@ -103,14 +101,14 @@ function scrollToBottom() {
   });
 }
 
-// Watch for route changes if user navigates between conversations
+// Watch for route changes (unchanged)
 watch(conversationId, (newId, oldId) => {
   if (newId && newId !== oldId) {
-    loadMessages();
+    loadMessages(); // Reload messages for the new conversation
   }
 });
 
-// Initial load
+// Initial load (unchanged)
 onMounted(() => {
   loadMessages();
 });
@@ -197,12 +195,12 @@ onMounted(() => {
   position: relative;
 }
 .message-bubble-wrapper.sent .message-bubble {
-  background-color: #007bff;
+  background-color: #20a830;
   color: white;
   border-bottom-right-radius: 5px;
 }
 .message-bubble-wrapper.received .message-bubble {
-  background-color: #e5e5ea;
+  background-color: #72b1d6;
   color: black;
   border-bottom-left-radius: 5px;
 }
@@ -238,11 +236,15 @@ onMounted(() => {
 }
 .message-input-area button {
   padding: 0.5rem 1rem;
-  border-radius: 15px;
+  border-radius: 10px;
   background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
+}
+.message-input-area button:hover {
+  background-color: #0056b3;
+  transition: background-color 0.5s ease;
 }
 .message-input-area button:disabled {
   background-color: #a0a0a0;
