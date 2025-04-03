@@ -100,7 +100,7 @@ const handleLogout = () => {
 <style scoped>
 .hamburger-menu {
   position: relative;
-  z-index: 1000; //high because map was infront
+  z-index: 1000;
 }
 .dropdown-menu {
   position: fixed;
