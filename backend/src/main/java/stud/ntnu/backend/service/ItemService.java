@@ -178,13 +178,16 @@ public class ItemService {
 
   /**
    * <h3>Get items based on a category probability distribution</h3>
-   * <p>Returns a list of items randomly selected according to the provided category distribution.</p>
+   * <p>Returns a list of items randomly selected according to the provided category
+   * distribution.</p>
+   * TODO: consider splitting this function into multiple smaller functions for better readability
    *
    * @param distribution Map of category IDs to their probabilities
-   * @param limit Maximum number of items to return
+   * @param limit        Maximum number of items to return
    * @return List of item previews selected based on the distribution
    */
-  public List<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution, Integer limit) {
+  public List<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
+      Integer limit) {
     // Default limit if not provided or invalid
     int itemLimit = (limit != null && limit > 0) ? Math.min(limit, 1000) : 1000;
 
@@ -233,7 +236,9 @@ public class ItemService {
 
       // Select random items from this category
       for (int i = 0; i < itemCount && result.size() < itemLimit; i++) {
-        if (categoryItems.isEmpty()) break;
+        if (categoryItems.isEmpty()) {
+          break;
+        }
 
         int randomIndex = random.nextInt(categoryItems.size());
         Item selectedItem = categoryItems.get(randomIndex);
