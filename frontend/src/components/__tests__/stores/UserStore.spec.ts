@@ -39,6 +39,19 @@ describe('UserStore', () => {
     expect(() => store.login(401,'','')).toThrowError("Login Info Error");
   });
 
+  it('logout clears user state', () => {
+    const store = useUserStore();
 
+    store.token = 'fake_jwt_token';
+    store.username = 'testuser';
+    store.profile = { email: 'test@example.com', firstName: 'TestFirstName', lastName: 'TestSurname', phoneNumber: '12345678'};
+
+    store.logout();
+
+    expect(store.token).toBeNull();
+    expect(store.username).toBeNull();
+    expect(store.profile.email).toBe('');
+    expect(store.loggedIn).toBe(false);
+  })
 
 })
