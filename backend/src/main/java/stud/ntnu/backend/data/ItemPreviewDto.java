@@ -44,4 +44,17 @@ public class ItemPreviewDto {
      * <p>Uses BigDecimal for precise monetary calculations.</p>
      */
     private BigDecimal price;
+
+    /**
+    * <h3>Latitude of the item</h3>
+    * <p>Uses Double for precise position</p>
+    */
+    private Double latitude;
+
+    /**
+    * <h3>Longitude of the item</h3>
+    * <p>Uses Double for precise position</p>
+    */
+    private Double longitude;
+
 }

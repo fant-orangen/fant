@@ -63,4 +63,16 @@ public class ItemDetailsDto {
      * <p>List of image URLs associated with the item.</p>
      */
     private List<String> imageUrls;
+
+    /**
+    * <h3>Latitude of the item</h3>
+    * <p>Uses Double for precise position</p>
+    */
+    private Double latitude;
+
+    /**
+    * <h3>Longitude of the item</h3>
+    * <p>Uses Double for precise position</p>
+    */
+    private Double longitude;
 }

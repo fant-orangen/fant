@@ -60,6 +60,8 @@ public class ItemService {
         .title(item.getBriefDescription())
         .price(item.getPrice())
         .imageUrl(imageUrl)
+        .latitude(item.getLatitude())
+        .longitude(item.getLongitude())
         .build();
   }
 
