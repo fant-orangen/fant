@@ -175,6 +175,20 @@ describe('UserStore', () => {
 
       expect(api.get).toHaveBeenCalledWith('/users/profile');
       expect(store.profile).toEqual(mockProfileData);
-    })
-  })
+    });
+
+    it('handles fetch profile failure', async () => {
+      const store = useUserStore();
+      const fetchError = new Error("Network Error");
+
+      api.get.mockRejectedValue(fetchError);
+
+      const initialProfile = { ...store.profile };
+
+      await expect(store.fetchProfile()).rejects.toThrow("Network Error");
+
+      expect(api.get).toHaveBeenCalledWith('/users/profile');
+      expect(store.profile).toEqual(initialProfile);
+    });
+  });
 });
