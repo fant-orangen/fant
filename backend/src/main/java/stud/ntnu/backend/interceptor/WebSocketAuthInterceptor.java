@@ -17,12 +17,31 @@ import stud.ntnu.backend.util.JwtUtil;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * <h2>WebSocketAuthInterceptor</h2>
+ * <p>Interceptor for authenticating WebSocket connections via JWT tokens.</p>
+ * <p>This interceptor validates JWT tokens from incoming WebSocket connection requests
+ * and establishes authentication for authorized users.</p>
+ */
 @Component
 @RequiredArgsConstructor
 public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
+  /**
+   * <h3>JWT Utility</h3>
+   * <p>Utility for JWT token validation and data extraction.</p>
+   */
   private final JwtUtil jwtUtil;
 
+  /**
+   * <h3>Pre-send Processing</h3>
+   * <p>Intercepts WebSocket messages before they are sent to validate authentication.</p>
+   * <p>For CONNECT commands, extracts and validates JWT token to authenticate the user.</p>
+   *
+   * @param message the message being processed
+   * @param channel the channel the message is being sent through
+   * @return the processed message
+   */
   @Override
   public Message<?> preSend(Message<?> message, MessageChannel channel) {
     StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message,
@@ -53,6 +72,14 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
     return message;
   }
 
+  /**
+   * <h3>Extract JWT Token</h3>
+   * <p>Attempts to extract the JWT token from various locations in the request.</p>
+   * <p>First tries headers, then fallbacks to URL parameters.</p>
+   *
+   * @param accessor the STOMP header accessor for the connection
+   * @return the extracted JWT token or null if not found
+   */
   private String extractToken(StompHeaderAccessor accessor) {
     // Try to get token from headers (sent by frontend)
     List<String> authorization = accessor.getNativeHeader("Authorization");
