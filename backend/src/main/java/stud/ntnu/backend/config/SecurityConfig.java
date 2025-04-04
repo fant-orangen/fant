@@ -81,7 +81,6 @@ public class SecurityConfig {
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
-
   /**
    * <h3>Security Filter Chain</h3>
    * <p>Configures the security filter chain for HTTP security.</p>
@@ -102,9 +101,11 @@ public class SecurityConfig {
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/v3/api-docs/**",
-                "/h2-console/**",
-                "/ws/**")  // Permit WebSocket endpoint
-            .permitAll()
+                "/ws",           // WebSocket endpoint (no wildcard)
+                "/ws/**",        // SockJS fallback endpoints
+                "/topic/**",     // Subscription destinations
+                "/app/**",       // Application destinations
+                "/h2-console/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
         )

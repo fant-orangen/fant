@@ -29,18 +29,25 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         StompHeaderAccessor.class);
 
     if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-      String token = extractToken(accessor);
+      try {
+        String token = extractToken(accessor);
 
-      if (token != null && !token.isEmpty()) {
-        String email = jwtUtil.extractEmail(token);
-        if (email != null && !jwtUtil.isTokenExpired(token)) {
-          List<SimpleGrantedAuthority> authorities =
-              Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        if (token != null && !token.isEmpty()) {
+          String email = jwtUtil.extractEmail(token);
+          if (email != null && !jwtUtil.isTokenExpired(token)) {
+            List<SimpleGrantedAuthority> authorities =
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
-          Authentication auth = new UsernamePasswordAuthenticationToken(email, null, authorities);
-          SecurityContextHolder.getContext().setAuthentication(auth);
-          accessor.setUser(auth);
+            Authentication auth = new UsernamePasswordAuthenticationToken(email, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            accessor.setUser(auth);
+          }
         }
+        // If no valid token, just continue without setting authentication
+      } catch (Exception e) {
+        // Log but don't fail the connection
+        // This prevents system initialization errors
+        System.err.println("Error in WebSocket authentication: " + e.getMessage());
       }
     }
     return message;
