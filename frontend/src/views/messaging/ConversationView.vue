@@ -20,7 +20,6 @@ const error = ref<string | null>(null)
 const sending = ref(false)
 const messagesContainerRef = ref<HTMLElement | null>(null)
 
-// Get conversationId (which is the other user's ID in this context) from route params
 const conversationId = computed(() => route.params.conversationId as string)
 
 const itemId = ref<string | number>('unknown')
@@ -85,12 +84,12 @@ async function loadMessages() {
 
 // Update handleSendMessage to always include the itemId
 async function handleSendMessage() {
-  if (!newMessageContent.value.trim() || sending.value || !conversationId.value) return
+  if (!newMessageContent.value.trim() || sending.value || !otherUser.value?.id) return
   sending.value = true
   error.value = null
   try {
     // The recipientId is the conversation partner's ID
-    const recipientId = conversationId.value
+    const recipientId = otherUser.value.id
     // Now passing the itemId parameter
     const tempMessage = await sendMessage(recipientId, newMessageContent.value, itemId.value)
 
