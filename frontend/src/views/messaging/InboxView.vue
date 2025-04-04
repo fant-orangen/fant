@@ -17,6 +17,7 @@ onMounted(async () => {
   try {
     // This function needs to be implemented in messageService.ts
     conversations.value = await fetchConversations();
+    console.log("Fetched conversations:", conversations.value);
   } catch (err) {
     console.error("InboxView: Failed to fetch conversations:", err);
     error.value = "Could not load conversations.";
