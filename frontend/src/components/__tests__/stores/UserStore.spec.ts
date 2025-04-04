@@ -244,5 +244,22 @@ describe('UserStore', () => {
 
     });
 
+    describe('Getters', () => {
+      it('returns current username with getUsername', () => {
+        const store = useUserStore();
+        store.username = 'Alice-GetterTest';
+        expect(store.getUsername).toBe('Alice-GetterTest');
+        store.username = null;
+        expect(store.getUsername).toBeNull();
+      });
+      it('returns the current token with getToken', () => {
+        const store = useUserStore();
+        store.token = 'Token-GetterTest123';
+        expect(store.getToken).toBe('Token-GetterTest123');
+        store.token = null;
+        expect(store.getToken).toBeNull();
+      });
+    });
+
   });
 });
