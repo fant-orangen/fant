@@ -71,15 +71,15 @@ INSERT INTO item_images (item_id, image_url, position)
 VALUES (9, 'https://i.ibb.co/HTFJ6ky9/discoteque.jpg', 0);
 
 -- Inserts for mock conversation history
--- First message: Initial inquiry
-INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, read)
-VALUES (1, 2, 3, 'Hi, is this Mills Majones still available?', CURRENT_TIMESTAMP - INTERVAL 2 HOUR, true);
+-- Example 1: Using DATEADD function for H2 compatibility
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (1, 2, 3, 'Hi, is this Mills Majones still available?', DATEADD('HOUR', -2, CURRENT_TIMESTAMP()), true);
 
--- Second message: Response from seller
-INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, read)
-VALUES (2, 1, 3, 'Yes, it is still available. Are you interested in buying it?', CURRENT_TIMESTAMP - INTERVAL 1 HOUR, true);
+-- Example 2: Using a specific timestamp
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (2, 1, 3, 'Yes, it is! Are you interested in buying it?', DATEADD('HOUR', -1, CURRENT_TIMESTAMP()), true);
 
--- Third message: Follow-up question
-INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, read)
-VALUES (1, 2, 3, 'Great! What\'s the expiration date on it?', CURRENT_TIMESTAMP - INTERVAL 30 MINUTE, false);
+-- Example 3: Using current timestamp
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (1, 2, 3, 'I am! How fresh is it?', CURRENT_TIMESTAMP(), false);
 
