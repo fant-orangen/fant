@@ -1,5 +1,6 @@
 import type { Message, ConversationPreview, MessageUser } from '@/models/Message'
 import api from '@/services/api/axiosInstance' // Keep using axios instance
+import { webSocketService } from '@/services/WebSocketService'
 
 // Base URL for the json-server (adjust if needed)
 const JSON_SERVER_URL = 'http://localhost:3000'
@@ -8,6 +9,23 @@ const JSON_SERVER_URL = 'http://localhost:3000'
 // Change this ID to view conversations from a different perspective in your dummy data
 const DUMMY_USER_ID = '1'
 const DUMMY_USERNAME = 'alice' // Match the dummy data
+
+/**
+ * Initialize WebSocket connection
+ */
+export async function initializeMessaging(): Promise<void> {
+  const userId = getCurrentUserId()
+  if (userId) {
+    try {
+      await webSocketService.connect(userId)
+      console.log('WebSocket initialized for user:', userId)
+    } catch (error) {
+      console.error('Failed to initialize WebSocket:', error)
+    }
+  } else {
+    console.warn('Cannot initialize messaging: User not authenticated')
+  }
+}
 
 /**
  * Fetches all conversations for the currently authenticated user.

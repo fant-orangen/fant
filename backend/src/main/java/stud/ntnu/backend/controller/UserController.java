@@ -39,21 +39,15 @@ public class UserController {
   /**
    * <h3>Get user by id.</h3>
    *
-   * @param id The id of the user.
    * @return The user with the given id.
    */
-  @Operation(summary = "Get a user by ID", description = "Returns a user based on the provided ID")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Successfully retrieved user",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
-      @ApiResponse(responseCode = "404", description = "User not found"),
-      @ApiResponse(responseCode = "401", description = "Unauthorized"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")
-  })
-  @GetMapping("/{id}")
-  public ResponseEntity<UserResponseDto> getUserById(
-      @Parameter(description = "ID of the user to be retrieved", required = true) @PathVariable Long id) {
-    return ResponseEntity.ok(userService.getUserResponseById(id));
+  @GetMapping("/id")
+  public ResponseEntity<Long> getUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    User user = userService.getUserByEmail(email);
+    return ResponseEntity.ok(user.getId());
   }
 
   @GetMapping("/profile")
