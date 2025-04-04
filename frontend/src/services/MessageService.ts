@@ -14,17 +14,18 @@ import { fetchCurrentUserId } from '@/services/UserService.ts'
 /**
  * Initialize WebSocket connection
  */
+// src/services/MessageService.ts - Fix the initializeMessaging function
 export async function initializeMessaging(): Promise<void> {
-  const userId = fetchCurrentUserId()
-  if (userId) {
-    try {
+  try {
+    const userId = await fetchCurrentUserId() // Add await here
+    if (userId) {
       await webSocketService.connect(userId.toString())
       console.log('WebSocket initialized for user:', userId)
-    } catch (error) {
-      console.error('Failed to initialize WebSocket:', error)
+    } else {
+      console.warn('Cannot initialize messaging: User not authenticated')
     }
-  } else {
-    console.warn('Cannot initialize messaging: User not authenticated')
+  } catch (error) {
+    console.error('Failed to initialize WebSocket:', error)
   }
 }
 
