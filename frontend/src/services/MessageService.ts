@@ -4,12 +4,12 @@ import { webSocketService } from '@/services/WebSocketService'
 import { fetchCurrentUserId } from '@/services/UserService.ts'
 
 // Base URL for the json-server (adjust if needed)
-const JSON_SERVER_URL = 'http://localhost:3000'
+//const JSON_SERVER_URL = 'http://localhost:3000'
 
 // --- Hardcoded User for Dummy Data Interaction ---
 // Change this ID to view conversations from a different perspective in your dummy data
-const DUMMY_USER_ID = '1'
-const DUMMY_USERNAME = 'alice' // Match the dummy data
+//const DUMMY_USER_ID = '1'
+//const DUMMY_USERNAME = 'alice' // Match the dummy data
 
 /**
  * Initialize WebSocket connection
@@ -71,42 +71,73 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
 }
 
 /**
- * Sends a new message *as* the DUMMY_USER_ID.
- * @param recipientId - The ID of the user receiving the message.
- * @param messageContent - The content of the message.
+ * Sends a message via WebSocket
  */
 export async function sendMessage(
   recipientId: string | number,
   messageContent: string,
+  itemId?: string | number,
 ): Promise<Message> {
-  if (!recipientId) {
-    throw new Error('sendMessage (Dummy Mode): Recipient ID is required.')
-  }
-
-  console.log(
-    `sendMessage (Dummy Mode): Sending message from ${DUMMY_USER_ID} to ${recipientId}...`,
-  )
-
-  // Simplified
-  const recipient: MessageUser = { id: recipientId, username: `User ${recipientId}` }
-
-  const newMessagePayload: Omit<Message, 'id'> = {
-    sender: { id: DUMMY_USER_ID, username: DUMMY_USERNAME },
-    receiver: recipient,
-
-    messageContent: messageContent,
-    sentDate: new Date(),
-  }
-
   try {
-    const response = await api.post<Message>(`${JSON_SERVER_URL}/messages`, newMessagePayload)
-    console.log('sendMessage (Dummy Mode): Message sent successfully:', response.data)
-    return {
-      ...response.data,
-      sentDate: new Date(response.data.sentDate),
+    const userId = await fetchCurrentUserId()
+
+    // Create message payload
+    const messagePayload: Partial<Message> = {
+      sender: { id: userId, username: 'You' },
+      receiver: { id: recipientId.toString(), username: '' },
+      messageContent,
+      sentDate: new Date(),
     }
+
+    if (itemId) {
+      messagePayload.item = { id: itemId, title: '' }
+    }
+
+    // Send via WebSocket
+    await webSocketService.sendMessage(messagePayload)
+
+    // Return temporary message (real one will come through WebSocket)
+    return {
+      id: `temp-${Date.now()}`,
+      ...messagePayload,
+      sender: { id: userId, username: 'You' },
+      receiver: { id: recipientId.toString(), username: '' },
+    } as Message
   } catch (error) {
-    console.error(`sendMessage (Dummy Mode): Error sending message to ${recipientId}:`, error)
+    console.error('Error sending message:', error)
     throw error
   }
+}
+
+/**
+ * Register handler for new messages
+ */
+export function onNewMessage(handler: (message: Message) => void): void {
+  fetchCurrentUserId()
+    .then((userId) => {
+      webSocketService.onMessage(userId.toString(), handler)
+    })
+    .catch((error) => {
+      console.error('Error registering message handler:', error)
+    })
+}
+
+/**
+ * Remove a message handler
+ */
+export function removeMessageHandler(handler: (message: Message) => void): void {
+  fetchCurrentUserId()
+    .then((userId) => {
+      webSocketService.removeMessageHandler(userId.toString(), handler)
+    })
+    .catch((error) => {
+      console.error('Error removing message handler:', error)
+    })
+}
+
+/**
+ * Cleanup WebSocket connection
+ */
+export function cleanupMessaging(): void {
+  webSocketService.disconnect()
 }
