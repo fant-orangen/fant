@@ -1,6 +1,7 @@
 import type { Message, ConversationPreview, MessageUser } from '@/models/Message'
 import api from '@/services/api/axiosInstance' // Keep using axios instance
 import { webSocketService } from '@/services/WebSocketService'
+import { fetchCurrentUserId } from '@/services/UserService.ts'
 
 // Base URL for the json-server (adjust if needed)
 const JSON_SERVER_URL = 'http://localhost:3000'
@@ -14,10 +15,10 @@ const DUMMY_USERNAME = 'alice' // Match the dummy data
  * Initialize WebSocket connection
  */
 export async function initializeMessaging(): Promise<void> {
-  const userId = getCurrentUserId()
+  const userId = fetchCurrentUserId()
   if (userId) {
     try {
-      await webSocketService.connect(userId)
+      await webSocketService.connect(userId.toString())
       console.log('WebSocket initialized for user:', userId)
     } catch (error) {
       console.error('Failed to initialize WebSocket:', error)

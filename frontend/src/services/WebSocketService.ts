@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs'
+import type { StompSubscription } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import { ref } from 'vue'
 import type { Message } from '@/models/Message'
@@ -12,7 +13,7 @@ const SOCKET_URL = 'http://localhost:8080/ws'
 export class WebSocketService {
   private client: Client | null = null
   private connected = ref(false)
-  private subscriptions: { [key: string]: any } = {}
+  private subscriptions: { [key: string]: StompSubscription } = {}
   private messageHandlers: { [key: string]: ((message: Message) => void)[] } = {}
 
   /**
