@@ -1,6 +1,7 @@
 {
     "APP_WELCOME": "Velkommen til fant!",
     "APP_LANGUAGE_CHANGE": "Bytt språk",
+    "APP_LOGOUT": "logg ut",
     "category": {
         "travel" : "Reise",
         "appliance" : "Hvitevarer",
