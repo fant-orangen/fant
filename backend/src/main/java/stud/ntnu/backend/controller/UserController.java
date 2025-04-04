@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +38,8 @@ public class UserController {
    */
   private final UserService userService;
 
+  private Logger logger = LoggerFactory.getLogger(UserController.class);
+
   /**
    * <h3>Get user by id.</h3>
    *
@@ -45,6 +49,7 @@ public class UserController {
   public ResponseEntity<Long> getUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName();
+    logger.info(email);
 
     User user = userService.getUserByEmail(email);
     return ResponseEntity.ok(user.getId());

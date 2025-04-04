@@ -9,7 +9,7 @@ import api from '@/services/api/axiosInstance' // Keep using axios instance
  */
 export async function fetchCurrentUserId(): Promise<number> {
   try {
-    const response = await api.get<number>('/id');
+    const response = await api.get<number>('/users/id');
     return response.data;
   } catch (error) {
     console.error('Error fetching user ID:', error);
