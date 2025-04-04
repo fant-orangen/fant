@@ -151,7 +151,7 @@ public class ItemService {
    * @param item the item entity to extract an image URL from
    * @return the URL string of the first image (sorted by position) or null if no images exist
    */
-  private String getFirstImageUrl(Item item) {
+  public String getFirstImageUrl(Item item) {
     if (item.getImages() == null || item.getImages().isEmpty()) {
       return null;
     }
