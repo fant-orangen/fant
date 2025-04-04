@@ -80,7 +80,7 @@ export async function sendMessage(
   itemId: string | number,
 ): Promise<Message> {
   try {
-    const userId = await fetchCurrentUserId()
+    const userId = await fetchCurrentUserId() // TODO: Add a field for the current user id and only fetch it once
 
     // Create message payload
     const messagePayload: Partial<Message> = {

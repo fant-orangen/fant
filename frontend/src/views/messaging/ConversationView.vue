@@ -10,6 +10,7 @@ import {
   onNewMessage,
   removeMessageHandler,
 } from '@/services/MessageService'
+import { fetchCurrentUserId } from '@/services/UserService.ts'
 
 const route = useRoute()
 const messages = ref<Message[]>([])
@@ -19,6 +20,7 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const sending = ref(false)
 const messagesContainerRef = ref<HTMLElement | null>(null)
+const currentUserId = ref<string | number | null>(null) // Replace with actual user ID from your auth context
 
 const conversationId = computed(() => route.params.conversationId as string)
 
@@ -108,6 +110,7 @@ async function handleSendMessage() {
 // Initialize WebSocket and load messages
 onMounted(async () => {
   try {
+    currentUserId.value = await fetchCurrentUserId()
     // Initialize WebSocket connection
     await initializeMessaging()
 
@@ -136,8 +139,9 @@ watch(conversationId, (newId, oldId) => {
   }
 })
 
+// Update isMyMessage function to use currentUserId
 function isMyMessage(message: Message): boolean {
-  return message.sender.id !== conversationId.value
+  return message.sender.id.toString() === currentUserId.value?.toString()
 }
 
 function formatTimestamp(date: string | Date): string {
