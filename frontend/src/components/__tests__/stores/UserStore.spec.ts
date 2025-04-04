@@ -144,5 +144,19 @@ describe('UserStore', () => {
       expect(store.token).toBeNull();
       expect(store.username).toBeNull();
     });
+
+
+  it('handles login failure after after successful registration', async () => {
+    const store = useUserStore();
+    const loginError = new Error("Login Failure After Registration");
+    userService.register = vi.fn().mockResolvedValue({ status: 200, data: {} });
+    authService.fetchToken = vi.fn().mockRejectedValue(loginError);
+
+    await expect(store.registerUser(userData)).rejects.toThrow("Login Failure After Registration");
+
+    expect(userService.register).toHaveBeenCalledWith(userData);
+    expect(authService.fetchToken).toHaveBeenCalledWith({ username: userData.username, password: userData.password });
+    expect(store.username).toBeNull();
+  });
   });
 });
