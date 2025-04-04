@@ -223,5 +223,26 @@ describe('UserStore', () => {
       expect(store.profile).toEqual(responseProfileData);
     });
 
+    it('handles profile update failures', async () => {
+      const store = useUserStore();
+      const initalProfile = {
+        email: 'unupdated@example.com',
+        firstName: 'notAlice',
+        lastName: 'notTest',
+        phoneNumber: '87654321'
+      };
+      store.profile = { ...initalProfile };
+
+      const updateError = new Error("Update Failed");
+
+      api.put.mockRejectedValue(updateError);
+
+      await expect(store.updateProfile(updatedProfileData)).rejects.toThrow("Update Failed");
+
+      expect(api.put).toHaveBeenCalledWith('/users/profile', updatedProfileData);
+      expect(store.profile).toEqual(initalProfile);
+
+    });
+
   });
 });
