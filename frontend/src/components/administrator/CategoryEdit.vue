@@ -4,17 +4,18 @@
     <form @submit.prevent="handleSubmit">
       <input v-model="form.name" placeholder="Category Label" required />
       <select v-model="form.description">
-        <option v-for="icon in availableIcons" :key="icon.path" :value="icon.path">{{ icon.name }}</option>
+        <!-- Send only the icon name as lowercase -->
+        <option v-for="icon in availableIcons" :key="icon" :value="icon">{{ icon }}</option>
       </select>
       <input v-model="customIconUrl" placeholder="Or enter custom Icon URL" @input="updateIconUrl" />
       <button type="submit">{{ isEditing ? 'Update' : 'Add' }} Category</button>
     </form>
     <ul>
-      <li v-for="category in categories" :key="category.id">
+      <li v-for="category in categories" :key="category.id ?? 'new'">
         <span>{{ category.name }}</span>
-        <img :src="category.description" :alt="category.name" class="icon" />
+        <span>{{ category.description }}</span>
         <button @click="editCategory(category)">Edit</button>
-        <button @click="removeCategory(category.id)">Delete</button>
+        <button @click="removeCategory(category.id ?? '')">Delete</button>
       </li>
     </ul>
   </div>
@@ -25,41 +26,19 @@ import { ref, onMounted } from 'vue';
 import type { Category } from '@/models/Category';
 import { fetchCategories, addCategory, updateCategory, deleteCategory } from '@/services/CategoryService.ts';
 
-import travelIcon from '@/assets/icons/travelIcon.svg';
-import applianceIcon from '@/assets/icons/applianceIcon.svg';
-import boatIcon from '@/assets/icons/boatIcon.svg';
-import bookIcon from '@/assets/icons/bookIcon.svg';
-import cameraIcon from '@/assets/icons/cameraIcon.svg';
-import carIcon from '@/assets/icons/carIcon.svg';
-import clothesIcon from '@/assets/icons/clothesIcon.svg';
-import computerIcon from '@/assets/icons/computerIcon.svg';
-import furnitureIcon from '@/assets/icons/furnitureIcon.svg';
-import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
-import phoneIcon from '@/assets/icons/phoneIcon.svg';
-import artIcon from '@/assets/icons/artIcon.svg';
-
 const categories = ref<Category[]>([]);
 const form = ref<Category>({
-  id: '0',
+  id: null,
   name: '',
-  description: '',
+  description: '', // This will hold the selected icon name as a string
   parent: null
 });
 const customIconUrl = ref('');
 const isEditing = ref(false);
-const availableIcons = ref<{ name: string, path: string }[]>([
-  { name: 'Travel', path: travelIcon },
-  { name: 'Appliance', path: applianceIcon },
-  { name: 'Boat', path: boatIcon },
-  { name: 'Book', path: bookIcon },
-  { name: 'Camera', path: cameraIcon },
-  { name: 'Car', path: carIcon },
-  { name: 'Clothes', path: clothesIcon },
-  { name: 'Computer', path: computerIcon },
-  { name: 'Furniture', path: furnitureIcon },
-  { name: 'Motorcycle', path: motorcycleIcon },
-  { name: 'Phone', path: phoneIcon },
-  { name: 'Art', path: artIcon },
+
+// Available icon names, no paths or imports
+const availableIcons = ref<string[]>([
+  'travel', 'appliance', 'boat', 'book', 'camera', 'car', 'clothes', 'computer', 'furniture', 'motorcycle', 'phone', 'art'
 ]);
 
 async function loadCategories() {
@@ -67,11 +46,10 @@ async function loadCategories() {
 }
 
 async function handleSubmit() {
+  console.log(form.value)
   if (isEditing.value) {
-    await updateCategory(form.value.id, { label: form.value.name, icon: form.value.description });
+    await updateCategory(form.value);
   } else {
-    const highestId = Math.max(...categories.value.map(category => Number(category.id)));
-    form.value.id = (highestId + 1).toString();
     await addCategory(form.value);
   }
   resetForm();
@@ -84,13 +62,15 @@ function editCategory(category: Category) {
   isEditing.value = true;
 }
 
-async function removeCategory(id: string) {
-  await deleteCategory(id);
-  await loadCategories();
+async function removeCategory(id: string | number | null) {
+  if (id !== null) {
+    await deleteCategory(Number(id));
+    await loadCategories();
+  }
 }
 
 function resetForm() {
-  form.value = { id: '0', name: '', description: '' };
+  form.value = { id: null, name: '', description: '' };
   customIconUrl.value = '';
   isEditing.value = false;
 }

@@ -6,9 +6,6 @@ INSERT INTO users (email, display_name, password_hash, role)
 VALUES ('jakob@mail.com', 'jakob', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW', 'ADMIN');
 
 INSERT INTO categories (name, description)
-VALUES ('A+', 'https://i.ibb.co/HfHbnGNs/vaskepulver.webp');
-
-INSERT INTO categories (name, description)
 VALUES ('Travel', 'travel');
 
 INSERT INTO categories (name, description)
