@@ -191,4 +191,37 @@ describe('UserStore', () => {
       expect(store.profile).toEqual(initialProfile);
     });
   });
+
+  describe('updateProfile action', () => {
+    const updatedProfileData = {
+      email: 'updateduser@example.com',
+      firstName: 'Alice',
+      lastName: 'Test',
+      phoneNumber: '12345678'
+    };
+
+    const responseProfileData = {
+      email: 'updateduser@example.com',
+      firstName: 'Alice',
+      lastName: 'Test',
+      phoneNumber: '12345678'
+    };
+
+    it('updates profile successfully', async () => {
+      const store = useUserStore();
+      store.profile = {
+        email: 'unupdated@example.com',
+        firstName: 'notAlice',
+        lastName: 'notTest',
+        phoneNumber: '87654321'
+      };
+      api.put.mockResolvedValue({ data: responseProfileData });
+
+      await store.updateProfile(updatedProfileData);
+
+      expect(api.put).toHaveBeenCalledWith('/users/profile', updatedProfileData);
+      expect(store.profile).toEqual(responseProfileData);
+    });
+
+  });
 });
