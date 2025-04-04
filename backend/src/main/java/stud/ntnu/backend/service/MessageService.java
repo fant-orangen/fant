@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.ConversationPreviewDto;
 import stud.ntnu.backend.data.ItemPreviewDto;
+import stud.ntnu.backend.data.MessageCreateDto;
 import stud.ntnu.backend.data.MessageDto;
 import stud.ntnu.backend.data.MessageResponseDto;
 import stud.ntnu.backend.data.MessageUserDto;
@@ -30,7 +31,30 @@ public class MessageService {
   private final UserRepository userRepository;
   private final ItemRepository itemRepository;
 
+  /**
+   * <h3>Save a new message</h3>
+   * <p>Persists a message to the database and returns the created message.</p>
+   *
+   * @param messageDto DTO containing message data
+   * @return The persisted message as a MessageResponseDto
+   */
+    public MessageResponseDto saveMessage(MessageCreateDto messageDto) {
+      User sender = userRepository.findById(messageDto.getSenderId())
+          .orElseThrow(() -> new RuntimeException("Sender not found"));
 
+      User receiver = userRepository.findById(messageDto.getReceiverId())
+          .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+      Item item = itemRepository.findById(messageDto.getItemId())
+          .orElseThrow(() -> new RuntimeException("Item not found"));
+
+      Message message = Message.builder().sender(sender).receiver(receiver).item(item)
+          .content(messageDto.getContent()).read(false).build();
+
+      Message savedMessage = messageRepository.save(message);
+
+      return mapToMessageResponseDto(savedMessage);
+    }
 
   /**
    * <h3>Get all conversations for a user</h3>
@@ -48,12 +72,10 @@ public class MessageService {
 
     Map<String, List<Message>> grouped = groupMessagesByConversation(currentUser, allMessages);
 
-    return grouped.values().stream()
-        .filter(conversation -> !conversation.isEmpty())
-        .map(messages -> buildConversationPreview(currentUser, messages))
-        .sorted(Comparator.comparing((ConversationPreviewDto c) -> c.getLastMessage().getSentAt())
-            .reversed())
-        .toList();
+    return grouped.values().stream().filter(conversation -> !conversation.isEmpty())
+        .map(messages -> buildConversationPreview(currentUser, messages)).sorted(
+            Comparator.comparing((ConversationPreviewDto c) -> c.getLastMessage().getSentAt())
+                .reversed()).toList();
   }
 
   /**
@@ -62,7 +84,8 @@ public class MessageService {
    *
    * @param currentUser the user whose conversations are to be grouped
    * @param messages    the list of messages to be grouped
-   * @return a map where the key is a string representing the conversation and the value is a list of messages
+   * @return a map where the key is a string representing the conversation and the value is a list
+   * of messages
    */
   private Map<String, List<Message>> groupMessagesByConversation(User currentUser,
       List<Message> messages) {
@@ -94,22 +117,16 @@ public class MessageService {
     Message lastMessage = messages.getFirst();
     Item item = lastMessage.getItem();
 
-    User otherUser = lastMessage.getSender().getId().equals(currentUser.getId())
-        ? lastMessage.getReceiver()
-        : lastMessage.getSender();
+    User otherUser =
+        lastMessage.getSender().getId().equals(currentUser.getId()) ? lastMessage.getReceiver()
+            : lastMessage.getSender();
 
     int unreadCount = (int) messages.stream()
-        .filter(m -> m.getReceiver().getId().equals(currentUser.getId()) && !m.isRead())
-        .count();
+        .filter(m -> m.getReceiver().getId().equals(currentUser.getId()) && !m.isRead()).count();
 
-    return ConversationPreviewDto.builder()
-        .id(lastMessage.getId())
-        .otherUser(toUserDto(otherUser))
-        .item(toItemDto(item))
-        .lastMessage(toMessageDto(lastMessage))
-        .unreadMessagesCount(unreadCount)
-        .relatedItem(toRelatedItemDto(item))
-        .build();
+    return ConversationPreviewDto.builder().id(lastMessage.getId()).otherUser(toUserDto(otherUser))
+        .item(toItemDto(item)).lastMessage(toMessageDto(lastMessage))
+        .unreadMessagesCount(unreadCount).relatedItem(toRelatedItemDto(item)).build();
   }
 
   /**
@@ -120,11 +137,8 @@ public class MessageService {
    * @return a {@link MessageUserDto} object representing the user
    */
   private MessageUserDto toUserDto(User user) {
-    return MessageUserDto.builder()
-        .id(user.getId())
-        .displayName(user.getDisplayName())
-        .email(user.getEmail())
-        .build();
+    return MessageUserDto.builder().id(user.getId()).displayName(user.getDisplayName())
+        .email(user.getEmail()).build();
   }
 
   /**
@@ -135,12 +149,8 @@ public class MessageService {
    * @return a {@link MessageDto} object representing the message
    */
   private MessageDto toMessageDto(Message m) {
-    return MessageDto.builder()
-        .id(m.getId())
-        .content(m.getContent())
-        .sentAt(m.getSentAt())
-        .read(m.isRead())
-        .build();
+    return MessageDto.builder().id(m.getId()).content(m.getContent()).sentAt(m.getSentAt())
+        .read(m.isRead()).build();
   }
 
   /**
@@ -151,21 +161,14 @@ public class MessageService {
    * @return a {@link ItemPreviewDto} object representing the item
    */
   private ItemPreviewDto toItemDto(Item item) {
-    String imageUrl = item.getImages() != null && !item.getImages().isEmpty()
-        ? item.getImages().stream()
-        .min(Comparator.comparing(ItemImage::getPosition))
-        .map(ItemImage::getImageUrl)
-        .orElse(null)
-        : null;
+    String imageUrl =
+        item.getImages() != null && !item.getImages().isEmpty() ? item.getImages().stream()
+            .min(Comparator.comparing(ItemImage::getPosition)).map(ItemImage::getImageUrl)
+            .orElse(null) : null;
 
-    return ItemPreviewDto.builder()
-        .id(item.getId())
-        .title(item.getBriefDescription())
-        .price(item.getPrice())
-        .imageUrl(imageUrl)
-        .latitude(item.getLatitude())
-        .longitude(item.getLongitude())
-        .build();
+    return ItemPreviewDto.builder().id(item.getId()).title(item.getBriefDescription())
+        .price(item.getPrice()).imageUrl(imageUrl).latitude(item.getLatitude())
+        .longitude(item.getLongitude()).build();
   }
 
   /**
@@ -176,10 +179,8 @@ public class MessageService {
    * @return a {@link ConversationPreviewDto.RelatedItemDto} object representing the related item
    */
   private ConversationPreviewDto.RelatedItemDto toRelatedItemDto(Item item) {
-    return ConversationPreviewDto.RelatedItemDto.builder()
-        .id(item.getId())
-        .title(item.getBriefDescription())
-        .build();
+    return ConversationPreviewDto.RelatedItemDto.builder().id(item.getId())
+        .title(item.getBriefDescription()).build();
   }
 
   /**
