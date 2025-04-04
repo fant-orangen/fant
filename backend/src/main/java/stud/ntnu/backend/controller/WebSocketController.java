@@ -5,11 +5,10 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
-import stud.ntnu.backend.data.MessageDto;
 import stud.ntnu.backend.data.MessageCreateDto;
 import stud.ntnu.backend.data.MessageResponseDto;
+import stud.ntnu.backend.data.WebSocketMessageDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.MessageService;
 import stud.ntnu.backend.service.UserService;
@@ -25,7 +24,7 @@ public class WebSocketController {
   private final UserService userService;
 
   @MessageMapping("/chat.send") // Client sends to /app/chat.send
-  public void sendMessage(@Payload MessageDto messageDto,
+  public void sendMessage(@Payload WebSocketMessageDto messageDto,
       SimpMessageHeaderAccessor headerAccessor) {
     // 1. Extract authenticated user from the WebSocket session
     Principal principal = headerAccessor.getUser();
@@ -39,8 +38,8 @@ public class WebSocketController {
     // 3. Create a proper MessageCreateDto with sender ID included
     MessageCreateDto createDto = MessageCreateDto.builder()
         .senderId(sender.getId())
-        .receiverId(Long.parseLong(messageDto.getReceiver().getId()))
-        .itemId(Long.parseLong(messageDto.getItem().getId()))
+        .receiverId(Long.valueOf(messageDto.getReceiver().getId()))
+        .itemId(Long.valueOf(messageDto.getItem().getId()))
         .content(messageDto.getMessageContent())
         .build();
 
