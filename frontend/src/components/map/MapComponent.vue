@@ -5,10 +5,9 @@ import L from 'leaflet';
 import { fetchPreviewItems } from '@/services/ItemService';
 import type { ItemPreviewType } from '@/models/Item';
 import type { MapComponentProps } from '@/models/MapComponent.ts';
-import { useI18n } from "vue-i18n";
-// Define the props using the imported type
+
+
 const props = defineProps<MapComponentProps>();
-const { t } = useI18n();
 
 /**
  * Component References
@@ -59,41 +58,35 @@ function initializeMap() {
  */
 async function loadItemsWithCoordinates() {
   try {
-    // Fetch items from the service - the service should return ItemPreviewType objects
     items.value = await fetchPreviewItems();
 
-    // Clean up existing markers before adding new ones to prevent duplicates
     if (map.value) {
-      markers.value.forEach(marker => {
-        marker.remove();
-      });
+      markers.value.forEach(marker => marker.remove());
       markers.value = [];
     }
 
-    // Add new markers for each item that has valid coordinates
+
     items.value.forEach(item => {
-      // Ensure item, coordinates, id, and map exist
       if (item && item.id != null && item.latitude != null && item.longitude != null && map.value) {
         const imageUrlContent = item.imageUrl
-          ? `<img src="${item.imageUrl}" alt="${item.title || 'Item image'}" style="max-width: 100px; max-height: 100px; display: block; margin: 5px auto;">` // Added auto margin
+          ? `<img src="${item.imageUrl}" alt="${item.title || 'Item image'}" style="max-width: 100px; max-height: 100px; display: block; margin: 5px auto;">`
           : '';
 
-        // Construct the link path
         const itemDetailPath = `/item-detail/${item.id}`;
-        const viewDetailsText = t('VIEW_DETAILS');
-        const priceText = t('PRICE');
+        const priceString = item.price != null ? `${item.price} kr` : '';
+        const linkText = `${item.title || 'View Details'} ${priceString ? '- ' + priceString : ''}`.trim();
 
+        // Create popup content with item picture, title, price and link
+        const popupContent = `
+          <div class="popup-content" style="text-align: center; padding: 5px;">
+            ${imageUrlContent}
+            <a href="${itemDetailPath}" target="_blank" rel="noopener noreferrer" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff; font-weight: bold;">
+              ${linkText} </a>
+          </div>
+        `;
         const marker = L.marker([item.latitude, item.longitude])
         .addTo(map.value as L.Map)
-        .bindPopup(`
-             <div class="popup-content" style="text-align: center; padding: 5px;"> <strong>${item.title}</strong><br>
-               ${priceText}: ${item.price ?? 'N/A'} kr
-               ${imageUrlContent}
-               <a href="${itemDetailPath}" target="_blank" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff;">
-                 ${viewDetailsText}
-               </a>
-             </div>
-           `);
+        .bindPopup(popupContent);
 
         markers.value.push(marker);
       }
@@ -138,7 +131,7 @@ onMounted(() => {
     }
   }
 
-  // Add resize listener for responsive behavior
+  // Resize listener for responsive behavior
   window.addEventListener('resize', handleResize);
 
   // Return cleanup function to prevent memory leaks when component is unmounted
