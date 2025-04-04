@@ -11,8 +11,8 @@ import api from '@/services/api/axiosInstance';
  */
 export const useUserStore = defineStore("user", () => {
   // Reactive state for authentication.
-  const token = ref<string | null>(null);
-  const username = ref<string | null>(null);
+  const token = ref<string | null>(localStorage.getItem('token'));
+  const username = ref<string | null>(localStorage.getItem('username'));
 
   // Reactive state for the user profile.
   // Fields here should match what your backend returns for a user profile.
@@ -39,6 +39,9 @@ export const useUserStore = defineStore("user", () => {
       console.log("Token" + tokenStr);
 
       username.value = user;
+
+      localStorage.setItem('token', tokenStr);
+      localStorage.setItem('username', user);
     } else {
       throw new Error("Login Info Error");
     }
