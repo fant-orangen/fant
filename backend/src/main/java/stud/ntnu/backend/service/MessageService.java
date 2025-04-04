@@ -89,7 +89,7 @@ public class MessageService {
   private ConversationPreviewDto buildConversationPreview(User currentUser,
       List<Message> messages) {
     messages.sort(Comparator.comparing(Message::getSentAt).reversed());
-    Message lastMessage = messages.get(0);
+    Message lastMessage = messages.getFirst();
     Item item = lastMessage.getItem();
 
     User otherUser = lastMessage.getSender().getId().equals(currentUser.getId())
