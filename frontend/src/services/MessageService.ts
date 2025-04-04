@@ -1,4 +1,4 @@
-import type { Message, ConversationPreview, MessageUser } from '@/models/Message'
+import type { Message, ConversationPreview } from '@/models/Message'
 import api from '@/services/api/axiosInstance' // Keep using axios instance
 import { webSocketService } from '@/services/WebSocketService'
 import { fetchCurrentUserId } from '@/services/UserService.ts'

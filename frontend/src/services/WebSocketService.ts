@@ -3,6 +3,7 @@ import type { StompSubscription } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import { ref } from 'vue'
 import type { Message } from '@/models/Message'
+import { useUserStore } from '@/stores/UserStore.ts'
 
 // Base WebSocket URL (adjust to match your Spring Boot configuration)
 const SOCKET_URL = 'http://localhost:8080/ws'
@@ -22,20 +23,33 @@ export class WebSocketService {
   connect(userId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        // Create STOMP client over SockJS
+        // Get token from user store
+        const userStore = useUserStore()
+        const token = userStore.token
+
+        if (!token) {
+          reject(new Error('No authentication token available'))
+          return
+        }
+
+        // Create STOMP client over SockJS with authentication
         this.client = new Client({
-          webSocketFactory: () => new SockJS(SOCKET_URL),
+          // Pass token as URL parameter
+          webSocketFactory: () => new SockJS(`${SOCKET_URL}?token=${token}`),
+          // Also include token in STOMP headers for added security
+          connectHeaders: {
+            Authorization: `Bearer ${token}`, // TODO: consider placing the authorisation header elsewhere
+          },
           reconnectDelay: 5000,
           heartbeatIncoming: 4000,
           heartbeatOutgoing: 4000,
           onConnect: () => {
             console.log('WebSocket connected')
             this.connected.value = true
-
-            // Subscribe to personal message topic
             this.subscribeToPersonalMessages(userId)
             resolve()
           },
+          // Rest of the config remains the same
           onStompError: (frame) => {
             console.error('STOMP error:', frame)
             reject(new Error(`STOMP error: ${frame.headers?.message || 'Unknown error'}`))

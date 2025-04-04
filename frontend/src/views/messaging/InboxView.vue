@@ -1,44 +1,60 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import type { ConversationPreview } from '@/models/Message'; // Use your defined types
-// Assume you create this service and functions
-import { fetchConversations } from '@/services/MessageService';
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import type { ConversationPreview, Message } from '@/models/Message'
+import {
+  fetchConversations,
+  initializeMessaging,
+  onNewMessage,
+  removeMessageHandler,
+} from '@/services/MessageService'
 
-const router = useRouter();
-const conversations = ref<ConversationPreview[]>([]);
-const loading = ref(false);
-const error = ref<string | null>(null);
+const router = useRouter()
+const conversations = ref<ConversationPreview[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
 
-// Fetch conversations when component mounts
-onMounted(async () => {
-  loading.value = true;
-  error.value = null;
-  try {
-    // This function needs to be implemented in messageService.ts
-    conversations.value = await fetchConversations();
-    console.log("Fetched conversations:", conversations.value);
-  } catch (err) {
-    console.error("InboxView: Failed to fetch conversations:", err);
-    error.value = "Could not load conversations.";
-    conversations.value = []; // Ensure it's an empty array on error
-  } finally {
-    loading.value = false;
-  }
-});
+const handleNewMessage = (message: Message) => {
+  console.log('New message received:', message.messageContent)
+  refreshConversations()
+}
 
-// Navigate to the specific conversation view
 function goToConversation(conversationId: string | number) {
-  // Assumes your route is named 'messages-conversation' and takes 'conversationId' as param
-  router.push({ name: 'messages-conversation', params: { conversationId: conversationId.toString() } });
+  router.push(`/messages/${conversationId}`)
 }
 
-// Helper function for truncating message preview (optional)
-function truncate(text: string, length = 50) {
-  if (!text) return '';
-  return text.length > length ? text.substring(0, length) + '...' : text;
+function truncate(text: string, maxLength = 50): string {
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text
 }
 
+async function refreshConversations() {
+  loading.value = true
+  error.value = null
+  try {
+    conversations.value = await fetchConversations()
+  } catch (err) {
+    console.error('InboxView: Failed to fetch conversations:', err)
+    error.value = 'Could not load conversations.'
+    conversations.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(async () => {
+  try {
+    await initializeMessaging()
+    onNewMessage(handleNewMessage)
+    await refreshConversations()
+  } catch (err) {
+    console.error('Failed to initialize messaging:', err)
+    error.value = 'Connection error. Please refresh.'
+  }
+})
+
+onUnmounted(() => {
+  removeMessageHandler(handleNewMessage)
+})
 </script>
 
 <template>
@@ -59,7 +75,9 @@ function truncate(text: string, length = 50) {
       >
         <div class="convo-details">
           <span class="other-user">{{ convo.otherUser.username }}</span>
-          <span v-if="convo.relatedItem" class="related-item">Item: {{ convo.relatedItem.title }}</span>
+          <span v-if="convo.relatedItem" class="related-item"
+            >Item: {{ convo.relatedItem.title }}</span
+          >
           <p class="last-message-snippet">
             {{ convo.lastMessage ? truncate(convo.lastMessage.messageContent) : 'No messages yet' }}
           </p>
@@ -76,11 +94,13 @@ function truncate(text: string, length = 50) {
 .inbox-view {
   padding: 0.7rem;
 }
+
 .conversation-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 .conversation-item {
   background: linear-gradient(to bottom, #ffffff, #dedede);
   display: flex;
@@ -94,21 +114,26 @@ function truncate(text: string, length = 50) {
   transition: background-color 0.5s ease;
   max-width: 600px;
 }
+
 .conversation-item:hover {
   background: linear-gradient(to bottom, #ffffff, #b5b5b5);
 }
+
 .convo-details {
   flex-grow: 1;
   margin-right: 1rem;
 }
+
 .other-user {
   font-weight: bold;
   margin-right: 0.5rem;
 }
+
 .related-item {
   font-size: 0.9em;
   color: #555;
 }
+
 .last-message-snippet {
   font-size: 0.9em;
   color: #777;
@@ -117,6 +142,7 @@ function truncate(text: string, length = 50) {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .unread-badge {
   background-color: red;
   color: white;
@@ -130,15 +156,20 @@ function truncate(text: string, length = 50) {
   align-items: center;
   flex-shrink: 0;
 }
+
 .conversation-item.has-unread .other-user,
 .conversation-item.has-unread .last-message-snippet {
   font-weight: bold;
 }
-.loading, .error, .empty-inbox {
+
+.loading,
+.error,
+.empty-inbox {
   text-align: center;
   padding: 2rem;
   color: #777;
 }
+
 .error {
   color: red;
 }
