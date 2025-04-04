@@ -101,7 +101,7 @@ describe('UserStore', () => {
     expect(store.username).toBeNull();
   });
 
-  describe('registerUser action', () => {
+  describe('registerUser function', () => {
     const userData = {
       username: 'newtestuser@example.com',
       password: 'password123',
@@ -159,4 +159,22 @@ describe('UserStore', () => {
     expect(store.username).toBeNull();
   });
   });
+
+  describe('fetchProfile function', () => {
+    it('fetches and updates profile successfully', async () => {
+      const store = useUserStore();
+      const mockProfileData = {
+        email: 'fetcheduser@example.com',
+        firstName: 'Alice',
+        lastName: 'Test',
+        phoneNumber: '12345678'
+      }
+      api.get.mockResolvedValue({ data: mockProfileData });
+
+      await store.fetchProfile();
+
+      expect(api.get).toHaveBeenCalledWith('/users/profile');
+      expect(store.profile).toEqual(mockProfileData);
+    })
+  })
 });
