@@ -71,10 +71,10 @@ onMounted(loadCategories);
   <div class="category-grid">
     <CategoryButton
       v-for="category in categories"
-      :key="category.id"
+      :key="category.id?.toString() || `temp-${Math.random()}`"
       :label="category.name"
       :icon="category.description"
-      @click="handleFunction(category.id)"
+      @click="handleFunction(category.id?.toString() || '')"
     />
   </div>
 </template>
