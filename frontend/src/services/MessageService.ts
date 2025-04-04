@@ -77,7 +77,7 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
 export async function sendMessage(
   recipientId: string | number,
   messageContent: string,
-  itemId?: string | number,
+  itemId: string | number,
 ): Promise<Message> {
   try {
     const userId = await fetchCurrentUserId()

@@ -52,7 +52,8 @@ public class WebSocketController {
         savedMessage
     );
 
-    // 6. Also send back to sender
+    // 6. Also send back to sendera
+
     messagingTemplate.convertAndSend(
         "/topic/messages/" + sender.getId(),
         savedMessage

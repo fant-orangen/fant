@@ -23,6 +23,8 @@ const messagesContainerRef = ref<HTMLElement | null>(null)
 // Get conversationId (which is the other user's ID in this context) from route params
 const conversationId = computed(() => route.params.conversationId as string)
 
+const itemId = ref<string | number>('unknown')
+
 // Handler for new messages
 const handleNewMessage = (message: Message) => {
   // Only add message if it's part of this conversation and not already in the list
@@ -51,6 +53,13 @@ async function loadMessages() {
     // Set otherUser based on fetched messages
     if (messages.value.length > 0) {
       const firstMessage = messages.value[0]
+
+      for (const message of messages.value) {
+        if (message.item?.id) {
+          itemId.value = message.item.id
+          break
+        }
+      }
       // Get currentUserId dynamically instead of hardcoding
       const currentUserId =
         firstMessage.sender.id === conversationId.value
@@ -74,7 +83,7 @@ async function loadMessages() {
   }
 }
 
-// Send a new message using WebSocket
+// Update handleSendMessage to always include the itemId
 async function handleSendMessage() {
   if (!newMessageContent.value.trim() || sending.value || !conversationId.value) return
   sending.value = true
@@ -82,10 +91,10 @@ async function handleSendMessage() {
   try {
     // The recipientId is the conversation partner's ID
     const recipientId = conversationId.value
-    // Now using the WebSocket-enabled sendMessage function
-    const tempMessage = await sendMessage(recipientId, newMessageContent.value)
+    // Now passing the itemId parameter
+    const tempMessage = await sendMessage(recipientId, newMessageContent.value, itemId.value)
 
-    // Add temporary message to UI immediately (will be replaced by real message via WebSocket)
+    // Add temporary message to UI immediately
     messages.value.push(tempMessage)
     newMessageContent.value = ''
     scrollToBottom()

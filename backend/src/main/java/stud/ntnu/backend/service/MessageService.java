@@ -5,7 +5,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import stud.ntnu.backend.data.ConversationPreviewDto;
 import stud.ntnu.backend.data.ItemPreviewDto;
 import stud.ntnu.backend.data.MessageCreateDto;
@@ -31,6 +34,8 @@ public class MessageService {
   private final UserRepository userRepository;
   private final ItemRepository itemRepository;
 
+  Logger logger = LoggerFactory.getLogger(MessageService.class);
+
   /**
    * <h3>Save a new message</h3>
    * <p>Persists a message to the database and returns the created message.</p>
@@ -38,23 +43,26 @@ public class MessageService {
    * @param messageDto DTO containing message data
    * @return The persisted message as a MessageResponseDto
    */
-    public MessageResponseDto saveMessage(MessageCreateDto messageDto) {
-      User sender = userRepository.findById(messageDto.getSenderId())
-          .orElseThrow(() -> new RuntimeException("Sender not found"));
+  @Transactional
+  public MessageResponseDto saveMessage(MessageCreateDto messageDto) {
+    User sender = userRepository.findById(messageDto.getSenderId())
+        .orElseThrow(() -> new RuntimeException("Sender not found"));
 
-      User receiver = userRepository.findById(messageDto.getReceiverId())
-          .orElseThrow(() -> new RuntimeException("Receiver not found"));
+    User receiver = userRepository.findById(messageDto.getReceiverId())
+        .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
-      Item item = itemRepository.findById(messageDto.getItemId())
-          .orElseThrow(() -> new RuntimeException("Item not found"));
+    Item item = itemRepository.findById(messageDto.getItemId())
+        .orElseThrow(() -> new RuntimeException("Item not found"));
 
-      Message message = Message.builder().sender(sender).receiver(receiver).item(item)
-          .content(messageDto.getContent()).read(false).build();
+    Message message = Message.builder().sender(sender).receiver(receiver).item(item)
+        .content(messageDto.getContent()).read(false).build();
 
-      Message savedMessage = messageRepository.save(message);
+    logger.debug("Built message object: {}", message);
+    Message savedMessage = messageRepository.save(message);
+    logger.info("Successfully saved message with ID: {}", savedMessage.getId());
 
-      return mapToMessageResponseDto(savedMessage);
-    }
+    return mapToMessageResponseDto(savedMessage);
+  }
 
   /**
    * <h3>Get all conversations for a user</h3>

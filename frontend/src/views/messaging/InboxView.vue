@@ -23,8 +23,9 @@ function goToConversation(conversationId: string | number) {
   router.push(`/messages/${conversationId}`)
 }
 
-function truncate(text: string, maxLength = 50): string {
-  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text
+function truncate(text: string | undefined | null, maxLength = 50): string {
+  if (!text) return 'No content';
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 }
 
 async function refreshConversations() {
