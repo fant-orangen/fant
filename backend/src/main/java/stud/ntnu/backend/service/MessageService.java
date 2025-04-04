@@ -61,16 +61,54 @@ public class MessageService {
     }
 
     // Convert each conversation to a preview DTO
-    return conversations.entrySet().stream()
-        .map(entry -> {
-          String[] keys = entry.getKey().split("-");
-          Long otherUserId = Long.parseLong(keys[0]);
-          Long itemId = Long.parseLong(keys[1]);
-          List<Message> messages = entry.getValue();
+    return conversations.entrySet().stream().map(entry -> {
+      String[] keys = entry.getKey().split("-");
+      Long otherUserId = Long.parseLong(keys[0]);
+      Long itemId = Long.parseLong(keys[1]);
+      List<Message> messages = entry.getValue();
 
-          return createConversationPreview(user.getId(), otherUserId, itemId, messages);
-        })
-        .collect(Collectors.toList());
+      return createConversationPreview(user.getId(), otherUserId, itemId, messages);
+    }).collect(Collectors.toList());
+  }
+
+  /**
+   * <h3>Get messages for a specific item</h3>
+   * <p>Retrieves all messages related to a specific item for a user identified by their email.</p>
+   *
+   * @param email  The email of the user
+   * @param itemId The ID of the item
+   * @return A list of messages
+   */
+  public List<MessageResponseDto> getItemMessages(String email, Long itemId) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+    Item item = itemService.findById(itemId);
+
+    // Find all messages where the current user is either sender or receiver
+    // and the message is related to the specified item
+    List<Message> messages = messageRepository.findConversation(user.getId(),
+        item.getSeller().getId(), itemId);
+
+    return messages.stream().map(this::convertToMessageResponseDto).collect(Collectors.toList());
+  }
+
+  /**
+   * <h3>Convert Message to MessageResponseDto</h3>
+   * <p>Maps a Message entity to a MessageResponseDto.</p>
+   *
+   * @param message The message entity
+   * @return A MessageResponseDto
+   */
+  private MessageResponseDto convertToMessageResponseDto(Message message) {
+    return MessageResponseDto.builder().id(message.getId()).sender(
+            MessageUserDto.builder().id(message.getSender().getId())
+                .displayName(message.getSender().getDisplayName()).email(message.getSender().getEmail())
+                .build()).receiver(MessageUserDto.builder().id(message.getReceiver().getId())
+            .displayName(message.getReceiver().getDisplayName()).email(message.getReceiver().getEmail())
+            .build()).item(MessageResponseDto.ItemReferenceDto.builder().id(message.getItem().getId())
+            .title(message.getItem().getBriefDescription()).build())
+        .messageContent(message.getContent()).sentDate(message.getSentAt()).build();
   }
 
   /**
@@ -100,36 +138,21 @@ public class MessageService {
 
     // Count unread messages
     int unreadCount = (int) messages.stream()
-        .filter(m -> m.getReceiver().getId().equals(userId) && !m.isRead())
-        .count();
+        .filter(m -> m.getReceiver().getId().equals(userId) && !m.isRead()).count();
 
     // Create the DTO
     return ConversationPreviewDto.builder()
         .id(otherUserId) // Using other user's ID as conversation ID
-        .otherUser(MessageUserDto.builder()
-            .id(otherUser.getId())
-            .displayName(otherUser.getDisplayName())
-            .email(otherUser.getEmail())
-            .build())
-        .item(ItemPreviewDto.builder()
-            .id(item.getId())
-            .title(item.getBriefDescription())
-            .price(item.getPrice())
-            .imageUrl(itemService.getFirstImageUrl(item))
-            .build())
-        .lastMessage(lastMessage != null ? MessageDto.builder()
-            .id(lastMessage.getId())
-            .content(lastMessage.getContent())
-            .senderId(lastMessage.getSender().getId())
-            .receiverId(lastMessage.getReceiver().getId())
-            .sentAt(lastMessage.getSentAt())
-            .read(lastMessage.isRead())
-            .build() : null)
-        .unreadMessagesCount(unreadCount)
-        .relatedItem(ConversationPreviewDto.RelatedItemDto.builder()
-            .id(item.getId())
-            .title(item.getBriefDescription())
-            .build())
-        .build();
+        .otherUser(
+            MessageUserDto.builder().id(otherUser.getId()).displayName(otherUser.getDisplayName())
+                .email(otherUser.getEmail()).build()).item(
+            ItemPreviewDto.builder().id(item.getId()).title(item.getBriefDescription())
+                .price(item.getPrice()).imageUrl(itemService.getFirstImageUrl(item)).build())
+        .lastMessage(lastMessage != null ? MessageDto.builder().id(lastMessage.getId())
+            .content(lastMessage.getContent()).senderId(lastMessage.getSender().getId())
+            .receiverId(lastMessage.getReceiver().getId()).sentAt(lastMessage.getSentAt())
+            .read(lastMessage.isRead()).build() : null).unreadMessagesCount(unreadCount)
+        .relatedItem(ConversationPreviewDto.RelatedItemDto.builder().id(item.getId())
+            .title(item.getBriefDescription()).build()).build();
   }
 }
