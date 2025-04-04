@@ -52,6 +52,19 @@ public class ItemService {
   }
 
   /**
+   * <h3>Find item by ID</h3>
+   * <p>Finds an item by its ID.</p>
+   *
+   * @param id the ID of the item to find
+   * @return the found item entity
+   * @throws RuntimeException if item is not found
+   */
+  public Item findById(Long id) {
+    return itemRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+  }
+
+  /**
    * <h3>Map an Item entity to its preview DTO</h3>
    * <p>Transforms a complete {@link Item} entity into a simplified
    * {@link ItemPreviewDto} containing only the data needed for item listings.</p>

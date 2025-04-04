@@ -19,7 +19,7 @@ const DUMMY_USERNAME = 'alice' // Match the dummy data
 export async function fetchConversations(): Promise<ConversationPreview[]> {
   try {
     // The endpoint will use the JWT token to identify the user
-    const response = await api.get<ConversationPreview[]>('/messages/conversations')
+    const response = await api.get<ConversationPreview[]>('/messaging/conversations')
     return response.data
   } catch (error) {
     console.error('Error fetching conversations:', error)

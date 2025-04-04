@@ -1,7 +1,11 @@
 package stud.ntnu.backend.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,19 +28,21 @@ public class Message {
   @JoinColumn(name = "receiver_id")
   private User receiver;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "item_id")
   private Item item;
 
-  @Column(columnDefinition = "TEXT", nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String content;
 
-  @Column(nullable = false, updatable = false)
+  @Column(nullable = false)
   private LocalDateTime sentAt;
 
+  @Column(nullable = false)
+  private boolean read;
+
   @PrePersist
-  void onSend() {
+  void onCreate() {
     sentAt = LocalDateTime.now();
   }
 }
-
