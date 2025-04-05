@@ -8,11 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +23,7 @@ import stud.ntnu.backend.util.JwtUtil;
 
 /**
  * <h2>AuthController</h2>
- * <p>Controller for handling authentication requests.</p>
+ * <p>Controller for handling user authentication and registration.</p>
  */
 @RestController
 @RequestMapping("/auth")
@@ -36,58 +33,70 @@ public class AuthController {
 
   /**
    * <h3>Authentication Manager</h3>
-   * <p>Manages authentication processes.</p>
+   * <p>Handles user authentication processes.</p>
+   *
+   * @see AuthenticationManager
    */
   private final AuthenticationManager authenticationManager;
 
   /**
    * <h3>JWT Utility</h3>
-   * <p>Utility class for generating and validating JWT tokens.</p>
+   * <p>Handles JWT token generation and validation.</p>
+   *
+   * @see JwtUtil
    */
   private final JwtUtil jwtUtil;
 
+  /**
+   * <h3>User Service</h3>
+   * <p>Service for user management operations.</p>
+   *
+   * @see UserService
+   */
   private final UserService userService;
 
   /**
-   * <h3>Generate JWT Token</h3>
+   * <h3>User Login</h3>
+   * <p>Authenticates user and generates JWT token.</p>
    *
-   * <p>Authenticates the user and generates a JWT token if authentication is successful.</p>
-   *
-   * @param request the authentication request containing username and password
-   * @return a response entity containing the status and the generated JWT token
+   * @param request the authentication request
+   * @return {@link AuthResponseDto} containing JWT token
    */
-  @Operation(summary = "Authenticate user",
-      description = "Authenticates a user with username and password and returns a JWT token")
+  @Operation(summary = "Authenticate user", description = "Authenticates user credentials and returns JWT token")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Authentication successful",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = AuthResponseDto.class))),
-      @ApiResponse(responseCode = "401", description = "Invalid credentials",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = AuthResponseDto.class))),
-      @ApiResponse(responseCode = "500", description = "Internal server error",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = AuthResponseDto.class)))})
+          content = @Content(schema = @Schema(implementation = AuthResponseDto.class))),
+      @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+      @ApiResponse(responseCode = "500", description = "Internal server error")})
   @PostMapping("/login")
   public ResponseEntity<AuthResponseDto> login(
       @Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
-          description = "Authentication request with username and password",
+          description = "Authentication credentials",
           required = true,
           content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
       ) AuthRequestDto request) {
-
-      authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(
-              request.getEmail(),
-              request.getPassword()
-          )
-      );
-
-      return ResponseEntity.ok(new AuthResponseDto(jwtUtil.generateToken(request.getEmail())));
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            request.getEmail(),
+            request.getPassword()
+        )
+    );
+    return ResponseEntity.ok(new AuthResponseDto(jwtUtil.generateToken(request.getEmail())));
   }
 
+  /**
+   * <h3>User Registration</h3>
+   * <p>Creates new user account and returns JWT token.</p>
+   *
+   * @param request the user registration data
+   * @return {@link AuthResponseDto} containing JWT token
+   */
+  @Operation(summary = "Register user", description = "Creates new user account and returns JWT token")
+  @ApiResponse(responseCode = "200", description = "Registration successful",
+      content = @Content(schema = @Schema(implementation = AuthResponseDto.class)))
   @PostMapping("/register")
-  public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody UserRequestDto request) {
+  public ResponseEntity<AuthResponseDto> register(
+      @Valid @RequestBody UserRequestDto request) {
     return ResponseEntity.ok(
         new AuthResponseDto(jwtUtil.generateToken(userService.createUser(request).getEmail())));
   }

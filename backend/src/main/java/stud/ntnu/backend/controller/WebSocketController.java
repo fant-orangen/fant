@@ -1,62 +1,53 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.Valid;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import stud.ntnu.backend.data.MessageCreateDto;
-import stud.ntnu.backend.data.MessageResponseDto;
 import stud.ntnu.backend.data.WebSocketMessageDto;
-import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.MessageService;
 import stud.ntnu.backend.service.UserService;
 
-import java.security.Principal;
-
+/**
+ * <h2>WebSocketController</h2>
+ * <p>Controller for handling real-time WebSocket messaging operations.</p>
+ */
 @Controller
 @RequiredArgsConstructor
 public class WebSocketController {
 
-  private final SimpMessagingTemplate messagingTemplate;
+  /**
+   * <h3>Message Service</h3>
+   * <p>Service handling message processing and delivery.</p>
+   *
+   * @see MessageService
+   */
   private final MessageService messageService;
+
+  /**
+   * <h3>User Service</h3>
+   * <p>Service handling user authentication and retrieval.</p>
+   *
+   * @see UserService
+   */
   private final UserService userService;
 
-  @MessageMapping("/chat.send") // Client sends to /app/chat.send
-  public void sendMessage(@Payload WebSocketMessageDto messageDto,
+  /**
+   * <h3>Send WebSocket Message</h3>
+   * <p>Processes and delivers real-time messages via WebSocket.</p>
+   *
+   * @param messageDto the message content and metadata
+   * @param headerAccessor the WebSocket session header accessor
+   */
+  @MessageMapping("/chat.send")
+  public void sendMessage(
+      @Payload @Valid WebSocketMessageDto messageDto,
       SimpMessageHeaderAccessor headerAccessor) {
-    // 1. Extract authenticated user from the WebSocket session
-    Principal principal = headerAccessor.getUser();
-    if (principal == null) {
-      throw new RuntimeException("User not authenticated");
-    }
-
-    // 2. Get the sender details from the authentication context
-    User sender = userService.getCurrentUser(principal);
-
-    // 3. Create a proper MessageCreateDto with sender ID included
-    MessageCreateDto createDto = MessageCreateDto.builder()
-        .senderId(sender.getId())
-        .receiverId(Long.valueOf(messageDto.getReceiver().getId()))
-        .itemId(Long.valueOf(messageDto.getItem().getId()))
-        .content(messageDto.getMessageContent())
-        .build();
-
-    // 4. Save message and get response
-    MessageResponseDto savedMessage = messageService.saveMessage(createDto);
-
-    // 5. Send to receiver
-    messagingTemplate.convertAndSend(
-        "/topic/messages/" + createDto.getReceiverId(),
-        savedMessage
-    );
-
-    // 6. Also send back to sendera
-/*
-    messagingTemplate.convertAndSend(
-        "/topic/messages/" + sender.getId(),
-        savedMessage
-    ); */
+    messageService.sendWebSocketMessage(
+        userService.getCurrentUser(Objects.requireNonNull(headerAccessor.getUser())),
+        messageDto);
   }
 }

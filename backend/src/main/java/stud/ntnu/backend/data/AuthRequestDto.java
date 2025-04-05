@@ -7,7 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * <h2> AuthRequestDTO for representing the authentication request. </h2>
+ * <h2>AuthRequestDto</h2>
+ * <p>Data transfer object for user authentication requests.</p>
  */
 @Data
 @AllArgsConstructor
@@ -15,14 +16,16 @@ import lombok.NoArgsConstructor;
 public class AuthRequestDto {
 
   /**
-   * <h3> The email of the user.</h3>
+   * <h3>Email</h3>
+   * <p>The user's email address used for authentication.</p>
    */
   @NotBlank(message = "Email is required")
   @Email
   private String email;
 
   /**
-   * <h3> The password of the user.</h3>
+   * <h3>Password</h3>
+   * <p>The user's password used for authentication.</p>
    */
   @NotBlank(message = "Password is required")
   private String password;

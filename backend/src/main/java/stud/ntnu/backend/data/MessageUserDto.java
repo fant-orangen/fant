@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * <h2>MessageUserDto</h2>
- * <p>Data Transfer Object representing a user in message contexts.</p>
+ * <p>Data transfer object for user information in messaging contexts.</p>
  */
 @Data
 @NoArgsConstructor
@@ -15,7 +15,21 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MessageUserDto {
 
+  /**
+   * <h3>User ID</h3>
+   * <p>Unique identifier of the user.</p>
+   */
   private Long id;
+
+  /**
+   * <h3>Display Name</h3>
+   * <p>User's display name for messaging.</p>
+   */
   private String displayName;
+
+  /**
+   * <h3>Email</h3>
+   * <p>User's email address.</p>
+   */
   private String email;
 }

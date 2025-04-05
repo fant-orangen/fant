@@ -1,6 +1,7 @@
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -10,78 +11,80 @@ import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.repository.CategoryRepository;
 
 /**
- * Service class for handling category-related business logic.
- * <p>
- * This service provides methods for CRUD operations and other business logic
- * related to categories. It acts as a middle layer between the controller
- * and the repository layer.
- * </p>
- *
- * @see CategoryRepository
- * @see Category
- * @see CategoryRequestDto
+ * <h2>CategoryService</h2>
+ * <p>Service for category management operations.</p>
  */
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
   /**
-   * Repository for handling database operations for {@link Category} entities.
+   * <h3>Category Repository</h3>
+   * <p>Data access component for categories.</p>
    */
   private final CategoryRepository categoryRepository;
 
   /**
-   * Mapper for converting between {@link CategoryRequestDto} and {@link Category} entities.
+   * <h3>Model Mapper</h3>
+   * <p>Object mapper for DTO conversions.</p>
    */
   private final ModelMapper modelMapper;
 
   /**
-   * Creates a new {@link Category}.
+   * <h3>Create Category</h3>
+   * <p>Creates a new category from the provided DTO.</p>
    *
-   * @param categoryRequestDto the {@link CategoryRequestDto} containing category data to create
-   * @return the newly created {@link Category} entity
+   * @param categoryRequestDto the category data
+   * @return the created {@link Category}
    */
+  @Transactional
   public Category create(CategoryRequestDto categoryRequestDto) {
-    return categoryRepository.save(modelMapper.map(categoryRequestDto, Category.class));
+    return categoryRepository.save(fromDto(categoryRequestDto));
   }
 
   /**
-   * Updates an existing {@link Category}.
+   * <h3>Update Category</h3>
+   * <p>Updates an existing category with new data.</p>
    *
-   * @param categoryRequestDto the {@link CategoryRequestDto} containing updated category data
+   * @param categoryRequestDto the updated category data
    * @param id                 the ID of the category to update
-   * @return the updated {@link Category} entity
+   * @return the updated {@link Category}
    */
+  @Transactional
   public Category update(CategoryRequestDto categoryRequestDto, Long id) {
-    Category category = modelMapper.map(categoryRequestDto, Category.class);
+    Category category = fromDto(categoryRequestDto);
     category.setId(id);
     return categoryRepository.save(category);
   }
 
   /**
-   * Deletes a {@link Category} by its ID.
+   * <h3>Delete Category</h3>
+   * <p>Deletes a category by its ID.</p>
    *
    * @param id the ID of the category to delete
    */
+  @Transactional
   public void delete(Long id) {
     categoryRepository.deleteById(id);
   }
 
   /**
-   * Retrieves all {@link Category} entities.
+   * <h3>Get All Categories</h3>
+   * <p>Retrieves all categories in the system.</p>
    *
-   * @return a list of all {@link Category} entities
+   * @return list of all {@link Category} entities
    */
   public List<Category> getAll() {
     return categoryRepository.findAll();
   }
 
   /**
-   * Retrieves a {@link Category} by its ID.
+   * <h3>Get Category By ID</h3>
+   * <p>Retrieves a category by its unique identifier.</p>
    *
-   * @param id the ID of the category to retrieve
-   * @return the found {@link Category} entity
-   * @throws EntityNotFoundException if no category is found with the given ID
+   * @param id the category ID
+   * @return the found {@link Category}
+   * @throws EntityNotFoundException if category not found
    */
   public Category getCategoryById(Long id) {
     return categoryRepository.findById(id)
@@ -89,14 +92,26 @@ public class CategoryService {
   }
 
   /**
-   * Finds a {@link Category} by its name or throws an exception if not found.
+   * <h3>Get Category By Name</h3>
+   * <p>Retrieves a category by its exact name.</p>
    *
-   * @param name the name of the category to find (case-sensitive)
-   * @return the found {@link Category} entity
-   * @throws EntityNotFoundException if no category exists with the specified name
+   * @param name the category name
+   * @return the found {@link Category}
+   * @throws EntityNotFoundException if category not found
    */
   public Category getCategoryByName(String name) {
     return categoryRepository.findByName(name)
         .orElseThrow(() -> new EntityNotFoundException("Category not found with name: " + name));
+  }
+
+  /**
+   * <h3>Convert DTO to Entity</h3>
+   * <p>Maps a CategoryRequestDto to a Category entity.</p>
+   *
+   * @param categoryRequestDto the DTO to convert
+   * @return the mapped {@link Category} entity
+   */
+  private Category fromDto(CategoryRequestDto categoryRequestDto) {
+    return modelMapper.map(categoryRequestDto, Category.class);
   }
 }

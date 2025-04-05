@@ -12,14 +12,8 @@ import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.service.CategoryService;
 
 /**
- * REST controller for public category-related operations.
- * <p>
- * Provides read-only endpoints for accessing category information.
- * All endpoints are prefixed with {@code /api/category}.
- * </p>
- *
- * @see Category
- * @see CategoryService
+ * <h2>CategoryController</h2>
+ * <p>Controller for public read-only category operations.</p>
  */
 @RestController
 @RequestMapping("/api/category")
@@ -27,15 +21,19 @@ import stud.ntnu.backend.service.CategoryService;
 public class CategoryController {
 
   /**
-   * Service for handling category business logic and data access.
+   * <h3>Category Service</h3>
+   * <p>Service handling category business logic.</p>
+   *
+   * @see CategoryService
    */
   private final CategoryService categoryService;
 
   /**
-   * Retrieves a specific category by its unique identifier.
+   * <h3>Get Category By ID</h3>
+   * <p>Retrieves a single category by its identifier.</p>
    *
-   * @param id the ID of the category to retrieve (must be positive)
-   * @return {@link ResponseEntity} containing the requested {@link Category}
+   * @param id the ID of the category to retrieve
+   * @return the requested {@link Category}
    */
   @GetMapping("/{id}")
   public ResponseEntity<Category> getCategoryById(@Positive @PathVariable Long id) {
@@ -43,9 +41,10 @@ public class CategoryController {
   }
 
   /**
-   * Retrieves all available categories in the system.
+   * <h3>Get All Categories</h3>
+   * <p>Retrieves all available categories.</p>
    *
-   * @return {@link ResponseEntity} containing a list of all {@link Category} entities
+   * @return list of all {@link Category} entities
    */
   @GetMapping
   public ResponseEntity<List<Category>> getAllCategories() {

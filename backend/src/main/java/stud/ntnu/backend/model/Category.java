@@ -2,6 +2,8 @@ package stud.ntnu.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "categories")
@@ -23,5 +25,6 @@ public class Category {
 
   @ManyToOne
   @JoinColumn(name = "parent_id")
+  @OnDelete(action = OnDeleteAction.SET_NULL)
   private Category parent;
 }

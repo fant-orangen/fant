@@ -1,52 +1,36 @@
 package stud.ntnu.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import stud.ntnu.backend.data.AuthRequestDto;
-import stud.ntnu.backend.data.AuthResponseDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.UserRepository;
-
 import java.util.Collections;
-import stud.ntnu.backend.util.JwtUtil;
 
 /**
  * <h2>UserAuthenticationService</h2>
- * <p>Service responsible for authenticating users by loading their details from the database.</p>
- * <p>Implements Spring Security's {@link UserDetailsService} interface to integrate
- * with the authentication framework.</p>
+ * <p>Service handling user authentication and authorization.</p>
  */
 @Service
 @RequiredArgsConstructor
 public class UserAuthenticationService implements UserDetailsService {
 
   /**
-   * <h3>User repository for accessing user data</h3>
+   * <h3>User Repository</h3>
+   * <p>Data access component for user accounts.</p>
    */
   private final UserRepository userRepository;
 
-
   /**
-   * <h3>Logger for diagnostic information</h3>
-   */
-  Logger logger = LoggerFactory.getLogger(UserAuthenticationService.class); // TODO: remove logger?
-
-  /**
-   * <h3>Loads a user's details by email</h3>
-   * <p>Retrieves a user from the database and converts it to Spring Security's UserDetails object.</p>
+   * <h3>Load User By Username</h3>
+   * <p>Authenticates users by email and provides their security context.</p>
    *
-   * @param email the email identifying the user whose data is required
-   * @return a fully populated UserDetails object
-   * @throws UsernameNotFoundException if the user could not be found
+   * @param email the user's email address
+   * @return Spring Security {@link UserDetails}
+   * @throws UsernameNotFoundException if user not found
    */
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

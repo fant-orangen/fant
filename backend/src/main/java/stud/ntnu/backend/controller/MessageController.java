@@ -1,9 +1,9 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.constraints.Positive;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,45 +13,59 @@ import stud.ntnu.backend.data.MessageResponseDto;
 import stud.ntnu.backend.service.MessageService;
 
 import java.util.List;
+import stud.ntnu.backend.service.UserService;
 
 /**
  * <h2>MessageController</h2>
- * <p>Controller for handling messaging related operations.</p>
+ * <p>Controller for messaging operations between users.</p>
  */
 @RestController
 @RequestMapping("/api/messaging")
 @RequiredArgsConstructor
 public class MessageController {
 
+  /**
+   * <h3>Message Service</h3>
+   * <p>Service handling message-related operations.</p>
+   *
+   * @see MessageService
+   */
   private final MessageService messageService;
 
   /**
-   * <h3>Get all conversations for the authenticated user</h3>
-   * <p>Returns a list of conversation previews containing information about other users,
-   * related items, and last messages.</p>
+   * <h3>User Service</h3>
+   * <p>Service handling user-related operations.</p>
    *
-   * @return A list of conversation preview DTOs
+   * @see UserService
+   */
+  private final UserService userService;
+
+  /**
+   * <h3>Get Conversations</h3>
+   * <p>Retrieves all conversations for the current user.</p>
+   *
+   * @param principal the authenticated user
+   * @return list of {@link ConversationPreviewDto}
    */
   @GetMapping("/conversations")
-  public ResponseEntity<List<ConversationPreviewDto>> getConversations() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String email = authentication.getName();
-
-    List<ConversationPreviewDto> conversations = messageService.getUserConversations(email);
-    return ResponseEntity.ok(conversations);
+  public ResponseEntity<List<ConversationPreviewDto>> getConversations(Principal principal) {
+    return ResponseEntity.ok(
+        messageService.getUserConversations(userService.getCurrentUser(principal)));
   }
 
   /**
-   * <h3>Get messages for an item</h3>
-   * <p>Retrieves all messages related to a specific item for the current user.</p>
+   * <h3>Get Item Messages</h3>
+   * <p>Retrieves messages for a specific item.</p>
    *
-   * @param itemId The ID of the item
-   * @return A list of messages
+   * @param itemId    the ID of the item
+   * @param principal the authenticated user
+   * @return list of {@link MessageResponseDto}
    */
   @GetMapping("/messages")
-  public ResponseEntity<List<MessageResponseDto>> getItemMessages(@RequestParam Long itemId) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String email = authentication.getName();
-    return ResponseEntity.ok(messageService.getItemMessages(email, itemId));
+  public ResponseEntity<List<MessageResponseDto>> getItemMessages(
+      @Positive @RequestParam Long itemId,
+      Principal principal) {
+    return ResponseEntity.ok(
+        messageService.getItemMessages(userService.getCurrentUser(principal), itemId));
   }
 }

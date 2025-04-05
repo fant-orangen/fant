@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,7 +24,7 @@ import stud.ntnu.backend.filter.JwtAuthFilter;
 
 /**
  * <h2>SecurityConfig</h2>
- * <p>Configuration class for Spring Security settings.</p>
+ * <p>Central configuration class for Spring Security settings.</p>
  */
 @Configuration
 @EnableWebSecurity
@@ -32,21 +33,25 @@ public class SecurityConfig {
 
   /**
    * <h3>UserDetailsService</h3>
-   * <p>Service for loading user-specific data.</p>
+   * <p>Service for loading user-specific data during authentication.</p>
+   *
+   * @see UserDetailsService
    */
   private final UserDetailsService userDetailsService;
 
   /**
    * <h3>JWT Authentication Filter</h3>
-   * <p>Filter for processing JWT authentication.</p>
+   * <p>Custom filter for processing JWT authentication tokens.</p>
+   *
+   * @see JwtAuthFilter
    */
   private final JwtAuthFilter jwtAuthFilter;
 
   /**
    * <h3>Password Encoder</h3>
-   * <p>Bean for encoding passwords using BCrypt.</p>
+   * <p>Provides BCrypt password encoding functionality.</p>
    *
-   * @return the password encoder
+   * @return configured {@link BCryptPasswordEncoder} instance
    */
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -55,10 +60,9 @@ public class SecurityConfig {
 
   /**
    * <h3>Authentication Provider</h3>
-   * <p>Bean for configuring the authentication provider with user details service and password
-   * encoder.</p>
+   * <p>Configures DAO authentication with user details service and password encoder.</p>
    *
-   * @return the authentication provider
+   * @return configured {@link DaoAuthenticationProvider}
    */
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
@@ -70,30 +74,31 @@ public class SecurityConfig {
 
   /**
    * <h3>Authentication Manager</h3>
-   * <p>Bean for managing authentication processes.</p>
+   * <p>Creates and configures the authentication manager.</p>
    *
    * @param authenticationConfiguration the authentication configuration
-   * @return the authentication manager
-   * @throws Exception if an error occurs during authentication manager creation
+   * @return configured {@link AuthenticationManager}
+   * @throws Exception if configuration fails
    */
   @Bean
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
+
   /**
    * <h3>Security Filter Chain</h3>
-   * <p>Configures the security filter chain for HTTP security.</p>
+   * <p>Defines the security filter chain configuration.</p>
    *
-   * @param http the HTTP security configuration
-   * @return the security filter chain
-   * @throws Exception if an error occurs during filter chain configuration
+   * @param http the HTTP security builder
+   * @return configured {@link SecurityFilterChain}
+   * @throws Exception if configuration fails
    */
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
+        .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
@@ -101,33 +106,32 @@ public class SecurityConfig {
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/v3/api-docs/**",
-                "/ws",           // WebSocket endpoint (no wildcard)
-                "/ws/**",        // SockJS fallback endpoints
-                "/topic/**",     // Subscription destinations
-                "/app/**",       // Application destinations
+                "/ws",
+                "/ws/**",
+                "/topic/**",
+                "/app/**",
                 "/h2-console/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-    // Enable h2-console access
-    http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+    http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
     return http.build();
   }
 
-
   /**
-   * TODO: change this later when the app is deployed
-   * CORS configuration source for setting up interaction between frontend and backend.
+   * <h3>CORS Configuration</h3>
+   * <p>Configures Cross-Origin Resource Sharing settings.</p>
    *
-   * @return the CORS configuration source
+   * @return configured {@link CorsConfigurationSource}
    */
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173, http://localhost:5174"));
+    configuration.setAllowedOrigins(
+        Arrays.asList("http://localhost:5173", "http://localhost:5174"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
     configuration.setAllowCredentials(true);

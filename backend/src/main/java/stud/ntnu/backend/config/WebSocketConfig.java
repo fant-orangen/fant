@@ -1,6 +1,5 @@
 package stud.ntnu.backend.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,9 +10,7 @@ import stud.ntnu.backend.interceptor.WebSocketAuthInterceptor;
 
 /**
  * <h2>WebSocketConfig</h2>
- * <p>Configuration class for WebSocket messaging.</p>
- * <p>This class sets up WebSocket endpoints, message broker options, and
- * configures the authentication interceptor for secure messaging.</p>
+ * <p>Configuration class for WebSocket and STOMP messaging.</p>
  */
 @Configuration
 @EnableWebSocketMessageBroker
@@ -21,14 +18,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   /**
    * <h3>WebSocket Authentication Interceptor</h3>
-   * <p>Interceptor for authenticating WebSocket connections using JWT tokens.</p>
+   * <p>Interceptor for authenticating WebSocket connections.</p>
+   *
+   * @see WebSocketAuthInterceptor
    */
   private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
   /**
-   * <h3>Constructor for WebSocketConfig</h3>
+   * <h3>Constructor</h3>
+   * <p>Creates a new WebSocketConfig instance.</p>
    *
-   * @param webSocketAuthInterceptor the authentication interceptor for WebSocket connections
+   * @param webSocketAuthInterceptor the authentication interceptor
    */
   public WebSocketConfig(WebSocketAuthInterceptor webSocketAuthInterceptor) {
     this.webSocketAuthInterceptor = webSocketAuthInterceptor;
@@ -36,9 +36,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   /**
    * <h3>Configure Message Broker</h3>
-   * <p>Sets up the message broker with appropriate destination prefixes.</p>
+   * <p>Configures message broker destinations and prefixes.</p>
    *
-   * @param config the message broker registry to configure
+   * @param config the message broker registry
+   * @see MessageBrokerRegistry
    */
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -48,9 +49,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   /**
    * <h3>Register STOMP Endpoints</h3>
-   * <p>Registers WebSocket endpoints that clients connect to.</p>
+   * <p>Registers WebSocket endpoints for client connections.</p>
    *
    * @param registry the STOMP endpoint registry
+   * @see StompEndpointRegistry
    */
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -61,9 +63,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   /**
    * <h3>Configure Client Inbound Channel</h3>
-   * <p>Adds the authentication interceptor to the client inbound channel.</p>
+   * <p>Adds authentication interceptor to inbound channel.</p>
    *
    * @param registration the channel registration
+   * @see ChannelRegistration
    */
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
