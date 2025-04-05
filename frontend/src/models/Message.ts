@@ -1,3 +1,5 @@
+import type { ItemPreviewType } from '@/models/Item.ts'
+
 export interface MessageUser {
   id: number | string;
   username: string;
@@ -18,6 +20,7 @@ export interface Message {
 export interface ConversationPreview {
   id: number | string;
   otherUser: MessageUser;
+  item: ItemPreviewType;
   lastMessage: Message | null; // Preview snippet of last message
   unreadMessagesCount: number;
   relatedItem?: {

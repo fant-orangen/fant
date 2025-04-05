@@ -101,6 +101,10 @@ public class SecurityConfig {
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/v3/api-docs/**",
+                "/ws",           // WebSocket endpoint (no wildcard)
+                "/ws/**",        // SockJS fallback endpoints
+                "/topic/**",     // Subscription destinations
+                "/app/**",       // Application destinations
                 "/h2-console/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()

@@ -57,7 +57,7 @@ export async function fetchPreviewItemsByCategoryId(
  */
 export async function fetchItemsByDistribution(
   recommendation: CategoryRecommendation,
-  limit: number = 1000,
+  limit: number = 5,
 ): Promise<ItemPreviewType[]> {
   try {
     const response = await api.post<ItemPreviewType[]>('/items/view/recommended_items', {
@@ -82,17 +82,17 @@ export async function fetchItemsByDistribution(
 export async function recordItemView(itemId: string | number): Promise<{ status: number }> {
   try {
     // Send the item ID to the backend and capture the response
-    const response = await api.post(`/items/view/post/${itemId}`)
-    console.log(`View recorded for item ${itemId}`)
+    const response = await api.post(`/items/view/post/${itemId}`);
+    console.log(`View recorded for item ${itemId}`);
 
     // Return the status code from the response
-    return { status: response.status }
+    return { status: response.status };
   } catch (error) {
     // Log the error but still return something to avoid disrupting UI flow
-    console.error(`Failed to record view for item ${itemId}:`, error)
+    console.error(`Failed to record view for item ${itemId}:`, error);
 
     // Generic error code if we couldn't get a proper status
-    return { status: 500 }
+    return { status: 500 };
   }
 }
 

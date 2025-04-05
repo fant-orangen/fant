@@ -1,18 +1,32 @@
 package stud.ntnu.backend.data;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class MessageResponseDto {
-  private Long senderId;
-  private Long receiverId;
-  private Long itemId;
+import java.time.LocalDateTime;
 
-  private String content;
-  private LocalDateTime sentAt;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class MessageResponseDto {
+
+  private Long id;
+  private MessageUserDto sender;
+  private MessageUserDto receiver;
+  private ItemReferenceDto item;
+  private String messageContent;
+  private LocalDateTime sentDate;
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  public static class ItemReferenceDto {
+
+    private Long id;
+    private String title;
+  }
 }

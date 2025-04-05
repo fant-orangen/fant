@@ -22,6 +22,8 @@ import {
 const props = defineProps<{ categoryId: string | null }>()
 const items = ref<ItemPreviewType[]>([])
 
+const minimumViews = 5;
+
 async function fetchItems() {
   try {
     if (props.categoryId) {
@@ -33,7 +35,7 @@ async function fetchItems() {
         const viewCount = await fetchUserViewCount()
         console.log(`User view count: ${viewCount}`)
 
-        if (viewCount > 10) {
+        if (viewCount > minimumViews) {
           // User has enough views for personalized recommendations
           console.log('Using personalized recommendations')
           const recommendations = await fetchCategoryRecommendations()
