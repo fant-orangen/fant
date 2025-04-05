@@ -32,7 +32,10 @@ async function refreshConversations() {
   loading.value = true
   error.value = null
   try {
-    conversations.value = await fetchConversations()
+    conversations.value = await fetchConversations() // TODO: remove test prints
+    for (const convo in conversations.value) {
+      console.log('Conversation:', conversations.value[convo])
+    }
   } catch (err) {
     console.error('InboxView: Failed to fetch conversations:', err)
     error.value = 'Could not load conversations.'

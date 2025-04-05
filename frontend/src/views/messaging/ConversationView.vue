@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
-import type { Message, MessageUser } from '@/models/Message'
-// Import additional WebSocket-related functions
+import { useRoute, useRouter } from 'vue-router'
+import type { Message, MessageUser, ConversationPreview } from '@/models/Message'
 import {
   fetchMessages,
   sendMessage,
   initializeMessaging,
   onNewMessage,
   removeMessageHandler,
+  fetchConversations
 } from '@/services/MessageService'
 import { fetchCurrentUserId } from '@/services/UserService.ts'
 
 const route = useRoute()
+const router = useRouter()
 const messages = ref<Message[]>([])
 const newMessageContent = ref('')
 const otherUser = ref<MessageUser | null>(null)
@@ -20,17 +21,17 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const sending = ref(false)
 const messagesContainerRef = ref<HTMLElement | null>(null)
-const currentUserId = ref<string | number | null>(null) // Replace with actual user ID from your auth context
+const currentUserId = ref<string | number | null>(null)
+const itemId = ref<string | number | null>(null)
 
 const conversationId = computed(() => route.params.conversationId as string)
 
-const itemId = ref<string | number>('unknown')
-
 // Handler for new messages
 const handleNewMessage = (message: Message) => {
-  // Only add message if it's part of this conversation and not already in the list
+  // Only add message if it's part of this conversation
   const isRelevantMessage =
-    message.sender.id === conversationId.value || message.receiver.id === conversationId.value
+    (message.sender.id === otherUser.value?.id || message.receiver.id === otherUser.value?.id) &&
+    message.item?.id === itemId.value
 
   const isNewMessage = !messages.value.some((m) => m.id === message.id)
 
@@ -40,43 +41,54 @@ const handleNewMessage = (message: Message) => {
   }
 }
 
-// Fetch messages when component mounts or conversationId changes
-async function loadMessages() {
-  if (!conversationId.value) {
-    error.value = 'Invalid conversation ID.'
-    return
-  }
-  loading.value = true
-  error.value = null
+// First fetch the conversation details to get the itemId
+async function getConversationDetails(): Promise<boolean> {
   try {
-    messages.value = await fetchMessages(conversationId.value)
+    const conversations = await fetchConversations()
+    const currentConversation = conversations.find(c => c.id.toString() === conversationId.value)
 
-    // Set otherUser based on fetched messages
-    if (messages.value.length > 0) {
-      const firstMessage = messages.value[0]
-
-      for (const message of messages.value) {
-        if (message.item?.id) {
-          itemId.value = message.item.id
-          break
-        }
-      }
-      // Get currentUserId dynamically instead of hardcoding
-      const currentUserId =
-        firstMessage.sender.id === conversationId.value
-          ? firstMessage.receiver.id
-          : firstMessage.sender.id
-
-      otherUser.value =
-        firstMessage.sender.id === currentUserId ? firstMessage.receiver : firstMessage.sender
-    } else {
-      // Fallback if no messages
-      otherUser.value = { id: conversationId.value, username: `User ${conversationId.value}` }
+    if (!currentConversation) {
+      error.value = 'Conversation not found.'
+      return false
     }
 
+    // Set the item ID from the conversation
+    if (currentConversation.relatedItem?.id) {
+      itemId.value = currentConversation.relatedItem.id
+    } else if (currentConversation.item?.id) {
+      itemId.value = currentConversation.item.id
+    } else {
+      error.value = 'No item associated with this conversation.'
+      return false
+    }
+
+    // Set the other user
+    otherUser.value = currentConversation.otherUser
+
+    return true
+  } catch (err) {
+    console.error('Failed to fetch conversation details:', err)
+    error.value = 'Could not load conversation details.'
+    return false
+  }
+}
+
+// Fetch messages using the itemId
+async function loadMessages() {
+  if (!itemId.value) {
+    error.value = 'No item associated with this conversation.'
+    return
+  }
+
+  loading.value = true
+  error.value = null
+
+  try {
+    messages.value = await fetchMessages(itemId.value)
+    console.log("Fetched messages for itemId:", itemId.value)
     scrollToBottom()
   } catch (err) {
-    console.error(`ConversationView: Failed to fetch messages:`, err)
+    console.error(`Failed to fetch messages:`, err)
     error.value = 'Could not load messages.'
     messages.value = []
   } finally {
@@ -84,15 +96,14 @@ async function loadMessages() {
   }
 }
 
-// Update handleSendMessage to always include the itemId
 async function handleSendMessage() {
-  if (!newMessageContent.value.trim() || sending.value || !otherUser.value?.id) return
+  if (!newMessageContent.value.trim() || sending.value || !otherUser.value?.id || !itemId.value) return
+
   sending.value = true
   error.value = null
+
   try {
-    // The recipientId is the conversation partner's ID
     const recipientId = otherUser.value.id
-    // Now passing the itemId parameter
     const tempMessage = await sendMessage(recipientId, newMessageContent.value, itemId.value)
 
     // Add temporary message to UI immediately
@@ -100,46 +111,55 @@ async function handleSendMessage() {
     newMessageContent.value = ''
     scrollToBottom()
   } catch (err) {
-    console.error(`ConversationView: Failed to send message:`, err)
+    console.error(`Failed to send message:`, err)
     error.value = 'Failed to send message.'
   } finally {
     sending.value = false
   }
 }
 
-// Initialize WebSocket and load messages
-onMounted(async () => {
+// Initialize everything
+async function initializeConversation() {
   try {
     currentUserId.value = await fetchCurrentUserId()
-    // Initialize WebSocket connection
+
+    // Get conversation details first
+    const success = await getConversationDetails()
+    if (!success) return
+
+    // Then load messages using the item ID
+    await loadMessages()
+  } catch (err) {
+    console.error('Failed to initialize conversation:', err)
+    error.value = 'Error loading conversation. Please try again.'
+  }
+}
+
+onMounted(async () => {
+  try {
+    // Initialize WebSocket first
     await initializeMessaging()
 
     // Register handler for new messages
     onNewMessage(handleNewMessage)
 
-    // Initial load of messages
-    await loadMessages()
+    // Initialize conversation data
+    await initializeConversation()
   } catch (err) {
     console.error('Failed to initialize messaging:', err)
     error.value = 'Connection error. Please refresh.'
   }
 })
 
-// Clean up WebSocket handler when component unmounts
 onUnmounted(() => {
   removeMessageHandler(handleNewMessage)
 })
 
-// Rest of the methods remain the same...
-
 // Watch for route changes
-watch(conversationId, (newId, oldId) => {
-  if (newId && newId !== oldId) {
-    loadMessages()
-  }
+watch(conversationId, async () => {
+  await initializeConversation()
 })
 
-// Update isMyMessage function to use currentUserId
 function isMyMessage(message: Message): boolean {
   return message.sender.id.toString() === currentUserId.value?.toString()
 }
