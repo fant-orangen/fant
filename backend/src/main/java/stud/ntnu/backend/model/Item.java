@@ -45,7 +45,7 @@ public class Item {
    */
   @ManyToOne(optional = false)
   @JoinColumn(name = "category_id")
-  @OnDelete(action = OnDeleteAction.SET_NULL)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Category category;
 
   /**
