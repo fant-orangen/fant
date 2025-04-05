@@ -84,7 +84,11 @@ async function loadMessages() {
   error.value = null
 
   try {
-    messages.value = await fetchMessages(itemId.value)
+    const fetchedMessages = await fetchMessages(itemId.value)
+    // Sort messages by date
+    messages.value = fetchedMessages.sort((a, b) =>
+      a.sentDate.getTime() - b.sentDate.getTime()
+    )
     console.log("Fetched messages for itemId:", itemId.value)
     scrollToBottom()
   } catch (err) {

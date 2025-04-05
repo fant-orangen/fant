@@ -53,10 +53,10 @@ public class WebSocketController {
     );
 
     // 6. Also send back to sendera
-
+/*
     messagingTemplate.convertAndSend(
         "/topic/messages/" + sender.getId(),
         savedMessage
-    );
+    ); */
   }
 }
