@@ -96,4 +96,3 @@ VALUES (2, 1, 3, 'Yes, it is! Are you interested in buying it?', DATEADD('HOUR',
 -- Example 3: Using current timestamp
 INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
 VALUES (1, 2, 3, 'I am! How fresh is it?', CURRENT_TIMESTAMP(), false);
-
