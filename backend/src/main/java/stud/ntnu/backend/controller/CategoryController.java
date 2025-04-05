@@ -12,7 +12,14 @@ import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.service.CategoryService;
 
 /**
- * <h2> The CategoryController class is a REST controller that handles HTTP requests regarding categories.</h2>
+ * REST controller for public category-related operations.
+ * <p>
+ * Provides read-only endpoints for accessing category information.
+ * All endpoints are prefixed with {@code /api/category}.
+ * </p>
+ *
+ * @see Category
+ * @see CategoryService
  */
 @RestController
 @RequestMapping("/api/category")
@@ -20,20 +27,26 @@ import stud.ntnu.backend.service.CategoryService;
 public class CategoryController {
 
   /**
-   * <h3> The CategoryService. </h3>
+   * Service for handling category business logic and data access.
    */
   private final CategoryService categoryService;
 
   /**
-   * <h3> Get category by id. </h3>
-   * @param id The id of the category.
-   * @return The category with the given id.
+   * Retrieves a specific category by its unique identifier.
+   *
+   * @param id the ID of the category to retrieve (must be positive)
+   * @return {@link ResponseEntity} containing the requested {@link Category}
    */
   @GetMapping("/{id}")
   public ResponseEntity<Category> getCategoryById(@Positive @PathVariable Long id) {
     return ResponseEntity.ok(categoryService.getCategoryById(id));
   }
 
+  /**
+   * Retrieves all available categories in the system.
+   *
+   * @return {@link ResponseEntity} containing a list of all {@link Category} entities
+   */
   @GetMapping
   public ResponseEntity<List<Category>> getAllCategories() {
     return ResponseEntity.ok(categoryService.findAll());

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
@@ -33,10 +34,11 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ex.getMessage());
   }
 
-  @ExceptionHandler(SignatureException.class)
-  public ResponseEntity<String> handleSignatureException(SignatureException ex) {
+  @ExceptionHandler(HandlerMethodValidationException.class)
+  public ResponseEntity<String> handleHandlerMethodValidationException(
+      HandlerMethodValidationException ex) {
     log.warn(ex.getMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
   }
 
   @ExceptionHandler(Exception.class)
