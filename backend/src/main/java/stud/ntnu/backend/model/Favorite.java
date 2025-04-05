@@ -3,6 +3,7 @@ package stud.ntnu.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "favorites", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "item_id"})})
@@ -24,12 +25,8 @@ public class Favorite {
   @JoinColumn(name = "item_id")
   private Item item;
 
-  @Column(nullable = false, updatable = false)
+  @CreationTimestamp
+  @Column(name = "created_at")
   private LocalDateTime createdAt;
-
-  @PrePersist
-  void onCreate() {
-    createdAt = LocalDateTime.now();
-  }
 }
 

@@ -1,13 +1,15 @@
 package stud.ntnu.backend.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import stud.ntnu.backend.data.UserRegistrationDto;
+import stud.ntnu.backend.data.UserRequestDto;
 import stud.ntnu.backend.data.UserResponseDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.UserRepository;
@@ -28,63 +30,44 @@ public class UserService {
 
   private final PasswordEncoder passwordEncoder;
 
-  private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+  private final ModelMapper modelMapper;
 
-  public User createUser(UserRegistrationDto registrationDto) {
-    logger.info("creating user: {}", registrationDto);
-    User user = new User();
-    user.setEmail(registrationDto.getEmail());
-    user.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword()));
-    user.setDisplayName(registrationDto.getDisplayName());
-    user.setFirstName(registrationDto.getFirstName());
-    user.setLastName(registrationDto.getLastName());
-    user.setPhone(registrationDto.getPhone());
+  public User createUser(UserRequestDto registrationDto) {
+    return userRepository.save(fromDto(registrationDto));
+  }
+
+  public User updateUser(UserRequestDto userRequestDto, Long id) {
+    User user = fromDto(userRequestDto);
+    user.setId(id);
     return userRepository.save(user);
   }
 
-  /**
-   * <h3>Find all users in the repository.</h3>
-   *
-   * @return All users as list.
-   */
-  public List<User> findAll() {
+  public void deleteUser(Long id) {
+    userRepository.deleteById(id);
+  }
+
+  public List<User> getAll() {
     return userRepository.findAll();
   }
 
-  /**
-   * <h3> Find user by email. </h3>
-   *
-   * @param email The email of the user.
-   * @return An Optional containing the user if found, or empty if not found.
-   */
-  public Optional<User> findByEmail(String email) {
-    return userRepository.findByEmail(email);
-  }
-
-  /**
-   * <h3> Get user by id. </h3>
-   *
-   * @param id The id of the user.
-   * @return The user with the given id.
-   */
-  public User getUserById(Long id) {
-    logger.info("fetching user with id: {} ", id);
-    return userRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-  }
-
-  public User getUserByEmail(String email) {
-    return userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
-  }
-
-  public UserResponseDto getUserResponseById(Long id) {
-    User user = getUserById(id);
-    return new UserResponseDto(user.getDisplayName(), user.getCreatedAt());
+  public UserResponseDto getUserById(Long id) {
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+    return modelMapper.map(user, UserResponseDto.class);
   }
 
   public User getCurrentUser(Principal principal) {
     return userRepository.findByEmail(principal.getName())
-        .orElseThrow(() -> new RuntimeException("User not found"));
+        .orElseThrow(() -> new EntityNotFoundException("Current user not found"));
+  }
+
+  public Long getCurrentUserId(Principal principal) {
+    return getCurrentUser(principal).getId();
+  }
+
+  private User fromDto(UserRequestDto userRequestDto) {
+    User user = modelMapper.map(userRequestDto, User.class);
+    user.setPasswordHash(passwordEncoder.encode(userRequestDto.getPassword()));
+    return user;
   }
 }

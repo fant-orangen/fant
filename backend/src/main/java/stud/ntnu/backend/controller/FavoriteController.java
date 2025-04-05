@@ -1,5 +1,6 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -8,12 +9,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.FavoriteResponseDto;
-import stud.ntnu.backend.model.Favorite;
 import stud.ntnu.backend.service.FavoriteService;
 import stud.ntnu.backend.service.ItemService;
 import stud.ntnu.backend.service.UserService;
@@ -27,27 +25,28 @@ public class FavoriteController {
   private final UserService userService;
   private final ItemService itemService;
 
-  @PostMapping
-  public ResponseEntity<FavoriteResponseDto> addFavorite(@RequestParam long id, Principal principal) {
-    Favorite favorite = new Favorite();
-    favorite.setItem(itemService.findById(id));
-    favorite.setUser(userService.getCurrentUser(principal));
-    return ResponseEntity.ok(favoriteService.save(favorite));
+  @PostMapping("/{itemId}")
+  public ResponseEntity<Void> addFavorite(@Positive @PathVariable long itemId,
+                                          Principal principal) {
+    favoriteService.add(userService.getCurrentUserId(principal), itemId);
+    return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping
-  public ResponseEntity<Void> removeFavorite(@RequestParam long id) {
-    favoriteService.delete(favoriteService.findById(id));
-    return ResponseEntity.noContent().build();
+  @DeleteMapping("/{itemId}")
+  public ResponseEntity<Void> removeFavorite(@Positive @PathVariable long itemId,
+                                             Principal principal) {
+    favoriteService.delete(userService.getCurrentUserId(principal), itemId);
+    return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/user")
-  public ResponseEntity<List<FavoriteResponseDto>> getFavoritesByUser(@RequestParam long userId) {
-    return ResponseEntity.ok(favoriteService.findByUserId(userId));
+  @GetMapping
+  public ResponseEntity<List<FavoriteResponseDto>> getFavorites(Principal principal) {
+    return ResponseEntity.ok(
+        favoriteService.getFavoritesByUserId(userService.getCurrentUserId(principal)));
   }
 
-  @GetMapping("/item")
-  public ResponseEntity<List<FavoriteResponseDto>> getFavoritesByItem(@RequestParam long itemId) {
-    return ResponseEntity.ok(favoriteService.findByItemId(itemId));
+  @GetMapping("/{itemId}")
+  public ResponseEntity<Long> getFavoriteCountByItem(@Positive @PathVariable long itemId) {
+    return ResponseEntity.ok(favoriteService.countByItemId(itemId));
   }
 }

@@ -8,8 +8,10 @@ package stud.ntnu.backend.model;
   import lombok.NoArgsConstructor;
 
   import java.time.LocalDateTime;
+  import org.hibernate.annotations.CreationTimestamp;
+  import org.hibernate.annotations.UpdateTimestamp;
 
-  @Entity
+@Entity
   @Table(name = "users")
   @Data
   @NoArgsConstructor
@@ -41,9 +43,11 @@ package stud.ntnu.backend.model;
 
       private String phone;
 
+      @CreationTimestamp
       @Column(name = "created_at")
       private LocalDateTime createdAt;
 
+      @UpdateTimestamp
       @Column(name = "updated_at")
       private LocalDateTime updatedAt;
   }

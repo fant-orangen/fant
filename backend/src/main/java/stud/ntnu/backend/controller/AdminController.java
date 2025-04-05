@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.CategoryRequestDto;
+import stud.ntnu.backend.data.UserRequestDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.CategoryService;
@@ -37,58 +38,41 @@ import stud.ntnu.backend.service.UserService;
 @RequiredArgsConstructor
 public class AdminController {
 
-  /**
-   * Service for handling user management operations.
-   */
+
   private final UserService userService;
 
-  /**
-   * Service for handling category management operations.
-   */
   private final CategoryService categoryService;
 
-  /**
-   * Retrieves all registered users in the system.
-   *
-   * @return {@link ResponseEntity} containing a list of all {@link User} entities
-   */
-  @GetMapping("/users")
-  public ResponseEntity<List<User>> getAllUsers() {
-    return ResponseEntity.ok(userService.findAll());
+  @PutMapping("/users/{id}")
+  public ResponseEntity<User> updateUser(@Valid @RequestBody UserRequestDto userRequestDto,
+                                         @Positive @PathVariable Long id) {
+    return ResponseEntity.ok(userService.updateUser(userRequestDto, id));
   }
 
-  /**
-   * Creates a new category in the system.
-   *
-   * @param categoryRequestDto the {@link CategoryRequestDto} containing category details
-   * @return {@link ResponseEntity} containing the created {@link Category}
-   */
+  @DeleteMapping("users/{id}")
+  public ResponseEntity<Void> deleteUser(@Valid @PathVariable Long id) {
+    userService.deleteUser(id);
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/users")
+  public ResponseEntity<List<User>> getAllUsers() {
+    return ResponseEntity.ok(userService.getAll());
+  }
+
   @PostMapping("/category")
   public ResponseEntity<Category> createCategory(
       @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
     return ResponseEntity.ok(categoryService.create(categoryRequestDto));
   }
 
-  /**
-   * Updates an existing category.
-   *
-   * @param id                 the ID of the category to update (must be positive)
-   * @param categoryRequestDto the {@link CategoryRequestDto} containing updated details
-   * @return {@link ResponseEntity} containing the updated {@link Category}
-   */
   @PutMapping("/category/{id}")
-  public ResponseEntity<Category> updateCategory(@Positive @PathVariable Long id,
-                                                 @Valid @RequestBody
-                                                 CategoryRequestDto categoryRequestDto) {
+  public ResponseEntity<Category> updateCategory(@Valid @RequestBody
+                                                 CategoryRequestDto categoryRequestDto,
+                                                 @Positive @PathVariable Long id) {
     return ResponseEntity.ok(categoryService.update(categoryRequestDto, id));
   }
 
-  /**
-   * Deletes a category by its ID.
-   *
-   * @param id the ID of the category to delete (must be positive)
-   * @return empty {@link ResponseEntity} with status 200 if successful
-   */
   @DeleteMapping("/category/{id}")
   public ResponseEntity<Void> deleteCategory(@Positive @PathVariable Long id) {
     categoryService.delete(id);

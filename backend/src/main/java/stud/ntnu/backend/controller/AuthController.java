@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.AuthRequestDto;
 import stud.ntnu.backend.data.AuthResponseDto;
-import stud.ntnu.backend.data.UserRegistrationDto;
-import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.data.UserRequestDto;
 import stud.ntnu.backend.service.UserService;
 import stud.ntnu.backend.util.JwtUtil;
 
@@ -48,8 +47,6 @@ public class AuthController {
   private final JwtUtil jwtUtil;
 
   private final UserService userService;
-
-  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   /**
    * <h3>Generate JWT Token</h3>
@@ -79,7 +76,6 @@ public class AuthController {
           content = @Content(schema = @Schema(implementation = AuthRequestDto.class))
       ) AuthRequestDto request) {
 
-    try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
               request.getEmail(),
@@ -88,18 +84,10 @@ public class AuthController {
       );
 
       return ResponseEntity.ok(new AuthResponseDto(jwtUtil.generateToken(request.getEmail())));
-
-    } catch (BadCredentialsException e) {
-      return ResponseEntity.status(401)
-          .body(new AuthResponseDto(null));
-    } catch (Exception e) {
-      return ResponseEntity.status(500)
-          .body(new AuthResponseDto(null));
-    }
   }
 
   @PostMapping("/register")
-  public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody UserRegistrationDto request) {
+  public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody UserRequestDto request) {
     return ResponseEntity.ok(
         new AuthResponseDto(jwtUtil.generateToken(userService.createUser(request).getEmail())));
   }

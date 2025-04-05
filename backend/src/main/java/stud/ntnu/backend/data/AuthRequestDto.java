@@ -18,6 +18,7 @@ public class AuthRequestDto {
    * <h3> The email of the user.</h3>
    */
   @NotBlank(message = "Email is required")
+  @Email
   private String email;
 
   /**

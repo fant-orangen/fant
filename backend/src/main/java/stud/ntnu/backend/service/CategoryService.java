@@ -36,18 +36,6 @@ public class CategoryService {
   private final ModelMapper modelMapper;
 
   /**
-   * Retrieves a {@link Category} by its ID.
-   *
-   * @param id the ID of the category to retrieve
-   * @return the found {@link Category} entity
-   * @throws EntityNotFoundException if no category is found with the given ID
-   */
-  public Category getCategoryById(Long id) {
-    return categoryRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
-  }
-
-  /**
    * Creates a new {@link Category}.
    *
    * @param categoryRequestDto the {@link CategoryRequestDto} containing category data to create
@@ -75,7 +63,7 @@ public class CategoryService {
    *
    * @param id the ID of the category to delete
    */
-  public void delete(long id) {
+  public void delete(Long id) {
     categoryRepository.deleteById(id);
   }
 
@@ -84,8 +72,20 @@ public class CategoryService {
    *
    * @return a list of all {@link Category} entities
    */
-  public List<Category> findAll() {
+  public List<Category> getAll() {
     return categoryRepository.findAll();
+  }
+
+  /**
+   * Retrieves a {@link Category} by its ID.
+   *
+   * @param id the ID of the category to retrieve
+   * @return the found {@link Category} entity
+   * @throws EntityNotFoundException if no category is found with the given ID
+   */
+  public Category getCategoryById(Long id) {
+    return categoryRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
   }
 
   /**
@@ -95,7 +95,7 @@ public class CategoryService {
    * @return the found {@link Category} entity
    * @throws EntityNotFoundException if no category exists with the specified name
    */
-  public Category findByName(String name) {
+  public Category getCategoryByName(String name) {
     return categoryRepository.findByName(name)
         .orElseThrow(() -> new EntityNotFoundException("Category not found with name: " + name));
   }

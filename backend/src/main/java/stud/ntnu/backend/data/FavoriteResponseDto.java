@@ -7,8 +7,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FavoriteResponseDto {
-  private long id;
-  private long userId;
   private long itemId;
   private LocalDateTime createdAt;
 }

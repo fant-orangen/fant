@@ -33,7 +33,7 @@ public class WebSocketController {
     }
 
     // 2. Get the sender details from the authentication context
-    User sender = userService.getUserByEmail(principal.getName());
+    User sender = userService.getCurrentUser(principal);
 
     // 3. Create a proper MessageCreateDto with sender ID included
     MessageCreateDto createDto = MessageCreateDto.builder()

@@ -1,5 +1,7 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.Optional;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,8 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import stud.ntnu.backend.data.UserRequestDto;
 import stud.ntnu.backend.data.UserResponseDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.UserService;
@@ -38,25 +43,25 @@ public class UserController {
    */
   private final UserService userService;
 
-  private Logger logger = LoggerFactory.getLogger(UserController.class);
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponseDto> getUser(@Positive @PathVariable Long id) {
+    return ResponseEntity.ok(userService.getUserById(id));
+  }
 
-  /**
-   * <h3>Get user by id.</h3>
-   *
-   * @return The user with the given id.
-   */
-  @GetMapping("/id")
-  public ResponseEntity<Long> getUserId() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String email = authentication.getName();
-    logger.info(email);
-
-    User user = userService.getUserByEmail(email);
-    return ResponseEntity.ok(user.getId());
+  @PutMapping("/profile")
+  public ResponseEntity<User> updateUser(@Valid @RequestBody UserRequestDto userRequestDto,
+                                         Principal principal) {
+    return ResponseEntity.ok(
+        userService.updateUser(userRequestDto, userService.getCurrentUserId(principal)));
   }
 
   @GetMapping("/profile")
   public ResponseEntity<User> getCurrentUser(Principal principal) {
     return ResponseEntity.ok(userService.getCurrentUser(principal));
+  }
+
+  @GetMapping("/id")
+  public ResponseEntity<Long> getCurrentUserId(Principal principal) {
+    return ResponseEntity.ok(userService.getCurrentUserId(principal));
   }
 }
