@@ -5,10 +5,10 @@ VALUES ('alice@example.com', 'alice', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFx
 INSERT INTO users (email, display_name, password_hash, role)
 VALUES ('jakob@mail.com', 'jakob', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW', 'ADMIN');
 
-INSERT INTO categories (name, description)
+INSERT INTO categories (name, image_url)
 VALUES ('Test', 'Test');
 
-INSERT INTO categories (name, description)
+INSERT INTO categories (name, image_url)
 VALUES ('Other Category', 'Test');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)

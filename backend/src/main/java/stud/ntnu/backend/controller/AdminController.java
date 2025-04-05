@@ -1,5 +1,7 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import stud.ntnu.backend.data.CategoryRequestDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.CategoryService;
@@ -36,6 +38,7 @@ public class AdminController {
 
   /**
    * <h3>Get all users.</h3>
+   *
    * @return All users as list.
    */
   @GetMapping("/users")
@@ -45,22 +48,27 @@ public class AdminController {
 
   /**
    * <h3>Save a new category to the database.</h3>
-   * @param category The category to be saved.
+   *
+   * @param categoryRequestDto The category to be saved.
    * @return The saved category.
    */
   @PostMapping("/category")
-  public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-    return ResponseEntity.ok(categoryService.save(category));
+  public ResponseEntity<Category> createCategory(@Valid @RequestBody
+                                                 CategoryRequestDto categoryRequestDto) {
+    return ResponseEntity.ok(categoryService.create(categoryRequestDto));
   }
 
 
-  @PutMapping("/category")
-  public ResponseEntity<Category> updateProduct(@RequestBody Category category) {
-    return ResponseEntity.ok(categoryService.save(category));
+  @PutMapping("/category/{id}")
+  public ResponseEntity<Category> updateProduct(@Positive @PathVariable Long id,
+                                                @Valid @RequestBody
+                                                CategoryRequestDto categoryRequestDto) {
+    return ResponseEntity.ok(categoryService.update(categoryRequestDto, id));
   }
 
   @DeleteMapping("/category/{id}")
-  public ResponseEntity<Category> deleteCategory(@PathVariable Long id) {
-    return ResponseEntity.ok(categoryService.delete(id));
+  public ResponseEntity<Void> deleteCategory(@Positive @PathVariable Long id) {
+    categoryService.delete(id);
+    return ResponseEntity.ok().build();
   }
 }

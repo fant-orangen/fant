@@ -1,5 +1,6 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,8 @@ public class CategoryController {
    * @return The category with the given id.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
-    return ResponseEntity.ok(categoryService.findById(id));
+  public ResponseEntity<Category> getCategoryById(@Positive @PathVariable Long id) {
+    return ResponseEntity.ok(categoryService.getCategoryById(id));
   }
 
   @GetMapping

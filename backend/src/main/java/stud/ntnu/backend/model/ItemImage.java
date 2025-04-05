@@ -19,7 +19,7 @@ public class ItemImage {
   @JoinColumn(name = "item_id")
   private Item item;
 
-  @Column(nullable = false)
+  @Column(name = "image_url", nullable = false)
   private String imageUrl;
 
   @Column(nullable = false)
