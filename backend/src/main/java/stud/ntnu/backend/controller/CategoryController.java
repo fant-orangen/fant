@@ -1,5 +1,6 @@
 package stud.ntnu.backend.controller;
 
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,8 @@ import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.service.CategoryService;
 
 /**
- * <h2> The CategoryController class is a REST controller that handles HTTP requests regarding categories.</h2>
+ * <h2>CategoryController</h2>
+ * <p>Controller for public read-only category operations.</p>
  */
 @RestController
 @RequestMapping("/api/category")
@@ -19,22 +21,33 @@ import stud.ntnu.backend.service.CategoryService;
 public class CategoryController {
 
   /**
-   * <h3> The CategoryService. </h3>
+   * <h3>Category Service</h3>
+   * <p>Service handling category business logic.</p>
+   *
+   * @see CategoryService
    */
   private final CategoryService categoryService;
 
   /**
-   * <h3> Get category by id. </h3>
-   * @param id The id of the category.
-   * @return The category with the given id.
+   * <h3>Get Category By ID</h3>
+   * <p>Retrieves a single category by its identifier.</p>
+   *
+   * @param id the ID of the category to retrieve
+   * @return the requested {@link Category}
    */
   @GetMapping("/{id}")
-  public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
-    return ResponseEntity.ok(categoryService.findById(id));
+  public ResponseEntity<Category> getCategoryById(@Positive @PathVariable Long id) {
+    return ResponseEntity.ok(categoryService.getCategoryById(id));
   }
 
+  /**
+   * <h3>Get All Categories</h3>
+   * <p>Retrieves all available categories.</p>
+   *
+   * @return list of all {@link Category} entities
+   */
   @GetMapping
   public ResponseEntity<List<Category>> getAllCategories() {
-    return ResponseEntity.ok(categoryService.findAll());
+    return ResponseEntity.ok(categoryService.getAll());
   }
 }

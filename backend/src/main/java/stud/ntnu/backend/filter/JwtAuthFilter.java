@@ -1,10 +1,12 @@
 package stud.ntnu.backend.filter;
 
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,7 @@ import java.io.IOException;
  * <h2>JwtAuthFilter</h2>
  * <p>Filter for processing JWT authentication in incoming HTTP requests.</p>
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -49,30 +52,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
    */
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+                                  FilterChain filterChain) throws ServletException, IOException {
 
-    final String authHeader = request.getHeader("Authorization");
+    try {
 
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      filterChain.doFilter(request, response);
-      return;
-    }
+      final String authHeader = request.getHeader("Authorization");
 
-    String token = authHeader.substring(7);
-    String username = jwtUtil.extractEmail(token);
-
-    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-      if (jwtUtil.validateToken(token, userDetails.getUsername())) {
-        UsernamePasswordAuthenticationToken authToken =
-            new UsernamePasswordAuthenticationToken(userDetails, null,
-                userDetails.getAuthorities());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        filterChain.doFilter(request, response);
+        return;
       }
-    }
 
-    filterChain.doFilter(request, response);
+      String token = authHeader.substring(7);
+      String username = jwtUtil.extractEmail(token);
+
+      if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+        if (jwtUtil.validateToken(token, userDetails.getUsername())) {
+          UsernamePasswordAuthenticationToken authToken =
+              new UsernamePasswordAuthenticationToken(userDetails, null,
+                  userDetails.getAuthorities());
+          authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+      }
+
+      filterChain.doFilter(request, response);
+
+    } catch (SignatureException e) {
+      log.warn(e.getMessage());
+      response.setStatus(401);
+      response.getWriter().write("Invalid JWT signature");
+    }
   }
 }

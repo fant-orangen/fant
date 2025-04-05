@@ -6,10 +6,18 @@ import org.springframework.stereotype.Repository;
 import stud.ntnu.backend.model.Category;
 
 /**
- * <h2>Category repository</h2>
- * Repository responsible for defining the database functions related to the {@link Category}-model
+ * <h2>CategoryRepository</h2>
+ * <p>Repository for accessing and managing category data.</p>
  */
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+
+  /**
+   * <h3>Find By Name</h3>
+   * <p>Retrieves a category by its exact name.</p>
+   *
+   * @param name the category name to search for
+   * @return {@link Optional} containing the matching category if found
+   */
   Optional<Category> findByName(String name);
 }

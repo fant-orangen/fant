@@ -1,12 +1,13 @@
 package stud.ntnu.backend.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import stud.ntnu.backend.data.ConversationPreviewDto;
@@ -15,6 +16,7 @@ import stud.ntnu.backend.data.MessageCreateDto;
 import stud.ntnu.backend.data.MessageDto;
 import stud.ntnu.backend.data.MessageResponseDto;
 import stud.ntnu.backend.data.MessageUserDto;
+import stud.ntnu.backend.data.WebSocketMessageDto;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.ItemImage;
 import stud.ntnu.backend.model.Message;
@@ -26,220 +28,276 @@ import stud.ntnu.backend.repository.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * <h2>MessageService</h2>
+ * <p>Service for managing messaging between users.</p>
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MessageService {
 
+  /**
+   * <h3>Message Repository</h3>
+   * <p>Data access component for messages.</p>
+   */
   private final MessageRepository messageRepository;
-  private final UserRepository userRepository;
-  private final ItemRepository itemRepository;
-
-  Logger logger = LoggerFactory.getLogger(MessageService.class);
 
   /**
-   * <h3>Save a new message</h3>
-   * <p>Persists a message to the database and returns the created message.</p>
+   * <h3>User Repository</h3>
+   * <p>Data access component for users.</p>
+   */
+  private final UserRepository userRepository;
+
+  /**
+   * <h3>Item Repository</h3>
+   * <p>Data access component for items.</p>
+   */
+  private final ItemRepository itemRepository;
+
+  /**
+   * <h3>Messaging Template</h3>
+   * <p>Component for WebSocket message delivery.</p>
+   */
+  private final SimpMessagingTemplate messagingTemplate;
+
+  /**
+   * <h3>Save Message</h3>
+   * <p>Creates and persists a new message.</p>
    *
-   * @param messageDto DTO containing message data
-   * @return The persisted message as a MessageResponseDto
+   * @param messageDto the message data
+   * @return saved {@link MessageResponseDto}
+   * @throws EntityNotFoundException if sender, receiver or item not found
    */
   @Transactional
   public MessageResponseDto saveMessage(MessageCreateDto messageDto) {
     User sender = userRepository.findById(messageDto.getSenderId())
-        .orElseThrow(() -> new RuntimeException("Sender not found"));
-
+        .orElseThrow(() -> new EntityNotFoundException("Sender not found"));
     User receiver = userRepository.findById(messageDto.getReceiverId())
-        .orElseThrow(() -> new RuntimeException("Receiver not found"));
-
+        .orElseThrow(() -> new EntityNotFoundException("Receiver not found"));
     Item item = itemRepository.findById(messageDto.getItemId())
-        .orElseThrow(() -> new RuntimeException("Item not found"));
+        .orElseThrow(() -> new EntityNotFoundException("Item not found"));
 
-    Message message = Message.builder().sender(sender).receiver(receiver).item(item)
-        .content(messageDto.getContent()).read(false).build();
+    Message message = Message.builder()
+        .sender(sender)
+        .receiver(receiver)
+        .item(item)
+        .content(messageDto.getContent())
+        .read(false)
+        .build();
 
-    logger.debug("Built message object: {}", message);
     Message savedMessage = messageRepository.save(message);
-    logger.info("Successfully saved message with ID: {}", savedMessage.getId());
-
     return mapToMessageResponseDto(savedMessage);
   }
 
   /**
-   * <h3>Get all conversations for a user</h3>
-   * <p>This method retrieves all conversations for a given user, grouping messages by conversation
-   * and returning a list of conversation previews.</p>
+   * <h3>Send WebSocket Message</h3>
+   * <p>Processes and delivers real-time messages via WebSocket.</p>
    *
-   * @param email the email of the user whose conversations are to be retrieved
-   * @return a list of {@link ConversationPreviewDto} objects representing the user's conversations
+   * @param sender     the sending user
+   * @param messageDto the message content
    */
-  public List<ConversationPreviewDto> getUserConversations(String email) {
-    User currentUser = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+  @Transactional
+  public void sendWebSocketMessage(User sender, WebSocketMessageDto messageDto) {
+    MessageCreateDto createDto = MessageCreateDto.builder()
+        .senderId(sender.getId())
+        .receiverId(Long.valueOf(messageDto.getReceiver().getId()))
+        .itemId(Long.valueOf(messageDto.getItem().getId()))
+        .content(messageDto.getMessageContent())
+        .build();
 
-    List<Message> allMessages = messageRepository.findAllByUserInvolved(currentUser.getId());
-
-    Map<String, List<Message>> grouped = groupMessagesByConversation(currentUser, allMessages);
-
-    return grouped.values().stream().filter(conversation -> !conversation.isEmpty())
-        .map(messages -> buildConversationPreview(currentUser, messages)).sorted(
-            Comparator.comparing((ConversationPreviewDto c) -> c.getLastMessage().getSentAt())
-                .reversed()).toList();
+    MessageResponseDto savedMessage = saveMessage(createDto);
+    messagingTemplate.convertAndSend("/topic/messages/" + createDto.getReceiverId(), savedMessage);
   }
 
   /**
-   * <h3>Group messages by conversation</h3>
-   * <p>This method groups messages by conversation based on the sender and receiver.</p>
+   * <h3>Get User Conversations</h3>
+   * <p>Retrieves all conversations for a user.</p>
    *
-   * @param currentUser the user whose conversations are to be grouped
-   * @param messages    the list of messages to be grouped
-   * @return a map where the key is a string representing the conversation and the value is a list
-   * of messages
+   * @param user the requesting user
+   * @return list of {@link ConversationPreviewDto}
    */
-  private Map<String, List<Message>> groupMessagesByConversation(User currentUser,
-      List<Message> messages) {
+  public List<ConversationPreviewDto> getUserConversations(User user) {
+    List<Message> allMessages = messageRepository.findAllByUserInvolved(user.getId());
+    Map<String, List<Message>> grouped = groupMessagesByConversation(user, allMessages);
+
+    return grouped.values().stream()
+        .filter(conversation -> !conversation.isEmpty())
+        .map(messages -> buildConversationPreview(user, messages))
+        .sorted(Comparator.comparing((ConversationPreviewDto c) -> c.getLastMessage().getSentAt())
+            .reversed())
+        .toList();
+  }
+
+  /**
+   * <h3>Get Item Messages</h3>
+   * <p>Retrieves conversation history about a specific item.</p>
+   *
+   * @param user   the requesting user
+   * @param itemId the item ID
+   * @return list of {@link MessageResponseDto}
+   */
+  public List<MessageResponseDto> getItemMessages(User user, Long itemId) {
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+    List<Message> messages = messageRepository.findAllByUserInvolved(user.getId()).stream()
+        .filter(message -> message.getItem().getId().equals(itemId))
+        .collect(Collectors.toList());
+
+    return messages.stream()
+        .map(this::mapToMessageResponseDto)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * <h3>Group Messages By Conversation</h3>
+   * <p>Organizes messages into conversation groups.</p>
+   *
+   * @param user     the requesting user
+   * @param messages list of messages to group
+   * @return map of grouped messages by conversation key
+   */
+  private Map<String, List<Message>> groupMessagesByConversation(User user,
+                                                                 List<Message> messages) {
     Map<String, List<Message>> grouped = new HashMap<>();
-
     for (Message m : messages) {
-      User other =
-          m.getSender().getId().equals(currentUser.getId()) ? m.getReceiver() : m.getSender();
-      Long itemId = m.getItem().getId();
-      String key = other.getId() + "-" + itemId;
-
+      User other = m.getSender().getId().equals(user.getId()) ? m.getReceiver() : m.getSender();
+      String key = other.getId() + "-" + m.getItem().getId();
       grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(m);
     }
-
     return grouped;
   }
 
   /**
-   * <h3>Build a conversation preview</h3>
-   * <p>This method constructs a conversation preview DTO from the provided messages.</p>
+   * <h3>Build Conversation Preview</h3>
+   * <p>Creates a conversation summary from messages.</p>
    *
-   * @param currentUser the user whose conversations are being previewed
-   * @param messages    the list of messages in the conversation
-   * @return a {@link ConversationPreviewDto} object representing the conversation preview
+   * @param user     the requesting user
+   * @param messages list of messages in conversation
+   * @return {@link ConversationPreviewDto} for the conversation
    */
-  private ConversationPreviewDto buildConversationPreview(User currentUser,
-      List<Message> messages) {
+  private ConversationPreviewDto buildConversationPreview(User user, List<Message> messages) {
     messages.sort(Comparator.comparing(Message::getSentAt).reversed());
     Message lastMessage = messages.getFirst();
-    Item item = lastMessage.getItem();
-
-    User otherUser =
-        lastMessage.getSender().getId().equals(currentUser.getId()) ? lastMessage.getReceiver()
-            : lastMessage.getSender();
+    User otherUser = lastMessage.getSender().getId().equals(user.getId()) ?
+        lastMessage.getReceiver() : lastMessage.getSender();
 
     int unreadCount = (int) messages.stream()
-        .filter(m -> m.getReceiver().getId().equals(currentUser.getId()) && !m.isRead()).count();
+        .filter(m -> m.getReceiver().getId().equals(user.getId()) && !m.isRead())
+        .count();
 
-    return ConversationPreviewDto.builder().id(lastMessage.getId()).otherUser(toUserDto(otherUser))
-        .item(toItemDto(item)).lastMessage(toMessageDto(lastMessage))
-        .unreadMessagesCount(unreadCount).relatedItem(toRelatedItemDto(item)).build();
+    return ConversationPreviewDto.builder()
+        .id(lastMessage.getId())
+        .otherUser(toUserDto(otherUser))
+        .item(toItemDto(lastMessage.getItem()))
+        .lastMessage(toMessageDto(lastMessage))
+        .unreadMessagesCount(unreadCount)
+        .relatedItem(toRelatedItemDto(lastMessage.getItem()))
+        .build();
   }
 
   /**
-   * <h3>Convert a User to MessageUserDto</h3>
-   * <p>This method converts a User entity to a MessageUserDto.</p>
+   * <h3>Map To Message Response DTO</h3>
+   * <p>Converts Message entity to response DTO.</p>
    *
-   * @param user the user entity to be converted
-   * @return a {@link MessageUserDto} object representing the user
+   * @param message the message to convert
+   * @return {@link MessageResponseDto}
+   */
+  private MessageResponseDto mapToMessageResponseDto(Message message) {
+    return MessageResponseDto.builder()
+        .id(message.getId())
+        .sender(mapToMessageUserDto(message.getSender()))
+        .receiver(mapToMessageUserDto(message.getReceiver()))
+        .item(new MessageResponseDto.ItemReferenceDto(
+            message.getItem().getId(),
+            message.getItem().getBriefDescription()))
+        .messageContent(message.getContent())
+        .sentDate(message.getSentAt())
+        .build();
+  }
+
+  /**
+   * <h3>Map To Message User DTO</h3>
+   * <p>Converts User entity to message user DTO.</p>
+   *
+   * @param user the user to convert
+   * @return {@link MessageUserDto}
+   */
+  private MessageUserDto mapToMessageUserDto(User user) {
+    return MessageUserDto.builder()
+        .id(user.getId())
+        .email(user.getEmail())
+        .displayName(user.getDisplayName())
+        .build();
+  }
+
+  /**
+   * <h3>Convert To User DTO</h3>
+   * <p>Creates a simplified user DTO for messages.</p>
+   *
+   * @param user the user to convert
+   * @return {@link MessageUserDto}
    */
   private MessageUserDto toUserDto(User user) {
-    return MessageUserDto.builder().id(user.getId()).displayName(user.getDisplayName())
-        .email(user.getEmail()).build();
+    return MessageUserDto.builder()
+        .id(user.getId())
+        .displayName(user.getDisplayName())
+        .email(user.getEmail())
+        .build();
   }
 
   /**
-   * <h3>Convert a Message to MessageDto</h3>
-   * <p>This method converts a Message entity to a MessageDto.</p>
+   * <h3>Convert To Message DTO</h3>
+   * <p>Creates a simplified message DTO.</p>
    *
-   * @param m the message entity to be converted
-   * @return a {@link MessageDto} object representing the message
+   * @param m the message to convert
+   * @return {@link MessageDto}
    */
   private MessageDto toMessageDto(Message m) {
-    return MessageDto.builder().id(m.getId()).content(m.getContent()).sentAt(m.getSentAt())
-        .read(m.isRead()).build();
+    return MessageDto.builder()
+        .id(m.getId())
+        .content(m.getContent())
+        .sentAt(m.getSentAt())
+        .read(m.isRead())
+        .build();
   }
 
   /**
-   * <h3>Convert an Item to ItemPreviewDto</h3>
-   * <p>This method converts an Item entity to an ItemPreviewDto.</p>
+   * <h3>Convert To Item DTO</h3>
+   * <p>Creates an item preview DTO.</p>
    *
-   * @param item the item entity to be converted
-   * @return a {@link ItemPreviewDto} object representing the item
+   * @param item the item to convert
+   * @return {@link ItemPreviewDto}
    */
   private ItemPreviewDto toItemDto(Item item) {
-    String imageUrl =
-        item.getImages() != null && !item.getImages().isEmpty() ? item.getImages().stream()
-            .min(Comparator.comparing(ItemImage::getPosition)).map(ItemImage::getImageUrl)
+    String imageUrl = item.getImages() != null && !item.getImages().isEmpty() ?
+        item.getImages().stream()
+            .min(Comparator.comparing(ItemImage::getPosition))
+            .map(ItemImage::getImageUrl)
             .orElse(null) : null;
 
-    return ItemPreviewDto.builder().id(item.getId()).title(item.getBriefDescription())
-        .price(item.getPrice()).imageUrl(imageUrl).latitude(item.getLatitude())
-        .longitude(item.getLongitude()).build();
+    return ItemPreviewDto.builder()
+        .id(item.getId())
+        .title(item.getBriefDescription())
+        .price(item.getPrice())
+        .imageUrl(imageUrl)
+        .latitude(item.getLatitude())
+        .longitude(item.getLongitude())
+        .build();
   }
 
   /**
-   * <h3>Convert an Item to RelatedItemDto</h3>
-   * <p>This method converts an Item entity to a RelatedItemDto.</p>
+   * <h3>Convert To Related Item DTO</h3>
+   * <p>Creates a minimal item reference DTO.</p>
    *
-   * @param item the item entity to be converted
-   * @return a {@link ConversationPreviewDto.RelatedItemDto} object representing the related item
+   * @param item the item to convert
+   * @return {@link ConversationPreviewDto.RelatedItemDto}
    */
   private ConversationPreviewDto.RelatedItemDto toRelatedItemDto(Item item) {
-    return ConversationPreviewDto.RelatedItemDto.builder().id(item.getId())
-        .title(item.getBriefDescription()).build();
-  }
-
-  /**
-   * <h3>Get messages for a specific item</h3>
-   * <p>This method retrieves all messages related to a specific item for a given user.</p>
-   *
-   * @param email  the email of the user whose messages are to be retrieved
-   * @param itemId the ID of the item whose messages are to be retrieved
-   * @return a list of {@link MessageResponseDto} objects representing the messages for the item
-   */
-  public List<MessageResponseDto> getItemMessages(String email, Long itemId) {
-    User currentUser = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-
-    Item item = itemRepository.findById(itemId)
-        .orElseThrow(() -> new RuntimeException("Item not found"));
-
-    // Find either the owner or potential buyer based on the current user
-    User otherUser;
-    if (item.getSeller().getId().equals(currentUser.getId())) {
-      // Current user is the seller, look for messages from any buyer
-      // This is simplified - in a real scenario, you'd need to determine which buyer
-      otherUser = null; // You'll need logic to identify the specific buyer
-    } else {
-      // Current user is a potential buyer, the other user is the seller
-      otherUser = item.getSeller();
-    }
-
-    List<Message> messages;
-    if (otherUser != null) {
-      messages = messageRepository.findConversation(currentUser.getId(), otherUser.getId(), itemId);
-    } else {
-      // Just get all messages related to the item for this user
-      messages = messageRepository.findAllByUserInvolved(currentUser.getId()).stream()
-          .filter(message -> message.getItem().getId().equals(itemId)).collect(Collectors.toList());
-    }
-
-    return messages.stream().map(this::mapToMessageResponseDto).collect(Collectors.toList());
-  }
-
-  private MessageResponseDto mapToMessageResponseDto(Message message) {
-    return MessageResponseDto.builder().id(message.getId())
-        .sender(mapToMessageUserDto(message.getSender()))
-        .receiver(mapToMessageUserDto(message.getReceiver())).item(
-            new MessageResponseDto.ItemReferenceDto(message.getItem().getId(),
-                message.getItem().getBriefDescription())).messageContent(message.getContent())
-        .sentDate(message.getSentAt()).build();
-  }
-
-  private MessageUserDto mapToMessageUserDto(User user) {
-    return MessageUserDto.builder().id(user.getId()).email(user.getEmail())
-        .displayName(user.getDisplayName()).build();
+    return ConversationPreviewDto.RelatedItemDto.builder()
+        .id(item.getId())
+        .title(item.getBriefDescription())
+        .build();
   }
 }
