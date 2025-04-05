@@ -86,8 +86,10 @@
     "SEND": "Send",
 
     "INBOX": "Inbox",
-    "NO_CONVERSATIONS_YET": "Ingen samtaler enda"
+    "NO_CONVERSATIONS_YET": "Ingen samtaler enda",
 
-
+    "VIEW_DETAILS": "Vis Detaljer",
+    "PRICE": "Pris",
+    "NO_TITLE": "Ingen Tittel"
 
 }

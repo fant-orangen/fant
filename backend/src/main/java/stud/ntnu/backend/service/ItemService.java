@@ -41,6 +41,11 @@ public class ItemService {
   private final ItemViewRepository itemViewRepository;
 
   private final UserRepository userRepository;
+  
+  public Item findById(Long id) {
+    return itemRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+  }
 
   /**
    * <h3>Retrieve all items in preview format</h3>
