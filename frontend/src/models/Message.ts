@@ -3,6 +3,7 @@ import type { ItemPreviewType } from '@/models/Item.ts'
 export interface MessageUser {
   id: number | string;
   username: string;
+  displayName?: string;
 }
 
 export interface Message {
