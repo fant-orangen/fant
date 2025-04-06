@@ -109,13 +109,7 @@ export async function fetchFavoriteItems(
   try {
     // Uses the base URL and auth token from the shared axios instance 'api'.
     // Assumes endpoint is relative to baseURL (e.g., /api/users/me/favorites)
-    const response = await api.get<PaginatedItemsResponse>('/users/me/favorites', {
-      params: {
-        // Send parameters as query string ?page=...&limit=...
-        page: page,
-        limit: limit,
-      },
-    })
+    const response = await api.get<PaginatedItemsResponse>('/favorite');
     return response.data
   } catch (error) {
     console.error(`Error fetching favorite items (page ${page}, limit ${limit}):`, error)
