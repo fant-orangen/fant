@@ -2,6 +2,7 @@ import type { Message, ConversationPreview } from '@/models/Message'
 import api from '@/services/api/axiosInstance' // Keep using axios instance
 import { webSocketService } from '@/services/WebSocketService'
 import { fetchCurrentUserId } from '@/services/UserService.ts'
+import { useUserStore } from '@/stores/UserStore.ts'
 
 // Base URL for the json-server (adjust if needed)
 //const JSON_SERVER_URL = 'http://localhost:3000'
@@ -11,13 +12,15 @@ import { fetchCurrentUserId } from '@/services/UserService.ts'
 //const DUMMY_USER_ID = '1'
 //const DUMMY_USERNAME = 'alice' // Match the dummy data
 
+
 /**
  * Initialize WebSocket connection
  */
 // src/services/MessageService.ts - Fix the initializeMessaging function
 export async function initializeMessaging(): Promise<void> {
   try {
-    const userId = await fetchCurrentUserId() // Add await here
+    const userId = useUserStore().getUserId // Fetch the user ID from the store
+    console.log(userId)
     if (userId) {
       await webSocketService.connect(userId.toString())
       console.log('WebSocket initialized for user:', userId)
@@ -59,6 +62,12 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
     const response = await api.get<Message[]>('/messaging/messages', {
       params: { itemId },
     })
+    const messages = response.data.map(message => ({
+      ...message,
+      sentDate: new Date(message.sentDate)
+    }))
+    const unreadMessages = messages.filter(message => !message.isRead)
+    console.log(`Fetched ${messages.length} messages for itemId: ${itemId}. Unread: ${unreadMessages.length}`)
 
     // Transform dates from strings to Date objects
     return response.data.map((message) => ({
@@ -68,6 +77,42 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
   } catch (error) {
     console.error('Error fetching messages for item:', error)
     throw error
+  }
+}
+
+/**
+ * Marks messages as read by sending their IDs to the server.
+ * Only unread messages that were sent to the current user will be marked as read.
+ * This is added as a separate function in case we want to conditionally mark messages as read
+ *
+ * @param messages - The array of messages to check and potentially mark as read
+ * @returns A promise that resolves when the operation completes
+ * @throws {Error} If the request fails
+ */
+export async function readMessages(messages: Message[]): Promise<void> {
+  try {
+    // Get current user ID to know which messages are "to me"
+    const currentUserId = useUserStore().getUserId;
+    console.log("Current id: " + currentUserId)
+
+    // Filter for unread messages where the current user is the recipient
+    // Use the isRead property from the Message interface
+    const unreadMessageIds = messages
+      .filter(
+        (message) =>
+          message.receiver.id === currentUserId &&
+          !message.isRead
+      )
+      .map((message) => message.id);
+
+    // Only make the API call if there are unread messages
+    if (unreadMessageIds.length > 0) {
+      // Send the array of IDs to be marked as read
+      await api.post('/messaging/readall', { messageIds: unreadMessageIds });
+    }
+  } catch (error) {
+    console.error('Error marking messages as read:', error);
+    throw error;
   }
 }
 

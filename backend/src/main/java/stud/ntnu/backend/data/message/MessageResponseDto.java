@@ -1,5 +1,6 @@
 package stud.ntnu.backend.data.message;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,6 +46,13 @@ public class MessageResponseDto {
    * <p>The actual text content of the message.</p>
    */
   private String messageContent;
+
+  /**
+   * <h3>Is Read</h3>
+   * <p>Status indicating whether the message has been read.</p>
+   */
+  @JsonProperty("isRead")
+  private boolean isRead;
 
   /**
    * <h3>Sent Date</h3>

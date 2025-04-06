@@ -5,9 +5,12 @@ import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import stud.ntnu.backend.data.MessageReadRequestDto;
 import stud.ntnu.backend.data.message.ConversationPreviewDto;
 import stud.ntnu.backend.data.message.MessageResponseDto;
 import stud.ntnu.backend.service.MessageService;
@@ -68,4 +71,14 @@ public class MessageController {
     return ResponseEntity.ok(
         messageService.getItemMessages(userService.getCurrentUser(principal), itemId));
   }
+
+  @PostMapping("/readall")
+  public ResponseEntity<Void> markMessagesAsRead(
+      @RequestBody MessageReadRequestDto request,
+      Principal principal) {
+    messageService.markMessagesAsRead(request.getMessageIds(), userService.getCurrentUser(principal));
+    return ResponseEntity.ok().build();
+  }
+
+
 }

@@ -42,4 +42,16 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
   List<Message> findConversation(@Param("user1Id") Long user1Id,
                                  @Param("user2Id") Long user2Id,
                                  @Param("itemId") Long itemId);
+
+  /**
+   * <h3>Mark Messages as Read</h3>
+   * <p>Updates the read status of multiple messages to true.</p>
+   * <p>Only updates messages where the specified user is the recipient.</p>
+   *
+   * @param messageIds list of message IDs to update
+   * @param userId     ID of the recipient user
+   */
+  @Modifying
+  @Query("UPDATE Message m SET m.read = true WHERE m.id IN :messageIds AND m.receiver.id = :userId AND m.read = false")
+  void markMessagesAsRead(@Param("messageIds") List<Long> messageIds, @Param("userId") Long userId);
 }

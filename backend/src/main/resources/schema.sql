@@ -74,7 +74,7 @@ CREATE TABLE messages
     id          INT AUTO_INCREMENT PRIMARY KEY,
     sender_id   INT  NOT NULL,
     receiver_id INT  NOT NULL,
-    item_id     INT, -- Optional: for context if message relates to an item
+    item_id     INT NOT NULL,
     content     TEXT NOT NULL,
     sent_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `read`      BOOLEAN   DEFAULT FALSE,

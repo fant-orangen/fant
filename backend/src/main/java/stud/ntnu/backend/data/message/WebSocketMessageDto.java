@@ -1,6 +1,8 @@
 package stud.ntnu.backend.data.message;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +29,8 @@ public class WebSocketMessageDto {
    * <h3>Receiver</h3>
    * <p>Recipient information (required).</p>
    */
-  @NotBlank
+  @NotNull(message = "Receiver is required")
+  @Valid
   private ReceiverDto receiver;
 
   /**
