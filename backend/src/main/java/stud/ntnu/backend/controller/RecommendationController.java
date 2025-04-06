@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.CategoryRecommendationDto;
+import stud.ntnu.backend.data.category.CategoryRecommendationDto;
 import stud.ntnu.backend.service.RecommendationService;
 import stud.ntnu.backend.service.UserService;
 

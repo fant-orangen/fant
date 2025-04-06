@@ -1,4 +1,4 @@
-package stud.ntnu.backend.data;
+package stud.ntnu.backend.data.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import lombok.Data;
  * <p>Data transfer object for user registration and profile updates.</p>
  */
 @Data
-public class UserRequestDto {
+public class UserCreateDto {
 
   /**
    * <h3>Email</h3>

@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import stud.ntnu.backend.data.CategoryRequestDto;
+import stud.ntnu.backend.data.category.CategoryRequestDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.repository.CategoryRepository;
 

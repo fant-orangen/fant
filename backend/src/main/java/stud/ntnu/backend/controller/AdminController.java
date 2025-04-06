@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.CategoryRequestDto;
-import stud.ntnu.backend.data.UserRequestDto;
+import stud.ntnu.backend.data.category.CategoryRequestDto;
+import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.CategoryService;
+import stud.ntnu.backend.service.ItemService;
 import stud.ntnu.backend.service.UserService;
 
 /**
@@ -45,18 +46,20 @@ public class AdminController {
    */
   private final CategoryService categoryService;
 
+  private final ItemService itemService;
+
   /**
    * <h3>Update User</h3>
    * <p>Updates an existing user with the provided details.</p>
    *
-   * @param userRequestDto the user data to update
+   * @param userCreateDto the user data to update
    * @param id             the ID of the user to update
    * @return the updated {@link User}
    */
   @PutMapping("/users/{id}")
-  public ResponseEntity<User> updateUser(@Valid @RequestBody UserRequestDto userRequestDto,
+  public ResponseEntity<User> updateUser(@Valid @RequestBody UserCreateDto userCreateDto,
                                          @Positive @PathVariable Long id) {
-    return ResponseEntity.ok(userService.updateUser(userRequestDto, id));
+    return ResponseEntity.ok(userService.updateUser(userCreateDto, id));
   }
 
   /**
@@ -66,7 +69,7 @@ public class AdminController {
    * @param id the ID of the user to delete
    * @return empty response with OK status
    */
-  @DeleteMapping("users/{id}")
+  @DeleteMapping("/users/{id}")
   public ResponseEntity<Void> deleteUser(@Valid @PathVariable Long id) {
     userService.deleteUser(id);
     return ResponseEntity.ok().build();
@@ -121,6 +124,12 @@ public class AdminController {
   @DeleteMapping("/category/{id}")
   public ResponseEntity<Void> deleteCategory(@Positive @PathVariable Long id) {
     categoryService.delete(id);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/item/{id}")
+  public ResponseEntity<Void> deleteItem(@Positive @PathVariable Long id) {
+    itemService.adminDeleteItem(id);
     return ResponseEntity.ok().build();
   }
 }

@@ -1,4 +1,4 @@
-package stud.ntnu.backend.data;
+package stud.ntnu.backend.data.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

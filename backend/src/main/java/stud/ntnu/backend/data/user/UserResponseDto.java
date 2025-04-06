@@ -1,4 +1,4 @@
-package stud.ntnu.backend.data;
+package stud.ntnu.backend.data.user;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

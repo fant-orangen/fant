@@ -1,4 +1,4 @@
-package stud.ntnu.backend.model;
+package stud.ntnu.backend.model.enums;
 
 public enum ItemStatus {
   ACTIVE,

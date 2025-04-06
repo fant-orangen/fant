@@ -1,25 +1,22 @@
 package stud.ntnu.backend.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.ItemPreviewDto;
-import stud.ntnu.backend.data.ItemDetailsDto;
-import stud.ntnu.backend.data.RecommendedItemsRequestDto;
+import stud.ntnu.backend.data.item.ItemCreateDto;
+import stud.ntnu.backend.data.item.ItemPreviewDto;
+import stud.ntnu.backend.data.item.ItemDetailsDto;
+import stud.ntnu.backend.data.item.RecommendedItemsRequestDto;
 import stud.ntnu.backend.service.ItemService;
 import stud.ntnu.backend.service.UserService;
 
@@ -49,6 +46,27 @@ public class ItemController {
    * @see UserService
    */
   private final UserService userService;
+
+  @PostMapping
+  public ResponseEntity<ItemDetailsDto> createItem(@Valid ItemCreateDto requestDto,
+                                                   Principal principal) {
+    return ResponseEntity.ok(
+        itemService.createItem(userService.getCurrentUser(principal), requestDto));
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<ItemDetailsDto> updateItem(@Valid ItemCreateDto requestDto,
+                                                   @Positive @PathVariable Long id,
+                                                   Principal principal) {
+    return ResponseEntity.ok(
+        itemService.updateItem(userService.getCurrentUser(principal), requestDto, id));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteItem(@Positive @PathVariable Long id, Principal principal) {
+    itemService.deleteItem(userService.getCurrentUser(principal), id);
+    return ResponseEntity.ok().build();
+  }
 
   /**
    * <h3>Get All Items</h3>

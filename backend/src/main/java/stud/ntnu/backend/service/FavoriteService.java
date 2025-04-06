@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import stud.ntnu.backend.data.FavoriteResponseDto;
+import stud.ntnu.backend.data.favorite.FavoriteResponseDto;
 import stud.ntnu.backend.model.Favorite;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;

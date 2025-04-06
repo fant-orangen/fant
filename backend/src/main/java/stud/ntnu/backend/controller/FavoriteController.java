@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.FavoriteResponseDto;
+import stud.ntnu.backend.data.favorite.FavoriteResponseDto;
 import stud.ntnu.backend.service.FavoriteService;
 import stud.ntnu.backend.service.UserService;
 

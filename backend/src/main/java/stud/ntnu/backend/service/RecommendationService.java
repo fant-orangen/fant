@@ -2,7 +2,7 @@ package stud.ntnu.backend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import stud.ntnu.backend.data.CategoryRecommendationDto;
+import stud.ntnu.backend.data.category.CategoryRecommendationDto;
 import stud.ntnu.backend.model.ItemView;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.ItemViewRepository;

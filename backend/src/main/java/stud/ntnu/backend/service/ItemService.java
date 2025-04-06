@@ -1,22 +1,25 @@
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-import stud.ntnu.backend.data.ItemDetailsDto;
-import stud.ntnu.backend.data.ItemPreviewDto;
+import stud.ntnu.backend.data.item.ItemCreateDto;
+import stud.ntnu.backend.data.item.ItemDetailsDto;
+import stud.ntnu.backend.data.item.ItemPreviewDto;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.ItemImage;
 import stud.ntnu.backend.model.ItemView;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.ItemRepository;
 import stud.ntnu.backend.repository.ItemViewRepository;
-import stud.ntnu.backend.repository.UserRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -41,6 +44,37 @@ public class ItemService {
    * <p>Data access component for item view tracking.</p>
    */
   private final ItemViewRepository itemViewRepository;
+
+  private final ModelMapper modelMapper;
+
+  @Transactional
+  public ItemDetailsDto createItem(User seller, ItemCreateDto itemCreateDto) {
+    return mapToItemDetailsDto(itemRepository.save(fromCreateDto(seller, itemCreateDto)));
+  }
+
+  @Transactional
+  public ItemDetailsDto updateItem(User seller, ItemCreateDto itemCreateDto, Long id) {
+    Item item = fromCreateDto(seller, itemCreateDto);
+    item.setId(id);
+    return mapToItemDetailsDto(itemRepository.save(item));
+  }
+
+  @Transactional
+  public void deleteItem(User seller, Long id) {
+    Item item = itemRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + id));
+    if (!item.getSeller().equals(seller)) {
+      throw new BadCredentialsException("You are not allowed to delete this item");
+    }
+    itemRepository.delete(item);
+  }
+
+  @Transactional
+  public void adminDeleteItem(Long id) {
+    Item item = itemRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + id));
+    itemRepository.delete(item);
+  }
 
   /**
    * <h3>Get All Item Previews</h3>
@@ -213,5 +247,11 @@ public class ItemService {
 
     Collections.shuffle(result);
     return result.size() > itemLimit ? result.subList(0, itemLimit) : result;
+  }
+
+  private Item fromCreateDto(User seller, ItemCreateDto itemCreateDto) {
+    Item item = modelMapper.map(itemCreateDto, Item.class);
+    item.setSeller(seller);
+    return item;
   }
 }
