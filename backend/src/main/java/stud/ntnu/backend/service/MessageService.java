@@ -213,6 +213,7 @@ public class MessageService {
             message.getItem().getId(),
             message.getItem().getBriefDescription()))
         .messageContent(message.getContent())
+        .isRead(message.isRead())
         .sentDate(message.getSentAt())
         .build();
   }
