@@ -12,13 +12,15 @@ import { useUserStore } from '@/stores/UserStore.ts'
 //const DUMMY_USER_ID = '1'
 //const DUMMY_USERNAME = 'alice' // Match the dummy data
 
+
 /**
  * Initialize WebSocket connection
  */
 // src/services/MessageService.ts - Fix the initializeMessaging function
 export async function initializeMessaging(): Promise<void> {
   try {
-    const userId = await fetchCurrentUserId() // Add await here
+    const userId = useUserStore().getUserId // Fetch the user ID from the store
+    console.log(userId)
     if (userId) {
       await webSocketService.connect(userId.toString())
       console.log('WebSocket initialized for user:', userId)
@@ -90,8 +92,8 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
 export async function readMessages(messages: Message[]): Promise<void> {
   try {
     // Get current user ID to know which messages are "to me"
-    const userStore = useUserStore();
-    const currentUserId = userStore.getUserId;
+    const currentUserId = useUserStore().getUserId;
+    console.log("Current id: " + currentUserId)
 
     // Filter for unread messages where the current user is the recipient
     // Use the isRead property from the Message interface
