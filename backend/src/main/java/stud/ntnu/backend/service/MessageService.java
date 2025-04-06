@@ -306,7 +306,7 @@ public class MessageService {
    * <h3>Mark Messages as Read</h3>
    * <p>Updates specified messages as read if the current user is the recipient.</p>
    *
-   * @param messageIds  list of message IDs to mark as read
+   * @param messageIds  list of message IDs to mark as read TODO: Add transactional to any and all transactional methods
    * @param currentUser the current authenticated user
    */
   @Transactional

@@ -60,6 +60,12 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
     const response = await api.get<Message[]>('/messaging/messages', {
       params: { itemId },
     })
+    const messages = response.data.map(message => ({
+      ...message,
+      sentDate: new Date(message.sentDate)
+    }))
+    const unreadMessages = messages.filter(message => !message.isRead)
+    console.log(`Fetched ${messages.length} messages for itemId: ${itemId}. Unread: ${unreadMessages.length}`)
 
     // Transform dates from strings to Date objects
     return response.data.map((message) => ({
