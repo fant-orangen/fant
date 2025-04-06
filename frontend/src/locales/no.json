@@ -3,6 +3,7 @@
     "APP_LANGUAGE_CHANGE": "Bytt språk",
     "APP_LOGOUT": "logg ut",
     "category": {
+        "allItems": "All",
         "travel" : "Reise",
         "appliance" : "Hvitevarer",
         "boat" : "Båt",

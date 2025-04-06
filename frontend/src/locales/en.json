@@ -3,6 +3,7 @@
     "APP_LANGUAGE_CHANGE": "Change language",
     "APP_LOGOUT": "log out",
     "category": {
+        "allItems": "All",
         "travel" : "Travel",
         "appliance" : "Appliances",
         "boat" : "Boats",

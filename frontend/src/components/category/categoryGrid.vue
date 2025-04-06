@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { Category } from '@/models/Category';
 import CategoryButton from "./CategoryButton.vue";
 import { fetchCategories } from '@/services/CategoryService.ts';
+
+// Set up i18n
+const { t } = useI18n();
 
 // Import icons directly
 import travelIcon from '@/assets/icons/travelIcon.svg';
@@ -48,6 +52,22 @@ const iconMap: Record<string, string> = {
   Art: artIcon,
 };
 
+// Map of category names to translation keys
+const translationKeyMap: Record<string, string> = {
+  'Travel': 'category.travel',
+  'Appliance': 'category.appliance',
+  'Boat': 'category.boat',
+  'Book': 'category.book',
+  'Camera': 'category.cameras',
+  'Car': 'category.cars',
+  'Clothes': 'category.clothes',
+  'Computer': 'category.computers',
+  'Furniture': 'category.furniture',
+  'Motorcycle': 'category.motorcycle',
+  'Phone': 'category.phone',
+  'Art': 'category.art'
+};
+
 // Load categories from API
 async function loadCategories() {
   try {
@@ -65,6 +85,11 @@ async function loadCategories() {
         resolvedIcon = matchedIconKey ? iconMap[matchedIconKey] : '/fallback-icon.png'; // Use fallback if not found
       }
       category.imageUrl = resolvedIcon;
+
+      // Add translation key to the category if a mapping exists
+      if (category.name && translationKeyMap[category.name]) {
+        category.translationKey = translationKeyMap[category.name];
+      }
     });
   } catch (error) {
     console.error("Error loading categories:", error);
@@ -100,14 +125,14 @@ onMounted(loadCategories);
           <rect x="14" y="14" width="7" height="7" rx="1" />
         </svg>
       </span>
-      <span class="category-label">All Items</span>
+      <span class="category-label">{{ t('category.allItems') }}</span>
     </button>
 
-    <!-- Existing category buttons -->
+    <!-- Existing category buttons with translation -->
     <CategoryButton
       v-for="category in categories"
       :key="category.id?.toString() || `temp-${Math.random()}`"
-      :label="category.name"
+      :label="category.translationKey ? t(category.translationKey) : category.name"
       :icon="category.imageUrl"
       :compact="isVertical"
       :active="selectedCategoryId === category.id?.toString()"
