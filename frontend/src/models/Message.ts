@@ -15,6 +15,7 @@ export interface Message {
     title: string;
   }
   messageContent: string;
+  content?: string;
   sentDate: Date;
 }
 
@@ -22,7 +23,7 @@ export interface ConversationPreview {
   id: number | string;
   otherUser: MessageUser;
   item: ItemPreviewType;
-  lastMessage: Message | null; // Preview snippet of last message
+  lastMessage: Message | null;
   unreadMessagesCount: number;
   relatedItem?: {
     id: number | string;
