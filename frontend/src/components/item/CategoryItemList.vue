@@ -1,61 +1,52 @@
-<!-- frontend/src/components/CategoryItemList.vue -->
 <template>
   <div class="item-previews thumbnail-container">
-    <ItemPreview v-for="item in items" :key="item.id" :item="item" />
+    <ItemList
+      :fetchFunction="fetchItems"
+      :fetchParams="[props.categoryId]"
+      emptyMessage="No items found in this category."
+      :pageSize="12"
+      :paginationEnabled="false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { defineProps } from 'vue';
 import {
-  fetchItemsByDistribution,
+  fetchPreviewItemsByCategoryId,
   fetchPreviewItems,
-  fetchPreviewItemsByCategoryId
-} from '@/services/ItemService.ts'
-import type { ItemPreviewType } from '@/models/Item'
-import ItemPreview from '@/components/item/ItemPreview.vue'
+  fetchItemsByDistribution
+} from '@/services/ItemService.ts';
 import {
   fetchCategoryRecommendations,
   fetchUserViewCount
-} from '@/services/RecommendationService.ts'
+} from '@/services/RecommendationService.ts';
+import ItemList from '@/components/item/ItemList.vue';
 
-const props = defineProps<{ categoryId: string | null }>()
-const items = ref<ItemPreviewType[]>([])
-
+const props = defineProps<{ categoryId: string | null }>();
 const minimumViews = 5;
 
-async function fetchItems() {
-  try {
-    if (props.categoryId) {
-      items.value = await fetchPreviewItemsByCategoryId(props.categoryId)
-    } else {
-      // Insert new code here
-      try {
-        // Fetch the user's view count
-        const viewCount = await fetchUserViewCount()
-        console.log(`User view count: ${viewCount}`)
-
-        if (viewCount > minimumViews) {
-          // User has enough views for personalized recommendations
-          console.log('Using personalized recommendations')
-          const recommendations = await fetchCategoryRecommendations()
-          items.value = await fetchItemsByDistribution(recommendations)
-        } else {
-          // Not enough views, show regular items
-          console.log('Using regular item list (not enough views)')
-          items.value = await fetchPreviewItems()
-        }
-      } catch (error) {
-        console.error('Error checking user views or fetching recommendations:', error)
-        // Fallback to standard items if there's an error
-        items.value = await fetchPreviewItems()
+// Wrapper function to handle pagination
+async function fetchItems(categoryId: string | null) {
+  if (categoryId) {
+    // Modify your API service to accept pagination parameters
+    return await fetchPreviewItemsByCategoryId(categoryId); //not added pagination.
+  } else {
+    try {
+      const viewCount = await fetchUserViewCount();
+      if (viewCount > minimumViews) {
+        const recommendations = await fetchCategoryRecommendations();
+        // Modify your API service to accept pagination parameters
+        return await fetchItemsByDistribution(recommendations); //not added pagination
+      } else {
+        // Modify your API service to accept pagination parameters
+        return await fetchPreviewItems(); //not pagination
       }
+    } catch (error) {
+      console.error('Error with recommendations:', error);
+      // Modify your API service to accept pagination parameters
+      return await fetchPreviewItems(); //not pagination
     }
-  } catch (error) {
-    console.error('Error fetching items:', error)
   }
 }
-
-onMounted(fetchItems)
-watch(() => props.categoryId, fetchItems)
 </script>
