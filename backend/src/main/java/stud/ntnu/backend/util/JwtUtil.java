@@ -52,6 +52,7 @@ public class JwtUtil {
       // Find user and get their role
       userRepository.findByEmail(email).ifPresent(user -> {
         claims.put("role", user.getRole().toString());
+        claims.put("userId", user.getId());
       });
       return createToken(claims, email);
     }

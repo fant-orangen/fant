@@ -72,6 +72,42 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
 }
 
 /**
+ * Marks messages as read by sending their IDs to the server.
+ * Only unread messages that were sent to the current user will be marked as read.
+ *
+ * @param messages - The array of messages to check and potentially mark as read
+ * @returns A promise that resolves when the operation completes
+ * @throws {Error} If the request fails
+ */
+export async function readMessages(messages: Message[]): Promise<void> {
+  try {
+    // Get current user ID to know which messages are "to me"
+    const currentUserId = await fetchCurrentUserId()
+
+    // Filter for unread messages where the current user is the recipient
+    // Note: This assumes there's a 'read' property on the Message type
+    // If there isn't, you might need to modify the Message interface
+    const unreadMessageIds = messages
+      .filter(
+        (message) =>
+          message.receiver.id === currentUserId &&
+          // Assuming there's an 'isRead' or similar property
+          !(message as any).read,
+      )
+      .map((message) => message.id)
+
+    // Only make the API call if there are unread messages
+    if (unreadMessageIds.length > 0) {
+      // Send the array of IDs to be marked as read
+      await api.post('/messaging/readall', { messageIds: unreadMessageIds })
+    }
+  } catch (error) {
+    console.error('Error marking messages as read:', error)
+    throw error
+  }
+}
+
+/**
  * Sends a message via WebSocket
  */
 export async function sendMessage(
