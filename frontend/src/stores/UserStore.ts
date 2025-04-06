@@ -12,8 +12,8 @@ import api from '@/services/api/axiosInstance';
  */
 export const useUserStore = defineStore("user", () => {
   // Reactive state for authentication.
-  const token = ref<string | null>(null);
-  const username = ref<string | null>(null);
+  const token = ref<string | null>(localStorage.getItem('token'));
+  const username = ref<string | null>(localStorage.getItem('username'));
   const role = ref<string | null>(null);
 
   // Reactive state for the user profile.
@@ -138,6 +138,8 @@ export const useUserStore = defineStore("user", () => {
     username.value = null;
     role.value = null;
     profile.value = { email: '', firstName: '', lastName: '', phoneNumber: '' };
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
   }
 
   // Computed getters for accessing state reactively.
