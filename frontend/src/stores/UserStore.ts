@@ -136,6 +136,7 @@ export const useUserStore = defineStore("user", () => {
   function logout() {
     token.value = null;
     username.value = null;
+    role.value = null;
     profile.value = { email: '', firstName: '', lastName: '', phoneNumber: '' };
   }
 
