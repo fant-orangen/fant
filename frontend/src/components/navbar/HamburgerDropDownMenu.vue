@@ -18,6 +18,7 @@
       </button>
 
       <div class="menu-content">
+        <NavbarLanguageSelector />
         <div class="main-links">
           <RouterLink to="/map" @click="closeMenu">
             <IconWithText :icon-src="mapIcon" :text="$t('MAP')" />
@@ -25,7 +26,7 @@
         </div>
 
         <div class="user-links">
-          <NavbarLanguageSelector />
+
           <template v-if="loggedIn">
             <RouterLink to="/create-listing/start" @click="closeMenu">
               <IconWithText :icon-src="addIcon" :text="$t('APP_LISTING_CREATE_NEW')" />
@@ -108,48 +109,74 @@ const handleLogout = () => {
   position: relative;
   z-index: 1000;
 }
-.dropdown-menu {
-  position: fixed;
-  z-index: 999;
-}
 
+/* Hamburger button styling */
 .hamburger-button {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1002;
+  position: relative;
+}
+
+/* Styling for the static hamburger icon */
+.hamburger-icon {
+  width: 30px;
+  height: auto;
+}
+
+/* Container for animated hamburger lines – hidden by default */
+.hamburger-lines {
+  display: none;
   flex-direction: column;
   justify-content: space-around;
   width: 30px;
   height: 24px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
 }
 
-.hamburger-button span {
+/* When active, hide the static icon and show the animated lines */
+.hamburger-button.is-active .hamburger-icon {
+  display: none;
+}
+
+.hamburger-button.is-active .hamburger-lines {
+  display: flex;
+}
+
+/* Animated hamburger lines styling */
+.hamburger-lines span {
+  display: block;
   width: 30px;
   height: 2px;
   background: #333;
   border-radius: 10px;
   transition: all 0.3s linear;
-  position: relative;
   transform-origin: 1px;
 }
 
-.hamburger-button.is-active span:first-child {
+/* Transformations for active state */
+.hamburger-button.is-active .hamburger-lines span:first-child {
   transform: rotate(45deg);
 }
 
-.hamburger-button.is-active span:nth-child(2) {
+.hamburger-button.is-active .hamburger-lines span:nth-child(2) {
   opacity: 0;
   transform: translateX(20px);
 }
 
-.hamburger-button.is-active span:nth-child(3) {
+.hamburger-button.is-active .hamburger-lines span:nth-child(3) {
   transform: rotate(-45deg);
 }
 
+/* Dropdown menu styling */
 .dropdown-menu {
   position: fixed;
+  z-index: 1001;
   top: 0;
   right: -100%;
   width: 80%;
@@ -162,10 +189,23 @@ const handleLogout = () => {
   overflow-y: auto;
 }
 
+/* Dropdown menu open state */
 .dropdown-menu.is-open {
   right: 0;
 }
 
+/* Backdrop for closing the menu on click */
+.menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* Menu content and link styling */
 .menu-content {
   display: flex;
   flex-direction: column;
@@ -206,7 +246,9 @@ const handleLogout = () => {
   width: 100%;
   font-family: inherit;
 }
-.close-button{
+
+/* Close button for the dropdown menu */
+.close-button {
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -218,6 +260,7 @@ const handleLogout = () => {
   align-items: center;
   justify-content: center;
 }
+
 .close-button img {
   width: 30px;
   height: 30px;

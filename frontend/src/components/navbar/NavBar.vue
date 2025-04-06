@@ -1,20 +1,22 @@
 <template>
   <header class="nav">
-    <div class="logo">
-      <RouterLink to="/">fant<span class="domain">.no</span></RouterLink>
+    <div class="logo-area">
+      <div class="logo">
+        <RouterLink to="/">fant<span class="domain">.no</span></RouterLink>
+      </div>
+      <NavbarLanguageSelector class="language-selector-desktop" />
     </div>
 
-    <!-- Navigation container -->
     <div class="nav-container">
-      <!-- Wide screen navigation -->
       <WideScreenNavBar class="desktop-nav" />
-      <!-- Mobile hamburger menu -->
       <HamburgerDropDownMenu class="mobile-nav" />
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+// Import the language selector
+import NavbarLanguageSelector from './LanguageSelector.vue'; // Adjust path if needed
 import WideScreenNavBar from './WideScreenNavBar.vue';
 import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
 </script>
@@ -24,11 +26,17 @@ import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
   background-color: #fff;
   border-bottom: 1px solid #eee;
   width: 100%;
   box-sizing: border-box;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .logo a {
@@ -38,6 +46,7 @@ import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
   color: #000000;
   position: relative;
   background-color: white;
+  display: block;
 }
 
 .logo a::after {
@@ -60,23 +69,19 @@ import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
 }
 
 .nav-container {
-  flex: 1;
   display: flex;
   justify-content: flex-end;
 }
 
-/* Desktop styles */
-@media (min-width: 1200px) {
-  .mobile-nav {
-    display: none;
-  }
-  .desktop-nav {
-    display: flex;
-  }
+.language-selector-desktop {
+  display: none;
 }
 
-/* Tablet styles */
-@media (min-width: 810px) and (max-width: 1199px) {
+/* Desktop styles */
+@media (min-width: 810px) {
+  .language-selector-desktop {
+    display: block;
+  }
   .mobile-nav {
     display: none;
   }
@@ -93,16 +98,18 @@ import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
   .mobile-nav {
     display: block;
   }
-
   .nav {
-    padding: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  .logo-area {
+    gap: 0.75rem;
   }
 }
 
 /* Extra small screens */
 @media (max-width: 480px) {
   .nav {
-    padding: 0.75rem;
+    padding: 0.4rem 0.75rem;
   }
 
   .logo a {
