@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import stud.ntnu.backend.data.favorite.FavoriteResponseDto;
+import stud.ntnu.backend.exception.AlreadyFavoritedException;
 import stud.ntnu.backend.model.Favorite;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
@@ -45,6 +47,10 @@ public class FavoriteService {
   public void add(User user, Long itemId) {
     Item item = itemRepository.findById(itemId)
         .orElseThrow(() -> new EntityNotFoundException("Item not found with id " + itemId));
+    if (favoriteRepository.existsByUserIdAndItemId(user.getId(), itemId)) {
+      throw new AlreadyFavoritedException(
+          "User " + user.getId() + " already has favorited item " + itemId);
+    }
     favoriteRepository.save(Favorite.builder().user(user).item(item).build());
   }
 

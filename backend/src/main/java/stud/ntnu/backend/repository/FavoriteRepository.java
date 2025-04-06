@@ -40,4 +40,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
    * @return total number of favorites for the item
    */
   Long countByItemId(Long itemId);
+
+  boolean existsByUserIdAndItemId(Long userId, Long itemId);
 }
