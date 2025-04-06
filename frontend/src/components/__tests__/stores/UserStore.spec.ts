@@ -30,6 +30,9 @@ describe('UserStore', () => {
     authService = await import('@/services/api/authService');
     userService = await import('@/services/api/userService');
     api = (await import('@/services/api/axiosInstance')).default; // Get the mocked default export
+
+    const store = useUserStore();
+    store.logout();
   });
 
 

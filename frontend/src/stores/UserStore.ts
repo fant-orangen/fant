@@ -12,9 +12,22 @@ import api from '@/services/api/axiosInstance';
  */
 export const useUserStore = defineStore("user", () => {
   // Reactive state for authentication.
-  const token = ref<string | null>(null);
-  const username = ref<string | null>(null);
-  const role = ref<string | null>(null);
+  const token = ref<string | null>(localStorage.getItem('token'));
+  const username = ref<string | null>(localStorage.getItem('username'));
+  const role = ref<string | null>(localStorage.getItem('role'));
+
+  if (token.value && !role.value) {
+    try {
+      const tokenParts = token.value.split('.');
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        role.value = payload.role;
+        localStorage.setItem('role', payload.role);
+      }
+    } catch (error) {
+      console.error("Error parsing token:", error);
+    }
+  }
 
   // Reactive state for the user profile.
   // Fields here should match what your backend returns for a user profile.
@@ -33,14 +46,17 @@ export const useUserStore = defineStore("user", () => {
    * @throws {Error} If the login status is not 200.
    */
   function login(status: number, tokenStr: string, user: string) {
-    //console.log(status);
-    console.log("test");
-    //console.log("string: " + tokenStr);
     if (status === 200) {
       token.value = tokenStr;
-      console.log("Token" + tokenStr);
-
       username.value = user;
+
+      // Extract role from token and save to localStorage
+      const tokenParts = tokenStr.split('.');
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        role.value = payload.role;
+        localStorage.setItem('role', payload.role);
+      }
 
       localStorage.setItem('token', tokenStr);
       localStorage.setItem('username', user);
@@ -64,8 +80,7 @@ export const useUserStore = defineStore("user", () => {
       console.log("Login response:", response.data);
 
       // Extract token from response.data.data (the structure returned by backend)
-      let tokenStr: string;
-      tokenStr = response.data.token;
+      const tokenStr = response.data.token;
 
       console.log("Token type:", typeof tokenStr);
 
@@ -138,6 +153,9 @@ export const useUserStore = defineStore("user", () => {
     username.value = null;
     role.value = null;
     profile.value = { email: '', firstName: '', lastName: '', phoneNumber: '' };
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
   }
 
   // Computed getters for accessing state reactively.
