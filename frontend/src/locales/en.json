@@ -85,5 +85,7 @@
 
     "VIEW_DETAILS": "View details",
     "PRICE": "Price",
-    "NO_TITLE": "No title"
+    "NO_TITLE": "No title",
+
+    "START_CONVERSATION": "Start the conversation"
 }
