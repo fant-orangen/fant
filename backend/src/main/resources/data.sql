@@ -5,6 +5,9 @@ VALUES ('alice@example.com', 'alice', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFx
 INSERT INTO users (email, display_name, password_hash, role)
 VALUES ('jakob@mail.com', 'jakob', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW', 'ADMIN');
 
+INSERT INTO users (email, display_name, password_hash)
+VALUES ('ola@norge.no', 'ola', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+
 INSERT INTO categories (name, image_url)
 VALUES ('Travel', 'travel');
 
@@ -124,3 +127,6 @@ VALUES (2, 1, 3, 'Yes, it is! Are you interested in buying it?', DATEADD('HOUR',
 -- Example 3: Using current timestamp
 INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
 VALUES (1, 2, 3, 'I am! How fresh is it?', CURRENT_TIMESTAMP(), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Hi!', DATEADD('HOUR', -1, CURRENT_TIMESTAMP()), false);

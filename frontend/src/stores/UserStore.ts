@@ -165,6 +165,7 @@ export const useUserStore = defineStore("user", () => {
   const loggedIn = computed(() => token.value !== null);
   const getUsername = computed(() => username.value);
   const getToken = computed(() => token.value);
+  const getUserId = computed(() => userId.value);
 
   return {
     token,
@@ -180,6 +181,7 @@ export const useUserStore = defineStore("user", () => {
     logout,
     loggedIn,
     getUsername,
-    getToken
+    getToken,
+    getUserId
   };
 });
