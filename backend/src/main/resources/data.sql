@@ -104,7 +104,6 @@ VALUES (6, 'https://i.ibb.co/h1922gsJ/velociraptor.webp', 0);
 INSERT INTO item_images (item_id, image_url, position)
 VALUES (7, 'https://i.ibb.co/Y5mZ4DJ/15-planks.jpg', 0);
 
-
 -- Insert mock images for item 8 (Bringebærsyltetøy)
 INSERT INTO item_images (item_id, image_url, position)
 VALUES (8, 'https://i.ibb.co/ktPs8NS/syltetoy.png', 0);

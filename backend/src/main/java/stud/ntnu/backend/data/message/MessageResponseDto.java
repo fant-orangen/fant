@@ -47,6 +47,12 @@ public class MessageResponseDto {
   private String messageContent;
 
   /**
+   * <h3>Is Read</h3>
+   * <p>Status indicating whether the message has been read.</p>
+   */
+  private boolean isRead;
+
+  /**
    * <h3>Sent Date</h3>
    * <p>Timestamp when the message was sent.</p>
    */

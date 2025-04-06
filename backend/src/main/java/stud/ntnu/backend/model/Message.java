@@ -72,6 +72,7 @@ public class Message {
   @Column(name = "sent_at", nullable = false)
   private LocalDateTime sentAt;
 
+
   /**
    * <h3>Read Status</h3>
    * <p>Indicates whether the message has been read (default: false).</p>
