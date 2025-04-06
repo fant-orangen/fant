@@ -106,7 +106,6 @@
  */
 
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import ImageGallery from '@/components/show/ImageGallery.vue';
 import HeartIcon from '@/components/toggle/HeartIcon.vue';
 import type { ItemDetailsType } from '@/models/Item';
@@ -125,7 +124,6 @@ const item = ref<ItemDetailsType | null>(null);
 const loading = ref(true);
 const error = ref(false);
 const errorMessage = ref("Failed to load item details. Please try again later.");
-const router = useRouter();
 
 /**
  * Computed property to determine if location data is available
