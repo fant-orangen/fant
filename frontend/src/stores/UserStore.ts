@@ -13,6 +13,7 @@ export const useUserStore = defineStore("user", () => {
   // Reactive state for authentication.
   const token = ref<string | null>(null);
   const username = ref<string | null>(null);
+  const role = ref<string | null>(null);
 
   // Reactive state for the user profile.
   // Fields here should match what your backend returns for a user profile.
@@ -66,6 +67,18 @@ export const useUserStore = defineStore("user", () => {
 
       if (response.status !== 200 || !tokenStr) {
         throw new Error("Login Info Error");
+      }
+
+      // Decode and extract role from JWT token
+      const tokenParts = tokenStr.split('.');
+      if (tokenParts.length === 3) {
+        // Base64 decode the payload
+        const payload = JSON.parse(atob(tokenParts[1]));
+        console.log("JWT Payload:", payload);
+        console.log("User role:", payload.role);
+
+        // Store the role in state
+        role.value = payload.role;
       }
 
       login(response.status, tokenStr, user);
@@ -132,6 +145,7 @@ export const useUserStore = defineStore("user", () => {
     username,
     profile,
     login,
+    role,
     verifyLogin,
     registerUser,
     fetchProfile,

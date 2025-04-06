@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import stud.ntnu.backend.repository.UserRepository;
 
 // TODO: remove everything related to claims that's unnecessary
 /**
@@ -32,6 +33,13 @@ public class JwtUtil {
      */
     private final long jwtExpirationMs = 1000 * 60 * 60 * 5;
 
+    private final UserRepository userRepository;
+
+  // Add constructor for dependency injection
+   public JwtUtil(UserRepository userRepository) {
+      this.userRepository = userRepository;
+    }
+
     /**
      * <h3>Generate a JWT token</h3>
      * <p>Creates a JWT token for the given email.</p>
@@ -40,8 +48,12 @@ public class JwtUtil {
      * @return the generated JWT token
      */
     public String generateToken(String email) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
+      Map<String, Object> claims = new HashMap<>();
+      // Find user and get their role
+      userRepository.findByEmail(email).ifPresent(user -> {
+        claims.put("role", user.getRole().toString());
+      });
+      return createToken(claims, email);
     }
 
     /**
