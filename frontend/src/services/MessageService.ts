@@ -2,6 +2,7 @@ import type { Message, ConversationPreview } from '@/models/Message'
 import api from '@/services/api/axiosInstance' // Keep using axios instance
 import { webSocketService } from '@/services/WebSocketService'
 import { fetchCurrentUserId } from '@/services/UserService.ts'
+import { useUserStore } from '@/stores/UserStore.ts'
 
 // Base URL for the json-server (adjust if needed)
 //const JSON_SERVER_URL = 'http://localhost:3000'
@@ -74,6 +75,7 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
 /**
  * Marks messages as read by sending their IDs to the server.
  * Only unread messages that were sent to the current user will be marked as read.
+ * This is added as a separate function in case we want to conditionally mark messages as read
  *
  * @param messages - The array of messages to check and potentially mark as read
  * @returns A promise that resolves when the operation completes
@@ -82,7 +84,8 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
 export async function readMessages(messages: Message[]): Promise<void> {
   try {
     // Get current user ID to know which messages are "to me"
-    const currentUserId = await fetchCurrentUserId()
+    const userStore = useUserStore()
+    const currentUserId = userStore.getUserId;
 
     // Filter for unread messages where the current user is the recipient
     // Note: This assumes there's a 'read' property on the Message type

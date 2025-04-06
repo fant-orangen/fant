@@ -15,6 +15,7 @@ export const useUserStore = defineStore("user", () => {
   const token = ref<string | null>(localStorage.getItem('token'));
   const username = ref<string | null>(localStorage.getItem('username'));
   const role = ref<string | null>(localStorage.getItem('role'));
+  const userId = ref<string | null>(localStorage.getItem('userId'));
 
   if (token.value && !role.value) {
     try {
@@ -55,6 +56,8 @@ export const useUserStore = defineStore("user", () => {
       if (tokenParts.length === 3) {
         const payload = JSON.parse(atob(tokenParts[1]));
         role.value = payload.role;
+        userId.value = payload.userId;
+        localStorage.setItem('userId', payload.userId);
         localStorage.setItem('role', payload.role);
       }
 
@@ -169,6 +172,7 @@ export const useUserStore = defineStore("user", () => {
     profile,
     login,
     role,
+    userId,
     verifyLogin,
     registerUser,
     fetchProfile,

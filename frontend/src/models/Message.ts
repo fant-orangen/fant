@@ -15,6 +15,7 @@ export interface Message {
     title: string;
   }
   messageContent: string;
+  read: boolean;
   content?: string;
   sentDate: Date;
 }
