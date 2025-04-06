@@ -221,6 +221,16 @@ onMounted(() => {
 }
 
 /**
+ * Main layout - two column grid for desktop
+ */
+.item-detail-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/**
  * Loading state styling
  */
 .loading-state {
@@ -273,13 +283,44 @@ onMounted(() => {
 }
 
 /**
- * Gallery column styling
+ * Gallery column styling with strict size constraints
  */
 .gallery-column {
   border-radius: 8px;
   overflow: hidden;
   background-color: #f8f9fa;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  max-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Target images within the gallery using deep selector */
+.gallery-column :deep(img) {
+  max-width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Ensure gallery component doesn't overflow */
+.gallery-column :deep(.image-gallery) {
+  width: 100%;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+/* Style navigation arrows in gallery */
+.gallery-column :deep(.nav-button) {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .no-image-placeholder {
@@ -287,7 +328,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  height: 300px;
   color: #888;
   font-size: 1.1em;
   background-color: #f0f0f0;
@@ -406,7 +447,22 @@ onMounted(() => {
   box-shadow: none;
 }
 
-@media (max-width: 640px) {
+/**
+ * Responsive adjustments for smaller screens
+ */
+@media (max-width: 768px) {
+  .item-detail-container {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-column {
+    max-height: 400px;
+  }
+
+  .gallery-column :deep(img) {
+    max-height: 400px;
+  }
+
   .item-title {
     font-size: 1.5em;
   }
@@ -418,6 +474,21 @@ onMounted(() => {
   .details-column {
     padding: 1rem;
     gap: 1.2rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .item-details-page {
+    margin: 1rem auto;
+  }
+
+  .gallery-column {
+    max-height: 300px;
+  }
+
+  .gallery-column :deep(img) {
+    max-height: 300px;
   }
 }
 </style>
