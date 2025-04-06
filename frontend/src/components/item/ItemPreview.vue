@@ -4,49 +4,55 @@
       <img :src="item.imageUrl" :alt="item.title" class="item-image" />
       <HeartIcon class="heart-icon"/>
       <div class="price-overlay">
-        <p class="item-price">{{ item.price + " kr" }}</p>
+        <span class="item-price">{{ item.price + " kr" }}</span>
       </div>
     </div>
-    <h2 class="item-title">{{ item.title }}</h2>
+    <div class="info-container">
+      <h2 class="item-title">{{ item.title }}</h2>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from 'vue';
-import type { ItemPreviewType, ItemDetailsType } from '@/models/Item';
-import HeartIcon from '@/components/toggle/HeartIcon.vue'; // Ensure the correct path
-import { fetchItem } from '@/services/ItemService.ts';
-import router from "@/router";
-
+import type { ItemPreviewType } from '@/models/Item';
+import HeartIcon from '@/components/toggle/HeartIcon.vue';
+import router from "@/router"; //
 
 const props = defineProps<{ item: ItemPreviewType }>();
-async function handleClick() {
+
+function handleClick() {
   try {
-    const itemDetails: ItemDetailsType = await fetchItem(props.item.id);
-    console.log('Item details:', itemDetails);
+    console.log(`Navigating to item-detail with ID: ${props.item.id}`);
     router.push({ name: 'item-detail', params: { id: props.item.id } });
   } catch (error) {
-    console.error('Error fetching item details:', error);
+    console.error('Error during router push:', error);
   }
 }
 </script>
 
 <style scoped>
 .item-preview {
-  border: 1px solid #ccc;
-  padding: 10px;
   margin: 10px;
-  text-align: center;
+  text-align: left;
   position: relative;
   border-radius: 10px;
   cursor: pointer;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.item-preview:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .image-container {
   position: relative;
   width: 100%;
-  padding-top: 100%; /* This creates a square container */
-  overflow: hidden; /* Hide overflow to ensure the image cuts */
+  padding-top: 100%;
 }
 
 .item-image {
@@ -55,28 +61,41 @@ async function handleClick() {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensure the image covers the container without stretching */
+  object-fit: cover;
+  display: block;
 }
 
 .price-overlay {
   position: absolute;
-  bottom: 0;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.6);
   color: white;
-  text-align: right;
-  padding: 5px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.info-container {
+  padding: 10px 12px 12px;
 }
 
 .item-title {
-  font-size: 1.2em;
-  margin: 10px 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
 }
+
 .heart-icon {
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 1; /* Ensure the heart icon is in front of the image */
+  z-index: 1;
 }
 
 .item-price {

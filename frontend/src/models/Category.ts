@@ -3,4 +3,5 @@ export interface Category {
   name: string;
   imageUrl: string;
   parent?: Category | null;
+  translationKey?: string;
 }
