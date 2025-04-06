@@ -112,6 +112,7 @@ public class SecurityConfig {
                 "/app/**",
                 "/h2-console/**",
                 "/api/items/all",
+                "api/items/details/",
                 "/api/items/category/").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
