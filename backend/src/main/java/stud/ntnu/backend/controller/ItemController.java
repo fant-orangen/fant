@@ -98,10 +98,10 @@ public class ItemController {
    * @param category the category ID
    * @return list of {@link ItemPreviewDto} in the category
    */
-  @GetMapping("/category/{category}")
+  @GetMapping("/category/{categoryId}")
   public ResponseEntity<List<ItemPreviewDto>> getItemsByCategory(
-      @Positive @PathVariable Long category) {
-    return ResponseEntity.ok(itemService.getItemsByCategory(category));
+      @Positive @PathVariable Long categoryId) {
+    return ResponseEntity.ok(itemService.getItemsByCategoryId(categoryId));
   }
 
   /**
