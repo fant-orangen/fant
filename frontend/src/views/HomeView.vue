@@ -25,6 +25,6 @@ function onCategoryClick(categoryId: string) {
 }
 </script>
 
-<style>
+<style scoped>
 @import '@/assets/styles/responsiveStyles.css';
 </style>

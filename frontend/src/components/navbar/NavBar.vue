@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 // Import the language selector
-import NavbarLanguageSelector from './LanguageSelector.vue'; // Adjust path if needed
+import NavbarLanguageSelector from './LanguageSelector.vue';
 import WideScreenNavBar from './WideScreenNavBar.vue';
 import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
 </script>

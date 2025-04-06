@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
 import type { ItemPreviewType } from '@/models/Item';
 import HeartIcon from '@/components/toggle/HeartIcon.vue';
 import router from "@/router"; //
