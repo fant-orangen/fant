@@ -13,7 +13,7 @@
         <div class="form-group">
           <label>Icon</label>
           <div class="icon-selector">
-            <select v-model="form.description">
+            <select v-model="form.imageUrl">
               <option value="" disabled>Select an icon</option>
               <option v-for="icon in availableIcons" :key="icon" :value="icon">{{ icon }}</option>
             </select>
@@ -85,7 +85,7 @@ const categories = ref<Category[]>([]);
 const form = ref<Category>({
   id: null,
   name: '',
-  description: '', // This will hold the selected icon name as a string
+  imageUrl: '', // This will hold the selected icon name as a string
   parent: null
 });
 const customIconUrl = ref('');
@@ -114,22 +114,23 @@ const iconMap: Record<string, string> = {
 
 // Computed property to resolve the current icon
 const resolvedIcon = computed(() => {
-  if (!form.value.description) return null;
+  if (!form.value.imageUrl) return null;
 
-  if (form.value.description.startsWith('http')) {
-    return form.value.description;
+  if (form.value.imageUrl.startsWith('http')) {
+    return form.value.imageUrl;
   }
 
-  return iconMap[form.value.description.toLowerCase()] || null;
+  return iconMap[form.value.imageUrl.toLowerCase()] || null;
 });
 
 // Function to get icon for a category
 function getIconForCategory(category: Category): string {
-  if (category.description.startsWith('http')) {
-    return category.description;
+  console.log("kategori: ", category);
+  if (category.imageUrl.startsWith('http')) {
+    return category.imageUrl;
   }
 
-  return iconMap[category.description.toLowerCase()] || '/fallback-icon.png';
+  return iconMap[category.imageUrl.toLowerCase()] || '/fallback-icon.png';
 }
 
 async function loadCategories() {
@@ -151,8 +152,8 @@ function editCategory(category: Category) {
   form.value = { ...category };
 
   // Set customIconUrl only if it's an actual URL
-  customIconUrl.value = category.description.startsWith('http')
-    ? category.description
+  customIconUrl.value = category.imageUrl.startsWith('http')
+    ? category.imageUrl
     : '';
 
   isEditing.value = true;
@@ -166,16 +167,16 @@ async function removeCategory(id: string | number | null) {
 }
 
 function resetForm() {
-  form.value = { id: null, name: '', description: '' };
+  form.value = { id: null, name: '', imageUrl: '' };
   customIconUrl.value = '';
   isEditing.value = false;
 }
 
 function updateIconUrl() {
   if (customIconUrl.value) {
-    form.value.description = customIconUrl.value;
+    form.value.imageUrl = customIconUrl.value;
   } else {
-    form.value.description = ''; // Reset if no URL is provided
+    form.value.imageUrl = ''; // Reset if no URL is provided
   }
 }
 

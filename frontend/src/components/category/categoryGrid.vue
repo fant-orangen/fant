@@ -46,13 +46,13 @@ async function loadCategories() {
     categories.value.forEach(category => {
       let resolvedIcon;
 
-      if (category.description.startsWith('http')) {
-        resolvedIcon = category.description;
+      if (category.imageUrl.startsWith('http')) {
+        resolvedIcon = category.imageUrl;
       } else {
-        const matchedIconKey = Object.keys(iconMap).find(key => key.toLowerCase() === category.description);
+        const matchedIconKey = Object.keys(iconMap).find(key => key.toLowerCase() === category.imageUrl);
         resolvedIcon = matchedIconKey ? iconMap[matchedIconKey] : '/fallback-icon.png'; // Use fallback if not found
       }
-      category.description = resolvedIcon;
+      category.imageUrl = resolvedIcon;
     });
   } catch (error) {
     console.error("Error loading categories:", error);
@@ -73,7 +73,7 @@ onMounted(loadCategories);
       v-for="category in categories"
       :key="category.id?.toString() || `temp-${Math.random()}`"
       :label="category.name"
-      :icon="category.description"
+      :icon="category.imageUrl"
       @click="handleFunction(category.id?.toString() || '')"
     />
   </div>
