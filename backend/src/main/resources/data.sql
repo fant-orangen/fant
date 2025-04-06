@@ -49,7 +49,7 @@ VALUES (1, 1, 'Test', 'Test', 500.00, 'ACTIVE', NOW(), NOW(),62,5.7);
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at,
                    latitude, longitude)
-VALUES (1, 1, 'Lambi Deluxe', 'Test', 200.00, 'ACTIVE', NOW(), NOW(), 62, 8.1);
+VALUES (1, 1, 'Lambi Deluxe', 'Pent brukt', 200.00, 'ACTIVE', NOW(), NOW(), 62, 8.1);
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at,
                    latitude, longitude)
