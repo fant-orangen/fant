@@ -273,11 +273,6 @@ onMounted(() => {
 }
 
 /**
- * Import responsive styles for the item detail container grid
- */
-@import '@/assets/styles/responsiveStyles.css';
-
-/**
  * Gallery column styling
  */
 .gallery-column {
