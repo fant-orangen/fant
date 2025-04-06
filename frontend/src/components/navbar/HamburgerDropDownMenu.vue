@@ -22,14 +22,14 @@
           <RouterLink to="/map" @click="closeMenu">
             <IconWithText :icon-src="mapIcon" :text="$t('MAP')" />
           </RouterLink>
-          <RouterLink to="/create-listing/start" @click="closeMenu">
-            <IconWithText :icon-src="addIcon" :text="$t('APP_LISTING_CREATE_NEW')" />
-          </RouterLink>
         </div>
 
         <div class="user-links">
           <NavbarLanguageSelector />
           <template v-if="loggedIn">
+            <RouterLink to="/create-listing/start" @click="closeMenu">
+              <IconWithText :icon-src="addIcon" :text="$t('APP_LISTING_CREATE_NEW')" />
+            </RouterLink>
             <RouterLink to="/messages" @click="closeMenu">
               <IconWithText
                 :icon-src="hasNewMessages ? notificationNewIcon : notificationIcon"
@@ -38,6 +38,12 @@
             </RouterLink>
             <RouterLink to="/profile" @click="closeMenu">
               <IconWithText :icon-src="userIcon" :text="$t('PROFILE_TILE_MY_ACCOUNT_TITLE')" />
+            </RouterLink>
+            <RouterLink
+              v-if="userStore.role === 'ADMIN'"
+              to="/admin"
+              class="nav-link">
+              Admin
             </RouterLink>
             <button class="logout-btn" @click="handleLogout">
               {{ $t('APP_LOGOUT') }}
