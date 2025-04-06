@@ -454,6 +454,19 @@
       },
       "messageContent": "jj",
       "sentDate": "2025-04-03T09:09:59.775Z"
+    },
+    {
+      "id": "3fdd",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "User 2"
+      },
+      "messageContent": "Hei",
+      "sentDate": "2025-04-04T08:15:26.194Z"
     }
   ]
 }

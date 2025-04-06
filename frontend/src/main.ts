@@ -3,6 +3,7 @@ import '@/assets/styles/categoryButtons.css'
 import '@/assets/styles/categoryGrid.css'
 import '@/assets/styles/login/loginRegistration.css'
 import 'leaflet/dist/leaflet.css';
+import './global.js'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

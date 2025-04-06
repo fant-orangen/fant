@@ -81,5 +81,9 @@
     "SEND": "Send",
 
     "INBOX": "Inbox",
-    "NO_CONVERSATIONS_YET": "No conversations yet"
+    "NO_CONVERSATIONS_YET": "No conversations yet",
+
+    "VIEW_DETAILS": "View details",
+    "PRICE": "Price",
+    "NO_TITLE": "No title"
 }

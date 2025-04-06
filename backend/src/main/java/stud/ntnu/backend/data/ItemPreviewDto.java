@@ -20,41 +20,41 @@ import java.math.BigDecimal;
 @Builder
 public class ItemPreviewDto {
 
-    /**
-     * <h3>Unique identifier for the item</h3>
-     * <p>Corresponds to the primary key in the items table.</p>
-     */
-    private Long id;
+  /**
+   * <h3>Unique identifier for the item</h3>
+   * <p>Corresponds to the primary key in the items table.</p>
+   */
+  private Long id;
 
-    /**
-     * <h3>Short title describing the item</h3>
-     * <p>Mapped from the briefDescription field of the Item entity.</p>
-     */
-    private String title;
+  /**
+   * <h3>Short title describing the item</h3>
+   * <p>Mapped from the briefDescription field of the Item entity.</p>
+   */
+  private String title;
 
-    /**
-     * <h3>URL to the primary image of the item</h3>
-     * <p>References the first (lowest position) image associated with the item.</p>
-     * <p>May be null if the item has no images.</p>
-     */
-    private String imageUrl;
+  /**
+   * <h3>URL to the primary image of the item</h3>
+   * <p>References the first (lowest position) image associated with the item.</p>
+   * <p>May be null if the item has no images.</p>
+   */
+  private String imageUrl;
 
-    /**
-     * <h3>Price of the item</h3>
-     * <p>Uses BigDecimal for precise monetary calculations.</p>
-     */
-    private BigDecimal price;
+  /**
+   * <h3>Price of the item</h3>
+   * <p>Uses BigDecimal for precise monetary calculations.</p>
+   */
+  private BigDecimal price;
 
-    /**
-    * <h3>Latitude of the item</h3>
-    * <p>Uses Double for precise position</p>
-    */
-    private Double latitude;
+  /**
+   * <h3>Latitude of the item</h3>
+   * <p>Uses Double for precise position</p>
+   */
+  private Double latitude;
 
-    /**
-    * <h3>Longitude of the item</h3>
-    * <p>Uses Double for precise position</p>
-    */
-    private Double longitude;
+  /**
+   * <h3>Longitude of the item</h3>
+   * <p>Uses Double for precise position</p>
+   */
+  private Double longitude;
 
 }

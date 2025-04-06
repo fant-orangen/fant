@@ -2,16 +2,18 @@ package stud.ntnu.backend.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * <h2> AuthResponseDto for representing an authentication response. </h2>
+ * <h2>AuthResponseDto</h2>
+ * <p>Data transfer object for authentication responses containing JWT tokens.</p>
  */
 @Data
 @AllArgsConstructor
 public class AuthResponseDto {
+
   /**
-   * <h3> The token. </h3>
+   * <h3>Token</h3>
+   * <p>JSON Web Token (JWT) for authenticated session.</p>
    */
-  private String token; // Contains the JWT token
+  private String token;
 }

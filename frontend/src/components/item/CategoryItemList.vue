@@ -6,27 +6,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { fetchPreviewItems, fetchPreviewItemsByCategoryId } from '@/services/ItemService.ts';
-import type { ItemPreviewType } from '@/models/Item';
-import ItemPreview from "@/components/item/ItemPreview.vue";
+import { ref, onMounted, watch } from 'vue'
+import {
+  fetchItemsByDistribution,
+  fetchPreviewItems,
+  fetchPreviewItemsByCategoryId
+} from '@/services/ItemService.ts'
+import type { ItemPreviewType } from '@/models/Item'
+import ItemPreview from '@/components/item/ItemPreview.vue'
+import {
+  fetchCategoryRecommendations,
+  fetchUserViewCount
+} from '@/services/RecommendationService.ts'
 
-const props = defineProps<{ categoryId: string | null }>();
-const items = ref<ItemPreviewType[]>([]);
+const props = defineProps<{ categoryId: string | null }>()
+const items = ref<ItemPreviewType[]>([])
+
+const minimumViews = 5;
 
 async function fetchItems() {
   try {
     if (props.categoryId) {
-      items.value = await fetchPreviewItemsByCategoryId(props.categoryId);
+      items.value = await fetchPreviewItemsByCategoryId(props.categoryId)
     } else {
-      items.value = await fetchPreviewItems();
+      // Insert new code here
+      try {
+        // Fetch the user's view count
+        const viewCount = await fetchUserViewCount()
+        console.log(`User view count: ${viewCount}`)
+
+        if (viewCount > minimumViews) {
+          // User has enough views for personalized recommendations
+          console.log('Using personalized recommendations')
+          const recommendations = await fetchCategoryRecommendations()
+          items.value = await fetchItemsByDistribution(recommendations)
+        } else {
+          // Not enough views, show regular items
+          console.log('Using regular item list (not enough views)')
+          items.value = await fetchPreviewItems()
+        }
+      } catch (error) {
+        console.error('Error checking user views or fetching recommendations:', error)
+        // Fallback to standard items if there's an error
+        items.value = await fetchPreviewItems()
+      }
     }
   } catch (error) {
-    console.error('Error fetching items:', error);
+    console.error('Error fetching items:', error)
   }
 }
 
-onMounted(fetchItems);
-watch(() => props.categoryId, fetchItems);
+onMounted(fetchItems)
+watch(() => props.categoryId, fetchItems)
 </script>
-

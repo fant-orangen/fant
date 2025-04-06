@@ -3,7 +3,6 @@ import { fetchToken } from '@/services/api/authService';
 import { register } from '@/services/api/userService';
 import { computed, ref } from 'vue';
 import api from '@/services/api/axiosInstance';
-import { checkAdminStatus } from '@/services/CategoryService';
 
 
 /**
@@ -13,9 +12,9 @@ import { checkAdminStatus } from '@/services/CategoryService';
  */
 export const useUserStore = defineStore("user", () => {
   // Reactive state for authentication.
-  const token = ref<string | null>(localStorage.getItem('token'));
-  const username = ref<string | null>(localStorage.getItem('username'));
-  const isAdmin = ref<boolean>(false);
+  const token = ref<string | null>(null);
+  const username = ref<string | null>(null);
+  const role = ref<string | null>(null);
 
   // Reactive state for the user profile.
   // Fields here should match what your backend returns for a user profile.
@@ -74,6 +73,18 @@ export const useUserStore = defineStore("user", () => {
         throw new Error("Login Info Error");
       }
 
+      // Decode and extract role from JWT token
+      const tokenParts = tokenStr.split('.');
+      if (tokenParts.length === 3) {
+        // Base64 decode the payload
+        const payload = JSON.parse(atob(tokenParts[1]));
+        console.log("JWT Payload:", payload);
+        console.log("User role:", payload.role);
+
+        // Store the role in state
+        role.value = payload.role;
+      }
+
       login(response.status, tokenStr, user);
     } catch (error) {
       console.error("Login error:", error);
@@ -128,24 +139,6 @@ export const useUserStore = defineStore("user", () => {
     profile.value = { email: '', firstName: '', lastName: '', phoneNumber: '' };
   }
 
-  async function checkIsAdmin() {
-    if (!token.value) {
-      isAdmin.value = false;
-      return false;
-    }
-
-    try {
-      const result = await checkAdminStatus();
-      isAdmin.value = result;
-      return result;
-    } catch (error) {
-      console.error("Error checking admin status:", error);
-      isAdmin.value = false;
-      return false;
-    }
-  }
-
-
   // Computed getters for accessing state reactively.
   const loggedIn = computed(() => token.value !== null);
   const getUsername = computed(() => username.value);
@@ -156,6 +149,7 @@ export const useUserStore = defineStore("user", () => {
     username,
     profile,
     login,
+    role,
     verifyLogin,
     registerUser,
     fetchProfile,
@@ -163,8 +157,6 @@ export const useUserStore = defineStore("user", () => {
     logout,
     loggedIn,
     getUsername,
-    getToken,
-    isAdmin,
-    checkIsAdmin
+    getToken
   };
 });
