@@ -371,7 +371,7 @@ function scrollToBottom() {
         :disabled="sending || loading || !!error"
       ></textarea>
       <button @click="handleSendMessage" :disabled="!newMessageContent.trim() || sending || loading || !!error">
-        {{ sending ? $t('SENDING') : $t('SEND') }}
+        {{ $t('SEND') }}
       </button>
     </div>
   </div>
