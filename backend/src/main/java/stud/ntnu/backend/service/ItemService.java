@@ -109,7 +109,7 @@ public class ItemService {
    * @param categoryId the category ID
    * @return list of {@link ItemPreviewDto}
    */
-  public List<ItemPreviewDto> getItemsByCategory(Long categoryId) {
+  public List<ItemPreviewDto> getItemsByCategoryId(Long categoryId) {
     return itemRepository.findByCategoryId(categoryId).stream()
         .map(this::mapToItemPreviewDto)
         .collect(Collectors.toList());
