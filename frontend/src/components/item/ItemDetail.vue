@@ -49,15 +49,6 @@
           <p>{{ item.description || 'No description provided.' }}</p>
         </div>
 
-        <!-- Location information section -->
-        <div class="item-location" v-if="hasLocationData">
-          <h3>Location</h3>
-          <p>{{ formatLocation(item) }}</p>
-          <div v-if="item.latitude && item.longitude" class="location-map">
-            <!-- Mini map could be added here -->
-          </div>
-        </div>
-
         <!-- Seller/contact information section -->
         <div class="seller-info">
           <h3>Contact Information</h3>
@@ -126,16 +117,6 @@ const error = ref(false);
 const errorMessage = ref("Failed to load item details. Please try again later.");
 
 /**
- * Computed property to determine if location data is available
- */
-const hasLocationData = computed(() => {
-  return item.value && (
-    item.value.location ||
-    (item.value.latitude && item.value.longitude)
-  );
-});
-
-/**
  * Computed property to determine if the user can contact the seller
  */
 const canContactSeller = computed(() => {
@@ -152,18 +133,6 @@ function formatPrice(price: number | null): string {
   return `${price.toLocaleString('no-NO')} kr`;
 }
 
-/**
- * Formats the location information from the item data
- * @param {ItemDetailsType} itemData - The item containing location data
- * @returns {string} The formatted location string
- */
-function formatLocation(itemData: ItemDetailsType): string {
-  if (itemData.location) return itemData.location;
-  if (itemData.latitude && itemData.longitude) {
-    return `Coordinates: ${itemData.latitude.toFixed(6)}, ${itemData.longitude.toFixed(6)}`;
-  }
-  return 'Location not specified';
-}
 
 /**
  * Loads the item data from the API

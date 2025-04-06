@@ -33,7 +33,7 @@ const isVertical = computed(() => props.layout === 'vertical');
 // Define categories array
 const categories = ref<Category[]>([]);
 const emit = defineEmits<{
-  select: (categoryId: string) => void
+  select: [categoryId: string]
 }>();
 
 // Local icon import map
