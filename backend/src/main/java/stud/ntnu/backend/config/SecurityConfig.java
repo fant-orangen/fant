@@ -110,6 +110,7 @@ public class SecurityConfig {
                 "/ws/**",
                 "/topic/**",
                 "/app/**",
+                "/api/items/all",
                 "/h2-console/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
