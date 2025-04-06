@@ -6,14 +6,43 @@ INSERT INTO users (email, display_name, password_hash, role)
 VALUES ('jakob@mail.com', 'jakob', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW', 'ADMIN');
 
 INSERT INTO categories (name, image_url)
-VALUES ('Test', 'Test');
+VALUES ('Travel', 'travel');
 
 INSERT INTO categories (name, image_url)
-VALUES ('Other Category', 'Test');
+VALUES ('Appliance', 'appliance');
 
-INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at,
-                   latitude, longitude)
-VALUES (1, 1, 'Test', 'Test', 500.00, 'ACTIVE', NOW(), NOW(), 62, 5.7);
+INSERT INTO categories (name, image_url)
+VALUES ('Boat', 'boat');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Book', 'book');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Camera', 'camera');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Car', 'car');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Clothes', 'clothes');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Computer', 'computer');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Furniture', 'furniture');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Motorcycle', 'motorcycle');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Phone', 'phone');
+
+INSERT INTO categories (name, image_url)
+VALUES ('Art', 'art');
+
+INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
+VALUES (1, 1, 'Test', 'Test', 500.00, 'ACTIVE', NOW(), NOW(),62,5.7);
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at,
                    latitude, longitude)

@@ -4,6 +4,7 @@ import { register } from '@/services/api/userService';
 import { computed, ref } from 'vue';
 import api from '@/services/api/axiosInstance';
 
+
 /**
  * UserStore manages user authentication and profile state.
  * It handles login, registration, profile fetching/updating, and logout.
@@ -40,6 +41,9 @@ export const useUserStore = defineStore("user", () => {
       console.log("Token" + tokenStr);
 
       username.value = user;
+
+      localStorage.setItem('token', tokenStr);
+      localStorage.setItem('username', user);
     } else {
       throw new Error("Login Info Error");
     }
@@ -132,6 +136,7 @@ export const useUserStore = defineStore("user", () => {
   function logout() {
     token.value = null;
     username.value = null;
+    role.value = null;
     profile.value = { email: '', firstName: '', lastName: '', phoneNumber: '' };
   }
 

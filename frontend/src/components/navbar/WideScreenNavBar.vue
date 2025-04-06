@@ -9,6 +9,12 @@
       </RouterLink>
     </div>
     <div class="user-links">
+      <RouterLink
+        v-if="userStore.role === 'ADMIN'"
+        to="/admin"
+        class="nav-link">
+        Admin
+      </RouterLink>
       <NavbarLanguageSelector />
       <template v-if="loggedIn">
         <RouterLink to="/messages">
@@ -30,7 +36,7 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import NavbarLanguageSelector from './LanguageSelector.vue';
