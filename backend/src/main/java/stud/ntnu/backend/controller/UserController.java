@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.UserRequestDto;
-import stud.ntnu.backend.data.UserResponseDto;
+import stud.ntnu.backend.data.user.UserCreateDto;
+import stud.ntnu.backend.data.user.UserResponseDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.UserService;
 
@@ -51,15 +51,15 @@ public class UserController {
    * <h3>Update User Profile</h3>
    * <p>Updates the current user's profile information.</p>
    *
-   * @param userRequestDto the updated user data
+   * @param userCreateDto the updated user data
    * @param principal      the authenticated user
    * @return updated {@link User} entity
    */
   @PutMapping("/profile")
-  public ResponseEntity<User> updateUser(@Valid @RequestBody UserRequestDto userRequestDto,
+  public ResponseEntity<User> updateUser(@Valid @RequestBody UserCreateDto userCreateDto,
                                          Principal principal) {
     return ResponseEntity.ok(
-        userService.updateUser(userRequestDto, userService.getCurrentUserId(principal)));
+        userService.updateUser(userCreateDto, userService.getCurrentUserId(principal)));
   }
 
   /**

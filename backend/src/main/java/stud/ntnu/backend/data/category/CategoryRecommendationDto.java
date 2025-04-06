@@ -1,4 +1,4 @@
-package stud.ntnu.backend.data;
+package stud.ntnu.backend.data.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

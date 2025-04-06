@@ -1,9 +1,10 @@
-package stud.ntnu.backend.data;
+package stud.ntnu.backend.data.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import stud.ntnu.backend.data.item.ItemPreviewDto;
 
 /**
  * <h2>ConversationPreviewDto</h2>

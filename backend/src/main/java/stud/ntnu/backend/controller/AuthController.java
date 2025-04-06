@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.AuthRequestDto;
-import stud.ntnu.backend.data.AuthResponseDto;
-import stud.ntnu.backend.data.UserRequestDto;
+import stud.ntnu.backend.data.auth.AuthRequestDto;
+import stud.ntnu.backend.data.auth.AuthResponseDto;
+import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.service.UserService;
 import stud.ntnu.backend.util.JwtUtil;
 
@@ -96,7 +96,7 @@ public class AuthController {
       content = @Content(schema = @Schema(implementation = AuthResponseDto.class)))
   @PostMapping("/register")
   public ResponseEntity<AuthResponseDto> register(
-      @Valid @RequestBody UserRequestDto request) {
+      @Valid @RequestBody UserCreateDto request) {
     return ResponseEntity.ok(
         new AuthResponseDto(jwtUtil.generateToken(userService.createUser(request).getEmail())));
   }

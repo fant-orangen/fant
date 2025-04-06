@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import stud.ntnu.backend.data.UserRequestDto;
-import stud.ntnu.backend.data.UserResponseDto;
+import stud.ntnu.backend.data.user.UserCreateDto;
+import stud.ntnu.backend.data.user.UserResponseDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.UserRepository;
 
@@ -47,7 +47,7 @@ public class UserService {
    * @return the created {@link User}
    */
   @Transactional
-  public User createUser(UserRequestDto registrationDto) {
+  public User createUser(UserCreateDto registrationDto) {
     return userRepository.save(fromDto(registrationDto));
   }
 
@@ -55,13 +55,13 @@ public class UserService {
    * <h3>Update User</h3>
    * <p>Modifies an existing user's profile.</p>
    *
-   * @param userRequestDto the updated user data
+   * @param userCreateDto the updated user data
    * @param id             the user ID to update
    * @return the updated {@link User}
    */
   @Transactional
-  public User updateUser(UserRequestDto userRequestDto, Long id) {
-    User user = fromDto(userRequestDto);
+  public User updateUser(UserCreateDto userCreateDto, Long id) {
+    User user = fromDto(userCreateDto);
     user.setId(id);
     return userRepository.save(user);
   }
@@ -129,12 +129,12 @@ public class UserService {
    * <h3>Convert DTO to Entity</h3>
    * <p>Maps registration DTO to User entity with encrypted password.</p>
    *
-   * @param userRequestDto the DTO to convert
+   * @param userCreateDto the DTO to convert
    * @return mapped {@link User} entity
    */
-  private User fromDto(UserRequestDto userRequestDto) {
-    User user = modelMapper.map(userRequestDto, User.class);
-    user.setPasswordHash(passwordEncoder.encode(userRequestDto.getPassword()));
+  private User fromDto(UserCreateDto userCreateDto) {
+    User user = modelMapper.map(userCreateDto, User.class);
+    user.setPasswordHash(passwordEncoder.encode(userCreateDto.getPassword()));
     return user;
   }
 

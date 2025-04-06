@@ -7,7 +7,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import stud.ntnu.backend.data.WebSocketMessageDto;
+import stud.ntnu.backend.data.message.WebSocketMessageDto;
 import stud.ntnu.backend.service.MessageService;
 import stud.ntnu.backend.service.UserService;
 

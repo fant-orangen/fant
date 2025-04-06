@@ -1,4 +1,4 @@
-package stud.ntnu.backend.data;
+package stud.ntnu.backend.data.message;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

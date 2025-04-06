@@ -1,4 +1,4 @@
-package stud.ntnu.backend.data;
+package stud.ntnu.backend.data.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
