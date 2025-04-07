@@ -1,78 +1,103 @@
 import api from '@/services/api/axiosInstance';
-import type { BidCreatePayload, BidResponseType } from '@/models/Bid';
+import type { BidPayload, BidResponseType } from '@/models/Bid';
 
 /**
- * Places a new modals on a specific item.
- * Corresponds to POST /api/items/{itemId}/bids
+ * Places a new bid for an item.
+ * The authenticated user is identified through their JWT token.
  *
- * @param itemId - The ID of the item to modals on.
- * @param bidData - The modals details (amount and optional comment).
- * @returns A promise resolving to the details of the created modals.
+ * @param bid - The bid information including itemId, amount, and optional comment
+ * @returns A promise that resolves when the bid is successfully placed
+ * @throws Error if the request fails
  */
-export async function placeBidOnItem(itemId: string | number, bidData: BidCreatePayload): Promise<BidResponseType> {
+export async function placeBid(bid: BidPayload): Promise<{ status: number }> {
   try {
-    const response = await api.post<BidResponseType>(`/items/${itemId}/bids`, bidData);
-    console.log(`Bid placed successfully for item ${itemId}:`, response.data);
-    return response.data;
+    const response = await api.post('/orders/bid', bid);
+    console.log(`Bid successfully placed for item ${bid.itemId}`);
+
+    return {status: response.status }
   } catch (error) {
-    console.error(`Error placing bid on item ${itemId}:`, error);
+    console.error('Error placing bid:', error);
     throw error;
   }
 }
 
 /**
- * Fetches all bids for a specific item.
- * Used by the seller on the 'Manage Listing' page.
- * Corresponds to GET /api/items/{itemId}/bids
+ * Fetches all bids placed by the currently authenticated user.
+ * Uses the authentication token to identify the user.
  *
- * @param itemId - The ID of the item whose bids are to be fetched.
- * @returns A promise resolving to an array of bids for the item.
+ * @returns A promise resolving to an array of the user's bids
+ * @throws Error if the request fails
  */
-export async function fetchBidsForItem(itemId: string | number): Promise<BidResponseType[]> {
+export async function fetchUserBids(): Promise<BidResponseType[]> {
   try {
-    const response = await api.get<BidResponseType[]>(`/items/${itemId}/bids`);
-    console.log(`Fetched ${response.data.length} bids for item ${itemId}`);
+    const response = await api.get<BidResponseType[]>('/orders/bids');
+    console.log('User bids fetched:', response.data.length);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching bids for item ${itemId}:`, error);
-    throw error;
+    console.error('Error fetching user bids:', error);
+    throw error
   }
 }
 
 /**
- * Marks a specific modals as 'ACCEPTED'.
- * Used by the seller on the 'Manage Listing' page.
- * The backend should handle associated logic (e.g., updating item status, rejecting other bids).
- *
- * @param bidId - The ID of the modals to accept.
- * @returns A promise resolving to the updated modals details (with status 'ACCEPTED').
+ * Accepts a bid for an item
+ * @param bidderId The ID of the user who placed the bid
+ * @param itemId The ID of the item the bid was placed on
+ * @returns The response with status code
  */
-export async function acceptBid(bidId: string | number): Promise<BidResponseType> {
+export async function acceptBid(bidderId: string | number, itemId: string | number): Promise<{ status: number }> {
   try {
-    const response = await api.put<BidResponseType>(`/bids/${bidId}/accept`);
-    console.log(`Bid ${bidId} accepted:`, response.data);
-    return response.data;
+    const response = await api.post('/orders/accept', { bidderId, itemId });
+    return { status: response.status }
   } catch (error) {
-    console.error(`Error accepting bid ${bidId}:`, error);
-    throw error;
+    console.error('Error accepting bid:', error)
+    throw error
   }
 }
 
 /**
- * Marks a specific modals as 'REJECTED'.
- * Used by the seller on the 'Manage Listing' page.
- * Assumes a backend endpoint like PUT /api/bids/{bidId}/reject exists.
- *
- * @param bidId - The ID of the modals to reject.
- * @returns A promise resolving to the updated modals details (with status 'REJECTED').
+ * Rejects a bid for an item
+ * @param bidderId The ID of the user who placed the bid
+ * @param itemId The ID of the item the bid was placed on
+ * @returns The response with status code
  */
-export async function rejectBid(bidId: string | number): Promise<BidResponseType> {
+export async function rejectBid(bidderId: string | number, itemId: string | number): Promise<{ status: number }> {
   try {
-    const response = await api.put<BidResponseType>(`/bids/${bidId}/reject`);
-    console.log(`Bid ${bidId} rejected:`, response.data);
-    return response.data;
+    const response = await api.post('/orders/reject', { bidderId, itemId });
+    return { status: response.status }
   } catch (error) {
-    console.error(`Error rejecting bid ${bidId}:`, error);
-    throw error;
+    console.error('Error rejecting bid:', error)
+    throw error
   }
 }
+
+/**
+ * Deletes a bid for the specified item
+ * @param id - The ID of the item to delete the bid for
+ * @returns Promise with response status
+ */
+export async function deleteBid(id: string | number): Promise<{status: number}> {
+  try {
+    const response = await api.delete(`/orders/delete/${id}`)
+    return { status: response.status }
+  } catch (error) {
+    console.error('Error deleting bid:', error)
+    throw error
+  }
+}
+
+/**
+ * Updates an existing bid for an item
+ * @param bid - The updated bid information
+ * @returns The response with status code
+ */
+export async function updateBid(bid: BidPayload): Promise<{status: number}> {
+  try {
+    const response = await api.put('/orders/update', bid)
+    return { status: response.status }
+  } catch (error) {
+    console.error('Error updating bid:', error)
+    throw error
+  }
+}
+
