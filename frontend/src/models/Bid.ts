@@ -1,12 +1,19 @@
 /**
+ * Defines the possible statuses for a bid, matching the backend ENUM.
+ */
+export type BidStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+
+/**
  * Represents the data sent from the frontend to the backend
- * when creating a new bid.
+ * when creating a new bid (payload for the POST request body).
+ * Note: itemId is typically passed in the URL path, and bidderId
+ * is determined from the authenticated user on the backend.
  */
 export interface BidCreatePayload {
   /**
-   * The monetary amount of the bid.
+   * The monetary amount of the bid. Matches 'amount' in the database.
    */
-  bidAmount: number;
+  amount: number;
 
   /**
    * An optional comment accompanying the bid.
@@ -15,12 +22,13 @@ export interface BidCreatePayload {
 }
 
 /**
- * Represents the data received from the backend after a bid
- * has been successfully created, confirming the bid details.
+ * Represents the detailed data received from the backend for a bid,
+ * often used when fetching bids or after creating one.
+ * Matches the updated database schema.
  */
 export interface BidResponseType {
   /**
-   * The unique identifier for the created bid record.
+   * The unique identifier for the bid record.
    */
   id: number | string;
 
@@ -30,20 +38,20 @@ export interface BidResponseType {
   itemId: number | string;
 
   /**
-   * The identifier of the user who placed the bid.
+   * The identifier of the user who placed the bid. Matches 'bidder_id' in DB.
    */
-  userId: number | string;
+  bidderId: number | string;
 
   /**
    * The display name of the user who placed the bid.
-   * (Useful if you plan to display bid history later)
+   * (Assumes backend includes this for convenience, e.g., via a JOIN or lookup)
    */
-  username: string;
+  bidderUsername: string;
 
   /**
-   * The monetary amount of the bid that was placed.
+   * The monetary amount of the bid. Matches 'amount' in the database.
    */
-  bidAmount: number;
+  amount: number;
 
   /**
    * The comment submitted with the bid, if any.
@@ -51,7 +59,19 @@ export interface BidResponseType {
   comment?: string;
 
   /**
-   * The timestamp indicating when the bid was placed.
+   * The current status of the bid (PENDING, ACCEPTED, REJECTED).
    */
-  bidTime: string;
+  status: BidStatus;
+
+  /**
+   * The timestamp indicating when the bid was initially placed. Matches 'created_at'.
+   * Often received as an ISO 8601 string from the backend.
+   */
+  createdAt: string;
+
+  /**
+   * The timestamp indicating when the bid was last updated
+   * Often received as an ISO 8601 string from the backend.
+   */
+  updatedAt: string;
 }
