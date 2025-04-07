@@ -130,3 +130,37 @@ VALUES (1, 2, 3, 'I am! How fresh is it?', CURRENT_TIMESTAMP(), false);
 
 INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
 VALUES (3, 1, 5, 'Hi!', DATEADD('HOUR', -1, CURRENT_TIMESTAMP()), false);
+
+-- Place test bids
+-- Multiple bids on item 1
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (1, 2, 95.00, 'I can pick it up today', 'PENDING');
+
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (1, 3, 100.00, 'Would you accept this offer?', 'PENDING');
+
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (1, 4, 105.50, 'Very interested in this item', 'ACCEPTED');
+
+-- Multiple bids on item 3
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (3, 2, 240.00, 'Can you deliver?', 'REJECTED');
+
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (3, 5, 260.00, 'I can pick it up this weekend', 'PENDING');
+
+-- Bids on various other items
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (2, 3, 45.00, 'Is this still available?', 'PENDING');
+
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (4, 4, 19.50, 'Would you take $19.50?', 'ACCEPTED');
+
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (5, 1, 75.00, 'Is the condition still good?', 'PENDING');
+
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (6, 2, 320.00, 'Can you provide more photos?', 'PENDING');
+
+INSERT INTO bids (item_id, bidder_id, amount, comment, status)
+VALUES (7, 5, 15.25, 'Is this the latest version?', 'PENDING');
