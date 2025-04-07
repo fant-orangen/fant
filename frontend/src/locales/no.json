@@ -29,18 +29,17 @@
     "LASTNAME": "Etternavn",
     "BIRTHDATE": "Fødselsdag",
     "PHONENUMBER": "Telefonnummer",
-
-    "LOGIN_LOGIN": "Logg Inn",
+    "LOGIN": "Logg Inn",
     "NEW_USER_QUESTION": "Ny Bruker?",
-
 
     "APP_LISTING_CREATE_NEW": "Ny annonse",
     "APP_LISTING_CREATE_NEW_HEADER_LABEL": "Overskrift",
-    "APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL":"Beskrivelse",
+    "APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL": "Beskrivelse",
     "APP_LISTING_CREATE_NEW_CATEGORY_LABEL": "Kategori",
     "APP_LISTING_CREATE_NEW_PRICE_LABEL": "Pris",
-    "APP_LISTING_CREATE_NEW_POSTAL_CODE_LABEL": "Postnummer",
-    "APP_LISTING_CREATE_NEW_IMAGES_LABEL": "Vedlegg",
+    "APP_LISTING_CREATE_NEW_LOCATION": "Sted",
+    "APP_LISTING_CREATE_NEW_IMAGES_LABEL": "Legg til bilder",
+    "APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL": "Last opp bilder",
 
     "APP_LISTING_CREATE_NEW_HEADER_PLACEHOLDER": "Skriv inn overskrift",
     "APP_LISTING_CREATE_NEW_DESCRIPTION_PLACEHOLDER": "Skriv inn beskrivelse",
@@ -49,9 +48,8 @@
     "APP_LISTING_CREATE_NEW_POSTAL_CODE_PLACEHOLDER": "Skriv inn postnummer",
     "APP_LISTING_CREATE_NEW_IMAGES_PLACEHOLDER": "Legg ved bilder",
 
-    "APP_LISTING_CREATE_NEW_SUBMIT_BUTTON": "Opprett annonse",
+    "APP_LISTING_CREATE_NEW_SUBMIT_BUTTON": "Publiser annonse",
     "APP_LISTING_UPLOAD_FILE": "legg til fil",
-    "APP_LISTING_UPLOADED_FILE": "vedlagt fil",
 
     "REGISTRATION_NAVBAR": "Registrer",
     "LOGIN_NAVBAR": "Logg Inn",
@@ -77,8 +75,10 @@
     "PROFILE_RATINGS_LABEL": "Evalueringer",
 
     "MAP": "Kart",
+    "COORDINATES": "Kordinater",
+    "LATITUDE": "Breddegrader",
+    "LONGITUDE": "Lengdegrader",
     "INBOX_NAVBAR": "Meldinger",
-
     "BACK_TO_INBOX": "Tilbake til Inbox",
     "LOADING_MESSAGES": "Laster Meldinger",
     "CHAT_WITH": "Samtale med ",

@@ -84,7 +84,6 @@ function placeMarker(lat: number, lng: number) {
   // Create marker
   selectionMarker.value = L.marker([lat, lng], { icon })
   .addTo(map.value as L.Map)  // Add type assertion here
-  .bindPopup('Selected location')
   .openPopup();
 }
 

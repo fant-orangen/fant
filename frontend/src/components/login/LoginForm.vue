@@ -44,7 +44,7 @@ function navigateToRegister() {
 
 <template>
   <div class="form-container">
-    <h1>{{ $t('LOGIN_LOGIN') }}</h1>
+    <h1>{{ $t('LOGIN') }}</h1>
     <form class="form" @submit.prevent="login">
       <!-- Use TextInput component for username -->
       <TextInput
@@ -62,7 +62,7 @@ function navigateToRegister() {
         :placeholder="$t('PASSWORD')"
       />
       <button type="submit" :disabled="isLoading">{{ $t('LOGIN') }}</button>
-      <button type="button" @click="navigateToRegister">{{ $t('REGISTER') }}</button>
+      <button type="button" @click="navigateToRegister">{{ $t('REGISTRATION_BUTTON') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
     <router-link to="/register">{{ $t('NEW_USER_QUESTION') }}</router-link>

@@ -22,8 +22,9 @@
     "APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL":"Description",
     "APP_LISTING_CREATE_NEW_CATEGORY_LABEL": "Category",
     "APP_LISTING_CREATE_NEW_PRICE_LABEL": "Price",
-    "APP_LISTING_CREATE_NEW_POSTAL_CODE_LABEL": "Postal Code",
+    "APP_LISTING_CREATE_NEW_LOCATION": "Location",
     "APP_LISTING_CREATE_NEW_IMAGES_LABEL": "Add images",
+    "APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL": "Upload Images",
 
     "APP_LISTING_CREATE_NEW_HEADER_PLACEHOLDER": "Enter headline",
     "APP_LISTING_CREATE_NEW_DESCRIPTION_PLACEHOLDER": "Enter description",
@@ -73,6 +74,9 @@
     "PROFILE_RATINGS_LABEL": "Ratings",
 
     "MAP": "Map",
+    "COORDINATES": "Coordinates",
+    "LATITUDE": "Latitude",
+    "LONGITUDE": "Longitude",
     "INBOX_NAVBAR": "Messages",
     "BACK_TO_INBOX": "Back to Inbox",
     "LOADING_MESSAGES": "Loading Messages",

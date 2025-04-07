@@ -5,7 +5,7 @@
     <div class="upload-area">
       <label :for="id" class="upload-button">
         <span class="button-icon">+</span>
-        {{ multiple ? $t('APP_ADD_IMAGES') : $t('APP_ADD_IMAGE') }}
+        {{ multiple ? $t('APP_LISTING_CREATE_NEW_IMAGES_LABEL') : $t('APP_LISTING_CREATE_NEW_IMAGES_LABEL') }}
         <input
           type="file"
           :id="id"
