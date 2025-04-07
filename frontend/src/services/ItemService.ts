@@ -1,12 +1,18 @@
-import api from '@/services/api/axiosInstance'
-import type {ItemPreviewType, ItemDetailsType, ItemFavoritesType} from '@/models/Item'
-
+import api from '@/services/api/axiosInstance' // [cite: uploaded:src/services/api/axiosInstance.ts]
+import type {ItemPreviewType, ItemDetailsType, CreateItemType, ItemFavoritesType} from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
 // Define an interface for the expected paginated response (needed by fetchFavoriteItems)
 export interface PaginatedItemsResponse {
   items: ItemPreviewType[]
   totalItems: number
+}
+
+export async function createItem(item: CreateItemType): Promise<CreateItemType> {
+  console.log("before post", item);
+  const response = await api.post<CreateItemType>('/items', item);
+  console.log("after post", response.data);
+  return response.data;
 }
 
 // Existing function to fetch all preview items (potentially needs pagination update too)
@@ -100,7 +106,6 @@ export async function recordItemView(itemId: string | number): Promise<{ status:
  * Fetches all favorite items for the currently logged-in user.
  * @returns Promise that resolves to an array of favorite items
  */
-
 export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
   console.log("on way to fetch fav items");
   const { data: favorites } = await api.get<ItemFavoritesType[]>('/favorite');
@@ -116,8 +121,22 @@ export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
     } catch (error) {
       console.error(`Error fetching item details for ID ${fav.itemId}:`, error);
     }
-
   }
 
   return fullItems;
+}
+
+/**
+ * Fetches items listed by the currently authenticated user.
+ * Requires the user to be logged in.
+ * @returns A Promise resolving to an array of the user's items.
+ */
+export async function fetchMyItems(): Promise<ItemPreviewType[]> { // <-- Add this function
+  try {
+    const response = await api.get<ItemPreviewType[]>('/items/my');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching logged-in user\'s items:', error);
+    throw error; // Re-throw the error to be caught by the component
+  }
 }

@@ -1,6 +1,7 @@
 package stud.ntnu.backend.data.item;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +19,7 @@ public class ItemCreateDto {
    * <h3>Category ID</h3>
    * <p>The ID of the category to which the item belongs.</p>
    */
-  @NotBlank
+  @NotNull
   private Long categoryId;
 
   /**
@@ -39,7 +40,7 @@ public class ItemCreateDto {
    * <h3>Price</h3>
    * <p>The price of the item.</p>
    */
-  @NotBlank
+  @NotNull
   private BigDecimal price;
 
   /**

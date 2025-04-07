@@ -61,11 +61,14 @@ function initializeMap() {
 async function loadItemsWithCoordinates() {
   try {
     // Fetch items based on category selection
+    let fetchedItems: ItemPreviewType[] | undefined; // Allow undefined from fetch potentially
     if (props.categoryId) {
-      items.value = await fetchPreviewItemsByCategoryId(props.categoryId);
+      fetchedItems = await fetchPreviewItemsByCategoryId(props.categoryId);
     } else {
-      items.value = await fetchPreviewItems();
+      fetchedItems = await fetchPreviewItems();
     }
+    // Ensure items.value is an array, even if fetch returned undefined or null
+    items.value = Array.isArray(fetchedItems) ? fetchedItems : [];
 
     // Clear existing markers
     if (map.value) {
@@ -73,32 +76,34 @@ async function loadItemsWithCoordinates() {
       markers.value = [];
     }
 
-    // Create new markers for items with valid coordinates
-    items.value.forEach(item => {
-      if (item && item.id != null && item.latitude != null && item.longitude != null && map.value) {
-        const imageUrlContent = item.imageUrl
-          ? `<img src="${item.imageUrl}" alt="${item.title || 'Item image'}" style="max-width: 100px; max-height: 100px; display: block; margin: 5px auto;">`
-          : '';
+    // --- FIX: Check if items.value is actually an array ---
+    if (Array.isArray(items.value)) { // <-- Add this check
+      items.value.forEach(item => {
+        if (item && item.id != null && item.latitude != null && item.longitude != null && map.value) {
+          const imageUrlContent = item.imageUrl
+            ? `<img src="${item.imageUrl}" alt="${item.title || 'Item image'}" style="max-width: 100px; max-height: 100px; display: block; margin: 5px auto;">`
+            : '';
 
-        const itemDetailPath = `/item-detail/${item.id}`;
-        const priceString = item.price != null ? `${item.price} kr` : '';
-        const linkText = `${item.title || 'View Details'} ${priceString ? '- ' + priceString : ''}`.trim();
+          const itemDetailPath = `/item-detail/${item.id}`;
+          const priceString = item.price != null ? `${item.price} kr` : '';
+          const linkText = `${item.title || 'View Details'} ${priceString ? '- ' + priceString : ''}`.trim();
 
-        // Create popup content with item picture, title, price and link
-        const popupContent = `
-          <div class="popup-content" style="text-align: center; padding: 5px;">
-            ${imageUrlContent}
-            <a href="${itemDetailPath}" target="_blank" rel="noopener noreferrer" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff; font-weight: bold;">
-              ${linkText} </a>
-          </div>
-        `;
-        const marker = L.marker([item.latitude, item.longitude])
-        .addTo(map.value as L.Map)
-        .bindPopup(popupContent);
+          // Create popup content with item picture, title, price and link
+          const popupContent = `
+            <div class="popup-content" style="text-align: center; padding: 5px;">
+                ${imageUrlContent}
+                <a href="${itemDetailPath}" target="_blank" rel="noopener noreferrer" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff; font-weight: bold;">
+                ${linkText} </a>
+            </div>
+            `;
+          const marker = L.marker([item.latitude, item.longitude])
+          .addTo(map.value as L.Map)
+          .bindPopup(popupContent);
 
-        markers.value.push(marker);
-      }
-    });
+          markers.value.push(marker);
+        }
+      });
+    } // <-- End of added check
   } catch (error) {
     console.error('Failed to load items for map:', error);
   }

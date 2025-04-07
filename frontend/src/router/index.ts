@@ -12,12 +12,15 @@ import ProfileLayout from "@/views/profile/ProfileLayout.vue";
 import ProfileOverview from '@/views/profile/ProfileOverview.vue';
 import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
 import FavoritesView from "@/views/profile/FavoritesView.vue";
+import ManageMyItemView from "@/views/profile/ManageMyItemView.vue";
+import ProfileMyBidsView from "@/views/profile/ProfileMyBidsView.vue"; // <-- Import new view
 import MapView from "@/views/MapView.vue";
 import ConversationView from "@/views/messaging/ConversationView.vue";
 import InboxView from "@/views/messaging/InboxView.vue";
 // --- End Profile imports ---
 
 const routes = [
+  // ... other routes (home, item-detail, login, etc.) ...
   {
     path: '/',
     name: 'home',
@@ -25,7 +28,7 @@ const routes = [
     meta: { title: 'Home - Fant' }
   },
   {
-    path: '/item-detail/:id',
+    path: '/item-detail/:id', // Public item detail view
     name: 'item-detail',
     component: ItemDetailView,
     props: true,
@@ -53,9 +56,8 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: CategoryEditView,
-    meta: { title: 'Administrator - category - Fant'} // Consider adding requiresAuth, requiresAdmin?
+    meta: { title: 'Administrator - category - Fant', requiresAuth: true, requiresAdmin: true }
   },
-  // Dynamic Route for CategoryView.vue
   {
     path: '/category/:categoryKey',
     name: 'category',
@@ -75,60 +77,93 @@ const routes = [
     path: '/messages',
     name: 'messages-inbox',
     component: InboxView,
-    meta: { title: "Message Overview - Fant"}
+    meta: { title: "Message Overview - Fant", requiresAuth: true }
   },
 
   {
     path: '/messages/:conversationId',
     name: 'messages-conversation',
     component: ConversationView,
-    meta: { title: "Conversation - Fant"}
+    props: true,
+    meta: { title: "Conversation - Fant", requiresAuth: true }
   },
 
+
+  // Profile Section with nested routes
   {
     path: '/profile',
     component: ProfileLayout,
     meta: { requiresAuth: true },
     children: [
       {
-        path: '',
+        path: '', // Overview at /profile
         name: 'profile-overview',
         component: ProfileOverview,
         meta: { title: 'Profile Overview - Fant' }
       },
       {
-        path: 'listings',
+        path: 'listings', // My Listings at /profile/listings
         name: 'profile-listings',
         component: ProfileAdsView,
         meta: { title: 'My Listings - Fant' }
       },
       {
-        path: 'favorites',
+        path: 'listings/manage/:id', // Manage specific listing at /profile/listings/manage/:id
+        name: 'manage-my-item',
+        component: ManageMyItemView,
+        props: true,
+        meta: { title: 'Manage Item - Fant' }
+      },
+      {
+        path: 'favorites', // My Favorites at /profile/favorites
         name: 'profile-favorites',
         component: FavoritesView,
         meta: { title: 'My Favorites - Fant' }
       },
-
+      { // <-- Add this new route object
+        path: 'my-bids', // My Bids at /profile/my-bids
+        name: 'profile-my-bids',
+        component: ProfileMyBidsView,
+        meta: { title: 'My Bids - Fant' }
+        // requiresAuth is inherited from parent '/profile'
+      },
     ],
   }
-
-
+  // ... fallback route ...
 ]
 
-// Scroll to top when route changes
+// ... rest of router setup (createRouter, scrollBehavior, beforeEach, afterEach) ...
+// Ensure your beforeEach guard correctly checks for authentication
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  scrollBehavior() {
-    // always scroll to top
-    return { top: 0 }
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
   }
-})
+});
 
-// Update the document title based on the route's meta title
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('token');
+  const userRole = localStorage.getItem('role');
+
+  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+    next({ name: 'login', query: { redirect: to.fullPath } });
+  } else if (to.matched.some(record => record.meta.requiresAdmin) && userRole !== 'ADMIN') {
+    next({ name: 'home' });
+  }
+  else {
+    next();
+  }
+});
+
 router.afterEach((to) => {
-  // Use the title from the matched route's meta field
-  document.title = to.meta.title as string || 'Fant';
-})
+  setTimeout(() => {
+    document.title = to.meta.title as string || 'Fant';
+  }, 0);
+});
 
-export default router
+export default router;

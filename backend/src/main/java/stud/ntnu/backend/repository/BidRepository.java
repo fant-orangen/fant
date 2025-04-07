@@ -25,6 +25,8 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
    */
   List<Bid> findByItemId(Long itemId);
 
+  Page<Bid> findByItemId(Long itemId, Pageable pageable);
+
   /**
    * <h3>Find By Bidder ID</h3>
    * <p>Retrieves all bids made by a specific user.</p>

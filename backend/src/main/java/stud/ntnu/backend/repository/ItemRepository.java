@@ -26,4 +26,13 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
   Page<Item> findByCategoryId(Long categoryId, Pageable pageable);
 
+
+  /**
+   * <h3>Find By Seller ID</h3>
+   * <p>Retrieves all items listed by a specific seller.</p>
+   *
+   * @param sellerId the ID of the seller
+   * @return list of {@link Item} entities listed by the seller
+   */
+  Page<Item> findBySellerId(Long sellerId, Pageable pageable);
 }

@@ -1,5 +1,6 @@
 package stud.ntnu.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -32,6 +33,7 @@ public class ItemImage {
   @ManyToOne(optional = false)
   @JoinColumn(name = "item_id")
   @OnDelete(action = OnDeleteAction.CASCADE)
+  @JsonBackReference
   private Item item;
 
   /**

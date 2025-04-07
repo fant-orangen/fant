@@ -118,13 +118,25 @@ public class ItemService {
   }
 
   /**
+   * <h3>Get Items By Seller</h3>
+   * <p>Retrieves items listed by a specific seller.</p>
+   *
+   * @param sellerId the seller's ID
+   * @return list of {@link ItemPreviewDto}
+   */
+  public Page<ItemPreviewDto> getItemsBySellerId(Long sellerId, Pageable pageable) {
+    return itemRepository.findBySellerId(sellerId, pageable)
+        .map(this::mapToItemPreviewDto);
+  }
+
+  /**
    * <h3>Record Item View</h3>
    * <p>Tracks when a user views an item.</p>
    *
    * @param itemId the viewed item ID
    * @param user   the viewing user
    */
- @Transactional
+  @Transactional
   public void recordView(Long itemId, User user) {
     Item item = itemRepository.findById(itemId)
         .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + itemId));
@@ -200,7 +212,10 @@ public class ItemService {
         .category(item.getCategory() != null ? item.getCategory().getName() : "")
         .price(item.getPrice())
         .contact(item.getSeller() != null ? item.getSeller().getDisplayName() : "")
+        .sellerId(item.getSeller() != null ? item.getSeller().getId() : null) // <-- Added mapping
         .imageUrls(imageUrls)
+        .latitude(item.getLatitude())
+        .longitude(item.getLongitude())
         .build();
   }
 

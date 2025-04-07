@@ -89,5 +89,9 @@
     "PRICE": "Price",
     "NO_TITLE": "No title",
 
-    "START_CONVERSATION": "Start the conversation"
+    "START_CONVERSATION": "Start the conversation",
+
+    "MY_BIDS_TITLE": "My Bids",
+    "PROFILE_TILE_MY_BIDS_DESC": "View bids you have placed"
+
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.bid.BidCreateDto;
+import stud.ntnu.backend.data.bid.BidResponseDto;
 import stud.ntnu.backend.data.bid.BidUpdateDto;
 import stud.ntnu.backend.model.Bid;
 import stud.ntnu.backend.service.BidService;
@@ -53,7 +54,7 @@ public class BidController {
    * @return empty response with 204 No Content status
    */
   @PostMapping("/bid")
-  public ResponseEntity<Bid> createBid(
+  public ResponseEntity<BidResponseDto> createBid(
       @Valid @RequestBody BidCreateDto bidCreateDto,
       Principal principal) {
     return ResponseEntity.ok(
@@ -68,7 +69,7 @@ public class BidController {
    * @return list of {@link Bid} entities placed by the user
    */
   @GetMapping("/bids")
-  public ResponseEntity<Page<Bid>> getUserBids(Principal principal, Pageable pageable) {
+  public ResponseEntity<Page<BidResponseDto>> getUserBids(Principal principal, Pageable pageable) {
     return ResponseEntity.ok(
         bidService.getBidsByBidderId(userService.getCurrentUserId(principal), pageable));
   }
@@ -134,7 +135,7 @@ public class BidController {
    * @return empty response with OK status if successful
    */
   @PutMapping("/{itemId}")
-  public ResponseEntity<Bid> updateBid(
+  public ResponseEntity<BidResponseDto> updateBid(
       @Valid @RequestBody BidUpdateDto bidUpdateDto, @Positive @PathVariable Long itemId,
       Principal principal) {
     return ResponseEntity.ok(

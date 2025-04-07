@@ -170,26 +170,36 @@ public class MessageService {
   /**
    * <h3>Build Conversation Preview</h3>
    * <p>Creates a conversation summary from messages.</p>
+   * <p>Uses the ID of the *earliest* message as the stable conversation identifier.</p>
    *
    * @param user     the requesting user
-   * @param messages list of messages in conversation
+   * @param messages list of messages in conversation (assumes non-empty)
    * @return {@link ConversationPreviewDto} for the conversation
    */
   private ConversationPreviewDto buildConversationPreview(User user, List<Message> messages) {
+    // Sort oldest first to find the stable identifier
+    messages.sort(Comparator.comparing(Message::getSentAt));
+    Message firstMessage = messages.getFirst(); // Earliest message
+    Long conversationIdentifier = firstMessage.getId(); // Use earliest message ID as the main ID
+
+    // Sort newest first to find the last message for preview content
     messages.sort(Comparator.comparing(Message::getSentAt).reversed());
-    Message lastMessage = messages.getFirst();
+    Message lastMessage = messages.getFirst(); // Newest message for preview
+
+    // Determine the other user based on the last message (or first, doesn't matter)
     User otherUser = lastMessage.getSender().getId().equals(user.getId()) ?
         lastMessage.getReceiver() : lastMessage.getSender();
 
+    // Calculate unread count based on all messages in the thread
     int unreadCount = (int) messages.stream()
         .filter(m -> m.getReceiver().getId().equals(user.getId()) && !m.isRead())
         .count();
 
     return ConversationPreviewDto.builder()
-        .id(lastMessage.getId())
+        .id(conversationIdentifier) // <-- USE EARLIEST MESSAGE ID HERE
         .otherUser(toUserDto(otherUser))
-        .item(toItemDto(lastMessage.getItem()))
-        .lastMessage(toMessageDto(lastMessage))
+        .item(toItemDto(lastMessage.getItem())) // Item context from last message is fine
+        .lastMessage(toMessageDto(lastMessage)) // Preview content from last message
         .unreadMessagesCount(unreadCount)
         .relatedItem(toRelatedItemDto(lastMessage.getItem()))
         .build();
@@ -311,6 +321,70 @@ public class MessageService {
   public void markMessagesAsRead(List<Long> messageIds, User currentUser) {
     if (messageIds != null && !messageIds.isEmpty()) {
       messageRepository.markMessagesAsRead(messageIds, currentUser.getId());
+    }
+  }
+
+  /**
+   * <h3>Find or Create Conversation</h3>
+   * <p>Finds an existing conversation thread between the user and the item's seller.
+   * If no messages exist, it creates an initial message to establish the thread.</p>
+   * <p>Returns an ID that can identify the conversation (currently the ID of the earliest message).</p>
+   *
+   * @param currentUser The user initiating the conversation.
+   * @param itemId      The ID of the item being discussed.
+   * @return The ID of the earliest message in the conversation thread.
+   * @throws EntityNotFoundException If the item or seller doesn't exist.
+   * @throws IllegalArgumentException If the user tries to start a conversation with themselves.
+   */
+  @Transactional // Make method transactional
+  public Long findOrCreateConversation(User currentUser, Long itemId) {
+    log.info("Finding or creating conversation for item {} by user {}", itemId, currentUser.getId());
+
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> {
+          log.error("Item not found with id: {}", itemId);
+          return new EntityNotFoundException("Item not found with id: " + itemId);
+        });
+
+    User seller = item.getSeller();
+
+    if (seller == null) {
+      log.error("Seller not found for item id: {}", itemId);
+      throw new EntityNotFoundException("Seller not found for item id: " + itemId);
+    }
+
+    if (currentUser.getId().equals(seller.getId())) {
+      log.warn("User {} attempted to start a conversation with themselves over item {}", currentUser.getId(), itemId);
+      throw new IllegalArgumentException("Cannot start a conversation with yourself.");
+    }
+
+    // 1. Check if any messages already exist for this item between these two users
+    List<Message> existingMessages = messageRepository.findConversation(currentUser.getId(), seller.getId(), itemId);
+
+    if (!existingMessages.isEmpty()) {
+      // Conversation exists, find the earliest message ID to use as a stable identifier
+      log.info("Found existing conversation for item {} between users {} and {}. Returning earliest message ID.",
+          itemId, currentUser.getId(), seller.getId());
+      return existingMessages.stream()
+          .min(Comparator.comparing(Message::getSentAt))
+          .map(Message::getId)
+          .orElseThrow(() -> new IllegalStateException("Conversation found but no messages retrieved.")); // Should not happen
+    } else {
+      // 2. No existing messages, create an initial "system" message to establish the thread
+      log.info("No existing conversation found for item {} between users {} and {}. Creating initial message.",
+          itemId, currentUser.getId(), seller.getId());
+      Message initialMessage = Message.builder()
+          .sender(currentUser) // Or potentially a system user if you have one
+          .receiver(seller)
+          .item(item)
+          .content("Conversation started about: " + item.getBriefDescription()) // System message
+          .read(true) // Mark as read for sender, receiver will see it as unread initially
+          .build();
+      Message savedInitialMessage = messageRepository.save(initialMessage);
+      log.info("Initial message saved with ID: {}", savedInitialMessage.getId());
+
+      // Return the ID of this newly created initial message
+      return savedInitialMessage.getId();
     }
   }
 }
