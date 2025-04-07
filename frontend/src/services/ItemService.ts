@@ -6,7 +6,6 @@ import type { CategoryRecommendation } from '@/models/Recommendation'
 export interface PaginatedItemsResponse {
   items: ItemPreviewType[]
   totalItems: number
-  // Add other fields if your API provides them (e.g., totalPages, currentPage)
 }
 
 export async function createItem(item: CreateItemType): Promise<CreateItemType> {
@@ -125,4 +124,19 @@ export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
   }
 
   return fullItems;
+}
+
+/**
+ * Fetches items listed by the currently authenticated user.
+ * Requires the user to be logged in.
+ * @returns A Promise resolving to an array of the user's items.
+ */
+export async function fetchMyItems(): Promise<ItemPreviewType[]> { // <-- Add this function
+  try {
+    const response = await api.get<ItemPreviewType[]>('/items/my');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching logged-in user\'s items:', error);
+    throw error; // Re-throw the error to be caught by the component
+  }
 }

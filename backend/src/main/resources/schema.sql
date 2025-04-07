@@ -97,3 +97,18 @@ CREATE TABLE orders
     FOREIGN KEY (seller_id) REFERENCES users (id),
     FOREIGN KEY (item_id) REFERENCES items (id)
 );
+
+CREATE TABLE bids
+(
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    item_id     INT            NOT NULL,
+    bidder_id   INT            NOT NULL,
+    amount      DECIMAL(10, 2) NOT NULL,
+    comment     TEXT,
+    status      ENUM('PENDING', 'ACCEPTED', 'REJECTED') DEFAULT 'PENDING',
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE,
+    FOREIGN KEY (bidder_id) REFERENCES users (id) ON DELETE CASCADE,
+    UNIQUE KEY uk_bid_item_bidder (item_id, bidder_id)
+);
