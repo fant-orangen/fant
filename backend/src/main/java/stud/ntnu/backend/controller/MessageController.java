@@ -2,6 +2,8 @@ package stud.ntnu.backend.controller;
 
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.MessageReadRequestDto;
 import stud.ntnu.backend.data.message.ConversationPreviewDto;
 import stud.ntnu.backend.data.message.MessageResponseDto;
+import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.MessageService;
 
 import java.util.List;
@@ -78,6 +81,30 @@ public class MessageController {
       Principal principal) {
     messageService.markMessagesAsRead(request.getMessageIds(), userService.getCurrentUser(principal));
     return ResponseEntity.ok().build();
+  }
+
+  /**
+   * <h3>Initiate Conversation</h3>
+   * <p>Finds an existing conversation or creates a new one (implicitly)
+   * between the current user and the seller of the specified item.</p>
+   * <p>Returns an identifier that the frontend can use to navigate to the conversation view.</p>
+   *
+   * @param itemId    The ID of the item to discuss.
+   * @param principal The authenticated user initiating the conversation.
+   * @return A map containing the 'conversationId' (which might be the ID of the first message).
+   */
+  @PostMapping("/conversations/initiate")
+  public ResponseEntity<Map<String, Long>> initiateConversation(
+      @RequestParam @Positive Long itemId,
+      Principal principal) {
+
+    User currentUser = userService.getCurrentUser(principal);
+    // Delegate logic to MessageService
+    Long conversationIdentifier = messageService.findOrCreateConversation(currentUser, itemId);
+
+    Map<String, Long> response = new HashMap<>();
+    response.put("conversationId", conversationIdentifier);
+    return ResponseEntity.ok(response);
   }
 
 

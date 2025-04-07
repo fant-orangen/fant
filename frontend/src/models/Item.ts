@@ -19,6 +19,7 @@ export interface ItemDetailsType {
   imageUrls: string[];
   latitude?: number;
   longitude?: number;
+  sellerId: number | string;
 }
 
 export interface ItemFavoritesType {
