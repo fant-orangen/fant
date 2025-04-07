@@ -1,12 +1,11 @@
-import api from '@/services/api/axiosInstance' // [cite: uploaded:src/services/api/axiosInstance.ts]
-import type { ItemPreviewType, ItemDetailsType } from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
+import api from '@/services/api/axiosInstance'
+import type { ItemPreviewType, ItemDetailsType } from '@/models/Item'
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
 // Define an interface for the expected paginated response (needed by fetchFavoriteItems)
 export interface PaginatedItemsResponse {
   items: ItemPreviewType[]
   totalItems: number
-  // Add other fields if your API provides them (e.g., totalPages, currentPage)
 }
 
 // Existing function to fetch all preview items (potentially needs pagination update too)
@@ -111,7 +110,7 @@ export async function fetchFavoriteItems(
     // Assumes endpoint is relative to baseURL (e.g., /api/users/me/favorites)
     const response = await api.get<PaginatedItemsResponse>('/users/me/favorites', {
       params: {
-        // Send parameters as query string ?page=...&limit=...
+
         page: page,
         limit: limit,
       },
