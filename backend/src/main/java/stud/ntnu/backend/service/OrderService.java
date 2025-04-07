@@ -1,6 +1,7 @@
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -11,7 +12,6 @@ import stud.ntnu.backend.model.Bid;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.model.enums.BidStatus;
-import stud.ntnu.backend.model.enums.ItemStatus;
 import stud.ntnu.backend.repository.OrderRepository;
 import stud.ntnu.backend.repository.ItemRepository;
 
@@ -27,7 +27,7 @@ public class OrderService {
    * <h3>Bid Repository</h3>
    * <p>Repository for accessing bid data.</p>
    */
-  private final OrderRepository bidRepository;
+  private final OrderRepository orderRepository;
 
   /**
    * <h3>Item Repository</h3>
@@ -59,7 +59,7 @@ public class OrderService {
             : Bid.builder().build().getStatus())
         .build();
 
-    return bidRepository.save(bid);
+    return orderRepository.save(bid);
   }
 
   /**
@@ -71,11 +71,11 @@ public class OrderService {
    * @throws EntityNotFoundException if no matching bid is found
    */
   public void deleteBidByItemIdAndBidder(Long itemId, User bidder) {
-    Bid bid = bidRepository.findByItemIdAndBidderId(itemId, bidder.getId())
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidder.getId())
         .orElseThrow(() -> new EntityNotFoundException(
             "Bid not found for item ID: " + itemId + " and bidder ID: " + bidder.getId()));
 
-    bidRepository.delete(bid);
+    orderRepository.delete(bid);
   }
 
   /**
@@ -90,7 +90,7 @@ public class OrderService {
    */
   public void acceptBid(Long itemId, Long bidderId, User currentUser) {
     // Find the bid by item ID and bidder ID
-    Bid bid = bidRepository.findByItemIdAndBidderId(itemId, bidderId)
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
         .orElseThrow(() -> new EntityNotFoundException("Bid not found"));
 
     // Get the item to check ownership
@@ -104,7 +104,7 @@ public class OrderService {
 
     // Update the bid status
     bid.setStatus(BidStatus.ACCEPTED);
-    bidRepository.save(bid);
+    orderRepository.save(bid);
   }
 
   /**
@@ -119,7 +119,7 @@ public class OrderService {
    */
   public void rejectBid(Long itemId, Long bidderId, User currentUser) {
     // Find the bid by item ID and bidder ID
-    Bid bid = bidRepository.findByItemIdAndBidderId(itemId, bidderId)
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
         .orElseThrow(() -> new EntityNotFoundException("Bid not found"));
 
     // Get the item to check ownership
@@ -133,7 +133,36 @@ public class OrderService {
 
     // Update the bid status
     bid.setStatus(BidStatus.REJECTED);
-    bidRepository.save(bid);
+    orderRepository.save(bid);
+  }
+
+  /**
+   * <h3>Update Bid</h3>
+   * <p>Updates a bid's amount and/or comment for an existing bid.</p>
+   *
+   * @param itemId     ID of the item being bid on
+   * @param bidderId   ID of the user who made the bid
+   * @param newAmount  optional new amount for the bid
+   * @param newComment optional new comment for the bid
+   * @throws EntityNotFoundException if no matching bid is found
+   */
+  @Transactional
+  public void updateBid(Long itemId, Long bidderId, BigDecimal newAmount, String newComment) {
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
+        .orElseThrow(() -> new EntityNotFoundException(
+            "Bid not found for item ID: " + itemId + " and bidder ID: " + bidderId));
+
+    // Only update fields that are provided
+    if (newAmount != null) {
+      bid.setAmount(newAmount);
+    }
+
+    if (newComment != null) {
+      bid.setComment(newComment);
+    }
+
+    // Save the updated bid
+    orderRepository.save(bid);
   }
 
   /**
@@ -144,6 +173,8 @@ public class OrderService {
    * @return list of {@link Bid} entities placed by the user
    */
   public List<Bid> getBidsByBidderId(Long bidderId) {
-    return bidRepository.findByBidderId(bidderId);
+    return orderRepository.findByBidderId(bidderId);
   }
+
+
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.bid.BidCreateDto;
+import stud.ntnu.backend.data.bid.BidUpdateDto;
 import stud.ntnu.backend.model.Bid;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.OrderService;
@@ -120,6 +121,26 @@ public class OrderController {
       @RequestParam @Positive Long bidderId,
       Principal principal) {
     orderService.rejectBid(itemId, bidderId, userService.getCurrentUser(principal));
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * <h3>Update Bid</h3>
+   * <p>Updates an existing bid with new amount and/or comment.</p>
+   *
+   * @param bidUpdateDto the bid update details
+   * @param principal    the authenticated user
+   * @return empty response with OK status if successful
+   */
+  @PostMapping("/update")
+  public ResponseEntity<Void> updateBid(
+      @Valid @RequestBody BidUpdateDto bidUpdateDto,
+      Principal principal) {
+    orderService.updateBid(
+        bidUpdateDto.getItemId(),
+        userService.getCurrentUserId(principal),
+        bidUpdateDto.getAmount(),
+        bidUpdateDto.getComment());
     return ResponseEntity.ok().build();
   }
 }
