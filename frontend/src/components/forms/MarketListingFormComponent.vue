@@ -126,6 +126,7 @@ import { fetchCategories } from '@/services/CategoryService';
 import { createItem } from '@/services/ItemService';
 import type { CreateItemType } from '@/models/Item';
 import type { Category } from '@/models/Category';
+import ImageService from '@/services/ImageService';
 
 const formData = ref<CreateItemType>({
   categoryId: 0,
@@ -191,18 +192,22 @@ function handleFileUpload(files: File[]) {
   formData.value.images = null; // or send files separately
 }
 
-// Submit handler
 async function submitForm() {
   try {
+    // 1. Send the item data first
     const payload: CreateItemType = { ...formData.value };
-    const createdItemId = await createItem(payload);
+    const createdItemId = await createItem(payload); // this should return the new item's ID
+    console.log('Item created successfully:', createdItemId);
 
-    console.log('Submitting payload:', payload);
-    //await createItem(payload);
-    alert('Item created successfully!');
+    // 2. Upload images afterward, using the returned item ID
+    if (imageFiles.value.length > 0) {
+      await ImageService.uploadImages(imageFiles.value, createdItemId);
+    }
+
+    alert('Item and images uploaded successfully!');
   } catch (error) {
-    console.error('Error creating item:', error);
-    alert('Failed to create item.');
+    console.error('Error creating item or uploading images:', error);
+    alert('Failed to create item or upload images.');
   }
 }
 </script>
