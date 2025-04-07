@@ -4,10 +4,10 @@
 export type BidStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 
 /**
- * Represents the data to be sent when creating a new bid.
+ * Represents the data to be sent when creating or updating a bid.
  * Matches the structure of the server-side BidCreateDto.
  */
-export interface BidCreatePayload {
+export interface BidPayload {
   /**
    * The ID of the item for which the bid is placed.
    */
@@ -78,3 +78,5 @@ export interface BidResponseType {
    */
   updatedAt: string;
 }
+
+

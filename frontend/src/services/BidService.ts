@@ -1,5 +1,5 @@
 import api from '@/services/api/axiosInstance';
-import type { BidCreatePayload, BidResponseType } from '@/models/Bid';
+import type { BidPayload, BidResponseType } from '@/models/Bid';
 
 /**
  * Places a new bid for an item.
@@ -9,7 +9,7 @@ import type { BidCreatePayload, BidResponseType } from '@/models/Bid';
  * @returns A promise that resolves when the bid is successfully placed
  * @throws Error if the request fails
  */
-export async function placeBid(bid: BidCreatePayload): Promise<{ status: number }> {
+export async function placeBid(bid: BidPayload): Promise<{ status: number }> {
   try {
     const response = await api.post('/orders/bid', bid);
     console.log(`Bid successfully placed for item ${bid.itemId}`);
@@ -46,8 +46,13 @@ export async function fetchUserBids(): Promise<BidResponseType[]> {
  * @returns The response with status code
  */
 export async function acceptBid(bidderId: string | number, itemId: string | number): Promise<{ status: number }> {
-  const response = await api.post('/orders/accept', { bidderId, itemId });
-  return { status: response.status }
+  try {
+    const response = await api.post('/orders/accept', { bidderId, itemId });
+    return { status: response.status }
+  } catch (error) {
+    console.error('Error accepting bid:', error)
+    throw error
+  }
 }
 
 /**
@@ -57,7 +62,42 @@ export async function acceptBid(bidderId: string | number, itemId: string | numb
  * @returns The response with status code
  */
 export async function rejectBid(bidderId: string | number, itemId: string | number): Promise<{ status: number }> {
-  const response = await api.post('/orders/reject', { bidderId, itemId });
-  return { status: response.status }
+  try {
+    const response = await api.post('/orders/reject', { bidderId, itemId });
+    return { status: response.status }
+  } catch (error) {
+    console.error('Error rejecting bid:', error)
+    throw error
+  }
+}
+
+/**
+ * Deletes a bid for the specified item
+ * @param id - The ID of the item to delete the bid for
+ * @returns Promise with response status
+ */
+export async function deleteBid(id: string | number): Promise<{status: number}> {
+  try {
+    const response = await api.delete(`/orders/delete/${id}`)
+    return { status: response.status }
+  } catch (error) {
+    console.error('Error deleting bid:', error)
+    throw error
+  }
+}
+
+/**
+ * Updates an existing bid for an item
+ * @param bid - The updated bid information
+ * @returns The response with status code
+ */
+export async function updateBid(bid: BidPayload): Promise<{status: number}> {
+  try {
+    const response = await api.put('/orders/update', bid)
+    return { status: response.status }
+  } catch (error) {
+    console.error('Error updating bid:', error)
+    throw error
+  }
 }
 
