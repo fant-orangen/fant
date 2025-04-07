@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.bid.BidCreateDto;
 import stud.ntnu.backend.service.OrderService;
@@ -50,7 +51,7 @@ public class OrderController {
       @Valid @RequestBody BidCreateDto bidCreateDto,
       Principal principal) {
     orderService.createBid(bidCreateDto, userService.getCurrentUser(principal));
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok().build();
   }
 
   /**
@@ -63,9 +64,45 @@ public class OrderController {
    */
   @DeleteMapping("/delete/{itemId}")
   public ResponseEntity<Void> deleteBid(
-          @Positive @PathVariable Long itemId,
-          Principal principal) {
-      orderService.deleteBidByItemIdAndBidder(itemId, userService.getCurrentUser(principal));
-      return ResponseEntity.ok().build();
+      @Positive @PathVariable Long itemId,
+      Principal principal) {
+    orderService.deleteBidByItemIdAndBidder(itemId, userService.getCurrentUser(principal));
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * <h3>Accept Bid</h3>
+   * <p>Changes a bid's status to ACCEPTED.</p>
+   *
+   * @param itemId    ID of the item being bid on
+   * @param bidderId  ID of the user who made the bid
+   * @param principal the authenticated user (must be seller)
+   * @return empty response with OK status
+   */
+  @PostMapping("/accept")
+  public ResponseEntity<Void> acceptBid(
+      @RequestParam @Positive Long itemId,
+      @RequestParam @Positive Long bidderId,
+      Principal principal) {
+    orderService.acceptBid(itemId, bidderId, userService.getCurrentUser(principal));
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * <h3>Reject Bid</h3>
+   * <p>Changes a bid's status to REJECTED.</p>
+   *
+   * @param itemId    ID of the item being bid on
+   * @param bidderId  ID of the user who made the bid
+   * @param principal the authenticated user (must be seller)
+   * @return empty response with OK status
+   */
+  @PostMapping("/reject")
+  public ResponseEntity<Void> rejectBid(
+      @RequestParam @Positive Long itemId,
+      @RequestParam @Positive Long bidderId,
+      Principal principal) {
+    orderService.rejectBid(itemId, bidderId, userService.getCurrentUser(principal));
+    return ResponseEntity.ok().build();
   }
 }

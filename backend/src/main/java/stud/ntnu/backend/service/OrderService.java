@@ -2,12 +2,15 @@ package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import stud.ntnu.backend.data.bid.BidCreateDto;
 import stud.ntnu.backend.model.Bid;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.model.enums.BidStatus;
+import stud.ntnu.backend.model.enums.ItemStatus;
 import stud.ntnu.backend.repository.OrderRepository;
 import stud.ntnu.backend.repository.ItemRepository;
 
@@ -72,5 +75,63 @@ public class OrderService {
             "Bid not found for item ID: " + itemId + " and bidder ID: " + bidder.getId()));
 
     bidRepository.delete(bid);
+  }
+
+  /**
+   * <h3>Accept Bid</h3>
+   * <p>Changes a bid's status to ACCEPTED if the current user is the seller of the item.</p>
+   *
+   * @param itemId      ID of the item being bid on
+   * @param bidderId    ID of the user who made the bid
+   * @param currentUser the authenticated user (must be seller)
+   * @throws AccessDeniedException   if the current user is not the seller
+   * @throws EntityNotFoundException if the bid or item doesn't exist
+   */
+  public void acceptBid(Long itemId, Long bidderId, User currentUser) {
+    // Find the bid by item ID and bidder ID
+    Bid bid = bidRepository.findByItemIdAndBidderId(itemId, bidderId)
+        .orElseThrow(() -> new EntityNotFoundException("Bid not found"));
+
+    // Get the item to check ownership
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+    // Check if current user is the seller
+    if (!item.getSeller().getId().equals(currentUser.getId())) {
+      throw new AccessDeniedException("Only the seller can accept bids");
+    }
+
+    // Update the bid status
+    bid.setStatus(BidStatus.ACCEPTED);
+    bidRepository.save(bid);
+  }
+
+  /**
+   * <h3>Reject Bid</h3>
+   * <p>Changes a bid's status to REJECTED if the current user is the seller of the item.</p>
+   *
+   * @param itemId      ID of the item being bid on
+   * @param bidderId    ID of the user who made the bid
+   * @param currentUser the authenticated user (must be seller)
+   * @throws AccessDeniedException   if the current user is not the seller
+   * @throws EntityNotFoundException if the bid or item doesn't exist
+   */
+  public void rejectBid(Long itemId, Long bidderId, User currentUser) {
+    // Find the bid by item ID and bidder ID
+    Bid bid = bidRepository.findByItemIdAndBidderId(itemId, bidderId)
+        .orElseThrow(() -> new EntityNotFoundException("Bid not found"));
+
+    // Get the item to check ownership
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+    // Check if current user is the seller
+    if (!item.getSeller().getId().equals(currentUser.getId())) {
+      throw new AccessDeniedException("Only the seller can reject bids");
+    }
+
+    // Update the bid status
+    bid.setStatus(BidStatus.REJECTED);
+    bidRepository.save(bid);
   }
 }
