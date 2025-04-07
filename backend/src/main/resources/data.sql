@@ -140,21 +140,21 @@ INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (1, 3, 100.00, 'Would you accept this offer?', 'PENDING');
 
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
-VALUES (1, 4, 105.50, 'Very interested in this item', 'ACCEPTED');
+VALUES (1, 3, 105.50, 'Very interested in this item', 'ACCEPTED');
 
 -- Multiple bids on item 3
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (3, 2, 240.00, 'Can you deliver?', 'REJECTED');
 
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
-VALUES (3, 5, 260.00, 'I can pick it up this weekend', 'PENDING');
+VALUES (3, 2, 260.00, 'I can pick it up this weekend', 'PENDING');
 
 -- Bids on various other items
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (2, 3, 45.00, 'Is this still available?', 'PENDING');
 
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
-VALUES (4, 4, 19.50, 'Would you take $19.50?', 'ACCEPTED');
+VALUES (4, 1, 19.50, 'Would you take $19.50?', 'ACCEPTED');
 
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (5, 1, 75.00, 'Is the condition still good?', 'PENDING');
@@ -163,4 +163,4 @@ INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (6, 2, 320.00, 'Can you provide more photos?', 'PENDING');
 
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
-VALUES (7, 5, 15.25, 'Is this the latest version?', 'PENDING');
+VALUES (7, 2, 15.25, 'Is this the latest version?', 'PENDING');
