@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +45,8 @@ public class OrderController {
    */
   private final UserService userService;
 
+  private final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
   /**
    * <h3>Create Bid</h3>
    * <p>Creates a new bid for an item from the authenticated user.</p>
@@ -56,6 +60,10 @@ public class OrderController {
       @Valid @RequestBody BidCreateDto bidCreateDto,
       Principal principal) {
     orderService.createBid(bidCreateDto, userService.getCurrentUser(principal));
+    logger.info("User {} created a bid for item {} with amount {}",
+        userService.getCurrentUser(principal).getId(),
+        bidCreateDto.getItemId(),
+        bidCreateDto.getAmount());
     return ResponseEntity.ok().build();
   }
 

@@ -4,19 +4,22 @@
 export type BidStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 
 /**
- * Represents the data sent from the frontend to the backend
- * when creating a new modals (payload for the POST request body).
- * Note: itemId is typically passed in the URL path, and bidderId
- * is determined from the authenticated user on the backend.
+ * Represents the data to be sent when creating a new bid.
+ * Matches the structure of the server-side BidCreateDto.
  */
 export interface BidCreatePayload {
   /**
-   * The monetary amount of the modals. Matches 'amount' in the database.
+   * The ID of the item for which the bid is placed.
+   */
+  itemId: number;
+
+  /**
+   * The monetary amount offered for the item.
    */
   amount: number;
 
   /**
-   * An optional comment accompanying the modals.
+   * Optional message from the bidder to the seller.
    */
   comment?: string;
 }

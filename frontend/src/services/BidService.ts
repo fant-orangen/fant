@@ -2,20 +2,21 @@ import api from '@/services/api/axiosInstance';
 import type { BidCreatePayload, BidResponseType } from '@/models/Bid';
 
 /**
- * Places a new modals on a specific item.
- * Corresponds to POST /api/items/{itemId}/bids
+ * Places a new bid for an item.
+ * The authenticated user is identified through their JWT token.
  *
- * @param itemId - The ID of the item to modals on.
- * @param bidData - The modals details (amount and optional comment).
- * @returns A promise resolving to the details of the created modals.
+ * @param bid - The bid information including itemId, amount, and optional comment
+ * @returns A promise that resolves when the bid is successfully placed
+ * @throws Error if the request fails
  */
-export async function placeBidOnItem(itemId: string | number, bidData: BidCreatePayload): Promise<BidResponseType> {
+export async function placeBid(bid: BidCreatePayload): Promise<{ status: number }> {
   try {
-    const response = await api.post<BidResponseType>(`/items/${itemId}/bids`, bidData);
-    console.log(`Bid placed successfully for item ${itemId}:`, response.data);
-    return response.data;
+    const response = await api.post('/bid', bid);
+    console.log(`Bid successfully placed for item ${bid.itemId}`);
+
+    return {status: response.status }
   } catch (error) {
-    console.error(`Error placing bid on item ${itemId}:`, error);
+    console.error('Error placing bid:', error);
     throw error;
   }
 }
