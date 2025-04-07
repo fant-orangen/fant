@@ -241,7 +241,7 @@ async function loadItemData() {
 
     // Log crucial details for debugging conversation logic
     console.log("Item details loaded:", item.value);
-    console.log("Seller ID from loaded item:", item.value.sellerId); // Check if sellerId is present
+
     if (viewResponse) {
       console.log(`View recorded status: ${viewResponse.status}`);
     } else {
