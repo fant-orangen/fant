@@ -3,11 +3,18 @@ package stud.ntnu.backend.service;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional; // Import Optional
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException; // Import for constraint violation
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import stud.ntnu.backend.data.bid.BidCreateDto;
+import stud.ntnu.backend.data.bid.BidResponseDto;
 import stud.ntnu.backend.model.Bid;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
@@ -23,158 +30,259 @@ import stud.ntnu.backend.repository.ItemRepository;
 @RequiredArgsConstructor
 public class OrderService {
 
-  /**
-   * <h3>Bid Repository</h3>
-   * <p>Repository for accessing bid data.</p>
-   */
   private final OrderRepository orderRepository;
-
-  /**
-   * <h3>Item Repository</h3>
-   * <p>Repository for accessing item data.</p>
-   */
   private final ItemRepository itemRepository;
 
+  private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+
   /**
-   * <h3>Create Bid</h3>
-   * <p>Creates a new bid for an item from a logged-in user.</p>
+   * Creates a new bid or potentially updates an existing PENDING bid.
+   * Prevents placing new bids if an ACCEPTED/REJECTED one exists.
    *
-   * @param bidCreateDto the bid details
-   * @param currentUser  the authenticated user making the bid
-   * @return the created {@link Bid}
-   * @throws jakarta.persistence.EntityNotFoundException if the item doesn't exist
+   * @param bidCreateDto DTO containing bid details.
+   * @param currentUser  The user placing the bid.
+   * @return The created or updated Bid entity.
+   * @throws IllegalArgumentException if the user already has a non-pending bid or is the seller.
+   * @throws EntityNotFoundException if the item doesn't exist.
    */
   @Transactional
   public Bid createBid(BidCreateDto bidCreateDto, User currentUser) {
+    logger.info("Attempting to create/update bid for item ID {} by user ID {}", bidCreateDto.getItemId(), currentUser.getId());
     Item item = itemRepository.findById(bidCreateDto.getItemId())
-        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(
-            "Item with ID " + bidCreateDto.getItemId() + " not found"));
+        .orElseThrow(() -> {
+          logger.error("Item not found with ID: {}", bidCreateDto.getItemId());
+          return new EntityNotFoundException("Item with ID " + bidCreateDto.getItemId() + " not found");
+        });
 
-    Bid bid = Bid.builder()
-        .item(item)
-        .bidder(currentUser)
-        .amount(bidCreateDto.getAmount())
-        .comment(bidCreateDto.getComment())
-        .status(bidCreateDto.getStatus() != null ? bidCreateDto.getStatus()
-            : Bid.builder().build().getStatus())
-        .build();
-
-    return orderRepository.save(bid);
-  }
-
-  /**
-   * <h3>Delete Bid By Item ID And Bidder</h3>
-   * <p>Deletes a bid placed by the specified bidder on the specified item.</p>
-   *
-   * @param itemId the ID of the item
-   * @param bidder the user who placed the bid
-   * @throws EntityNotFoundException if no matching bid is found
-   */
-  public void deleteBidByItemIdAndBidder(Long itemId, User bidder) {
-    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidder.getId())
-        .orElseThrow(() -> new EntityNotFoundException(
-            "Bid not found for item ID: " + itemId + " and bidder ID: " + bidder.getId()));
-
-    orderRepository.delete(bid);
-  }
-
-  /**
-   * <h3>Accept Bid</h3>
-   * <p>Changes a bid's status to ACCEPTED if the current user is the seller of the item.</p>
-   *
-   * @param itemId      ID of the item being bid on
-   * @param bidderId    ID of the user who made the bid
-   * @param currentUser the authenticated user (must be seller)
-   * @throws AccessDeniedException   if the current user is not the seller
-   * @throws EntityNotFoundException if the bid or item doesn't exist
-   */
-  public void acceptBid(Long itemId, Long bidderId, User currentUser) {
-    // Find the bid by item ID and bidder ID
-    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
-        .orElseThrow(() -> new EntityNotFoundException("Bid not found"));
-
-    // Get the item to check ownership
-    Item item = itemRepository.findById(itemId)
-        .orElseThrow(() -> new EntityNotFoundException("Item not found"));
-
-    // Check if current user is the seller
-    if (!item.getSeller().getId().equals(currentUser.getId())) {
-      throw new AccessDeniedException("Only the seller can accept bids");
+    // Prevent seller from bidding on their own item
+    if (item.getSeller().getId().equals(currentUser.getId())) {
+      logger.warn("Seller (User ID {}) attempted to bid on their own item (Item ID {})", currentUser.getId(), item.getId());
+      throw new IllegalArgumentException("Sellers cannot bid on their own items.");
     }
 
-    // Update the bid status
-    bid.setStatus(BidStatus.ACCEPTED);
-    orderRepository.save(bid);
+    // --- Check for existing bid ---
+    Optional<Bid> existingBidOptional = orderRepository.findByItemIdAndBidderId(item.getId(), currentUser.getId());
+
+    if (existingBidOptional.isPresent()) {
+      Bid existingBid = existingBidOptional.get();
+      logger.info("Existing bid (ID {}) found for item {} / bidder {}", existingBid.getId(), item.getId(), currentUser.getId());
+
+      // If existing bid is PENDING, update it instead of creating a new one
+      if (existingBid.getStatus() == BidStatus.PENDING) {
+        logger.info("Updating existing PENDING bid ID {}", existingBid.getId());
+        existingBid.setAmount(bidCreateDto.getAmount());
+        existingBid.setComment(bidCreateDto.getComment());
+        // No status change needed here, it remains PENDING until accepted/rejected
+        return orderRepository.save(existingBid);
+      } else {
+        // If bid is ACCEPTED or REJECTED, prevent placing a new bid
+        logger.warn("User {} attempted to place a new bid on item {} but already has a bid with status {}",
+            currentUser.getId(), item.getId(), existingBid.getStatus());
+        throw new IllegalArgumentException("You already have a bid on this item with status " + existingBid.getStatus() + ". Cannot place a new bid.");
+      }
+    } else {
+      // No existing bid found, create a new one
+      logger.info("No existing bid found for item {} / bidder {}. Creating new bid.", item.getId(), currentUser.getId());
+      Bid newBid = Bid.builder()
+          .item(item)
+          .bidder(currentUser)
+          .amount(bidCreateDto.getAmount())
+          .comment(bidCreateDto.getComment())
+          .status(BidStatus.PENDING) // New bids are always PENDING
+          .build();
+
+      try {
+        Bid savedBid = orderRepository.save(newBid);
+        logger.info("New bid created successfully with ID {} for item ID {}", savedBid.getId(), item.getId());
+        return savedBid;
+      } catch (DataIntegrityViolationException e) {
+        // Catch potential race condition if constraint added and another process created bid
+        logger.error("Data integrity violation while creating bid for item {} / bidder {}. Might be a race condition.", item.getId(), currentUser.getId(), e);
+        throw new IllegalStateException("Could not create bid due to a data conflict. Please try again.", e);
+      }
+    }
   }
 
-  /**
-   * <h3>Reject Bid</h3>
-   * <p>Changes a bid's status to REJECTED if the current user is the seller of the item.</p>
-   *
-   * @param itemId      ID of the item being bid on
-   * @param bidderId    ID of the user who made the bid
-   * @param currentUser the authenticated user (must be seller)
-   * @throws AccessDeniedException   if the current user is not the seller
-   * @throws EntityNotFoundException if the bid or item doesn't exist
-   */
-  public void rejectBid(Long itemId, Long bidderId, User currentUser) {
-    // Find the bid by item ID and bidder ID
-    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
-        .orElseThrow(() -> new EntityNotFoundException("Bid not found"));
 
-    // Get the item to check ownership
-    Item item = itemRepository.findById(itemId)
-        .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+  // --- Other methods remain largely the same, but benefit from the unique constraint ---
 
-    // Check if current user is the seller
-    if (!item.getSeller().getId().equals(currentUser.getId())) {
-      throw new AccessDeniedException("Only the seller can reject bids");
-    }
-
-    // Update the bid status
-    bid.setStatus(BidStatus.REJECTED);
-    orderRepository.save(bid);
-  }
-
-  /**
-   * <h3>Update Bid</h3>
-   * <p>Updates a bid's amount and/or comment for an existing bid.</p>
-   *
-   * @param itemId     ID of the item being bid on
-   * @param bidderId   ID of the user who made the bid
-   * @param newAmount  optional new amount for the bid
-   * @param newComment optional new comment for the bid
-   * @throws EntityNotFoundException if no matching bid is found
-   */
-  @Transactional
-  public void updateBid(Long itemId, Long bidderId, BigDecimal newAmount, String newComment) {
-    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
-        .orElseThrow(() -> new EntityNotFoundException(
-            "Bid not found for item ID: " + itemId + " and bidder ID: " + bidderId));
-
-    // Only update fields that are provided
-    if (newAmount != null) {
-      bid.setAmount(newAmount);
-    }
-
-    if (newComment != null) {
-      bid.setComment(newComment);
-    }
-
-    // Save the updated bid
-    orderRepository.save(bid);
-  }
-
-  /**
-   * <h3>Get Bids By Bidder ID</h3>
-   * <p>Retrieves all bids placed by a specific user.</p>
-   *
-   * @param bidderId the ID of the bidder
-   * @return list of {@link Bid} entities placed by the user
-   */
   public List<Bid> getBidsByBidderId(Long bidderId) {
+    logger.info("Fetching bids for bidder ID: {}", bidderId);
     return orderRepository.findByBidderId(bidderId);
   }
 
+  public List<BidResponseDto> getBidsForItem(Long itemId, User currentUser) {
+    logger.info("User ID {} attempting to fetch bids for item ID {}", currentUser.getId(), itemId);
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> {
+          logger.error("Item not found with ID: {} during bid fetch", itemId);
+          return new EntityNotFoundException("Item not found with id: " + itemId);
+        });
 
+    if (!item.getSeller().getId().equals(currentUser.getId())) {
+      logger.warn("Access denied: User ID {} is not the seller of item ID {}", currentUser.getId(), itemId);
+      throw new AccessDeniedException("You are not authorized to view bids for this item.");
+    }
+
+    List<Bid> bids = orderRepository.findByItemId(itemId);
+    logger.info("Found {} bids for item ID {}", bids.size(), itemId);
+    return bids.stream()
+        .map(this::mapToBidResponseDto)
+        .collect(Collectors.toList());
+  }
+
+  @Transactional
+  public void deleteBidByItemIdAndBidder(Long itemId, User bidder) {
+    logger.info("Attempting to delete bid for item ID {} by bidder ID {}", itemId, bidder.getId());
+    // Now findByItemIdAndBidderId should reliably return 0 or 1 result due to constraint
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidder.getId())
+        .orElseThrow(() -> {
+          logger.warn("Cannot delete bid: Bid not found for item ID {} and bidder ID {}", itemId, bidder.getId());
+          // Return EntityNotFoundException or just log and return if delete is non-critical
+          return new EntityNotFoundException("Bid not found for item ID: " + itemId + " and bidder ID: " + bidder.getId());
+        });
+
+    // Optional: Add check if bid status allows deletion (e.g., only PENDING bids?)
+    // if (bid.getStatus() != BidStatus.PENDING) {
+    //    logger.warn("Cannot delete bid ID {}: Status is {}", bid.getId(), bid.getStatus());
+    //    throw new IllegalStateException("Cannot delete a bid that is not PENDING.");
+    // }
+
+
+    orderRepository.delete(bid);
+    logger.info("Bid deleted successfully for item ID {} by bidder ID {}", itemId, bidder.getId());
+  }
+
+  @Transactional
+  public void acceptBid(Long itemId, Long bidderId, User currentUser) {
+    logger.info("User ID {} attempting to accept bid from bidder ID {} for item ID {}", currentUser.getId(), bidderId, itemId);
+    // findByItemIdAndBidderId should now be unique
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
+        .orElseThrow(() -> {
+          logger.error("Accept Bid Error: Bid not found for item {} / bidder {}", itemId, bidderId);
+          return new EntityNotFoundException("Bid not found");
+        });
+
+    Item item = bid.getItem();
+
+    if (!item.getSeller().getId().equals(currentUser.getId())) {
+      logger.warn("Access Denied: User {} attempted to accept bid on item {} owned by {}", currentUser.getId(), itemId, item.getSeller().getId());
+      throw new AccessDeniedException("Only the seller can accept bids");
+    }
+
+    // Check if the bid is PENDING before accepting
+    if (bid.getStatus() != BidStatus.PENDING) {
+      logger.warn("Attempted to accept bid ID {} which is not PENDING (status: {})", bid.getId(), bid.getStatus());
+      throw new IllegalStateException("Only PENDING bids can be accepted.");
+    }
+
+
+    // Optionally: Reject other pending bids for the same item
+    List<Bid> otherBids = orderRepository.findByItemId(itemId);
+    otherBids.stream()
+        .filter(other -> other.getStatus() == BidStatus.PENDING && !other.getId().equals(bid.getId()))
+        .forEach(other -> {
+          logger.info("Auto-rejecting other pending bid ID {} for item {}", other.getId(), itemId);
+          other.setStatus(BidStatus.REJECTED);
+          orderRepository.save(other); // Save change for each rejected bid
+        });
+
+    bid.setStatus(BidStatus.ACCEPTED);
+    // Optionally update item status
+    // item.setStatus(ItemStatus.SOLD);
+    // itemRepository.save(item);
+    orderRepository.save(bid);
+    logger.info("Bid ID {} accepted successfully for item ID {}", bid.getId(), itemId);
+  }
+
+  @Transactional
+  public void rejectBid(Long itemId, Long bidderId, User currentUser) {
+    logger.info("User ID {} attempting to reject bid from bidder ID {} for item ID {}", currentUser.getId(), bidderId, itemId);
+    // findByItemIdAndBidderId should now be unique
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
+        .orElseThrow(() -> {
+          logger.error("Reject Bid Error: Bid not found for item {} / bidder {}", itemId, bidderId);
+          return new EntityNotFoundException("Bid not found");
+        });
+
+    Item item = bid.getItem();
+
+    if (!item.getSeller().getId().equals(currentUser.getId())) {
+      logger.warn("Access Denied: User {} attempted to reject bid on item {} owned by {}", currentUser.getId(), itemId, item.getSeller().getId());
+      throw new AccessDeniedException("Only the seller can reject bids");
+    }
+
+    if (bid.getStatus() == BidStatus.PENDING) {
+      bid.setStatus(BidStatus.REJECTED);
+      orderRepository.save(bid);
+      logger.info("Bid ID {} rejected successfully for item ID {}", bid.getId(), itemId);
+    } else {
+      logger.warn("Attempted to reject bid ID {} which is already in status {}", bid.getId(), bid.getStatus());
+      // If already handled, maybe just return successfully without error
+      // throw new IllegalStateException("Bid is not in PENDING status.");
+    }
+  }
+
+  @Transactional
+  public void updateBid(Long itemId, Long bidderId, BigDecimal newAmount, String newComment) {
+    logger.info("Attempting to update bid for item ID {} by bidder ID {}", itemId, bidderId);
+    // findByItemIdAndBidderId should now be unique
+    Bid bid = orderRepository.findByItemIdAndBidderId(itemId, bidderId)
+        .orElseThrow(() -> {
+          logger.error("Update Bid Error: Bid not found for item {} / bidder {}", itemId, bidderId);
+          return new EntityNotFoundException("Bid not found for item ID: " + itemId + " and bidder ID: " + bidderId);
+        });
+
+    // Authorization check is implicitly handled by finding the specific bid via bidderId
+    // If a SecurityContext was available here, an explicit check could be added:
+    // if (!bid.getBidder().getId().equals(SecurityContextHolder.getContext().getAuthentication()... )) { ... }
+
+    if (bid.getStatus() != BidStatus.PENDING) {
+      logger.warn("Attempted to update bid ID {} which is not in PENDING status (status: {})", bid.getId(), bid.getStatus());
+      throw new IllegalStateException("Cannot update a bid that is not in PENDING status.");
+    }
+
+    boolean updated = false;
+    // Allow updating amount only if positive, prevent setting zero or negative
+    if (newAmount != null && newAmount.compareTo(BigDecimal.ZERO) > 0) {
+      if (bid.getAmount().compareTo(newAmount) != 0) {
+        bid.setAmount(newAmount);
+        updated = true;
+        logger.debug("Updating bid ID {} amount to {}", bid.getId(), newAmount);
+      }
+    } else if (newAmount != null) {
+      logger.warn("Attempted to update bid ID {} with non-positive amount {}", bid.getId(), newAmount);
+      throw new IllegalArgumentException("Bid amount must be positive.");
+    }
+
+    if (newComment != null) {
+      if (!newComment.equals(bid.getComment())) {
+        bid.setComment(newComment);
+        updated = true;
+        logger.debug("Updating bid ID {} comment", bid.getId());
+      }
+    }
+
+    if (updated) {
+      orderRepository.save(bid);
+      logger.info("Bid ID {} updated successfully", bid.getId());
+    } else {
+      logger.info("No changes detected for bid ID {}, update skipped", bid.getId());
+    }
+  }
+
+  private BidResponseDto mapToBidResponseDto(Bid bid) {
+    if (bid == null) return null;
+    return BidResponseDto.builder()
+        .id(bid.getId())
+        .itemId(bid.getItem() != null ? bid.getItem().getId() : null)
+        .bidderId(bid.getBidder() != null ? bid.getBidder().getId() : null)
+        .bidderUsername(bid.getBidder() != null ? bid.getBidder().getDisplayName() : "Unknown Bidder")
+        .amount(bid.getAmount())
+        .comment(bid.getComment())
+        .status(bid.getStatus())
+        .createdAt(bid.getCreatedAt())
+        .updatedAt(bid.getUpdatedAt())
+        .build();
+  }
 }
