@@ -40,39 +40,24 @@ export async function fetchUserBids(): Promise<BidResponseType[]> {
 }
 
 /**
- * Marks a specific modals as 'ACCEPTED'.
- * Used by the seller on the 'Manage Listing' page.
- * The backend should handle associated logic (e.g., updating item status, rejecting other bids).
- *
- * @param bidId - The ID of the modals to accept.
- * @returns A promise resolving to the updated modals details (with status 'ACCEPTED').
+ * Accepts a bid for an item
+ * @param bidderId The ID of the user who placed the bid
+ * @param itemId The ID of the item the bid was placed on
+ * @returns The response with status code
  */
-export async function acceptBid(bidId: string | number): Promise<BidResponseType> {
-  try {
-    const response = await api.put<BidResponseType>(`/bids/${bidId}/accept`);
-    console.log(`Bid ${bidId} accepted:`, response.data);
-    return response.data;
-  } catch (error) {
-    console.error(`Error accepting bid ${bidId}:`, error);
-    throw error;
-  }
+export async function acceptBid(bidderId: string | number, itemId: string | number): Promise<{ status: number }> {
+  const response = await api.post('/orders/accept', { bidderId, itemId });
+  return { status: response.status }
 }
 
 /**
- * Marks a specific modals as 'REJECTED'.
- * Used by the seller on the 'Manage Listing' page.
- * Assumes a backend endpoint like PUT /api/bids/{bidId}/reject exists.
- *
- * @param bidId - The ID of the modals to reject.
- * @returns A promise resolving to the updated modals details (with status 'REJECTED').
+ * Rejects a bid for an item
+ * @param bidderId The ID of the user who placed the bid
+ * @param itemId The ID of the item the bid was placed on
+ * @returns The response with status code
  */
-export async function rejectBid(bidId: string | number): Promise<BidResponseType> {
-  try {
-    const response = await api.put<BidResponseType>(`/bids/${bidId}/reject`);
-    console.log(`Bid ${bidId} rejected:`, response.data);
-    return response.data;
-  } catch (error) {
-    console.error(`Error rejecting bid ${bidId}:`, error);
-    throw error;
-  }
+export async function rejectBid(bidderId: string | number, itemId: string | number): Promise<{ status: number }> {
+  const response = await api.post('/orders/reject', { bidderId, itemId });
+  return { status: response.status }
 }
+
