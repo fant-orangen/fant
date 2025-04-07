@@ -1,6 +1,7 @@
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -133,5 +134,16 @@ public class OrderService {
     // Update the bid status
     bid.setStatus(BidStatus.REJECTED);
     bidRepository.save(bid);
+  }
+
+  /**
+   * <h3>Get Bids By Bidder ID</h3>
+   * <p>Retrieves all bids placed by a specific user.</p>
+   *
+   * @param bidderId the ID of the bidder
+   * @return list of {@link Bid} entities placed by the user
+   */
+  public List<Bid> getBidsByBidderId(Long bidderId) {
+    return bidRepository.findByBidderId(bidderId);
   }
 }
