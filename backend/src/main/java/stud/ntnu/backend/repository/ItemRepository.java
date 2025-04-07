@@ -20,4 +20,14 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
    * @return list of {@link Item} entities in the category
    */
   List<Item> findByCategoryId(Long categoryId);
+
+  /**
+   * <h3>Find By Seller ID</h3>
+   * <p>Retrieves all items listed by a specific seller.</p>
+   *
+   * @param sellerId the ID of the seller
+   * @return list of {@link Item} entities listed by the seller
+   */
+  List<Item> findBySellerId(Long sellerId);
 }
+

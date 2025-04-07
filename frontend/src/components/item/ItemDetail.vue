@@ -263,14 +263,6 @@ function retryLoading() {
   loadItemData();
 }
 
-/**
- * Handles toggling the favorite status of an item
- * @param {boolean} isFavorite - Whether the item is now favorited
- */
-function handleFavoriteToggle(isFavorite: boolean) {
-  console.log(`Item ${props.itemId} favorite status: ${isFavorite}`);
-  // Additional logic can be added here if needed
-}
 
 /**
  * Initiates a conversation with the seller
