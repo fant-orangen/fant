@@ -1,279 +1,141 @@
-<script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { useUserStore } from '@/stores/UserStore';
-import { useI18n } from 'vue-i18n';
-
-// --- Import your actual icon components here ---
-import IconHeart from '@/components/icons/IconHeart.vue';
-import IconProfile from '@/components/icons/IconProfile.vue'; // Import the new icon
-import IconListings from '@/components/icons/IconListings.vue'; // Import the new icon
-import IconVipps from '@/components/icons/IconVipps.vue';
-// import IconVerified from '@/components/icons/IconVerified.vue'; // Keep if needed for Vipps verified state
-
-const userStore = useUserStore();
-const { t } = useI18n();
-const loadingProfile = ref(false);
-const profileError = ref('');
-
-// --- Placeholder Data ---
-const vippsVerified = computed(() => false);
-// --- End Placeholder Data ---
-
-// Define navigation tiles - Updated 'icon' properties
-const profileTiles = ref([
-  {
-    titleKey: 'MY_ACCOUNT_TITLE',
-    descriptionKey: 'PROFILE_TILE_MY_ACCOUNT_DESC',
-    routeName: 'profile-overview',
-    icon: IconProfile,
-  },
-  {
-    titleKey: 'MY_LISTINGS',
-    descriptionKey: 'PROFILE_TILE_MY_LISTINGS_DESC',
-    routeName: 'profile-listings',
-    icon: IconListings,
-  },
-  {
-    titleKey: 'MY_FAVORITES',
-    descriptionKey: 'PROFILE_TILE_FAVORITES_DESC',
-    routeName: 'profile-favorites',
-    icon: IconHeart,
-  },
-]);
-
-// Fetch profile data when the layout mounts (no changes needed here)
-async function loadInitialProfile() {
-  if (!userStore.profile?.email && userStore.loggedIn) {
-    loadingProfile.value = true;
-    profileError.value = '';
-    try {
-      await userStore.fetchProfile();
-    } catch (err) {
-      console.error('Failed to load profile:', err);
-      profileError.value = t('PROFILE_LOAD_ERROR');
-    } finally {
-      loadingProfile.value = false;
-    }
-  }
-}
-
-onMounted(() => {
-  loadInitialProfile();
-});
-
-// Vipps function (no changes needed here)
-function verifyWithVipps() {
-  console.log('Initiating Vipps verification...');
-  // TODO: Add actual Vipps integration logic here
-}
-</script>
+// Example: ProfileLayout.vue
 
 <template>
-
-  <section class="profile-layout">
-
-
-    <section class="vipps-section" v-if="!vippsVerified">
-      <component :is="IconVipps" class="vipps-icon" />
-      <div class="vipps-text">
-        <h3>{{ t('PROFILE_VIPPS_PROMPT_TITLE') }}</h3>
-        <p>{{ t('PROFILE_VIPPS_PROMPT_DESC') }}</p>
-      </div>
-      <button @click="verifyWithVipps" class="vipps-button">
-        {{ t('PROFILE_VERIFY_VIPPS_BUTTON') }}
-      </button>
-    </section>
-    <section class="vipps-section verified" v-else>
-      {/* <component :is="IconVipps" class="vipps-icon" /> */} {/* TODO: Use actual Verified icon */}
-      <div class="vipps-icon">✅</div> {/* Placeholder */}
-      <div class="vipps-text">
-        <h3>{{ t('PROFILE_VIPPS_VERIFIED_TITLE') }}</h3>
-      </div>
-    </section>
-
-    <div v-if="loadingProfile" class="loading-message">{{ t('LOADING') }}</div>
-    <div v-if="profileError" class="error-message">{{ profileError }}</div>
-
-    <nav class="profile-tiles" v-if="!loadingProfile && !profileError">
-      <router-link
-        v-for="tile in profileTiles"
-        :key="tile.routeName"
-        :to="{ name: tile.routeName }"
-        class="tile-link"
-        active-class="active-tile"
-      >
-        <div class="profile-tile">
-          <component v-if="tile.icon" :is="tile.icon" class="tile-icon" aria-hidden="true" />
-          <h3>{{ t(tile.titleKey) }}</h3>
-          <p>{{ t(tile.descriptionKey) }}</p>
-        </div>
-      </router-link>
-    </nav>
-
-    <main class="profile-content" v-if="!loadingProfile && !profileError">
-      <router-view />
-    </main>
-
-  </section>
+  <div class="profile-layout">
+    <aside class="profile-sidebar">
+      <nav>
+        <RouterLink
+          v-for="tile in profileTiles"
+          :key="tile.name"
+          :to="tile.route"
+          class="tile-link"
+          active-class="router-link-active"
+        >
+          <component :is="tile.icon" class="tile-icon" /> <span>{{ $t(tile.label) }}</span>
+          <p>{{ $t(tile.description) }}</p>
+        </RouterLink>
+      </nav>
+    </aside>
+    <main class="profile-content">
+      <RouterView /> </main>
+  </div>
 </template>
 
+<script setup lang="ts">
+import { ref, markRaw } from 'vue'; // <-- Import markRaw
+import { RouterLink, RouterView } from 'vue-router';
+
+// Import your icon components
+import IconProfile from '@/components/icons/IconProfile.vue'; // Adjust path
+import IconListings from '@/components/icons/IconListings.vue'; // Adjust path
+import IconHeart from '@/components/icons/IconHeart.vue'; // Adjust path
+// Import other components if needed
+
+// Define the reactive structure holding tile data
+const profileTiles = ref([
+  {
+    name: 'profile-overview',
+    route: { name: 'profile-overview' },
+    icon: markRaw(IconProfile), // <-- Wrap icon component with markRaw
+    label: 'PROFILE_TILE_MY_ACCOUNT_TITLE',
+    description: 'PROFILE_TILE_MY_ACCOUNT_DESC'
+  },
+  {
+    name: 'profile-listings',
+    route: { name: 'profile-listings' },
+    icon: markRaw(IconListings), // <-- Wrap icon component with markRaw
+    label: 'MY_LISTINGS',
+    description: 'PROFILE_TILE_MY_LISTINGS_DESC'
+  },
+  { // <-- Add this new object for "My Bids" -->
+    name: 'profile-my-bids',
+    route: { name: 'profile-my-bids' }, // Use the route name defined in router/index.ts
+    icon: markRaw(IconListings),          // Use the imported (and markRaw-wrapped) icon
+    label: 'MY_BIDS_TITLE',             // Use the new i18n key
+    description: 'PROFILE_TILE_MY_BIDS_DESC' // Use the new i18n key
+  },
+  {
+    name: 'profile-favorites',
+    route: { name: 'profile-favorites' },
+    icon: markRaw(IconHeart), // <-- Wrap icon component with markRaw
+    label: 'MY_FAVORITES',
+    description: 'PROFILE_TILE_FAVORITES_DESC'
+  }
+  // Add other tiles if you have them
+]);
+
+// Other script setup logic if any...
+</script>
+
 <style scoped>
-/* Styles remain the same */
+/* Add styles for your layout, sidebar, tiles etc. */
 .profile-layout {
-  max-width: 960px;
-  margin: 2rem auto;
+  display: flex;
+  gap: 1rem; /* Adjust gap as needed */
   padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.profile-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
+.profile-sidebar {
+  flex: 0 0 250px; /* Fixed width sidebar, adjust as needed */
+  /* Add styles for sidebar appearance */
 }
 
-.user-details {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.avatar-placeholder {
-  width: 60px;
-  height: 60px;
-  background-color: #ccc;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: white;
-}
-
-.user-info h2 {
-  margin: 0 0 0.25rem 0;
-  font-size: 1.5rem;
-}
-
-.user-info p {
-  margin: 0;
-  color: #555;
-}
-
-.user-info .rating {
-  font-weight: bold;
-  color: #333;
-}
-
-.vipps-section {
-  background-color: #fff0f0; /* Vipps-like color background */
-  border: 1px solid #ffccd1;
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  gap: 1rem;
-}
-.vipps-section.verified {
-  background-color: #eafaf1;
-  border-color: #b8e9c9;
-}
-
-.vipps-icon {
-  width: 100px;
-  height: 100px;
-}
-
-.vipps-text h3 {
-  margin: 0 0 0.25rem 0;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.vipps-text p {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #333;
-}
-
-.vipps-button {
-  background-color: #FF5B24; /* Vipps color */
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  white-space: nowrap;
-}
-.vipps-button:hover {
-  background-color: #e64a19; /* Darker Vipps */
-}
-
-
-.loading-message, .error-message {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.1rem;
-}
-.error-message {
-  color: red;
-}
-
-.profile-tiles {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.profile-tile {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 1.5rem 1rem;
-  border-radius: 8px;
-  text-align: center;
-  transition: box-shadow 0.2s, border-color 0.2s;
+.profile-sidebar nav {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.5rem;
 }
 
 .tile-link {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
   text-decoration: none;
-  color: inherit;
+  color: var(--color-text);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  gap: 0.8rem; /* Space between icon and text */
 }
-.tile-link:hover .profile-tile {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #ccc;
+
+.tile-link:hover {
+  background-color: var(--color-background-mute);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.tile-link.active-tile .profile-tile {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+
+.tile-link.router-link-active { /* Style for the active link */
+  background-color: hsla(160, 100%, 37%, 0.1);
+  border-left: 4px solid hsla(160, 100%, 37%, 1);
+  font-weight: bold;
+  padding-left: calc(1rem - 4px); /* Adjust padding to account for border */
 }
 
 .tile-icon {
-  width: 32px;
-  height: 32px;
-  margin-bottom: 0.5rem;
-  color: #555;
+  width: 24px; /* Adjust icon size */
+  height: 24px;
+  flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
-.profile-tile h3 {
-  margin: 0;
-  font-size: 1.1rem;
+.tile-link div { /* Assuming text is wrapped in a div or similar */
+  display: flex;
+  flex-direction: column;
 }
-.profile-tile p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #666;
+
+.tile-link span { /* Label style */
+  font-weight: 500;
 }
+.tile-link p { /* Description style */
+  font-size: 0.85em;
+  color: var(--vt-c-text-light-2);
+  margin: 0.2rem 0 0 0;
+  line-height: 1.3;
+}
+
 
 .profile-content {
-  margin-top: 1rem;
+  flex-grow: 1; /* Main content takes remaining space */
+  /* Add styles for content area */
 }
 </style>

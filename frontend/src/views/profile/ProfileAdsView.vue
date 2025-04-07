@@ -10,7 +10,7 @@
     </div>
 
     <div v-else-if="userItems.length > 0" class="items-grid">
-      <div v-for="item in userItems" :key="item.id" class="item-preview-card" @click="navigateToItem(item.id)">
+      <div v-for="item in userItems" :key="item.id" class="item-preview-card" @click="navigateToManageItem(item.id)">
         <img
           :src="item.imageUrl || '/placeholder-image.png'"
           :alt="item.title"
@@ -26,6 +26,7 @@
 
     <div v-else class="no-items-message">
       <p>You haven't listed any items yet.</p>
+      <router-link to="/create-listing/start" class="create-listing-link">List an Item</router-link>
     </div>
   </div>
 </template>
@@ -34,10 +35,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router' // Import useRouter
 // Import the specific function to fetch the user's items
-import { fetchMyItems } from '@/services/ItemService' // <-- Use fetchMyItems
+import { fetchMyItems } from '@/services/ItemService'
 import type { ItemPreviewType } from '@/models/Item'
-// Optional: Import a dedicated card component
-// import ItemPreviewCard from '@/components/ItemPreviewCard.vue';
 
 const router = useRouter() // Initialize router
 const userItems = ref<ItemPreviewType[]>([])
@@ -49,20 +48,18 @@ async function loadUserItems() {
   isLoading.value = true
   error.value = null
   try {
-    // Use the new service function specific to the logged-in user
     console.log('Fetching logged-in user items...')
-    userItems.value = await fetchMyItems() // <-- Call fetchMyItems
+    userItems.value = await fetchMyItems()
     console.log('User items fetched:', userItems.value.length)
   } catch (err: any) {
     console.error('Failed to load user items:', err)
-    // Provide a more specific error message if possible
     if (err.response?.status === 401 || err.response?.status === 403) {
       error.value = 'Authentication error. Please log in again.'
-      // Optionally redirect to login: router.push('/login');
+      // router.push('/login'); // Optional: Redirect
     } else {
       error.value = 'Could not load your items. Please try again later.'
     }
-    userItems.value = [] // Clear items on error
+    userItems.value = []
   } finally {
     isLoading.value = false
   }
@@ -71,49 +68,25 @@ async function loadUserItems() {
 // Handle cases where an image fails to load
 function handleImageError(event: Event) {
   const imgElement = event.target as HTMLImageElement
-  // Ensure placeholder path is correct relative to the public directory
   imgElement.src = '/placeholder-image.png'
 }
 
-// Function to format price (example)
+// Function to format price
 function formatPrice(price: number | null | undefined): string {
-  if (price === null || price === undefined) {
-    return 'N/A';
-  }
-  // Example formatting for Norwegian Krone (NOK)
+  if (price === null || price === undefined) return 'N/A';
   return price.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' });
 }
 
-// Function to navigate to item detail page
-function navigateToItem(itemId: string | number) {
-  router.push({ name: 'item-detail', params: { id: itemId } });
+// Function to navigate to the item management page (NEW)
+function navigateToManageItem(itemId: string | number) { // <-- Updated function name
+  // Navigate to the new route 'manage-my-item'
+  router.push({ name: 'manage-my-item', params: { id: itemId } });
 }
 
 // Fetch items when the component is mounted
 onMounted(() => {
   loadUserItems()
 })
-
-// --- Placeholder functions for Edit/Delete ---
-/*
-function editItem(itemId: string | number) {
-    console.log('Edit item:', itemId);
-    // Navigate to edit page: router.push({ name: 'edit-item', params: { id: itemId } });
-}
-
-async function deleteItem(itemId: string | number) {
-    if (!confirm('Are you sure you want to delete this item?')) return;
-    console.log('Delete item:', itemId);
-    try {
-        // await deleteItemService(itemId); // Call your delete service function
-        // Refresh list after deletion
-        // userItems.value = userItems.value.filter(item => item.id !== itemId);
-    } catch (err) {
-        console.error('Failed to delete item:', err);
-        // Show error message to user
-    }
-}
-*/
 </script>
 
 <style scoped>
@@ -138,9 +111,8 @@ async function deleteItem(itemId: string | number) {
 
 .items-grid {
   display: grid;
-  /* Adjust minmax for desired card size */
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem; /* Spacing between items */
+  gap: 1.5rem;
   margin-top: 1.5rem;
 }
 
@@ -149,65 +121,51 @@ async function deleteItem(itemId: string | number) {
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--color-background-soft);
-  transition: box-shadow 0.3s ease, transform 0.2s ease; /* Added transform */
-  cursor: pointer; /* Indicate clickable */
-  display: flex; /* Use flexbox for better control */
-  flex-direction: column; /* Stack image and details vertically */
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .item-preview-card:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  transform: translateY(-3px); /* Slight lift effect */
+  transform: translateY(-3px);
 }
 
 .item-image {
   width: 100%;
-  height: 180px; /* Adjust height as needed */
-  object-fit: cover; /* Crop image nicely */
+  height: 180px;
+  object-fit: cover;
   display: block;
-  background-color: #f0f0f0; /* Lighter placeholder background */
+  background-color: #f0f0f0;
 }
 
 .item-details {
   padding: 1rem;
-  flex-grow: 1; /* Allow details to fill remaining space */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Push price down */
+  justify-content: space-between;
 }
 
 .item-details h3 {
   margin: 0 0 0.5rem 0;
-  font-size: 1.1rem; /* Slightly larger title */
+  font-size: 1.1rem;
   color: var(--color-heading);
-  /* Prevent long titles from breaking layout */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .item-price {
-  font-weight: 600; /* Slightly bolder price */
-  color: hsla(160, 100%, 37%, 1); /* Standard Vue green */
-  margin-top: 0.5rem; /* Add space above price */
+  font-weight: 600;
+  color: hsla(160, 100%, 37%, 1);
+  margin-top: 0.5rem;
   margin-bottom: 0;
   font-size: 1rem;
 }
 
-.item-actions {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.item-actions button {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-/* Add styles for a potential 'Create Listing' button */
-.no-items-message a {
+.no-items-message .create-listing-link { /* Style the link */
   display: inline-block;
   margin-top: 1rem;
   padding: 0.6rem 1.2rem;
@@ -218,7 +176,7 @@ async function deleteItem(itemId: string | number) {
   transition: background-color 0.3s ease;
 }
 
-.no-items-message a:hover {
+.no-items-message .create-listing-link:hover {
   background-color: hsla(160, 100%, 30%, 1);
 }
 </style>
