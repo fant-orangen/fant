@@ -9,6 +9,38 @@ export interface PaginatedItemsResponse {
   // Add other fields if your API provides them (e.g., totalPages, currentPage)
 }
 
+export async function createItem(itemData: ItemDetailsType): Promise<ItemDetailsType> {
+  const formData = new FormData();
+  formData.append('title', itemData.title);
+  formData.append('description', itemData.description);
+  formData.append('category', itemData.category);
+  formData.append('price', itemData.price.toString());
+  formData.append('contact', itemData.contact);
+
+  if (itemData.latitude !== undefined) {
+    formData.append('latitude', itemData.latitude.toString());
+  }
+  if (itemData.longitude !== undefined) {
+    formData.append('longitude', itemData.longitude.toString());
+  }
+
+  itemData.imageUrls.forEach((file, index) => {
+    formData.append(`imageFiles[${index}]`, file);
+  });
+
+  try {
+    const response = await api.post<ItemDetailsType>('/items', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating item:', error);
+    throw error;
+  }
+}
+
 // Existing function to fetch all preview items (potentially needs pagination update too)
 export async function fetchPreviewItems(): Promise<ItemPreviewType[]> {
   try {
