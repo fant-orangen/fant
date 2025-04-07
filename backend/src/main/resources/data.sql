@@ -137,19 +137,11 @@ INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (1, 2, 95.00, 'I can pick it up today', 'PENDING');
 
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
-VALUES (1, 3, 100.00, 'Would you accept this offer?', 'PENDING');
-
-INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (1, 3, 105.50, 'Very interested in this item', 'ACCEPTED');
-
--- Multiple bids on item 3
-INSERT INTO bids (item_id, bidder_id, amount, comment, status)
-VALUES (3, 2, 240.00, 'Can you deliver?', 'REJECTED');
 
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (3, 2, 260.00, 'I can pick it up this weekend', 'PENDING');
 
--- Bids on various other items
 INSERT INTO bids (item_id, bidder_id, amount, comment, status)
 VALUES (2, 3, 45.00, 'Is this still available?', 'PENDING');
 
