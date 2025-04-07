@@ -73,7 +73,6 @@ import { ref, computed, watch, onUnmounted } from 'vue';
 import { placeBid, updateMyBid } from '@/services/BidService'; // Import updateMyBid
 import type { BidPayload, BidResponseType, BidUpdatePayload } from '@/models/Bid'; // Import BidUpdatePayload
 import { useUserStore } from '@/stores/UserStore';
-import type { PropType } from 'vue'; // Import PropType
 
 /**
  * Component props
@@ -106,24 +105,25 @@ const errorMessage = ref<string>('');
 // --- Determine Mode ---
 const isUpdateMode = computed(() => !!props.initialBid);
 
-// --- Watcher to reset/prefill form when modal opens/props change ---
 watch(() => [props.isOpen, props.initialBid], ([newIsOpen, newInitialBid]) => {
   if (newIsOpen) {
-    bidStatus.value = 'idle'; // Reset status on open
+    bidStatus.value = 'idle';
     errorMessage.value = '';
     loading.value = false;
 
-    if (newInitialBid) {
-      // Pre-fill for update mode
+    // --- FIX: Use a more robust type check/guard ---
+    // Check if newInitialBid is truthy AND has an 'id' property
+    if (newInitialBid && typeof newInitialBid === 'object' && 'id' in newInitialBid) {
+      // Pre-fill for update mode - now TS knows it's BidResponseType
       bidAmount.value = newInitialBid.amount;
       bidComment.value = newInitialBid.comment || '';
     } else {
-      // Reset for create mode (or set based on currentPrice if needed)
-      bidAmount.value = props.currentPrice ?? 0; // Use current price if available for create
+      // Reset for create mode
+      bidAmount.value = props.currentPrice ?? 0;
       bidComment.value = '';
     }
   }
-}, { immediate: true }); // immediate: true to run on initial mount
+}, { immediate: true });
 
 // Close modal with escape key
 const handleEscKey = (event: KeyboardEvent) => {
@@ -169,8 +169,8 @@ function closeModal() {
 function resetForm() {
   bidStatus.value = 'idle';
   errorMessage.value = '';
-  // Reset form fields based on mode if needed, but watcher handles main reset
-  if (props.initialBid) {
+  // Use the same robust check here
+  if (props.initialBid && 'id' in props.initialBid) {
     bidAmount.value = props.initialBid.amount;
     bidComment.value = props.initialBid.comment || '';
   } else {
