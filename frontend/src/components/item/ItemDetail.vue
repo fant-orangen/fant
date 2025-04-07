@@ -1,21 +1,17 @@
 <template>
   <div class="item-details-page">
-    <!-- Loading state -->
     <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
       <p>Loading item details...</p>
     </div>
 
-    <!-- Error state -->
     <div v-else-if="error" class="error-state">
       <h2>Unable to load item</h2>
       <p>{{ errorMessage }}</p>
       <button @click="retryLoading" class="retry-button">Try Again</button>
     </div>
 
-    <!-- Content when item is loaded successfully -->
     <div v-else-if="item" class="item-detail-container">
-      <!-- Left column: Image gallery -->
       <div class="gallery-column">
         <ImageGallery
           v-if="item.imageUrls && item.imageUrls.length > 0"
@@ -28,9 +24,7 @@
         </div>
       </div>
 
-      <!-- Right column: Item details -->
       <div class="details-column">
-        <!-- Header section with title and favorite button -->
         <div class="header">
           <h1 class="item-title">{{ item.title }}</h1>
           <HeartIcon
@@ -39,23 +33,19 @@
           />
         </div>
 
-        <!-- Price display -->
         <p class="item-price">{{ formatPrice(item.price) }}</p>
 
-        <!-- Item description section -->
         <div class="item-description">
           <h3>Description</h3>
           <p>{{ item.description || 'No description provided.' }}</p>
         </div>
 
-        <!-- Seller/contact information section -->
         <div class="seller-info">
           <h3>Contact Information</h3>
           <p v-if="item.contact"><strong>Seller:</strong> {{ item.contact }}</p>
           <p v-else class="no-info">Contact information unavailable</p>
         </div>
 
-        <!-- Action buttons -->
         <div class="action-buttons">
           <button
             @click="startConversation"
@@ -74,7 +64,6 @@
           </button>
         </div>
 
-        <!-- Bid status message -->
         <div v-if="isUserSeller" class="seller-notice">
           You cannot bid on your own item.
         </div>
@@ -84,20 +73,18 @@
       </div>
     </div>
 
-    <!-- Fallback for when there's no loading, no error, but also no item -->
     <div v-else class="not-found-state">
       <h2>Item Not Found</h2>
       <p>The requested item could not be found or may have been removed.</p>
       <router-link to="/" class="home-link">Browse Other Items</router-link>
     </div>
 
-    <!-- Bid Modal Component -->
     <BidModal
       :is-open="showBidModal"
       :item-id="itemId"
       :item-title="item?.title || ''"
       :current-price="item?.price || 0"
-      @close="closeBidModal"
+      :initial-bid="null" @close="closeBidModal"
       @bid-placed="handleBidPlaced"
     />
   </div>
@@ -263,14 +250,6 @@ function retryLoading() {
   loadItemData();
 }
 
-/**
- * Handles toggling the favorite status of an item
- * @param {boolean} isFavorite - Whether the item is now favorited
- */
-function handleFavoriteToggle(isFavorite: boolean) {
-  console.log(`Item ${props.itemId} favorite status: ${isFavorite}`);
-  // Additional logic can be added here if needed
-}
 
 /**
  * Initiates a conversation with the seller

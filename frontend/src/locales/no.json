@@ -94,6 +94,8 @@
     "PRICE": "Pris",
     "NO_TITLE": "Ingen Tittel",
 
-    "START_CONVERSATION": "Start samtalen"
+    "START_CONVERSATION": "Start samtalen",
 
+    "MY_BIDS_TITLE": "Mine Bud",
+    "PROFILE_TILE_MY_BIDS_DESC": "Se bud du har plassert"
 }

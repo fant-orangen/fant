@@ -115,6 +115,19 @@ public class ItemService {
         .collect(Collectors.toList());
   }
 
+    /**
+     * <h3>Get Items By Seller</h3>
+     * <p>Retrieves items listed by a specific seller.</p>
+     *
+     * @param sellerId the seller's ID
+     * @return list of {@link ItemPreviewDto}
+     */
+    public List<ItemPreviewDto> getItemsBySellerId(Long sellerId) {
+        return itemRepository.findBySellerId(sellerId).stream()
+                .map(this::mapToItemPreviewDto)
+                .collect(Collectors.toList());
+    }
+
   /**
    * <h3>Record Item View</h3>
    * <p>Tracks when a user views an item.</p>

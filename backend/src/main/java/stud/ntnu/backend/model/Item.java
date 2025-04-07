@@ -1,5 +1,6 @@
 package stud.ntnu.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -111,5 +112,6 @@ public class Item {
    * <p>Collection of images associated with this item.</p>
    */
   @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
   private List<ItemImage> images;
 }
