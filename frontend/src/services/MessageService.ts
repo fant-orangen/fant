@@ -169,6 +169,39 @@ export function onNewMessage(handler: (message: Message) => void): void {
 }
 
 /**
+ * Calls the backend to find or create a conversation for a specific item.
+ * Returns the identifier for the conversation thread.
+ *
+ * @param itemId - The ID of the item to start a conversation about.
+ * @returns A promise resolving to the conversation identifier (e.g., the ID of the first message).
+ * @throws {Error} If the API call fails.
+ */
+export async function initiateConversation(itemId: string | number): Promise<number | string> {
+  try {
+    // The backend endpoint expects itemId as a request parameter
+    const response = await api.post<{ conversationId: number | string }>(
+        '/messaging/conversations/initiate',
+        null, // No request body needed for POST if using params
+        {
+          params: { itemId } // Send itemId as a query parameter
+        }
+    );
+
+    // Check if the response contains the expected data
+    if (response.data && response.data.conversationId) {
+      console.log(`Backend initiated/found conversation with identifier: ${response.data.conversationId}`);
+      return response.data.conversationId;
+    } else {
+      throw new Error('Invalid response received from initiate conversation endpoint.');
+    }
+  } catch (error) {
+    console.error('Error initiating conversation via backend:', error);
+    // Rethrow the error so the component can handle it (e.g., show an alert)
+    throw error;
+  }
+}
+
+/**
  * Remove a message handler
  */
 export function removeMessageHandler(handler: (message: Message) => void): void {
@@ -187,3 +220,5 @@ export function removeMessageHandler(handler: (message: Message) => void): void 
 export function cleanupMessaging(): void {
   webSocketService.disconnect()
 }
+
+
