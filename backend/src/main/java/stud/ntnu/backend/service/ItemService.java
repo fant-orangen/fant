@@ -210,7 +210,10 @@ public class ItemService {
         .category(item.getCategory() != null ? item.getCategory().getName() : "")
         .price(item.getPrice())
         .contact(item.getSeller() != null ? item.getSeller().getDisplayName() : "")
+        .sellerId(item.getSeller() != null ? item.getSeller().getId() : null) // <-- Added mapping
         .imageUrls(imageUrls)
+        .latitude(item.getLatitude())
+        .longitude(item.getLongitude())
         .build();
   }
 

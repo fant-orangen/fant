@@ -54,7 +54,13 @@ public class ItemDetailsDto {
      * <h3>Contact information for the seller</h3>
      * <p>Username of the seller.</p>
      */
-    private String contact;
+    private String contact; // Keep this if needed, but sellerId is more reliable for logic
+
+    /**
+     * <h3>Seller ID</h3>
+     * <p>The unique identifier of the user selling the item.</p>
+     */
+    private Long sellerId;
 
     /**
      * <h3>URLs to the images of the item</h3>
@@ -63,14 +69,14 @@ public class ItemDetailsDto {
     private List<String> imageUrls;
 
     /**
-    * <h3>Latitude of the item</h3>
-    * <p>Uses Double for precise position</p>
-    */
+     * <h3>Latitude of the item</h3>
+     * <p>Uses Double for precise position</p>
+     */
     private Double latitude;
 
     /**
-    * <h3>Longitude of the item</h3>
-    * <p>Uses Double for precise position</p>
-    */
+     * <h3>Longitude of the item</h3>
+     * <p>Uses Double for precise position</p>
+     */
     private Double longitude;
 }
