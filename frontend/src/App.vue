@@ -11,6 +11,19 @@ import NavBar from '@/components/navbar/NavBar.vue'
  </template>
 <style scoped>
 .container {
-  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0;
+  box-sizing: border-box;
+}
+.main {
+  flex-grow: 1;
+  margin: 0;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+:deep(.nav) {
+  flex-shrink: 0;
 }
 </style>

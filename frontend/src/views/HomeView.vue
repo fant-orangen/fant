@@ -29,7 +29,8 @@ const selectedCategoryId = ref<string | null>(null)
 const minimumViews = 5;
 
 function onCategoryClick(categoryId: string) {
-  selectedCategoryId.value = categoryId
+  // If empty string is received, set to null (all items)
+  selectedCategoryId.value = categoryId || null;
 }
 
 // Function to handle fetching items with or without a category
@@ -53,6 +54,6 @@ async function fetchItems(categoryId: string | null) {
 }
 </script>
 
-<style>
-@import '@/assets/styles/responsiveStyles.css'; /* This will still be global */
+<style scoped>
+@import '@/assets/styles/responsiveStyles.css';
 </style>

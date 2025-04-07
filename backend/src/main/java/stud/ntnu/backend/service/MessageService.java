@@ -159,7 +159,7 @@ public class MessageService {
    * @return map of grouped messages by conversation key
    */
   private Map<String, List<Message>> groupMessagesByConversation(User user,
-                                                                 List<Message> messages) {
+      List<Message> messages) {
     Map<String, List<Message>> grouped = new HashMap<>();
     for (Message m : messages) {
       User other = m.getSender().getId().equals(user.getId()) ? m.getReceiver() : m.getSender();
@@ -213,6 +213,7 @@ public class MessageService {
             message.getItem().getId(),
             message.getItem().getBriefDescription()))
         .messageContent(message.getContent())
+        .isRead(message.isRead())
         .sentDate(message.getSentAt())
         .build();
   }
@@ -299,5 +300,19 @@ public class MessageService {
         .id(item.getId())
         .title(item.getBriefDescription())
         .build();
+  }
+
+  /**
+   * <h3>Mark Messages as Read</h3>
+   * <p>Updates specified messages as read if the current user is the recipient.</p>
+   *
+   * @param messageIds  list of message IDs to mark as read TODO: Add transactional to any and all transactional methods
+   * @param currentUser the current authenticated user
+   */
+  @Transactional
+  public void markMessagesAsRead(List<Long> messageIds, User currentUser) {
+    if (messageIds != null && !messageIds.isEmpty()) {
+      messageRepository.markMessagesAsRead(messageIds, currentUser.getId());
+    }
   }
 }

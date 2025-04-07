@@ -6,7 +6,6 @@
       </RouterLink>
     </div>
     <div class="user-links">
-      <NavbarLanguageSelector />
       <template v-if="loggedIn">
         <RouterLink to="/create-listing/start">
           <IconWithText :icon-src="addIcon" :text="$t('APP_LISTING_CREATE_NEW')" />
@@ -34,12 +33,13 @@
     </div>
   </nav>
 </template>
+
 <script setup lang="ts">
+// No need to import NavbarLanguageSelector here anymore if only used above
 import { storeToRefs } from 'pinia';
-import { ref, onMounted, watch } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
-import NavbarLanguageSelector from './LanguageSelector.vue';
 import IconWithText from '@/components/icons/IconWithText.vue';
 
 // Import icons
@@ -52,9 +52,7 @@ import mapIcon from '@/assets/icons/map.svg';
 const router = useRouter();
 const userStore = useUserStore();
 const { loggedIn } = storeToRefs(userStore);
-
-// You can add this computed property based on your message store
-const hasNewMessages = ref(false);
+const hasNewMessages = ref(false); // Keep existing logic
 
 const handleLogout = () => {
   userStore.logout();

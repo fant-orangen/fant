@@ -1,4 +1,5 @@
-import axios from 'axios'
+import axiosInstance from '@/axiosConfig'
+
 
 export async function register(userData: {
   username: string;
@@ -8,5 +9,5 @@ export async function register(userData: {
   lastName: string;
   birthDate: string;
 }) {
-  return await axios.post('/api/auth/register', userData)
+  return await axiosInstance.post('/auth/register', userData)
 }

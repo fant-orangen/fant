@@ -23,7 +23,7 @@ import {
   initializeMessaging,
   onNewMessage,
   removeMessageHandler,
-  fetchConversations
+  fetchConversations, readMessages
 } from '@/services/MessageService'
 import { fetchCurrentUserId } from '@/services/UserService'
 
@@ -160,6 +160,7 @@ async function loadMessages() {
 
   try {
     const fetchedMessages = await fetchMessages(item.value.id)
+    await readMessages(fetchedMessages)
     // Sort messages chronologically
     messages.value = fetchedMessages.sort((a, b) =>
       a.sentDate.getTime() - b.sentDate.getTime()

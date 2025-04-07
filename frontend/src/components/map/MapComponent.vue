@@ -2,12 +2,14 @@
 import { ref, onMounted, watch } from 'vue';
 import 'leaflet/dist/leaflet.css'; // Required Leaflet CSS for proper map display
 import L from 'leaflet';
-import { fetchPreviewItems } from '@/services/ItemService';
+import { fetchPreviewItems, fetchPreviewItemsByCategoryId } from '@/services/ItemService';
 import type { ItemPreviewType } from '@/models/Item';
 import type { MapComponentProps } from '@/models/MapComponent.ts';
 
 
-const props = defineProps<MapComponentProps>();
+const props = defineProps<MapComponentProps & {
+  categoryId?: string | null;
+}>();
 
 /**
  * Component References
@@ -51,21 +53,27 @@ function initializeMap() {
  * Fetches items with location data and creates map markers
  *
  * This function handles the entire marker lifecycle:
- * 1. Fetches items from the ItemService
+ * 1. Fetches items from the ItemService based on category selection
  * 2. Clears any existing markers from the map
  * 3. Creates new markers for all items that have valid coordinates
  * 4. Configures each marker with a popup containing item details and image
  */
 async function loadItemsWithCoordinates() {
   try {
-    items.value = await fetchPreviewItems();
+    // Fetch items based on category selection
+    if (props.categoryId) {
+      items.value = await fetchPreviewItemsByCategoryId(props.categoryId);
+    } else {
+      items.value = await fetchPreviewItems();
+    }
 
+    // Clear existing markers
     if (map.value) {
       markers.value.forEach(marker => marker.remove());
       markers.value = [];
     }
 
-
+    // Create new markers for items with valid coordinates
     items.value.forEach(item => {
       if (item && item.id != null && item.latitude != null && item.longitude != null && map.value) {
         const imageUrlContent = item.imageUrl
@@ -110,6 +118,13 @@ watch(() => [props.initialLatitude, props.initialLongitude, props.initialZoom],
     }
   }
 );
+
+/**
+ * Watch for changes in category selection to refresh markers
+ */
+watch(() => props.categoryId, () => {
+  loadItemsWithCoordinates();
+});
 
 /**
  * Set up the map and event listeners when the component is mounted

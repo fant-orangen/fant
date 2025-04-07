@@ -3,6 +3,7 @@
     "APP_LANGUAGE_CHANGE": "Bytt språk",
     "APP_LOGOUT": "logg ut",
     "category": {
+        "allItems": "Alle",
         "travel" : "Reise",
         "appliance" : "Hvitevarer",
         "boat" : "Båt",
@@ -84,6 +85,7 @@
     "TYPE_MESSAGE": "Skriv din beskjed...",
     "SENDING": "Sender",
     "SEND": "Send",
+    "CATEGORIES": "Kategorier",
 
     "INBOX": "Inbox",
     "NO_CONVERSATIONS_YET": "Ingen samtaler enda",
