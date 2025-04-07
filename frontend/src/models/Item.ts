@@ -29,7 +29,7 @@ export interface ItemFavoritesType {
 export interface CreateItemType {
   categoryId: number;
   briefDescription: string;
-  fullDescription?: string;
+  fullDescription: string;
   price: number;
   latitude?: number;
   longitude?: number;
