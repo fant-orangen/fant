@@ -20,3 +20,8 @@ export interface ItemDetailsType {
   latitude?: number;
   longitude?: number;
 }
+
+export interface ItemFavoritesType {
+  itemId: string | number;
+  createdAt: string;
+}

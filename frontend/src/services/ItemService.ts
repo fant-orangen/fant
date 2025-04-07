@@ -1,5 +1,5 @@
 import api from '@/services/api/axiosInstance' // [cite: uploaded:src/services/api/axiosInstance.ts]
-import type { ItemPreviewType, ItemDetailsType } from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
+import type {ItemPreviewType, ItemDetailsType, ItemFavoritesType} from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
 // Define an interface for the expected paginated response (needed by fetchFavoriteItems)
@@ -97,22 +97,25 @@ export async function recordItemView(itemId: string | number): Promise<{ status:
 }
 
 /**
- * Fetches a paginated list of favorite items for the logged-in user.
- * Assumes the backend endpoint /api/users/me/favorites supports pagination.
- * @param page - The page number to fetch (e.g., 1-based)
- * @param limit - The number of items per page
+ * Fetches all favorite items for the currently logged-in user.
+ * @returns Promise that resolves to an array of favorite items
  */
-export async function fetchFavoriteItems(
-  page: number,
-  limit: number,
-): Promise<PaginatedItemsResponse> {
-  try {
-    // Uses the base URL and auth token from the shared axios instance 'api'.
-    // Assumes endpoint is relative to baseURL (e.g., /api/users/me/favorites)
-    const response = await api.get<PaginatedItemsResponse>('/favorite');
-    return response.data
-  } catch (error) {
-    console.error(`Error fetching favorite items (page ${page}, limit ${limit}):`, error)
-    throw error
+export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
+  console.log("on way to fetch fav items");
+  const { data: favorites } = await api.get<ItemFavoritesType[]>('/favorite');
+  console.log("items fetched fav")
+
+  const fullItems: ItemPreviewType[] = [];
+  for (const fav of favorites) {
+    try {
+      console.log(fav);
+      console.log("hello:",fav.itemId);
+      const { data: item } = await api.get<ItemPreviewType>(`/items/details/${fav.itemId}`);
+      fullItems.push(item);
+    } catch (error) {
+      console.error(`Error fetching item details for ID ${fav.itemId}:`, error);
+    }
   }
+
+  return fullItems;
 }

@@ -5,7 +5,7 @@
       <div class="details">
         <div class="header">
           <h1>{{ item.title }}</h1>
-          <HeartIcon />
+          <HeartIcon :itemId="item.id.toString()" />
         </div>
         <p><strong>Price:</strong> {{ item.price }} kr</p>
         <button @click="contactSeller" class="button">Contact Seller</button>
