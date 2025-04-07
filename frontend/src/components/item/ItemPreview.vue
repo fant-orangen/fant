@@ -2,7 +2,7 @@
   <div class="item-preview" @click="handleClick">
     <div class="image-container">
       <img :src="item.imageUrl" :alt="item.title" class="item-image" />
-      <HeartIcon class="heart-icon"/>
+      <HeartIcon class="heart-icon" :itemId="props.item.id.toString()" />
       <div class="price-overlay">
         <span class="item-price">{{ item.price + " kr" }}</span>
       </div>
