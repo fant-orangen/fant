@@ -35,7 +35,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
 
+  /**
+   * <h3>Item Service</h3>
+   * <p>Service handling item-related operations.</p>
+   *
+   * @see ItemService
+   */
   private final ItemService itemService;
+
+  /**
+   * <h3>User Service</h3>
+   * <p>Service handling user-related operations.</p>
+   *
+   * @see UserService
+   */
   private final UserService userService;
 
   // Logger instance - Ensure this line exists
@@ -51,7 +64,6 @@ public class ItemController {
     logger.info("Item created with ID: {}", createdItem.getId());
     return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
   }
-
 
   @PutMapping("/{id}")
   public ResponseEntity<ItemDetailsDto> updateItem(@Valid @RequestBody ItemCreateDto requestDto,

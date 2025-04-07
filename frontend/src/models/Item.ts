@@ -25,3 +25,18 @@ export interface ItemFavoritesType {
   itemId: string | number;
   createdAt: string;
 }
+
+export interface CreateItemType {
+  categoryId: number;
+  briefDescription: string;
+  fullDescription: string;
+  price: number;
+  latitude?: number;
+  longitude?: number;
+  images: null; // explicitly null when creating
+}
+
+export interface ItemImageType {
+  imageUrl: string;
+  position: number;
+}
