@@ -82,10 +82,10 @@
     <BidModal
       :is-open="showBidModal"
       :item-id="itemId"
-      :item-title="item?.title || ''"
-      :current-price="item?.price || 0"
-      :initial-bid="null" @close="closeBidModal"
-      @bid-placed="handleBidPlaced"
+      :item-title="item ? item.title : ''"
+    :current-price="item ? item.price : 0"
+    :initial-bid="null" @close="closeBidModal"
+    @bid-placed="handleBidPlaced"
     />
   </div>
 </template>
