@@ -22,21 +22,20 @@ export async function placeBid(bid: BidCreatePayload): Promise<{ status: number 
 }
 
 /**
- * Fetches all bids for a specific item.
- * Used by the seller on the 'Manage Listing' page.
- * Corresponds to GET /api/items/{itemId}/bids
+ * Fetches all bids placed by the currently authenticated user.
+ * Uses the authentication token to identify the user.
  *
- * @param itemId - The ID of the item whose bids are to be fetched.
- * @returns A promise resolving to an array of bids for the item.
+ * @returns A promise resolving to an array of the user's bids
+ * @throws Error if the request fails
  */
-export async function fetchBidsForItem(itemId: string | number): Promise<BidResponseType[]> {
+export async function fetchUserBids(): Promise<BidResponseType[]> {
   try {
-    const response = await api.get<BidResponseType[]>(`/items/${itemId}/bids`);
-    console.log(`Fetched ${response.data.length} bids for item ${itemId}`);
+    const response = await api.get<BidResponseType[]>('/orders/bids');
+    console.log('User bids fetched:', response.data.length);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching bids for item ${itemId}:`, error);
-    throw error;
+    console.error('Error fetching user bids:', error);
+    throw error
   }
 }
 
