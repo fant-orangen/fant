@@ -25,6 +25,16 @@ export interface BidPayload {
 }
 
 /**
+ * Represents the data payload for updating an existing bid.
+ * Matches the structure expected by the updateMyBid service.
+ */
+export interface BidUpdatePayload {
+  itemId: string | number;
+  amount?: number;
+  comment?: string;
+}
+
+/**
  * Represents the detailed data received from the backend for a modals,
  * often used when fetching bids or after creating one.
  * Matches the updated database schema.
