@@ -1,12 +1,12 @@
-import api from '@/services/api/axiosInstance' // [cite: uploaded:src/services/api/axiosInstance.ts]
-import type {ItemPreviewType, ItemDetailsType, ItemFavoritesType} from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
+import api from '@/services/api/axiosInstance'
+import type {ItemPreviewType, ItemDetailsType, ItemFavoritesType} from '@/models/Item'
+
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
 // Define an interface for the expected paginated response (needed by fetchFavoriteItems)
 export interface PaginatedItemsResponse {
   items: ItemPreviewType[]
   totalItems: number
-  // Add other fields if your API provides them (e.g., totalPages, currentPage)
 }
 
 // Existing function to fetch all preview items (potentially needs pagination update too)
@@ -100,6 +100,7 @@ export async function recordItemView(itemId: string | number): Promise<{ status:
  * Fetches all favorite items for the currently logged-in user.
  * @returns Promise that resolves to an array of favorite items
  */
+
 export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
   console.log("on way to fetch fav items");
   const { data: favorites } = await api.get<ItemFavoritesType[]>('/favorite');
@@ -115,6 +116,7 @@ export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
     } catch (error) {
       console.error(`Error fetching item details for ID ${fav.itemId}:`, error);
     }
+
   }
 
   return fullItems;
