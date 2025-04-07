@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,8 +77,8 @@ public class ItemController {
    * @return list of {@link ItemPreviewDto}
    */
   @GetMapping("/all")
-  public ResponseEntity<List<ItemPreviewDto>> getAllItems() {
-    return ResponseEntity.ok(itemService.getAllItemPreviews());
+  public ResponseEntity<Page<ItemPreviewDto>> getAllItems(Pageable pageable) {
+    return ResponseEntity.ok(itemService.getAllItemPreviews(pageable));
   }
 
   /**
@@ -95,13 +97,13 @@ public class ItemController {
    * <h3>Get Items By Category</h3>
    * <p>Retrieves items belonging to a specific category.</p>
    *
-   * @param category the category ID
+   * @param categoryId the category ID
    * @return list of {@link ItemPreviewDto} in the category
    */
   @GetMapping("/category/{categoryId}")
-  public ResponseEntity<List<ItemPreviewDto>> getItemsByCategory(
-      @Positive @PathVariable Long categoryId) {
-    return ResponseEntity.ok(itemService.getItemsByCategoryId(categoryId));
+  public ResponseEntity<Page<ItemPreviewDto>> getItemsByCategory(
+      @Positive @PathVariable Long categoryId, Pageable pageable) {
+    return ResponseEntity.ok(itemService.getItemsByCategoryId(categoryId, pageable));
   }
 
   /**

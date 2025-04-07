@@ -1,5 +1,6 @@
 package stud.ntnu.backend.data.bid;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,19 +17,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BidUpdateDto {
-
-  /**
-   * <h3>Item ID</h3>
-   * <p>The ID of the item for which the bid was placed.</p>
-   */
-  @NotNull(message = "Item ID is required")
-  @Positive(message = "Item ID must be positive")
-  private Long itemId;
-
   /**
    * <h3>Amount</h3>
    * <p>The updated monetary amount offered for the item (optional).</p>
    */
+  @NotNull(message = "Amount is required")
+  @Positive(message = "Amount must be positive")
   private BigDecimal amount;
 
   /**

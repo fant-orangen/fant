@@ -2,6 +2,7 @@ package stud.ntnu.backend.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -140,7 +141,6 @@ public class GlobalExceptionHandler {
     log.warn(ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
-
   /**
    * <h3>Handle Unexpected Errors</h3>
    * <p>Catches all unhandled exceptions.</p>

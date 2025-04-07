@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,17 +139,13 @@ public class MessageService {
    * @param itemId the item ID
    * @return list of {@link MessageResponseDto}
    */
-  public List<MessageResponseDto> getItemMessages(User user, Long itemId) {
-    Item item = itemRepository.findById(itemId)
-        .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+  public Page<MessageResponseDto> getItemMessages(User user, Long itemId, Pageable pageable) {
+    if (!itemRepository.existsById(itemId)) {
+      throw new EntityNotFoundException("Item not found");
+    }
 
-    List<Message> messages = messageRepository.findAllByUserInvolved(user.getId()).stream()
-        .filter(message -> message.getItem().getId().equals(itemId))
-        .collect(Collectors.toList());
-
-    return messages.stream()
-        .map(this::mapToMessageResponseDto)
-        .collect(Collectors.toList());
+    return messageRepository.findByUserInvolvedAndItemId(user.getId(), itemId, pageable)
+        .map(this::mapToMessageResponseDto);
   }
 
   /**
@@ -159,7 +157,7 @@ public class MessageService {
    * @return map of grouped messages by conversation key
    */
   private Map<String, List<Message>> groupMessagesByConversation(User user,
-      List<Message> messages) {
+                                                                 List<Message> messages) {
     Map<String, List<Message>> grouped = new HashMap<>();
     for (Message m : messages) {
       User other = m.getSender().getId().equals(user.getId()) ? m.getReceiver() : m.getSender();

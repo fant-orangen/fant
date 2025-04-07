@@ -3,6 +3,8 @@ package stud.ntnu.backend.controller;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,20 +67,20 @@ public class MessageController {
    * @return list of {@link MessageResponseDto}
    */
   @GetMapping("/messages")
-  public ResponseEntity<List<MessageResponseDto>> getItemMessages(
+  public ResponseEntity<Page<MessageResponseDto>> getItemMessages(
       @Positive @RequestParam Long itemId,
-      Principal principal) {
+      Principal principal,
+      Pageable pageable) {
     return ResponseEntity.ok(
-        messageService.getItemMessages(userService.getCurrentUser(principal), itemId));
+        messageService.getItemMessages(userService.getCurrentUser(principal), itemId, pageable));
   }
 
   @PostMapping("/readall")
   public ResponseEntity<Void> markMessagesAsRead(
       @RequestBody MessageReadRequestDto request,
       Principal principal) {
-    messageService.markMessagesAsRead(request.getMessageIds(), userService.getCurrentUser(principal));
+    messageService.markMessagesAsRead(request.getMessageIds(),
+        userService.getCurrentUser(principal));
     return ResponseEntity.ok().build();
   }
-
-
 }

@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.category.CategoryRequestDto;
 import stud.ntnu.backend.model.Category;
@@ -74,8 +76,8 @@ public class CategoryService {
    *
    * @return list of all {@link Category} entities
    */
-  public List<Category> getAll() {
-    return categoryRepository.findAll();
+  public Page<Category> getAll(Pageable pageable) {
+    return categoryRepository.findAll(pageable);
   }
 
   /**
