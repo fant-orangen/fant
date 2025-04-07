@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { placeBidOnItem } from '@/services/BidService';
+import { placeBid } from '@/services/BidService';
 import type { BidCreatePayload } from '@/models/Bid';
 import { useUserStore } from '@/stores/UserStore';
 
@@ -166,10 +166,11 @@ async function submitBid() {
   const bidData: BidCreatePayload = {
     amount: bidAmount.value,
     comment: bidComment.value.trim() || undefined,
+    itemId: props.itemId,
   };
 
   try {
-    await placeBidOnItem(props.itemId, bidData);
+    await placeBid(bidData);
     bidStatus.value = 'success';
     emit('bid-placed');
   } catch (error) {

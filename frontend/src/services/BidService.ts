@@ -11,7 +11,7 @@ import type { BidCreatePayload, BidResponseType } from '@/models/Bid';
  */
 export async function placeBid(bid: BidCreatePayload): Promise<{ status: number }> {
   try {
-    const response = await api.post('/bid', bid);
+    const response = await api.post('/orders/bid', bid);
     console.log(`Bid successfully placed for item ${bid.itemId}`);
 
     return {status: response.status }

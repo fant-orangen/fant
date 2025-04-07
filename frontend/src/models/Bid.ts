@@ -11,7 +11,7 @@ export interface BidCreatePayload {
   /**
    * The ID of the item for which the bid is placed.
    */
-  itemId: number;
+  itemId: string | number;
 
   /**
    * The monetary amount offered for the item.
