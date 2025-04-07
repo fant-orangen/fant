@@ -56,14 +56,32 @@
           <p v-else class="no-info">Contact information unavailable</p>
         </div>
 
-        <!-- Contact button -->
-        <button
-          @click="startConversation"
-          class="contact-button"
-          :disabled="!canContactSeller"
-        >
-          Contact Seller
-        </button>
+        <!-- Action buttons -->
+        <div class="action-buttons">
+          <button
+            @click="startConversation"
+            class="contact-button"
+            :disabled="!canContactSeller"
+          >
+            Contact Seller
+          </button>
+
+          <button
+            @click="openBidModal"
+            class="bid-button"
+            :disabled="!isUserLoggedIn || isUserSeller"
+          >
+            Place Bid
+          </button>
+        </div>
+
+        <!-- Bid status message -->
+        <div v-if="isUserSeller" class="seller-notice">
+          You cannot bid on your own item.
+        </div>
+        <div v-else-if="!isUserLoggedIn" class="login-notice">
+          Please log in to place a bid.
+        </div>
       </div>
     </div>
 
@@ -73,6 +91,16 @@
       <p>The requested item could not be found or may have been removed.</p>
       <router-link to="/" class="home-link">Browse Other Items</router-link>
     </div>
+
+    <!-- Bid Modal Component -->
+    <BidModal
+      :is-open="showBidModal"
+      :item-id="itemId"
+      :item-title="item?.title || ''"
+      :current-price="item?.price || 0"
+      @close="closeBidModal"
+      @bid-placed="handleBidPlaced"
+    />
   </div>
 </template>
 
@@ -88,6 +116,7 @@
  * - Seller contact details
  * - Ability to favorite/save the item
  * - Contact seller functionality
+ * - Bid placement functionality
  *
  * The component handles various states:
  * - Loading state while fetching data
@@ -99,8 +128,10 @@
 import { ref, onMounted, computed } from 'vue';
 import ImageGallery from '@/components/show/ImageGallery.vue';
 import HeartIcon from '@/components/toggle/HeartIcon.vue';
+import BidModal from '@/components/modals/BidModal.vue';
 import type { ItemDetailsType } from '@/models/Item';
 import { fetchItem, recordItemView } from '@/services/ItemService.ts';
+import { useUserStore } from '@/stores/UserStore';
 
 /**
  * Component props
@@ -115,12 +146,36 @@ const item = ref<ItemDetailsType | null>(null);
 const loading = ref(true);
 const error = ref(false);
 const errorMessage = ref("Failed to load item details. Please try again later.");
+const showBidModal = ref(false);
+
+// Get user store for auth status
+const userStore = useUserStore();
 
 /**
  * Computed property to determine if the user can contact the seller
  */
 const canContactSeller = computed(() => {
   return item.value && item.value.contact;
+});
+
+/**
+ * Computed property to check if a user is logged in
+ */
+const isUserLoggedIn = computed(() => {
+  return userStore.loggedIn;
+});
+
+/**
+ * Computed property to check if the current user is the seller
+ * Note: Since your ItemDetailsType doesn't include sellerId, we'll use the contact field
+ * to determine if the current user is the seller. This is a simplification - in a real
+ * implementation, you'd want a proper sellerId field or a way to determine ownership.
+ */
+const isUserSeller = computed(() => {
+  if (!item.value || !userStore.username) return false;
+  // Simple check - if username matches the contact field
+  // You may need to adjust this based on your actual data structure
+  return item.value.contact === userStore.username;
 });
 
 /**
@@ -133,6 +188,32 @@ function formatPrice(price: number | null): string {
   return `${price.toLocaleString('no-NO')} kr`;
 }
 
+/**
+ * Opens the modals modal
+ */
+function openBidModal() {
+  if (!isUserLoggedIn.value || isUserSeller.value) return;
+  showBidModal.value = true;
+}
+
+/**
+ * Closes the modals modal
+ */
+function closeBidModal() {
+  showBidModal.value = false;
+}
+
+/**
+ * Handles successful modals placement
+ */
+function handleBidPlaced() {
+  // You could add additional handling here, such as showing a toast notification
+  console.log("Bid placed successfully");
+  // Close modal after some time
+  setTimeout(() => {
+    closeBidModal();
+  }, 2000);
+}
 
 /**
  * Loads the item data from the API
@@ -419,32 +500,65 @@ onMounted(() => {
 }
 
 /**
- * Contact button styling
+ * Action buttons styling
  */
-.contact-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.contact-button, .bid-button {
+  flex: 1;
+  padding: 0.8rem 1rem;
   border-radius: 5px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
-  margin-top: 1rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.contact-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.bid-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.contact-button:hover:not(:disabled), .bid-button:hover:not(:disabled) {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .contact-button:hover:not(:disabled) {
   background-color: #0056b3;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.contact-button:disabled {
+.bid-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.contact-button:disabled, .bid-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+/**
+ * Login and seller notices
+ */
+.login-notice, .seller-notice {
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 
 /**
@@ -474,6 +588,10 @@ onMounted(() => {
   .details-column {
     padding: 1rem;
     gap: 1.2rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
   }
 }
 
