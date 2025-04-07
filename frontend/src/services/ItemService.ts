@@ -8,9 +8,9 @@ export interface PaginatedItemsResponse {
   totalItems: number
 }
 
-export async function createItem(item: CreateItemType): Promise<CreateItemType> {
+export async function createItem(item: CreateItemType): Promise< number> {
   console.log("before post", item);
-  const response = await api.post<CreateItemType>('/items', item);
+  const response = await api.post<number>('/items', item);
   console.log("after post", response.data);
   return response.data;
 }

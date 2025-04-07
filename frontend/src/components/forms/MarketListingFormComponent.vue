@@ -195,8 +195,10 @@ function handleFileUpload(files: File[]) {
 async function submitForm() {
   try {
     const payload: CreateItemType = { ...formData.value };
+    const createdItemId = await createItem(payload);
+
     console.log('Submitting payload:', payload);
-    await createItem(payload);
+    //await createItem(payload);
     alert('Item created successfully!');
   } catch (error) {
     console.error('Error creating item:', error);
