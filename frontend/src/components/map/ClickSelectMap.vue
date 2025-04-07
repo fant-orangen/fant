@@ -40,7 +40,7 @@ function initializeMap() {
   // Add tile layer
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map.value);
+  }).addTo(map.value as L.Map);
 
   // Set up click handler
   map.value.on('click', handleMapClick);
@@ -83,7 +83,7 @@ function placeMarker(lat: number, lng: number) {
 
   // Create marker
   selectionMarker.value = L.marker([lat, lng], { icon })
-  .addTo(map.value)
+  .addTo(map.value as L.Map)  // Add type assertion here
   .bindPopup('Selected location')
   .openPopup();
 }

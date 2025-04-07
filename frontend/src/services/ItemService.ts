@@ -1,5 +1,5 @@
 import api from '@/services/api/axiosInstance' // [cite: uploaded:src/services/api/axiosInstance.ts]
-import type {ItemPreviewType, ItemDetailsType, ItemFavoritesType} from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
+import type {ItemPreviewType, ItemDetailsType, CreateItemType, ItemFavoritesType} from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
 // Define an interface for the expected paginated response (needed by fetchFavoriteItems)
@@ -9,36 +9,11 @@ export interface PaginatedItemsResponse {
   // Add other fields if your API provides them (e.g., totalPages, currentPage)
 }
 
-export async function createItem(itemData: ItemDetailsType): Promise<ItemDetailsType> {
-  const formData = new FormData();
-  formData.append('title', itemData.title);
-  formData.append('description', itemData.description);
-  formData.append('category', itemData.category);
-  formData.append('price', itemData.price.toString());
-  formData.append('contact', itemData.contact);
-
-  if (itemData.latitude !== undefined) {
-    formData.append('latitude', itemData.latitude.toString());
-  }
-  if (itemData.longitude !== undefined) {
-    formData.append('longitude', itemData.longitude.toString());
-  }
-
-  itemData.imageUrls.forEach((file, index) => {
-    formData.append(`imageFiles[${index}]`, file);
-  });
-
-  try {
-    const response = await api.post<ItemDetailsType>('/items', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error creating item:', error);
-    throw error;
-  }
+export async function createItem(item: CreateItemType): Promise<CreateItemType> {
+  console.log("before post", item);
+  const response = await api.post<CreateItemType>('/items', item);
+  console.log("after post", response.data);
+  return response.data;
 }
 
 // Existing function to fetch all preview items (potentially needs pagination update too)

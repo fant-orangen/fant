@@ -48,7 +48,7 @@ public class ItemController {
   private final UserService userService;
 
   @PostMapping
-  public ResponseEntity<ItemDetailsDto> createItem(@Valid ItemCreateDto requestDto,
+  public ResponseEntity<ItemDetailsDto> createItem(@Valid @RequestBody ItemCreateDto requestDto,
                                                    Principal principal) {
     return ResponseEntity.ok(
         itemService.createItem(userService.getCurrentUser(principal), requestDto));
