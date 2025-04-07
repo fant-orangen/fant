@@ -2,12 +2,12 @@ import api from '@/services/api/axiosInstance';
 import type { BidCreatePayload, BidResponseType } from '@/models/Bid';
 
 /**
- * Places a new bid on a specific item.
+ * Places a new modals on a specific item.
  * Corresponds to POST /api/items/{itemId}/bids
  *
- * @param itemId - The ID of the item to bid on.
- * @param bidData - The bid details (amount and optional comment).
- * @returns A promise resolving to the details of the created bid.
+ * @param itemId - The ID of the item to modals on.
+ * @param bidData - The modals details (amount and optional comment).
+ * @returns A promise resolving to the details of the created modals.
  */
 export async function placeBidOnItem(itemId: string | number, bidData: BidCreatePayload): Promise<BidResponseType> {
   try {
@@ -40,12 +40,12 @@ export async function fetchBidsForItem(itemId: string | number): Promise<BidResp
 }
 
 /**
- * Marks a specific bid as 'ACCEPTED'.
+ * Marks a specific modals as 'ACCEPTED'.
  * Used by the seller on the 'Manage Listing' page.
  * The backend should handle associated logic (e.g., updating item status, rejecting other bids).
  *
- * @param bidId - The ID of the bid to accept.
- * @returns A promise resolving to the updated bid details (with status 'ACCEPTED').
+ * @param bidId - The ID of the modals to accept.
+ * @returns A promise resolving to the updated modals details (with status 'ACCEPTED').
  */
 export async function acceptBid(bidId: string | number): Promise<BidResponseType> {
   try {
@@ -59,12 +59,12 @@ export async function acceptBid(bidId: string | number): Promise<BidResponseType
 }
 
 /**
- * Marks a specific bid as 'REJECTED'.
+ * Marks a specific modals as 'REJECTED'.
  * Used by the seller on the 'Manage Listing' page.
  * Assumes a backend endpoint like PUT /api/bids/{bidId}/reject exists.
  *
- * @param bidId - The ID of the bid to reject.
- * @returns A promise resolving to the updated bid details (with status 'REJECTED').
+ * @param bidId - The ID of the modals to reject.
+ * @returns A promise resolving to the updated modals details (with status 'REJECTED').
  */
 export async function rejectBid(bidId: string | number): Promise<BidResponseType> {
   try {
