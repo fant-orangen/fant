@@ -1,5 +1,6 @@
 package stud.ntnu.backend.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,5 +56,21 @@ public class BidService {
         .build();
 
     return bidRepository.save(bid);
+  }
+
+  /**
+   * <h3>Delete Bid By Item ID And Bidder</h3>
+   * <p>Deletes a bid placed by the specified bidder on the specified item.</p>
+   *
+   * @param itemId the ID of the item
+   * @param bidder the user who placed the bid
+   * @throws EntityNotFoundException if no matching bid is found
+   */
+  public void deleteBidByItemIdAndBidder(Long itemId, User bidder) {
+    Bid bid = bidRepository.findByItemIdAndBidderId(itemId, bidder.getId())
+        .orElseThrow(() -> new EntityNotFoundException(
+            "Bid not found for item ID: " + itemId + " and bidder ID: " + bidder.getId()));
+
+    bidRepository.delete(bid);
   }
 }

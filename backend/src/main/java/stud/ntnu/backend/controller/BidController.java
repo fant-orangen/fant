@@ -1,8 +1,11 @@
 package stud.ntnu.backend.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,5 +51,21 @@ public class BidController {
       Principal principal) {
     bidService.createBid(bidCreateDto, userService.getCurrentUser(principal));
     return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * <h3>Delete Bid</h3>
+   * <p>Deletes a bid for an item placed by the authenticated user.</p>
+   *
+   * @param itemId    the ID of the item associated with the bid
+   * @param principal the authenticated user
+   * @return empty response with status OK
+   */
+  @DeleteMapping("/delete/{itemId}")
+  public ResponseEntity<Void> deleteBid(
+          @Positive @PathVariable Long itemId,
+          Principal principal) {
+      bidService.deleteBidByItemIdAndBidder(itemId, userService.getCurrentUser(principal));
+      return ResponseEntity.ok().build();
   }
 }

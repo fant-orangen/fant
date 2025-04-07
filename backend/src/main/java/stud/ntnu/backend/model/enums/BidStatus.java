@@ -21,11 +21,6 @@ public enum BidStatus {
    * <h3>REJECTED</h3>
    * <p>Bid has been rejected by the seller.</p>
    */
-  REJECTED,
+  REJECTED
 
-  /**
-   * <h3>WITHDRAWN</h3>
-   * <p>Bid has been withdrawn by the bidder.</p>
-   */
-  WITHDRAWN
 }
