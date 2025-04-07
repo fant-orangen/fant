@@ -12,7 +12,7 @@ import java.util.List;
  * <p>Repository for accessing and managing bid entities.</p>
  */
 @Repository
-public interface BidRepository extends JpaRepository<Bid, Long> {
+public interface OrderRepository extends JpaRepository<Bid, Long> {
 
   /**
    * <h3>Find By Item ID</h3>

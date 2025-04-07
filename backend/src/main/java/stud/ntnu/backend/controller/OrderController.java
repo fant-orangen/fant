@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.bid.BidCreateDto;
-import stud.ntnu.backend.service.BidService;
+import stud.ntnu.backend.service.OrderService;
 import stud.ntnu.backend.service.UserService;
 
 import java.security.Principal;
@@ -23,13 +23,13 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class BidController {
+public class OrderController {
 
   /**
    * <h3>Order Service</h3>
    * <p>Service handling order and bid operations.</p>
    */
-  private final BidService bidService;
+  private final OrderService orderService;
 
   /**
    * <h3>User Service</h3>
@@ -49,7 +49,7 @@ public class BidController {
   public ResponseEntity<Void> createBid(
       @Valid @RequestBody BidCreateDto bidCreateDto,
       Principal principal) {
-    bidService.createBid(bidCreateDto, userService.getCurrentUser(principal));
+    orderService.createBid(bidCreateDto, userService.getCurrentUser(principal));
     return ResponseEntity.noContent().build();
   }
 
@@ -65,7 +65,7 @@ public class BidController {
   public ResponseEntity<Void> deleteBid(
           @Positive @PathVariable Long itemId,
           Principal principal) {
-      bidService.deleteBidByItemIdAndBidder(itemId, userService.getCurrentUser(principal));
+      orderService.deleteBidByItemIdAndBidder(itemId, userService.getCurrentUser(principal));
       return ResponseEntity.ok().build();
   }
 }

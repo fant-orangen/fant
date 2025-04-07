@@ -8,7 +8,7 @@ import stud.ntnu.backend.data.bid.BidCreateDto;
 import stud.ntnu.backend.model.Bid;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
-import stud.ntnu.backend.repository.BidRepository;
+import stud.ntnu.backend.repository.OrderRepository;
 import stud.ntnu.backend.repository.ItemRepository;
 
 /**
@@ -17,13 +17,13 @@ import stud.ntnu.backend.repository.ItemRepository;
  */
 @Service
 @RequiredArgsConstructor
-public class BidService {
+public class OrderService {
 
   /**
    * <h3>Bid Repository</h3>
    * <p>Repository for accessing bid data.</p>
    */
-  private final BidRepository bidRepository;
+  private final OrderRepository bidRepository;
 
   /**
    * <h3>Item Repository</h3>
