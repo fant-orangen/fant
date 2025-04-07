@@ -35,8 +35,7 @@
           <h1 class="item-title">{{ item.title }}</h1>
           <HeartIcon
             class="heart-icon-details"
-            :item-id="itemId"
-            @toggle-favorite="handleFavoriteToggle"
+            :itemId="item.id.toString()"
           />
         </div>
 
