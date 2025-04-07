@@ -56,13 +56,13 @@ public class ItemController {
 
 
   @PostMapping
-  public ResponseEntity<ItemDetailsDto> createItem(@Valid @RequestBody ItemCreateDto requestDto,
+  public ResponseEntity<Long> createItem(@Valid @RequestBody ItemCreateDto requestDto,
       Principal principal) {
     logger.info("Received request to create item");
     User currentUser = userService.getCurrentUser(principal);
     ItemDetailsDto createdItem = itemService.createItem(currentUser, requestDto);
-    logger.info("Item created with ID: {}", createdItem.getId());
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
+    logger.info("Item created with ID: {}", createdItem.getId()); // TODO: simplify this code per the new requirements of just id
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdItem.getId());
   }
 
   @PutMapping("/{id}")
