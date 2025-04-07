@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -82,8 +84,8 @@ public class AdminController {
    * @return list of all {@link User} entities
    */
   @GetMapping("/users")
-  public ResponseEntity<List<User>> getAllUsers() {
-    return ResponseEntity.ok(userService.getAll());
+  public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
+    return ResponseEntity.ok(userService.getAll(pageable));
   }
 
   /**

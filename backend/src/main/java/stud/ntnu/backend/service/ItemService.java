@@ -9,15 +9,19 @@ import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.item.ItemCreateDto;
 import stud.ntnu.backend.data.item.ItemDetailsDto;
 import stud.ntnu.backend.data.item.ItemPreviewDto;
+import stud.ntnu.backend.model.Favorite;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.ItemImage;
 import stud.ntnu.backend.model.ItemView;
 import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.repository.FavoriteRepository;
 import stud.ntnu.backend.repository.ItemRepository;
 import stud.ntnu.backend.repository.ItemViewRepository;
 
@@ -44,6 +48,8 @@ public class ItemService {
    * <p>Data access component for item view tracking.</p>
    */
   private final ItemViewRepository itemViewRepository;
+
+  private final FavoriteRepository favoriteRepository;
 
   private final ModelMapper modelMapper;
 
@@ -82,10 +88,8 @@ public class ItemService {
    *
    * @return list of {@link ItemPreviewDto}
    */
-  public List<ItemPreviewDto> getAllItemPreviews() {
-    return itemRepository.findAll().stream()
-        .map(this::mapToItemPreviewDto)
-        .collect(Collectors.toList());
+  public Page<ItemPreviewDto> getAllItemPreviews(Pageable pageable) {
+    return itemRepository.findAll(pageable).map(this::mapToItemPreviewDto);
   }
 
   /**
@@ -109,24 +113,21 @@ public class ItemService {
    * @param categoryId the category ID
    * @return list of {@link ItemPreviewDto}
    */
-  public List<ItemPreviewDto> getItemsByCategoryId(Long categoryId) {
-    return itemRepository.findByCategoryId(categoryId).stream()
-        .map(this::mapToItemPreviewDto)
-        .collect(Collectors.toList());
+  public Page<ItemPreviewDto> getItemsByCategoryId(Long categoryId, Pageable pageable) {
+    return itemRepository.findByCategoryId(categoryId, pageable).map(this::mapToItemPreviewDto);
   }
 
-    /**
-     * <h3>Get Items By Seller</h3>
-     * <p>Retrieves items listed by a specific seller.</p>
-     *
-     * @param sellerId the seller's ID
-     * @return list of {@link ItemPreviewDto}
-     */
-    public List<ItemPreviewDto> getItemsBySellerId(Long sellerId) {
-        return itemRepository.findBySellerId(sellerId).stream()
-                .map(this::mapToItemPreviewDto)
-                .collect(Collectors.toList());
-    }
+  /**
+   * <h3>Get Items By Seller</h3>
+   * <p>Retrieves items listed by a specific seller.</p>
+   *
+   * @param sellerId the seller's ID
+   * @return list of {@link ItemPreviewDto}
+   */
+  public Page<ItemPreviewDto> getItemsBySellerId(Long sellerId, Pageable pageable) {
+    return itemRepository.findBySellerId(sellerId, pageable)
+        .map(this::mapToItemPreviewDto);
+  }
 
   /**
    * <h3>Record Item View</h3>
@@ -135,6 +136,7 @@ public class ItemService {
    * @param itemId the viewed item ID
    * @param user   the viewing user
    */
+  @Transactional
   public void recordView(Long itemId, User user) {
     Item item = itemRepository.findById(itemId)
         .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + itemId));
@@ -264,6 +266,13 @@ public class ItemService {
     Collections.shuffle(result);
     return result.size() > itemLimit ? result.subList(0, itemLimit) : result;
   }
+
+  public Page<ItemPreviewDto> getFavoritesByUserId(Long userId, Pageable pageable) {
+    Page<Favorite> favoritesPage = favoriteRepository.findAllByUserId(userId, pageable);
+
+    return favoritesPage.map(favorite -> mapToItemPreviewDto(favorite.getItem()));
+  }
+
 
   private Item fromCreateDto(User seller, ItemCreateDto itemCreateDto) {
     Item item = modelMapper.map(itemCreateDto, Item.class);

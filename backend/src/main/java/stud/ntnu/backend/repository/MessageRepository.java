@@ -1,5 +1,7 @@
 package stud.ntnu.backend.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +27,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
    */
   @Query("SELECT m FROM Message m WHERE m.sender.id = :userId OR m.receiver.id = :userId ORDER BY m.sentAt DESC")
   List<Message> findAllByUserInvolved(@Param("userId") Long userId);
+
+  @Query("SELECT m FROM Message m WHERE m.item.id = :itemId AND (m.sender.id = :userId OR m.receiver.id = :userId) ORDER BY m.sentAt DESC")
+  Page<Message> findByUserInvolvedAndItemId(@Param("userId") Long userId,
+                                               @Param("itemId") Long itemId, Pageable pageable);
 
   /**
    * <h3>Find Conversation</h3>

@@ -2,6 +2,8 @@ package stud.ntnu.backend.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import stud.ntnu.backend.model.Favorite;
@@ -20,7 +22,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
    * @param userId the ID of the user
    * @return list of {@link Favorite} entities
    */
-  List<Favorite> findAllByUserId(Long userId);
+  Page<Favorite> findAllByUserId(Long userId, Pageable pageable);
 
   /**
    * <h3>Find By User And Item</h3>

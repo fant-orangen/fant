@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import stud.ntnu.backend.data.favorite.FavoriteResponseDto;
+import stud.ntnu.backend.data.item.ItemPreviewDto;
 import stud.ntnu.backend.exception.AlreadyFavoritedException;
 import stud.ntnu.backend.model.Favorite;
 import stud.ntnu.backend.model.Item;
@@ -67,20 +68,6 @@ public class FavoriteService {
     favoriteRepository.delete(favoriteRepository.findByUserIdAndItemId(userId, itemId).orElseThrow(
         () -> new EntityNotFoundException(
             "Favorite not found with user id " + userId + "and item id " + itemId)));
-  }
-
-  /**
-   * <h3>Get User Favorites</h3>
-   * <p>Retrieves all favorite items for a user.</p>
-   *
-   * @param userId the ID of the user
-   * @return list of {@link FavoriteResponseDto} for the user
-   */
-  public List<FavoriteResponseDto> getFavoritesByUserId(Long userId) {
-    List<Favorite> favorites = favoriteRepository.findAllByUserId(userId);
-    return favorites.stream()
-        .map(this::toDto)
-        .collect(Collectors.toList());
   }
 
   /**

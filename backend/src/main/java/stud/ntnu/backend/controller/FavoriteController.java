@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.favorite.FavoriteResponseDto;
+import stud.ntnu.backend.data.item.ItemPreviewDto;
 import stud.ntnu.backend.service.FavoriteService;
+import stud.ntnu.backend.service.ItemService;
 import stud.ntnu.backend.service.UserService;
 
 /**
@@ -39,6 +43,8 @@ public class FavoriteController {
    * @see UserService
    */
   private final UserService userService;
+
+  private final ItemService itemService;
 
   /**
    * <h3>Add Favorite</h3>
@@ -78,9 +84,9 @@ public class FavoriteController {
    * @return list of {@link FavoriteResponseDto} for the user
    */
   @GetMapping
-  public ResponseEntity<List<FavoriteResponseDto>> getFavorites(Principal principal) {
+  public ResponseEntity<Page<ItemPreviewDto>> getFavorites(Principal principal, Pageable pageable) {
     return ResponseEntity.ok(
-        favoriteService.getFavoritesByUserId(userService.getCurrentUserId(principal)));
+        itemService.getFavoritesByUserId(userService.getCurrentUserId(principal), pageable));
   }
 
   /**

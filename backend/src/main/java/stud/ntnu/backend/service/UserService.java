@@ -6,6 +6,8 @@ import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.user.UserCreateDto;
@@ -83,8 +85,8 @@ public class UserService {
    *
    * @return list of all {@link User} entities
    */
-  public List<User> getAll() {
-    return userRepository.findAll();
+  public Page<User> getAll(Pageable pageable) {
+    return userRepository.findAll(pageable);
   }
 
   /**

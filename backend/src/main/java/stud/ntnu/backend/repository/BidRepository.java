@@ -1,6 +1,8 @@
 package stud.ntnu.backend.repository;
 
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import stud.ntnu.backend.model.Bid;
@@ -12,7 +14,7 @@ import java.util.List;
  * <p>Repository for accessing and managing bid entities.</p>
  */
 @Repository
-public interface OrderRepository extends JpaRepository<Bid, Long> {
+public interface BidRepository extends JpaRepository<Bid, Long> {
 
   /**
    * <h3>Find By Item ID</h3>
@@ -23,6 +25,8 @@ public interface OrderRepository extends JpaRepository<Bid, Long> {
    */
   List<Bid> findByItemId(Long itemId);
 
+  Page<Bid> findByItemId(Long itemId, Pageable pageable);
+
   /**
    * <h3>Find By Bidder ID</h3>
    * <p>Retrieves all bids made by a specific user.</p>
@@ -30,7 +34,7 @@ public interface OrderRepository extends JpaRepository<Bid, Long> {
    * @param bidderId the ID of the user
    * @return list of {@link Bid} entities
    */
-  List<Bid> findByBidderId(Long bidderId);
+  Page<Bid> findByBidderId(Long bidderId, Pageable pageable);
 
   /**
    * <h3>Find By Item ID And Bidder ID</h3>

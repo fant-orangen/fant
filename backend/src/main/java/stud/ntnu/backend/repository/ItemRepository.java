@@ -1,6 +1,9 @@
 package stud.ntnu.backend.repository;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import stud.ntnu.backend.model.Item;
@@ -21,6 +24,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
    */
   List<Item> findByCategoryId(Long categoryId);
 
+  Page<Item> findByCategoryId(Long categoryId, Pageable pageable);
+
+
   /**
    * <h3>Find By Seller ID</h3>
    * <p>Retrieves all items listed by a specific seller.</p>
@@ -28,6 +34,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
    * @param sellerId the ID of the seller
    * @return list of {@link Item} entities listed by the seller
    */
-  List<Item> findBySellerId(Long sellerId);
+  Page<Item> findBySellerId(Long sellerId, Pageable pageable);
 }
-

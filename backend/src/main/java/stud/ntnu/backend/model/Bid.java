@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
  * <p>Entity representing a purchase offer made on an item.</p>
  */
 @Entity
-@Table(name = "bids")
+@Table(name = "bids", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"item_id", "bidder_id"})})
 @Data
 @Builder
 @NoArgsConstructor
