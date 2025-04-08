@@ -9,6 +9,7 @@
     "REGISTRATION_BUTTON": "Register",
     "REGISTRATION_NAVBAR": "Register",
     "REGISTRATION_ACCOUNT_QUESTION": "Do you have an account?",
+    "ADMIN": "Admin",
 
     "MY_ACCOUNT_TITLE": "My Account",
     "PROFILE_TILE_MY_ACCOUNT_TITLE": "Profile",
@@ -44,6 +45,7 @@
 
     "HOME_NAVBAR": "Home",
     "INBOX_NAVBAR": "Messages",
+    "INBOX_NAME": "Inbox",
     "LOGIN_NAVBAR": "Log In",
     "REGISTRATION_NAVBAR": "Register",
     "BROWSE_NAVBAR": "Explore",
@@ -109,5 +111,20 @@
     "MY_BIDS_TITLE": "My Bids",
     "PROFILE_TILE_FAVORITES_DESC": "View Favorites",
     "PROFILE_TILE_MY_BIDS_DESC": "View bids you have placed",
-    "PROFILE_TILE_MY_LISTINGS_DESC": "View Listings"
+    "PROFILE_TILE_MY_LISTINGS_DESC": "View Listings",
+
+    "LOADING_BIDS": "Loading your bids...",
+    "ON_ITEM": "On item",
+    "ITEM": "Item",
+    "YOUR_BID_AMOUNT": "Your Bid Amount",
+    "YOUR_COMMENT": "Your Comment",
+    "STATUS": "Status",
+    "PLACED": "Placed",
+    "UPDATED": "Updated",
+    "UPDATE_BID": "Update Bid",
+    "ACCEPTED": "Accepted",
+    "REJECTED": "Rejected",
+    "NO_BIDS_PLACED": "You haven't placed any bids yet.",
+    "CONFIRM_BID_DELETION": "Confirm Bid Deletion",
+    "DELETE_BID": "Delete Bid"
 }

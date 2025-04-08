@@ -1,4 +1,4 @@
-/** 
+/**
  * <h1>Import necessary modules for internationalization (i18n) in Vue</h1>
  * This file sets up i18n for the Vue application.
  */
@@ -6,10 +6,11 @@ import { createI18n } from 'vue-i18n';
 
 /**
  * <h2>Import language files</h2>
- * Imports the language settings for Norwegian (no) and English (en).
+ * Imports the language settings for Norwegian (no), English (en), and Nepali (ne).
  */
 import no from './locales/no.json';
 import en from './locales/en.json';
+import ne from './locales/ne.json';
 
 /**
  * <h2>Get the current language setting</h2>
@@ -33,6 +34,8 @@ if (locale.toLowerCase().includes('no')) {
   locale = 'no';
 } else if (locale.toLowerCase().includes('en')) {
   locale = 'en';
+} else if (locale.toLowerCase().includes('ne')) {
+  locale = 'ne';
 }
 
 /**
@@ -40,21 +43,21 @@ if (locale.toLowerCase().includes('no')) {
  * <p>
  * Creates an i18n instance for the Vue application and sets up the languages and fallback language.
  * <ul>
- *   <li><b>locale:</b> Set to the selected language (either 'no' or 'en')</li>
+ *   <li><b>locale:</b> Set to the selected language (either 'no', 'en', or 'ne')</li>
  *   <li><b>fallbackLocale:</b> The fallback language if the selected language is not available, defaulting to 'no'.</li>
- *   <li><b>messages:</b> Contains translations for Norwegian and English</li>
+ *   <li><b>messages:</b> Contains translations for Norwegian, English, and Nepali</li>
  * </ul>
  * </p>
- * 
+ *
  * @returns {import('vue-i18n').I18n} - The Vue i18n instance with configured language options.
  */
-
 export default createI18n({
   locale,
   fallbackLocale: import.meta.env.VITE_I18N_FALLBACK_LOCALE || 'no',
   messages: {
     no,
     en,
+    ne,
   },
   globalInjection: true,
   legacy: false,

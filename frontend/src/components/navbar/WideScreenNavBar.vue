@@ -23,7 +23,7 @@
           v-if="userStore.role === 'ADMIN'"
           to="/admin"
           class="nav-link">
-          Admin
+          {{ $t('ADMIN') }}
         </RouterLink>
         <button class="logout-btn" @click="handleLogout">{{ $t('APP_LOGOUT') }}</button>
       </template>

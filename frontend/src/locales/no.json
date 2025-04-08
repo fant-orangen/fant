@@ -9,6 +9,7 @@
 "REGISTRATION_BUTTON": "Registrer",
 "REGISTRATION_NAVBAR": "Registrer",
 "REGISTRATION_ACCOUNT_QUESTION": "Har du en konto?",
+"ADMIN": "Administrator",
 
 "MY_ACCOUNT_TITLE": "Min Konto",
 "PROFILE_TILE_MY_ACCOUNT_TITLE": "Profil",
@@ -44,6 +45,7 @@
 
 "HOME_NAVBAR": "Hjem",
 "INBOX_NAVBAR": "Meldinger",
+"INBOX_NAME": "Innboks",
 "LOGIN_NAVBAR": "Logg Inn",
 "REGISTRATION_NAVBAR": "Registrer",
 "BROWSE_NAVBAR": "Utforsk",
@@ -62,6 +64,7 @@
 
 "CATEGORIES": "Kategorier",
 "CATEGORY_NAME": "Kategorinavn",
+"ADD_CATEGORY": "Legg til Kategori",
 "ENTER_CATEGORY_NAME": "Skriv inn kategorinavn",
 "SELECT_ICON": "Velg ikon",
 "ICON": "Ikon",
@@ -108,6 +111,24 @@
 "MY_BIDS_TITLE": "Mine Bud",
 "PROFILE_TILE_FAVORITES_DESC": "Vis Favoritter",
 "PROFILE_TILE_MY_BIDS_DESC": "Se bud du har plassert",
-"PROFILE_TILE_MY_LISTINGS_DESC": "Vis Annonser"
+"PROFILE_TILE_MY_LISTINGS_DESC": "Vis Annonser",
+
+"LOADING_BIDS": "Laster dine bud...",
+"ON_ITEM": "På vare",
+"ITEM": "Vare",
+"YOUR_BID_AMOUNT": "Ditt budbeløp",
+"YOUR_COMMENT": "Din kommentar",
+"STATUS": "Status",
+"PLACED": "Plassert",
+"UPDATED": "Oppdatert",
+"UPDATE_BID": "Oppdater bud",
+"ACCEPTED": "Akseptert",
+"REJECTED": "Avvist",
+"NO_BIDS_PLACED": "Du har ikke plassert noen bud ennå.",
+"CONFIRM_BID_DELETION": "Bekreft sletting av bud",
+"DELETE_BID": "Slett bud"
+
+
+
 
 }
