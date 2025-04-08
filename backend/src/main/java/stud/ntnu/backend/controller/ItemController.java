@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.item.ItemCreateDto;
 import stud.ntnu.backend.data.item.ItemPreviewDto;
@@ -125,17 +126,14 @@ public class ItemController {
     return ResponseEntity.ok(itemDetails);
   }
 
-  /**
-   * <h3>Get Items By Category</h3>
-   * <p>Retrieves items belonging to a specific category.</p>
-   *
-   * @param categoryId the category ID
-   * @return list of {@link ItemPreviewDto} in the category
-   */
-  @GetMapping("/category/{categoryId}")
-  public ResponseEntity<Page<ItemPreviewDto>> getItemsByCategory(
-      @Positive @PathVariable Long categoryId, Pageable pageable) {
-    return ResponseEntity.ok(itemService.getItemsByCategoryId(categoryId, pageable));
+  @GetMapping("/category/{categoryId}/page")
+  public ResponseEntity<Page<ItemPreviewDto>> getPagedItemsByCategory(
+      @Positive @PathVariable Long categoryId,
+      @Min(0) @RequestParam int page,
+      @Positive @RequestParam int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<ItemPreviewDto> pagedItems = itemService.getItemsByCategoryId(categoryId, pageable);
+    return ResponseEntity.ok(pagedItems);
   }
 
   /**

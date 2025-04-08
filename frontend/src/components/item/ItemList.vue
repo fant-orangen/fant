@@ -40,13 +40,16 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import ItemPreview from '@/components/item/ItemPreview.vue';
-import { fetchPagedPreviewItems } from '@/services/ItemService';
+import {
+  fetchPagedPreviewItems,
+  fetchPagedPreviewItemsByCategory
+} from '@/services/ItemService';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
 
 const props = defineProps<{
-  categoryId: string | null
-  pageSize: number
-  emptyMessage?: string
+  categoryId: string | null;
+  pageSize: number;
+  emptyMessage?: string;
 }>();
 
 const items = ref<ItemPreviewType[]>([]);
@@ -59,8 +62,16 @@ const error = ref<string | null>(null);
 async function loadItems() {
   loading.value = true;
   error.value = null;
+
   try {
-    const response: PaginatedItemPreviewResponse = await fetchPagedPreviewItems(currentPage.value - 1, props.pageSize);
+    let response: PaginatedItemPreviewResponse;
+
+    if (props.categoryId) {
+      response = await fetchPagedPreviewItemsByCategory(props.categoryId, currentPage.value - 1, props.pageSize);
+    } else {
+      response = await fetchPagedPreviewItems(currentPage.value - 1, props.pageSize);
+    }
+
     items.value = response.content;
     totalItems.value = response.totalElements;
     totalPages.value = response.totalPages;

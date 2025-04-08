@@ -55,6 +55,30 @@ export async function fetchPagedPreviewItems(page: number, size: number): Promis
   }
 }
 
+/**
+ * Fetches a paginated set of item previews for a specific category.
+ *
+ * @param categoryId - The category to filter by
+ * @param page - Page index (0-based)
+ * @param size - Number of items per page
+ * @returns A promise resolving to a paginated response of item previews
+ */
+export async function fetchPagedPreviewItemsByCategory(
+  categoryId: string,
+  page: number,
+  size: number
+): Promise<PaginatedItemPreviewResponse> {
+  try {
+    const response = await api.get<PaginatedItemPreviewResponse>(
+      `/items/category/${categoryId}/page?page=${page}&size=${size}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching paginated items for category ${categoryId}:`, error);
+    throw error;
+  }
+}
+
 // Existing function to fetch details for a single item
 export async function fetchItem(itemId: string | number): Promise<ItemDetailsType> {
   try {
