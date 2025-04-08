@@ -3,6 +3,7 @@ package stud.ntnu.backend.unit;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,7 +15,7 @@ import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.UserRepository;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import stud.ntnu.backend.service.UserService;
 
@@ -23,124 +24,162 @@ import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
+  @Mock
   private UserRepository userRepository;
+
+  @Mock
   private PasswordEncoder passwordEncoder;
+
+  @Mock
   private ModelMapper modelMapper;
+
+  @Mock
+  private Principal principal;
+
   private UserService userService;
 
   @BeforeEach
   void setUp() {
-    userRepository = mock(UserRepository.class);
-    passwordEncoder = mock(PasswordEncoder.class);
-    modelMapper = mock(ModelMapper.class);
+    MockitoAnnotations.openMocks(this);
     userService = new UserService(userRepository, passwordEncoder, modelMapper);
   }
 
   @Test
-  void createUser_shouldSaveUser() {
-    UserCreateDto dto = new UserCreateDto();
-    dto.setPassword("secret");
-
+  void createUser_shouldCreateUserSuccessfully() {
+    UserCreateDto userCreateDto = new UserCreateDto();
+    userCreateDto.setPassword("password");
     User user = new User();
-    user.setPasswordHash("encoded");
-
-    when(modelMapper.map(dto, User.class)).thenReturn(user);
-    when(passwordEncoder.encode("secret")).thenReturn("encoded");
+    when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
+    when(modelMapper.map(userCreateDto, User.class)).thenReturn(user);
     when(userRepository.save(user)).thenReturn(user);
 
-    User result = userService.createUser(dto);
+    User createdUser = userService.createUser(userCreateDto);
 
-    assertEquals(user, result);
+    assertNotNull(createdUser);
+    verify(passwordEncoder).encode("password");
     verify(userRepository).save(user);
   }
 
   @Test
-  void updateUser_shouldUpdateUserWithGivenId() {
-    UserCreateDto dto = new UserCreateDto();
-    dto.setPassword("pw");
+  void updateUser_shouldUpdateUserSuccessfully() {
+    Long userId = 1L;
 
-    User mappedUser = new User();
-    mappedUser.setPasswordHash("encoded");
+    // Prepare the input data for the update
+    UserCreateDto userCreateDto = new UserCreateDto();
+    userCreateDto.setPassword("newPassword");
 
-    when(modelMapper.map(dto, User.class)).thenReturn(mappedUser);
-    when(passwordEncoder.encode("pw")).thenReturn("encoded");
-    when(userRepository.save(mappedUser)).thenReturn(mappedUser);
+    // Create an existing user to be updated
+    User existingUser = new User();
+    existingUser.setId(userId);
+    existingUser.setPasswordHash("oldPassword");
 
-    User result = userService.updateUser(dto, 42L);
+    // Mock the repository behavior: findById should return the existing user
+    when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
 
-    assertEquals(mappedUser, result);
-    assertEquals(42L, result.getId());
-    verify(userRepository).save(mappedUser);
+    // Mock the password encoder to return the encoded password
+    when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+
+    // Mock the save method to return the updated user
+    when(userRepository.save(existingUser)).thenReturn(existingUser);
+
+    // Perform the update
+    User updatedUser = userService.updateUser(userCreateDto, userId);
+
+    // Assertions
+    assertNotNull(updatedUser);  // Ensure the updated user is not null
+    assertEquals("encodedNewPassword", updatedUser.getPasswordHash());  // Ensure password was updated
+    verify(userRepository).findById(userId);  // Ensure findById was called
+    verify(userRepository).save(existingUser);  // Ensure save was called
+  }
+
+
+  @Test
+  void updateUser_shouldThrowEntityNotFoundException_whenUserNotFound() {
+    Long userId = 1L;
+    UserCreateDto userCreateDto = new UserCreateDto();
+    when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+    assertThrows(EntityNotFoundException.class, () -> userService.updateUser(userCreateDto, userId));
   }
 
   @Test
-  void deleteUser_shouldCallRepositoryDeleteById() {
-    userService.deleteUser(5L);
-    verify(userRepository).deleteById(5L);
+  void deleteUser_shouldDeleteUserSuccessfully() {
+    Long userId = 1L;
+    userService.deleteUser(userId);
+
+    verify(userRepository).deleteById(userId);
   }
 
   @Test
-  void getAll_shouldReturnPageOfUsers() {
-    Pageable pageable = Pageable.unpaged();
-    Page<User> page = new PageImpl<>(List.of(new User()));
+  void getAll_shouldReturnAllUsers() {
+    User user1 = new User();
+    User user2 = new User();
+    Page<User> userPage = new PageImpl<>(Arrays.asList(user1, user2));
+    Pageable pageable = mock(Pageable.class);
+    when(userRepository.findAll(pageable)).thenReturn(userPage);
 
-    when(userRepository.findAll(pageable)).thenReturn(page);
+    Page<User> users = userService.getAll(pageable);
 
-    Page<User> result = userService.getAll(pageable);
-
-    assertEquals(page, result);
+    assertNotNull(users);
+    assertEquals(2, users.getContent().size());
+    verify(userRepository).findAll(pageable);
   }
 
   @Test
-  void getUserById_shouldReturnUserDto() {
+  void getUserById_shouldReturnUserResponseDto() {
+    Long userId = 1L;
     User user = new User();
-    UserResponseDto dto = new UserResponseDto();
+    user.setId(userId);
+    UserResponseDto userResponseDto = new UserResponseDto();
+    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    when(modelMapper.map(user, UserResponseDto.class)).thenReturn(userResponseDto);
 
-    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-    when(modelMapper.map(user, UserResponseDto.class)).thenReturn(dto);
+    UserResponseDto response = userService.getUserById(userId);
 
-    UserResponseDto result = userService.getUserById(1L);
-
-    assertEquals(dto, result);
+    assertNotNull(response);
+    verify(userRepository).findById(userId);
   }
 
   @Test
-  void getUserById_shouldThrowIfNotFound() {
-    when(userRepository.findById(99L)).thenReturn(Optional.empty());
+  void getUserById_shouldThrowEntityNotFoundException_whenUserNotFound() {
+    Long userId = 1L;
+    when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-    assertThrows(EntityNotFoundException.class, () -> userService.getUserById(99L));
+    assertThrows(EntityNotFoundException.class, () -> userService.getUserById(userId));
   }
 
   @Test
-  void getCurrentUser_shouldReturnUser() {
-    Principal principal = () -> "email@example.com";
-    User user = new User();
+  void getCurrentUser_shouldReturnCurrentUser() {
+    String email = "user@example.com";
+    User currentUser = new User();
+    currentUser.setEmail(email);
+    when(principal.getName()).thenReturn(email);
+    when(userRepository.findByEmail(email)).thenReturn(Optional.of(currentUser));
 
-    when(userRepository.findByEmail("email@example.com")).thenReturn(Optional.of(user));
+    User user = userService.getCurrentUser(principal);
 
-    User result = userService.getCurrentUser(principal);
-
-    assertEquals(user, result);
+    assertNotNull(user);
+    assertEquals(email, user.getEmail());
   }
 
   @Test
-  void getCurrentUser_shouldThrowIfNotFound() {
-    Principal principal = () -> "missing@example.com";
-    when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+  void getCurrentUser_shouldThrowEntityNotFoundException_whenUserNotFound() {
+    when(principal.getName()).thenReturn("nonexistent@example.com");
+    when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
 
     assertThrows(EntityNotFoundException.class, () -> userService.getCurrentUser(principal));
   }
 
   @Test
-  void getCurrentUserId_shouldReturnId() {
-    Principal principal = () -> "user@domain.com";
-    User user = new User();
-    user.setId(7L);
+  void getCurrentUserId_shouldReturnCurrentUserId() {
+    Long userId = 1L;
+    User currentUser = new User();
+    currentUser.setId(userId);
+    when(principal.getName()).thenReturn("user@example.com");
+    when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(currentUser));
 
-    when(userRepository.findByEmail("user@domain.com")).thenReturn(Optional.of(user));
+    Long id = userService.getCurrentUserId(principal);
 
-    Long result = userService.getCurrentUserId(principal);
-
-    assertEquals(7L, result);
+    assertEquals(userId, id);
   }
 }

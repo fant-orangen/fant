@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -176,7 +177,7 @@ public class BidServiceTest {
   @Test
   void getBidsForItem_SellerAccessing_Success() {
     // Arrange
-    List<Bid> bids = Arrays.asList(bid);
+    List<Bid> bids = Collections.singletonList(bid);
     Page<Bid> bidPage = new PageImpl<>(bids, pageable, bids.size());
 
     when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
@@ -188,7 +189,7 @@ public class BidServiceTest {
     // Assert
     assertNotNull(result);
     assertEquals(1, result.getTotalElements());
-    assertEquals(bid.getId(), result.getContent().get(0).getId());
+    assertEquals(bid.getId(), result.getContent().getFirst().getId());
   }
 
   @Test
@@ -390,7 +391,7 @@ public class BidServiceTest {
   @Test
   void getBidsByBidderId_Success() {
     // Arrange
-    List<Bid> bids = Arrays.asList(bid);
+    List<Bid> bids = Collections.singletonList(bid);
     Page<Bid> bidPage = new PageImpl<>(bids, pageable, bids.size());
 
     when(bidRepository.findByBidderId(anyLong(), any(Pageable.class))).thenReturn(bidPage);
@@ -401,7 +402,7 @@ public class BidServiceTest {
     // Assert
     assertNotNull(result);
     assertEquals(1, result.getTotalElements());
-    assertEquals(bid.getId(), result.getContent().get(0).getId());
+    assertEquals(bid.getId(), result.getContent().getFirst().getId());
   }
 
   @Test

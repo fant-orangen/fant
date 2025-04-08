@@ -35,10 +35,6 @@ public class UserService {
    */
   private final PasswordEncoder passwordEncoder;
 
-  /**
-   * <h3>Model Mapper</h3>
-   * <p>Object mapper for DTO conversions.</p>
-   */
   private final ModelMapper modelMapper;
 
   /**
@@ -50,7 +46,9 @@ public class UserService {
    */
   @Transactional
   public User createUser(UserCreateDto registrationDto) {
-    return userRepository.save(fromDto(registrationDto));
+    User user = modelMapper.map(registrationDto, User.class);
+    user.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword()));
+    return userRepository.save(modelMapper.map(registrationDto, User.class));
   }
 
   /**
@@ -58,13 +56,15 @@ public class UserService {
    * <p>Modifies an existing user's profile.</p>
    *
    * @param userCreateDto the updated user data
-   * @param id             the user ID to update
+   * @param id            the user ID to update
    * @return the updated {@link User}
    */
   @Transactional
   public User updateUser(UserCreateDto userCreateDto, Long id) {
-    User user = fromDto(userCreateDto);
-    user.setId(id);
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+    modelMapper.map(userCreateDto, user);
+    user.setPasswordHash(passwordEncoder.encode(userCreateDto.getPassword()));
     return userRepository.save(user);
   }
 
@@ -100,7 +100,7 @@ public class UserService {
   public UserResponseDto getUserById(Long id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
-    return toDto(user);
+    return modelMapper.map(user, UserResponseDto.class);
   }
 
   /**
@@ -125,29 +125,5 @@ public class UserService {
    */
   public Long getCurrentUserId(Principal principal) {
     return getCurrentUser(principal).getId();
-  }
-
-  /**
-   * <h3>Convert DTO to Entity</h3>
-   * <p>Maps registration DTO to User entity with encrypted password.</p>
-   *
-   * @param userCreateDto the DTO to convert
-   * @return mapped {@link User} entity
-   */
-  private User fromDto(UserCreateDto userCreateDto) {
-    User user = modelMapper.map(userCreateDto, User.class);
-    user.setPasswordHash(passwordEncoder.encode(userCreateDto.getPassword()));
-    return user;
-  }
-
-  /**
-   * <h3>Convert Entity to DTO</h3>
-   * <p>Maps User entity to response DTO.</p>
-   *
-   * @param user the entity to convert
-   * @return mapped {@link UserResponseDto}
-   */
-  public UserResponseDto toDto(User user) {
-    return modelMapper.map(user, UserResponseDto.class);
   }
 }
