@@ -50,8 +50,8 @@ const onInputChange = async () => {
 
   try {
     // Call the provided API function with the query
-    const response = await props.apiCall(query.value);
-    results.value = response.data;
+    //const response = await props.apiCall(query.value);
+    //results.value = response.data;
   } catch (err) {
     error.value = t('ERROR_SEARCHING');  // Use t to get the translation
     console.error(err);
