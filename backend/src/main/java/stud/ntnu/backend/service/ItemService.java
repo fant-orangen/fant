@@ -12,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.item.ItemCreateDto;
@@ -34,7 +33,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import stud.ntnu.backend.repository.specification.ItemSpecification;
-import stud.ntnu.backend.util.GeoUtils;
 
 /**
  * <h2>ItemService</h2>
