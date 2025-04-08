@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
@@ -123,6 +124,25 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
 
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+    log.warn(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<String> handleIOException(IOException ex) {
+    log.warn(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<String> handleMethodArgumentNotValidException(
+      MethodArgumentNotValidException ex) {
+    log.warn(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  }
+
   @ExceptionHandler(FileFormatException.class)
   public ResponseEntity<String> handleFileFormatException(FileFormatException ex) {
     log.warn(ex.getMessage());
@@ -141,6 +161,7 @@ public class GlobalExceptionHandler {
     log.warn(ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
+
   /**
    * <h3>Handle Unexpected Errors</h3>
    * <p>Catches all unhandled exceptions.</p>
