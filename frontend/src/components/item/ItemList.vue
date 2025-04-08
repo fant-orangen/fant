@@ -17,7 +17,7 @@
     </div>
 
     <!-- Pagination controls -->
-    <div v-if="paginationEnabled && items.length > 0 && totalPages > 1" class="pagination-controls">
+    <div v-if="items.length > 0 && totalPages > 1" class="pagination-controls">
       <button
         :disabled="currentPage <= 1"
         @click="changePage(currentPage - 1)"
@@ -34,140 +34,90 @@
         Next
       </button>
     </div>
-
-    <div v-if="loading && items.length > 0" class="loading-more">Loading more items...</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
-import ItemPreview from '@/components/item/ItemPreview.vue'
-import type { ItemPreviewType } from '@/models/Item'
+import { ref, onMounted, watch } from 'vue';
+import ItemPreview from '@/components/item/ItemPreview.vue';
+import { fetchPagedPreviewItems } from '@/services/ItemService';
+import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
 
-const props = defineProps({
-  fetchFunction: {
-    type: Function,
-    required: true,
-  },
-  fetchParams: {
-    type: Array,
-    default: () => [],
-  },
-  emptyMessage: {
-    type: String,
-    default: 'No items available',
-  },
-  pageSize: {
-    type: Number,
-    default: 10,
-  },
-  paginationEnabled: {
-    type: Boolean,
-    default: true,
-  },
-})
+const props = defineProps<{
+  categoryId: string | null
+  pageSize: number
+  emptyMessage?: string
+}>();
 
-const items = ref<ItemPreviewType[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
-const currentPage = ref(1)
-const totalItems = ref(0)
-const totalPages = computed(() => Math.ceil(totalItems.value / props.pageSize))
+const items = ref<ItemPreviewType[]>([]);
+const currentPage = ref(1);
+const totalPages = ref(0);
+const totalItems = ref(0);
+const loading = ref(true);
+const error = ref<string | null>(null);
 
 async function loadItems() {
-  loading.value = true
-  error.value = null
-
+  loading.value = true;
+  error.value = null;
   try {
-    let response
-    if (props.paginationEnabled) {
-      const paginatedParams = [...props.fetchParams, currentPage.value - 1, props.pageSize]
-      response = await props.fetchFunction(...paginatedParams)
-    } else {
-      response = await props.fetchFunction(...props.fetchParams)
-    }
-
-    if (response.content && response.totalElements !== undefined) {
-      items.value = response.content
-      totalItems.value = response.totalElements
-      currentPage.value = response.number + 1
-    } else if (Array.isArray(response)) {
-      items.value = response
-      totalItems.value = response.length
-    } else {
-      items.value = []
-      error.value = 'Invalid response format'
-    }
+    const response: PaginatedItemPreviewResponse = await fetchPagedPreviewItems(currentPage.value - 1, props.pageSize);
+    items.value = response.content;
+    totalItems.value = response.totalElements;
+    totalPages.value = response.totalPages;
   } catch (err) {
-    console.error('Failed to load items:', err)
-    error.value = 'Could not load items. Please try again later.'
-    items.value = []
+    error.value = 'Failed to load items.';
+    console.error(err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
-function changePage(newPage: number) {
-  if (newPage >= 1 && newPage <= totalPages.value) {
-    currentPage.value = newPage
-    loadItems()
+function changePage(page: number) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
   }
 }
 
-onMounted(loadItems)
-watch(
-  () => props.fetchParams.map((p) => JSON.stringify(p)),
-  () => {
-    currentPage.value = 1
-    loadItems()
-  },
-  { deep: true },
-)
+watch(currentPage, loadItems);
+watch(() => props.categoryId, () => {
+  currentPage.value = 1;
+  loadItems();
+});
+
+onMounted(loadItems);
 </script>
 
 <style scoped>
 .item-list-container {
   width: 100%;
 }
-
 .loading-indicator,
 .error-message,
-.no-items-message,
-.loading-more {
+.no-items-message {
   text-align: center;
   margin: 2rem 0;
 }
-
-.error-message p {
-  color: red;
-  font-weight: bold;
-}
-
 .items-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
-
 @media (max-width: 1200px) {
   .items-container {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-
 @media (max-width: 900px) {
   .items-container {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
 @media (max-width: 600px) {
   .items-container {
     grid-template-columns: 1fr;
   }
 }
-
 .pagination-controls {
   display: flex;
   justify-content: center;
@@ -175,7 +125,6 @@ watch(
   margin-top: 2rem;
   gap: 1rem;
 }
-
 .pagination-button {
   padding: 0.5rem 1rem;
   background-color: var(--color-background-soft);
@@ -183,12 +132,10 @@ watch(
   border-radius: 4px;
   cursor: pointer;
 }
-
 .pagination-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
 .page-info {
   font-size: 0.9rem;
 }
