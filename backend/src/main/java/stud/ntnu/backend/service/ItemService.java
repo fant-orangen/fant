@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +55,7 @@ public class ItemService {
   private final FavoriteRepository favoriteRepository;
 
   private final ModelMapper modelMapper;
+  private final Logger log = LoggerFactory.getLogger(ItemService.class);
 
   @Transactional
   public ItemDetailsDto createItem(User seller, ItemCreateDto itemCreateDto) {
@@ -144,7 +147,8 @@ public class ItemService {
     itemViewRepository.save(ItemView.builder().item(item).user(user).build());
   }
 
-  public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution, Pageable pageable) {
+  public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
+      Pageable pageable) {
     int pageSize = pageable.getPageSize();
     int offset = (int) pageable.getOffset();
 
@@ -163,7 +167,8 @@ public class ItemService {
       return Page.empty(pageable);
     }
 
-    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, pageSize, random);
+    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, pageSize,
+        random);
 
     // Apply pagination
     int end = Math.min(offset + pageSize, allItems.size());
@@ -280,6 +285,8 @@ public class ItemService {
 
   private Item fromCreateDto(User seller, ItemCreateDto itemCreateDto) {
     Item item = modelMapper.map(itemCreateDto, Item.class);
+    item.setId(null); // This line is crucial! Otherwise the item overwrites an existing one.
+    log.info("Item after mapping, ID should be null: {}", item.getId());
     item.setSeller(seller);
     return item;
   }
