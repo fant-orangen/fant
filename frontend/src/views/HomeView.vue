@@ -1,6 +1,11 @@
 <template>
   <section class="homepage">
+    <SearchField
+      :apiCall="searchProductsApi"
+      placeholder="Search for products..."
+    />
     <CategoryGrid @select="onCategoryClick" />
+    <h1>Search Products</h1>
     <ItemList
       :fetchFunction="fetchItems"
       :fetchParams="[selectedCategoryId]"
@@ -14,6 +19,7 @@
 <script setup lang="ts">
 import CategoryGrid from '@/components/category/categoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
+import SearchField from '@/components/input/SearchField.vue';
 import { ref, onMounted } from 'vue'
 import {
   fetchPreviewItemsByCategoryId,

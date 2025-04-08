@@ -10,6 +10,7 @@
 "REGISTRATION_NAVBAR": "Registrer",
 "REGISTRATION_ACCOUNT_QUESTION": "Har du en konto?",
 "ADMIN": "Administrator",
+"LOADING": "Loading...",
 
 "MY_ACCOUNT_TITLE": "Min Konto",
 "PROFILE_TILE_MY_ACCOUNT_TITLE": "Profil",
@@ -126,8 +127,10 @@
 "REJECTED": "Avvist",
 "NO_BIDS_PLACED": "Du har ikke plassert noen bud ennå.",
 "CONFIRM_BID_DELETION": "Bekreft sletting av bud",
-"DELETE_BID": "Slett bud"
+"DELETE_BID": "Slett bud",
 
+"ERROR_SEARCHING": "En feil skjedde under søk. ",
+"SEARCH_PLACEHOLDER": "Søk her"
 
 
 
