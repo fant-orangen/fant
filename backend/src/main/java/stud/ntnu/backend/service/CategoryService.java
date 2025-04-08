@@ -39,7 +39,7 @@ public class CategoryService {
    */
   @Transactional
   public Category create(CategoryRequestDto categoryRequestDto) {
-    return categoryRepository.save(fromDto(categoryRequestDto));
+    return categoryRepository.save(modelMapper.map(categoryRequestDto, Category.class));
   }
 
   /**
@@ -52,8 +52,9 @@ public class CategoryService {
    */
   @Transactional
   public Category update(CategoryRequestDto categoryRequestDto, Long id) {
-    Category category = fromDto(categoryRequestDto);
-    category.setId(id);
+    Category category = categoryRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Category with id " + id + " not found"));
+    modelMapper.map(categoryRequestDto, category);
     return categoryRepository.save(category);
   }
 
@@ -102,16 +103,5 @@ public class CategoryService {
   public Category getCategoryByName(String name) {
     return categoryRepository.findByName(name)
         .orElseThrow(() -> new EntityNotFoundException("Category not found with name: " + name));
-  }
-
-  /**
-   * <h3>Convert DTO to Entity</h3>
-   * <p>Maps a CategoryRequestDto to a Category entity.</p>
-   *
-   * @param categoryRequestDto the DTO to convert
-   * @return the mapped {@link Category} entity
-   */
-  private Category fromDto(CategoryRequestDto categoryRequestDto) {
-    return modelMapper.map(categoryRequestDto, Category.class);
   }
 }

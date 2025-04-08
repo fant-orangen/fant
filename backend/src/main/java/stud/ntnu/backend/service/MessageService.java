@@ -156,8 +156,8 @@ public class MessageService {
    * @param messages list of messages to group
    * @return map of grouped messages by conversation key
    */
-  private Map<String, List<Message>> groupMessagesByConversation(User user,
-                                                                 List<Message> messages) {
+  public Map<String, List<Message>> groupMessagesByConversation(User user,
+                                                                List<Message> messages) {
     Map<String, List<Message>> grouped = new HashMap<>();
     for (Message m : messages) {
       User other = m.getSender().getId().equals(user.getId()) ? m.getReceiver() : m.getSender();
@@ -176,7 +176,7 @@ public class MessageService {
    * @param messages list of messages in conversation (assumes non-empty)
    * @return {@link ConversationPreviewDto} for the conversation
    */
-  private ConversationPreviewDto buildConversationPreview(User user, List<Message> messages) {
+  public ConversationPreviewDto buildConversationPreview(User user, List<Message> messages) {
     // Sort oldest first to find the stable identifier
     messages.sort(Comparator.comparing(Message::getSentAt));
     Message firstMessage = messages.getFirst(); // Earliest message
@@ -212,7 +212,7 @@ public class MessageService {
    * @param message the message to convert
    * @return {@link MessageResponseDto}
    */
-  private MessageResponseDto mapToMessageResponseDto(Message message) {
+  public MessageResponseDto mapToMessageResponseDto(Message message) {
     return MessageResponseDto.builder()
         .id(message.getId())
         .sender(mapToMessageUserDto(message.getSender()))
@@ -248,7 +248,7 @@ public class MessageService {
    * @param user the user to convert
    * @return {@link MessageUserDto}
    */
-  private MessageUserDto toUserDto(User user) {
+  public MessageUserDto toUserDto(User user) {
     return MessageUserDto.builder()
         .id(user.getId())
         .displayName(user.getDisplayName())
@@ -263,7 +263,7 @@ public class MessageService {
    * @param m the message to convert
    * @return {@link MessageDto}
    */
-  private MessageDto toMessageDto(Message m) {
+  public MessageDto toMessageDto(Message m) {
     return MessageDto.builder()
         .id(m.getId())
         .content(m.getContent())
@@ -279,7 +279,7 @@ public class MessageService {
    * @param item the item to convert
    * @return {@link ItemPreviewDto}
    */
-  private ItemPreviewDto toItemDto(Item item) {
+  public ItemPreviewDto toItemDto(Item item) {
     String imageUrl = item.getImages() != null && !item.getImages().isEmpty() ?
         item.getImages().stream()
             .min(Comparator.comparing(ItemImage::getPosition))
@@ -303,7 +303,7 @@ public class MessageService {
    * @param item the item to convert
    * @return {@link ConversationPreviewDto.RelatedItemDto}
    */
-  private ConversationPreviewDto.RelatedItemDto toRelatedItemDto(Item item) {
+  public ConversationPreviewDto.RelatedItemDto toRelatedItemDto(Item item) {
     return ConversationPreviewDto.RelatedItemDto.builder()
         .id(item.getId())
         .title(item.getBriefDescription())

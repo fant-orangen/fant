@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.MessageReadRequestDto;
+import stud.ntnu.backend.data.message.MessageReadRequestDto;
 import stud.ntnu.backend.data.message.ConversationPreviewDto;
 import stud.ntnu.backend.data.message.MessageResponseDto;
 import stud.ntnu.backend.service.MessageService;
