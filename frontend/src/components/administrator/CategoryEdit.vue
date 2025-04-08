@@ -1,60 +1,60 @@
 <template>
   <div class="category-edit">
-    <h2>Manage Categories</h2>
+    <h2>{{ $t('MANAGE_CATEGORIES') }}</h2>
 
     <div class="card">
-      <h3>{{ isEditing ? 'Edit' : 'Add' }} Category</h3>
+      <h3>{{ isEditing ? $t('EDIT') : $t('ADD') }} {{ $t('CATEGORIES') }}</h3>
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
-          <label for="name">Category Name</label>
-          <input id="name" v-model="form.name" placeholder="Enter category name" required />
+          <label for="name">{{ $t('CATEGORY_NAME') }}</label>
+          <input id="name" v-model="form.name" :placeholder="$t('ENTER_CATEGORY_NAME')" required />
         </div>
 
         <div class="form-group">
-          <label>Icon</label>
+          <label>{{ $t('ICON') }}</label>
           <div class="icon-selector">
             <select v-model="form.imageUrl">
-              <option value="" disabled>Select an icon</option>
+              <option value="" disabled>{{ $t('SELECT_ICON') }}</option>
               <option v-for="icon in availableIcons" :key="icon" :value="icon">{{ icon }}</option>
             </select>
             <div v-if="resolvedIcon" class="icon-preview-container">
-              <img :src="resolvedIcon" alt="Icon preview" class="icon-preview" />
+              <img :src="resolvedIcon" :alt="$t('ICON_PREVIEW')" class="icon-preview" />
             </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="custom-icon">Custom Icon URL</label>
+          <label for="custom-icon">{{ $t('CUSTOM_ICON_URL') }}</label>
           <input
             id="custom-icon"
             v-model="customIconUrl"
-            placeholder="https://example.com/icon.svg"
+            :placeholder="$t('CUSTOM_ICON_URL_PLACEHOLDER')"
             @input="updateIconUrl"
           />
         </div>
 
         <div class="form-actions">
           <button type="submit" class="btn primary">
-            {{ isEditing ? 'Update' : 'Add' }} Category
+            {{ isEditing ? $t('UPDATE') : $t('ADD_CATEGORY') }}
           </button>
           <button v-if="isEditing" type="button" class="btn secondary" @click="resetForm">
-            Cancel
+            {{ $t('CANCEL') }}
           </button>
         </div>
       </form>
     </div>
 
     <div class="card categories-list">
-      <h3>Categories</h3>
+      <h3>{{ $t('CATEGORIES') }}</h3>
       <ul>
         <li v-for="category in categories" :key="category.id ?? 'new'" class="category-item">
           <div class="category-info">
-            <img :src="getIconForCategory(category)" alt="Category icon" class="icon" />
+            <img :src="getIconForCategory(category)" :alt="$t('CATEGORY_ICON')" class="icon" />
             <span class="category-name">{{ category.name }}</span>
           </div>
           <div class="category-actions">
-            <button class="btn edit" @click="editCategory(category)">Edit</button>
-            <button class="btn delete" @click="removeCategory(category.id ?? '')">Delete</button>
+            <button class="btn edit" @click="editCategory(category)">{{ $t('EDIT') }}</button>
+            <button class="btn delete" @click="removeCategory(category.id ?? '')">{{ $t('DELETE') }}</button>
           </div>
         </li>
       </ul>

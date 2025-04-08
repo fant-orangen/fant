@@ -120,10 +120,10 @@ onUnmounted(() => {
 <template>
   <div class="inbox-view">
     <!-- Page title - uses i18n translation -->
-    <h1>{{ $t('INBOX') }}</h1>
+    <h1>{{ $t('INBOX_NAME') }}</h1>
 
     <!-- Loading state -->
-    <div v-if="loading" class="loading">Loading conversations...</div>
+    <div v-if="loading" class="loading">{{ $t('LOADING_MESSAGES') }}</div>
 
     <!-- Error state -->
     <div v-else-if="error" class="error">{{ error }}</div>
@@ -156,7 +156,7 @@ onUnmounted(() => {
         <!-- Conversation details -->
         <div class="convo-details">
           <span class="other-user">{{ convo.otherUser.username }}</span>
-          <span v-if="convo.item" class="related-item">Item: {{ convo.item.title || 'N/A' }}</span>
+          <span v-if="convo.item" class="related-item">{{ $t('ITEM') }} {{ convo.item.title || 'N/A' }}</span>
           <p class="last-message-snippet">
             {{ convo.lastMessage ? truncate(convo.lastMessage.content || convo.lastMessage.messageContent) : 'No messages yet' }}
           </p>

@@ -1,26 +1,26 @@
 <template>
   <div class="listing-form-container">
     <form @submit.prevent="submitForm" class="listing-form">
-      <h1 class="form-title">Create New Item</h1>
+      <h1 class="form-title">{{ $t('APP_LISTING_CREATE_NEW') }}</h1>
       <div class="form-divider"></div>
 
       <!-- Title -->
       <TextInput
         id="briefDescription"
-        label="Title"
+        :label="$t('APP_LISTING_CREATE_NEW_HEADER_LABEL')"
         v-model="formData.briefDescription"
         required
-        placeholder="Enter item title"
+        :placeholder="$t('APP_LISTING_CREATE_NEW_HEADER_PLACEHOLDER')"
         class="form-field"
       />
 
       <!-- Description -->
       <TextInput
         id="fullDescription"
-        label="Description"
+        :label="$t('APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL')"
         v-model="formData.fullDescription"
         required
-        placeholder="Enter detailed description"
+        :placeholder="$t('APP_LISTING_CREATE_NEW_DESCRIPTION_PLACEHOLDER')"
         multiline
         :rows="3"
         class="form-field"
@@ -30,33 +30,33 @@
         <!-- Category -->
         <SelectInput
           id="category"
-          label="Category"
+          :label="$t('APP_LISTING_CREATE_NEW_CATEGORY_LABEL')"
           v-model="selectedCategoryName"
           :options="categoryOptions"
           required
-          placeholder="Select a category"
+          :placeholder="$t('APP_LISTING_CREATE_NEW_CATEGORY_PLACEHOLDER')"
           class="form-field-half"
         />
 
         <!-- Price -->
         <TextInput
           id="price"
-          label="Price"
+          :label="$t('APP_LISTING_CREATE_NEW_PRICE_LABEL')"
           v-model="priceInput"
           type="number"
           required
-          placeholder="Enter price"
+          :placeholder="$t('APP_LISTING_CREATE_NEW_PRICE_PLACEHOLDER')"
           class="form-field-half"
         />
       </div>
 
       <!-- Location -->
       <div class="form-field">
-        <label class="location-label">Location</label>
+        <label class="location-label">{{ $t('APP_LISTING_CREATE_NEW_LOCATION') }}</label>
 
         <div class="location-toggle">
-          <button type="button" :class="['toggle-btn', isMapMode ? 'active' : '']" @click="isMapMode = true">Map</button>
-          <button type="button" :class="['toggle-btn', !isMapMode ? 'active' : '']" @click="isMapMode = false">Coordinates</button>
+          <button type="button" :class="['toggle-btn', isMapMode ? 'active' : '']" @click="isMapMode = true">{{ $t('MAP') }}</button>
+          <button type="button" :class="['toggle-btn', !isMapMode ? 'active' : '']" @click="isMapMode = false">{{ $t('COORDINATES') }}</button>
         </div>
 
         <div v-if="isMapMode" class="map-mode">
@@ -81,20 +81,20 @@
           <div class="form-row">
             <TextInput
               id="latitude"
-              label="Latitude"
+              :label="$t('LATITUDE')"
               v-model="latitudeInput"
               type="number"
               step="0.0001"
-              placeholder="e.g. 60.3900"
+              placeholder="60.3900"
               class="form-field-half"
             />
             <TextInput
               id="longitude"
-              label="Longitude"
+              :label="$t('LONGITUDE')"
               v-model="longitudeInput"
               type="number"
               step="0.0001"
-              placeholder="e.g. 5.3200"
+              placeholder="5.3200"
               class="form-field-half"
             />
           </div>
@@ -104,14 +104,14 @@
       <!-- Image Upload -->
       <FileInput
         id="images"
-        label="Upload Images"
+        :label="$t('APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL')"
         :multiple="true"
         @update:files="handleFileUpload"
         class="form-field"
       />
 
       <!-- Submit -->
-      <button type="submit" class="submit-button">Create Item</button>
+      <button type="submit" class="submit-button">{{ $t('APP_LISTING_CREATE_NEW_SUBMIT_BUTTON') }}</button>
     </form>
   </div>
 </template>
