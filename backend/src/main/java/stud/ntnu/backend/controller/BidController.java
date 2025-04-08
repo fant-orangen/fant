@@ -82,7 +82,7 @@ public class BidController {
    * @param principal the authenticated user
    * @return empty response with status OK
    */
-  @DeleteMapping("/{itemId}")
+  @DeleteMapping("/delete/{itemId}")
   public ResponseEntity<Void> deleteBid(
       @Positive @PathVariable Long itemId,
       Principal principal) {
