@@ -79,69 +79,72 @@ function toggleAdvancedSearch() {
   <div class="search-controls-container">
     <div class="main-search-group">
       <div class="control-group search-term-group">
-        <label for="search-term">Search:</label>
+        <!-- Use translation key for label -->
+        <label for="search-term">{{ $t('SEARCH_LABEL') }}</label>
         <input
           id="search-term"
           type="text"
           v-model="searchQuery"
           @input="handleSearchInput"
-          placeholder="Search by title..."
+          :placeholder="$t('SEARCH_PLACEHOLDER')"
           class="search-input"
         />
       </div>
       <button
         @click="toggleAdvancedSearch"
         class="advanced-toggle-button"
-        title="Toggle Advanced Search"
+        :title="$t('ADVANCED_TOGGLE_TITLE')"
       >
-        {{ showAdvanced ? '[- Less]' : '[+ More Filters]' }}
+        <!-- Toggle text for advanced search -->
+        {{ showAdvanced ? $t('ADVANCED_LESS') : $t('ADVANCED_MORE') }}
       </button>
     </div>
 
     <div v-if="showAdvanced" class="advanced-options">
       <div class="control-group">
-        <label for="min-price">Min Price:</label>
+        <label for="min-price">{{ $t('MIN_PRICE_LABEL') }}</label>
         <input
           id="min-price"
           type="number"
           :value="minPriceValue"
           @input="handleMinPriceInput"
-          placeholder="e.g., 100"
+          :placeholder="$t('MIN_PRICE_PLACEHOLDER')"
           min="0"
           step="10"
           class="number-input"
         />
       </div>
       <div class="control-group">
-        <label for="max-price">Max Price:</label>
+        <label for="max-price">{{ $t('MAX_PRICE_LABEL') }}</label>
         <input
           id="max-price"
           type="number"
           :value="maxPriceValue"
           @input="handleMaxPriceInput"
-          placeholder="e.g., 500"
+          :placeholder="$t('MAX_PRICE_PLACEHOLDER')"
           min="0"
           step="10"
           class="number-input"
         />
       </div>
       <div class="control-group">
-        <label for="sort-select">Sort By:</label>
+        <label for="sort-select">{{ $t('SORT_LABEL') }}</label>
         <select
           id="sort-select"
           v-model="sortOptionValue"
           @change="handleSortChange"
           class="select-input"
         >
-          <option value="default">Default</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
+          <option value="default">{{ $t('SORT_DEFAULT') }}</option>
+          <option value="price_asc">{{ $t('SORT_PRICE_LOW_HIGH') }}</option>
+          <option value="price_desc">{{ $t('SORT_PRICE_HIGH_LOW') }}</option>
         </select>
       </div>
       <div class="control-group location-group">
-        <label for="distance-slider"
-        >Max Distance: {{ maxDistanceKm ?? 0 }} km</label
-        >
+        <!-- Example with dynamic placeholder using interpolation -->
+        <label for="distance-slider">
+          {{ $t('MAX_DISTANCE_LABEL', { distance: maxDistanceKm ?? 0 }) }}
+        </label>
         <input
           id="distance-slider"
           type="range"
@@ -152,10 +155,10 @@ function toggleAdvancedSearch() {
           step="10"
           class="distance-slider"
           :disabled="!isLocationAvailable"
-          :title="isLocationAvailable ? 'Adjust search distance' : 'Click \'Use My Location\' first'"
+          :title="isLocationAvailable ? $t('DISTANCE_SLIDER_TITLE') : $t('DISTANCE_SLIDER_DISABLED')"
         />
         <button @click="requestLocation" class="location-button">
-          Use My Location
+          {{ $t('USE_MY_LOCATION') }}
         </button>
       </div>
     </div>

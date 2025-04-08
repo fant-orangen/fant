@@ -126,5 +126,24 @@
   "REJECTED": "अस्वीकृत",
   "NO_BIDS_PLACED": "तपाईंले कुनै बोली राख्नु भएको छैन।",
   "CONFIRM_BID_DELETION": "बोली मेट्ने पुष्टि गर्नुहोस्",
-  "DELETE_BID": "बोली मेट्नुहोस्"
+  "DELETE_BID": "बोली मेट्नुहोस्",
+
+
+  "SEARCH_LABEL": "खोज:",
+  "SEARCH_PLACEHOLDER": "शीर्षक द्वारा खोज...",
+  "ADVANCED_TOGGLE_TITLE": "उन्नत खोज टगल गर्नुहोस्",
+  "ADVANCED_MORE": "[+ थप फिल्टर]",
+  "ADVANCED_LESS": "[- कम]",
+  "MIN_PRICE_LABEL": "न्यूनतम मूल्य:",
+  "MIN_PRICE_PLACEHOLDER": "उदाहरण: १००",
+  "MAX_PRICE_LABEL": "अधिकतम मूल्य:",
+  "MAX_PRICE_PLACEHOLDER": "उदाहरण: ५००",
+  "SORT_LABEL": "क्रम अनुसार:",
+  "SORT_DEFAULT": "डिफल्ट",
+  "SORT_PRICE_LOW_HIGH": "मूल्य: कमदेखि बढी",
+  "SORT_PRICE_HIGH_LOW": "मूल्य: बढीदेखि कम",
+  "MAX_DISTANCE_LABEL": "अधिकतम दूरी: {distance} कि.मि.",
+  "DISTANCE_SLIDER_TITLE": "खोज दूरी समायोजन गर्नुहोस्",
+  "DISTANCE_SLIDER_DISABLED": "पहिले 'मेरो स्थान प्रयोग गर्नुहोस्' थिच्नुहोस्",
+  "USE_MY_LOCATION": "मेरो स्थान प्रयोग गर्नुहोस्"
 }
