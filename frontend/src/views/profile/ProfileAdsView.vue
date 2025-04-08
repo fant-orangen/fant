@@ -3,20 +3,27 @@
     <h2>{{ $t('MY_LISTINGS') }}</h2>
 
     <div v-if="isLoading" class="loading-indicator">
-      <p>Loading your items...</p> </div>
+      <p>Loading your items...</p>
+    </div>
 
     <div v-else-if="error" class="error-message">
       <p>{{ error }}</p>
     </div>
 
     <div v-else-if="userItems.length > 0" class="items-grid">
-      <div v-for="item in userItems" :key="item.id" class="item-preview-card" @click="navigateToManageItem(item.id)">
+      <div
+        v-for="item in userItems"
+        :key="item.id"
+        class="item-preview-card"
+        @click="navigateToManageItem(item.id)"
+      >
         <img
           :src="item.imageUrl || '/placeholder-image.png'"
           :alt="item.title"
           class="item-image"
           @error="handleImageError"
-          loading="lazy" />
+          loading="lazy"
+        />
         <div class="item-details">
           <h3>{{ item.title }}</h3>
           <p class="item-price">{{ formatPrice(item.price) }}</p>
@@ -26,36 +33,44 @@
 
     <div v-else class="no-items-message">
       <p>You haven't listed any items yet.</p>
-      <router-link to="/create-listing/start" class="create-listing-link">List an Item</router-link>
+      <router-link to="/create-listing/start" class="create-listing-link"
+      >List an Item</router-link
+      >
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router' // Import useRouter
-// Import the specific function to fetch the user's items
-import { fetchMyItems } from '@/services/ItemService'
-import type { ItemPreviewType } from '@/models/Item'
+import { useRouter } from 'vue-router'
+import { fetchMyPagedItems } from '@/services/ItemService'
+import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item'
 
-const router = useRouter() // Initialize router
+const router = useRouter()
 const userItems = ref<ItemPreviewType[]>([])
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 
-// Function to fetch items listed by the logged-in user
+const page = ref(0)
+const size = 20 // Adjust as needed
+const sort = 'publishedAt,desc'
+
 async function loadUserItems() {
   isLoading.value = true
   error.value = null
   try {
-    console.log('Fetching logged-in user items...')
-    userItems.value = await fetchMyItems()
+    console.log('Fetching paginated items for user...')
+    const response: PaginatedItemPreviewResponse = await fetchMyPagedItems(
+      page.value,
+      size,
+      sort
+    )
+    userItems.value = response.content
     console.log('User items fetched:', userItems.value.length)
   } catch (err: any) {
     console.error('Failed to load user items:', err)
     if (err.response?.status === 401 || err.response?.status === 403) {
       error.value = 'Authentication error. Please log in again.'
-      // router.push('/login'); // Optional: Redirect
     } else {
       error.value = 'Could not load your items. Please try again later.'
     }
@@ -65,25 +80,20 @@ async function loadUserItems() {
   }
 }
 
-// Handle cases where an image fails to load
 function handleImageError(event: Event) {
   const imgElement = event.target as HTMLImageElement
   imgElement.src = '/placeholder-image.png'
 }
 
-// Function to format price
 function formatPrice(price: number | null | undefined): string {
-  if (price === null || price === undefined) return 'N/A';
-  return price.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' });
+  if (price === null || price === undefined) return 'N/A'
+  return price.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })
 }
 
-// Function to navigate to the item management page (NEW)
-function navigateToManageItem(itemId: string | number) { // <-- Updated function name
-  // Navigate to the new route 'manage-my-item'
-  router.push({ name: 'manage-my-item', params: { id: itemId } });
+function navigateToManageItem(itemId: string | number) {
+  router.push({ name: 'manage-my-item', params: { id: itemId } })
 }
 
-// Fetch items when the component is mounted
 onMounted(() => {
   loadUserItems()
 })
@@ -105,7 +115,7 @@ onMounted(() => {
 }
 
 .error-message p {
-  color: red; /* Or use a specific error color variable */
+  color: red;
   font-weight: bold;
 }
 
@@ -165,7 +175,7 @@ onMounted(() => {
   font-size: 1rem;
 }
 
-.no-items-message .create-listing-link { /* Style the link */
+.no-items-message .create-listing-link {
   display: inline-block;
   margin-top: 1rem;
   padding: 0.6rem 1.2rem;

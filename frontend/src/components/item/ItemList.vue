@@ -16,8 +16,8 @@
       <p>{{ emptyMessage }}</p>
     </div>
 
-    <!-- Pagination controls - only show if pagination is enabled -->
-    <div v-if="paginationEnabled && items.length > 0 && totalPages > 1" class="pagination-controls">
+    <!-- Pagination controls -->
+    <div v-if="items.length > 0 && totalPages > 1" class="pagination-controls">
       <button
         :disabled="currentPage <= 1"
         @click="changePage(currentPage - 1)"
@@ -34,97 +34,79 @@
         Next
       </button>
     </div>
-
-    <div v-if="loading && items.length > 0" class="loading-more">
-      Loading more items...
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue';
-import ItemPreview from '@/components/item/ItemPreview.vue';
-import type { ItemPreviewType } from '@/models/Item';
+import { ref, onMounted, watch } from 'vue'
+import ItemPreview from '@/components/item/ItemPreview.vue'
+import { fetchPagedPreviewItems, fetchPagedPreviewItemsByCategory } from '@/services/ItemService'
+import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item'
 
-const props = defineProps({
-  fetchFunction: {
-    type: Function,
-    required: true
-  },
-  fetchParams: {
-    type: Array,
-    default: () => []
-  },
-  emptyMessage: {
-    type: String,
-    default: 'No items available'
-  },
-  pageSize: {
-    type: Number,
-    default: 10
-  },
-  paginationEnabled: {
-    type: Boolean,
-    default: true
-  }
-});
+const props = defineProps<{
+  categoryId: string | null
+  pageSize: number
+  emptyMessage?: string
+  fetchFunction?: (
+    page: number,
+    size: number,
+    sort?: string,
+  ) => Promise<PaginatedItemPreviewResponse>
+}>()
 
-const items = ref<ItemPreviewType[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
-const currentPage = ref(1);
-const totalItems = ref(0);
-const totalPages = computed(() =>
-  Math.ceil(totalItems.value / props.pageSize)
-);
+const items = ref<ItemPreviewType[]>([])
+const currentPage = ref(1)
+const totalPages = ref(0)
+const totalItems = ref(0)
+const loading = ref(true)
+const error = ref<string | null>(null)
 
 async function loadItems() {
-  loading.value = true;
-  error.value = null;
+  loading.value = true
+  error.value = null
 
   try {
-    let response;
+    let response: PaginatedItemPreviewResponse
 
-    if (props.paginationEnabled) {
-      // Append pagination parameters to the fetch params
-      const paginatedParams = [...props.fetchParams, currentPage.value, props.pageSize];
-      response = await props.fetchFunction(...paginatedParams);
+    if (props.fetchFunction) {
+      response = await props.fetchFunction(currentPage.value - 1, props.pageSize)
+    } else if (props.categoryId) {
+      response = await fetchPagedPreviewItemsByCategory(
+        props.categoryId,
+        currentPage.value - 1,
+        props.pageSize,
+      )
     } else {
-      // Call without pagination parameters
-      response = await props.fetchFunction(...props.fetchParams);
+      response = await fetchPagedPreviewItems(currentPage.value - 1, props.pageSize)
     }
 
-    // Handle different response structures
-    if (response.items && response.totalItems !== undefined) {
-      // Paginated response structure
-      items.value = response.items;
-      totalItems.value = response.totalItems;
-    } else if (Array.isArray(response)) {
-      // Array response (non-paginated)
-      items.value = response;
-      totalItems.value = response.length;
-    } else {
-      items.value = [];
-      error.value = "Invalid response format";
-    }
+    items.value = response.content
+    totalItems.value = response.totalElements
+    totalPages.value = response.totalPages
   } catch (err) {
-    console.error("Failed to load items:", err);
-    error.value = "Could not load items. Please try again later.";
-    items.value = [];
+    error.value = 'Failed to load items.'
+    console.error(err)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
-function changePage(newPage: number) {
-  if (newPage >= 1 && newPage <= totalPages.value) {
-    currentPage.value = newPage;
-    loadItems();
+function changePage(page: number) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
   }
 }
 
-onMounted(loadItems);
-watch(() => props.fetchParams, loadItems, { deep: true });
+watch(currentPage, loadItems)
+watch(
+  () => props.categoryId,
+  () => {
+    currentPage.value = 1
+    loadItems()
+  },
+)
+
+onMounted(loadItems)
 </script>
 
 <style scoped>
@@ -134,16 +116,9 @@ watch(() => props.fetchParams, loadItems, { deep: true });
 
 .loading-indicator,
 .error-message,
-.no-items-message,
-.loading-more {
+.no-items-message {
   text-align: center;
   margin: 2rem 0;
-  color: var(--color-text);
-}
-
-.error-message p {
-  color: red;
-  font-weight: bold;
 }
 
 .items-container {

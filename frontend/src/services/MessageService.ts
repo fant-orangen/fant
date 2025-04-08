@@ -1,4 +1,4 @@
-import type { Message, ConversationPreview } from '@/models/Message'
+import type { Message, ConversationPreview, PaginatedMessageResponse } from '@/models/Message'
 import api from '@/services/api/axiosInstance' // Keep using axios instance
 import { webSocketService } from '@/services/WebSocketService'
 import { fetchCurrentUserId } from '@/services/UserService.ts'
@@ -11,7 +11,6 @@ import { useUserStore } from '@/stores/UserStore.ts'
 // Change this ID to view conversations from a different perspective in your dummy data
 //const DUMMY_USER_ID = '1'
 //const DUMMY_USERNAME = 'alice' // Match the dummy data
-
 
 /**
  * Initialize WebSocket connection
@@ -52,7 +51,7 @@ export async function fetchConversations(): Promise<ConversationPreview[]> {
 
 /**
  * Fetches all messages related to a specific item.
- *
+ * TODO: remove this function when we know it's not needed
  * @param itemId - The ID of the item to fetch messages for
  * @returns A promise that resolves to an array of messages
  * @throws {Error} If the request fails
@@ -62,12 +61,14 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
     const response = await api.get<Message[]>('/messaging/messages', {
       params: { itemId },
     })
-    const messages = response.data.map(message => ({
+    const messages = response.data.map((message) => ({
       ...message,
-      sentDate: new Date(message.sentDate)
+      sentDate: new Date(message.sentDate),
     }))
-    const unreadMessages = messages.filter(message => !message.isRead)
-    console.log(`Fetched ${messages.length} messages for itemId: ${itemId}. Unread: ${unreadMessages.length}`)
+    const unreadMessages = messages.filter((message) => !message.isRead)
+    console.log(
+      `Fetched ${messages.length} messages for itemId: ${itemId}. Unread: ${unreadMessages.length}`,
+    )
 
     // Transform dates from strings to Date objects
     return response.data.map((message) => ({
@@ -77,6 +78,33 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
   } catch (error) {
     console.error('Error fetching messages for item:', error)
     throw error
+  }
+}
+
+export async function fetchPagedMessages(
+  itemId: string | number,
+  page: number,
+  size: number,
+  sort: string = 'sentAt,desc' // ✅ use the actual entity field name
+): Promise<PaginatedMessageResponse> {
+  try {
+    const params: any = { itemId, page, size, sort };
+
+    const response = await api.get<PaginatedMessageResponse>('/messaging/messages', { params });
+
+    const paginated = {
+      ...response.data,
+      content: response.data.content.map((msg) => ({
+        ...msg,
+        sentDate: new Date(msg.sentDate),
+      })),
+    };
+
+    console.log(`Fetched page ${page} of messages for itemId: ${itemId}`);
+    return paginated;
+  } catch (error) {
+    console.error('Error fetching paginated messages:', error);
+    throw error;
   }
 }
 
@@ -92,27 +120,23 @@ export async function fetchMessages(itemId: string | number): Promise<Message[]>
 export async function readMessages(messages: Message[]): Promise<void> {
   try {
     // Get current user ID to know which messages are "to me"
-    const currentUserId = useUserStore().getUserId;
-    console.log("Current id: " + currentUserId)
+    const currentUserId = useUserStore().getUserId
+    console.log('Current id: ' + currentUserId)
 
     // Filter for unread messages where the current user is the recipient
     // Use the isRead property from the Message interface
     const unreadMessageIds = messages
-      .filter(
-        (message) =>
-          message.receiver.id === currentUserId &&
-          !message.isRead
-      )
-      .map((message) => message.id);
+      .filter((message) => message.receiver.id === currentUserId && !message.isRead)
+      .map((message) => message.id)
 
     // Only make the API call if there are unread messages
     if (unreadMessageIds.length > 0) {
       // Send the array of IDs to be marked as read
-      await api.post('/messaging/readall', { messageIds: unreadMessageIds });
+      await api.post('/messaging/readall', { messageIds: unreadMessageIds })
     }
   } catch (error) {
-    console.error('Error marking messages as read:', error);
-    throw error;
+    console.error('Error marking messages as read:', error)
+    throw error
   }
 }
 
@@ -180,24 +204,26 @@ export async function initiateConversation(itemId: string | number): Promise<num
   try {
     // The backend endpoint expects itemId as a request parameter
     const response = await api.post<{ conversationId: number | string }>(
-        '/messaging/conversations/initiate',
-        null, // No request body needed for POST if using params
-        {
-          params: { itemId } // Send itemId as a query parameter
-        }
-    );
+      '/messaging/conversations/initiate',
+      null, // No request body needed for POST if using params
+      {
+        params: { itemId }, // Send itemId as a query parameter
+      },
+    )
 
     // Check if the response contains the expected data
     if (response.data && response.data.conversationId) {
-      console.log(`Backend initiated/found conversation with identifier: ${response.data.conversationId}`);
-      return response.data.conversationId;
+      console.log(
+        `Backend initiated/found conversation with identifier: ${response.data.conversationId}`,
+      )
+      return response.data.conversationId
     } else {
-      throw new Error('Invalid response received from initiate conversation endpoint.');
+      throw new Error('Invalid response received from initiate conversation endpoint.')
     }
   } catch (error) {
-    console.error('Error initiating conversation via backend:', error);
+    console.error('Error initiating conversation via backend:', error)
     // Rethrow the error so the component can handle it (e.g., show an alert)
-    throw error;
+    throw error
   }
 }
 
@@ -220,5 +246,3 @@ export function removeMessageHandler(handler: (message: Message) => void): void 
 export function cleanupMessaging(): void {
   webSocketService.disconnect()
 }
-
-

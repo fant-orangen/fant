@@ -89,4 +89,15 @@ export interface BidResponseType {
   updatedAt: string;
 }
 
+export interface PaginatedBidResponse {
+  content: BidResponseType[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
 

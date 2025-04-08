@@ -8,6 +8,18 @@ export interface ItemPreviewType {
   longitude?: number;
 }
 
+export interface PaginatedItemPreviewResponse {
+  content: ItemPreviewType[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+
 export interface ItemDetailsType {
   id: string | number;
   title: string;

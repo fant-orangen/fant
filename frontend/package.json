@@ -19,6 +19,7 @@
   "dependencies": {
     "@stomp/stompjs": "^7.1.1",
     "@types/leaflet": "^1.9.17",
+    "cloudinary": "^2.6.0",
     "leaflet": "^1.9.4",
     "pinia": "^3.0.1",
     "sockjs-client": "^1.6.1",

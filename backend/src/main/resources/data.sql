@@ -85,35 +85,35 @@ VALUES (2, 2, 'Diskotek', 'Selger gammelt diskotek; familiebusiness.', 9000000.0
 
 -- Insert mock images for item 2 (Lambi Deluxe)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (2, 'https://i.ibb.co/wrBBYXmw/lambi.jpg', 0);
+VALUES (2, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050388/lambi_l19hef.jpg', 0);
 
 -- Insert mock images for item 3 (Mills Majones)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (3, 'https://i.ibb.co/VYxptvrF/mills.jpg', 0);
+VALUES (3, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050389/mills_lkbae2.jpg', 0);
 
 -- Insert mock images for item 4 (Ny bil!!!!)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (4, 'https://i.ibb.co/FkRNqvG3/lambo.jpg', 0);
+VALUES (4, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050389/lambo_tjlhrf.jpg', 0);
 
 -- Insert mock images for item 5 (Vaskepulver med jordbærsmak)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (5, 'https://i.ibb.co/HfHbnGNs/vaskepulver.webp', 0);
+VALUES (5, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050389/vaskepulver_djpggn.webp', 0);
 
 -- Insert mock images for item 6 (Dinosaurkjæledyr)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (6, 'https://i.ibb.co/h1922gsJ/velociraptor.webp', 0);
+VALUES (6, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050389/velociraptor_njtom5.webp', 0);
 
 -- Insert mock images for item 7 (Femten planker)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (7, 'https://i.ibb.co/Y5mZ4DJ/15-planks.jpg', 0);
+VALUES (7, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050389/15_planks_plych1.jpg', 0);
 
 -- Insert mock images for item 8 (Bringebærsyltetøy)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (8, 'https://i.ibb.co/ktPs8NS/syltetoy.png', 0);
+VALUES (8, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050389/syltetoy_vtpn8w.png', 0);
 
 -- Insert mock images for item 9 (Diskotek)
 INSERT INTO item_images (item_id, image_url, position)
-VALUES (9, 'https://i.ibb.co/HTFJ6ky9/discoteque.jpg', 0);
+VALUES (9, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744050389/discoteque_oxmg4h.jpg', 0);
 
 -- Inserts for mock conversation history
 -- Example 1: Using DATEADD function for H2 compatibility
