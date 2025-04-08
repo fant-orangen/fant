@@ -6,6 +6,8 @@ import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -92,11 +94,8 @@ public class ItemController {
    * @return list of {@link ItemPreviewDto}
    */
   @GetMapping("/all")
-  public ResponseEntity<List<ItemPreviewDto>> getAllItems() {
-    logger.info("Received request to get all items");
-    List<ItemPreviewDto> items = itemService.getAllItemPreviews();
-    logger.info("Returning {} items", items.size());
-    return ResponseEntity.ok(items);
+  public ResponseEntity<Page<ItemPreviewDto>> getAllItems(Pageable pageable) {
+    return ResponseEntity.ok(itemService.getAllItemPreviews(pageable));
   }
 
   /**
@@ -122,12 +121,9 @@ public class ItemController {
    * @return list of {@link ItemPreviewDto} in the category
    */
   @GetMapping("/category/{categoryId}")
-  public ResponseEntity<List<ItemPreviewDto>> getItemsByCategory(
-      @Positive @PathVariable Long categoryId) {
-    logger.info("Received request for items in category ID: {}", categoryId);
-    List<ItemPreviewDto> items = itemService.getItemsByCategoryId(categoryId);
-    logger.info("Returning {} items for category ID: {}", items.size(), categoryId);
-    return ResponseEntity.ok(items);
+  public ResponseEntity<Page<ItemPreviewDto>> getItemsByCategory(
+      @Positive @PathVariable Long categoryId, Pageable pageable) {
+    return ResponseEntity.ok(itemService.getItemsByCategoryId(categoryId, pageable));
   }
 
   /**
@@ -138,16 +134,13 @@ public class ItemController {
    * @return list of {@link ItemPreviewDto} listed by the user
    */
   @GetMapping("/my")
-  public ResponseEntity<List<ItemPreviewDto>> getMyItems(Principal principal) {
-    logger.info("Received request to get items for the current user");
+  public ResponseEntity<Page<ItemPreviewDto>> getMyItems(Principal principal, Pageable pageable) {
     // Use the imported User class here
     User currentUser = userService.getCurrentUser(principal);
-    List<ItemPreviewDto> items = itemService.getItemsBySellerId(currentUser.getId());
+    Page<ItemPreviewDto> items = itemService.getItemsBySellerId(currentUser.getId(), pageable);
     // Use the declared logger variable here
-    logger.info("Returning {} items for user ID: {}", items.size(), currentUser.getId());
     return ResponseEntity.ok(items);
   }
-
 
   /**
    * <h3>Record Item View</h3>

@@ -3,8 +3,6 @@ package stud.ntnu.backend.controller;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,8 +46,8 @@ public class CategoryController {
    *
    * @return list of all {@link Category} entities
    */
-  @GetMapping
-  public ResponseEntity<Page<Category>> getAllCategories(Pageable pageable) {
-    return ResponseEntity.ok(categoryService.getAll(pageable));
+  @GetMapping("/all")
+  public ResponseEntity<List<Category>> getAllCategories() {
+    return ResponseEntity.ok(categoryService.getAll());
   }
 }

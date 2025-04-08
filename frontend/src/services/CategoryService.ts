@@ -2,7 +2,7 @@ import api from '@/services/api/axiosInstance.ts';
 import type { Category } from '@/models/Category.ts';
 
 export async function fetchCategories(): Promise<Category[]> {
-  const response = await api.get<Category[]>('/category');
+  const response = await api.get<Category[]>('/category/all');
   console.log("inside the fetch categories:", response.data);
   return response.data;
 }
