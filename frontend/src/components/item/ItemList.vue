@@ -1,320 +1,217 @@
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { Category } from '@/models/Category';
-import CategoryButton from "@/components/category/CategoryButton.vue";
-import { fetchCategories } from '@/services/CategoryService.ts';
-
-const { t } = useI18n();
-
-import travelIcon from '@/assets/icons/travelIcon.svg';
-import applianceIcon from '@/assets/icons/applianceIcon.svg';
-import boatIcon from '@/assets/icons/boatIcon.svg';
-import bookIcon from '@/assets/icons/bookIcon.svg';
-import cameraIcon from '@/assets/icons/cameraIcon.svg';
-import carIcon from '@/assets/icons/carIcon.svg';
-import clothesIcon from '@/assets/icons/clothesIcon.svg';
-import computerIcon from '@/assets/icons/computerIcon.svg';
-import furnitureIcon from '@/assets/icons/furnitureIcon.svg';
-import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
-import phoneIcon from '@/assets/icons/phoneIcon.svg';
-import artIcon from '@/assets/icons/artIcon.svg';
-
-const props = defineProps<{
-  layout?: 'vertical' | 'grid' | 'horizontal',
-  selectedCategoryId?: string | null
-}>();
-
-const isVertical = computed(() => props.layout === 'vertical');
-const isHorizontal = computed(() => props.layout === 'horizontal' || !props.layout);
-
-const categories = ref<Category[]>([]);
-const emit = defineEmits<{
-  select: [categoryId: string]
-}>();
-
-const iconMap: Record<string, string> = {
-  Travel: travelIcon,
-  Appliance: applianceIcon,
-  Boat: boatIcon,
-  Book: bookIcon,
-  Camera: cameraIcon,
-  Car: carIcon,
-  Clothes: clothesIcon,
-  Computer: computerIcon,
-  Furniture: furnitureIcon,
-  Motorcycle: motorcycleIcon,
-  Phone: phoneIcon,
-  Art: artIcon,
-};
-
-const translationKeyMap: Record<string, string> = {
-  'Travel': 'category.travel',
-  'Appliance': 'category.appliance',
-  'Boat': 'category.boat',
-  'Book': 'category.book',
-  'Camera': 'category.cameras',
-  'Car': 'category.cars',
-  'Clothes': 'category.clothes',
-  'Computer': 'category.computers',
-  'Furniture': 'category.furniture',
-  'Motorcycle': 'category.motorcycle',
-  'Phone': 'category.phone',
-  'Art': 'category.art'
-};
-
-const getAllCategoryIcon = () => {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="3" width="7" height="7" rx="1" />
-    <rect x="14" y="3" width="7" height="7" rx="1" />
-    <rect x="3" y="14" width="7" height="7" rx="1" />
-    <rect x="14" y="14" width="7" height="7" rx="1" />
-  </svg>`;
-};
-
-async function loadCategories() {
-  try {
-    categories.value = await fetchCategories();
-
-    categories.value.forEach(category => {
-      let resolvedIcon;
-
-      if (category.imageUrl && category.imageUrl.startsWith('http')) {
-        resolvedIcon = category.imageUrl;
-      } else {
-        const matchedIconKey = Object.keys(iconMap).find(key =>
-          key.toLowerCase() === (category.imageUrl || '').toLowerCase()
-        );
-        resolvedIcon = matchedIconKey ? iconMap[matchedIconKey] : '/fallback-icon.png';
-      }
-      category.imageUrl = resolvedIcon;
-
-      if (category.name && translationKeyMap[category.name]) {
-        category.translationKey = translationKeyMap[category.name];
-      }
-    });
-  } catch (error) {
-    console.error("Error loading categories:", error);
-  }
-}
-
-function handleCategoryClick(id: string) {
-  emit('select', id);
-}
-
-function showAllItems() {
-  emit('select', '');
-}
-
-onMounted(loadCategories);
-</script>
-
 <template>
-  <div :class="[
-    isVertical ? 'category-list' :
-    isHorizontal ? 'category-row' : 'category-grid'
-  ]">
-    <div
-      class="category-wrapper"
-      @click="showAllItems"
-    >
-      <button
-        class="all-categories-button"
-        :class="{
-          'active': !selectedCategoryId,
-          'compact': isVertical
-        }"
-      >
-        <span class="category-icon all-icon" v-html="getAllCategoryIcon()"></span>
-        <span class="category-label">{{ t('category.allItems') }}</span>
-      </button>
+  <div class="item-list-container">
+    <div v-if="loading && items.length === 0" class="loading-indicator">
+      <p>Loading items...</p>
     </div>
 
-    <div
-      v-for="category in categories"
-      :key="category.id?.toString() || `temp-${Math.random()}`"
-      class="category-wrapper"
-      @click="handleCategoryClick(category.id?.toString() || '')"
-    >
-      <CategoryButton
-        :label="category.translationKey ? t(category.translationKey) : category.name"
-        :icon="category.imageUrl"
-        :compact="isVertical"
-        :active="selectedCategoryId === category.id?.toString()"
-      />
+    <div v-else-if="error" class="error-message">
+      <p>{{ error }}</p>
+    </div>
+
+    <div v-else-if="items.length > 0" class="items-container">
+      <ItemPreview v-for="item in items" :key="item.id" :item="item" />
+    </div>
+
+    <div v-else class="no-items-message">
+      <p>{{ emptyMessage }}</p>
+    </div>
+
+    <div v-if="items.length > 0 && totalPages > 1" class="pagination-controls">
+      <button
+        :disabled="currentPage <= 1"
+        @click="changePage(currentPage - 1)"
+        class="pagination-button"
+      >
+        Previous
+      </button>
+      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        :disabled="currentPage >= totalPages"
+        @click="changePage(currentPage + 1)"
+        class="pagination-button"
+      >
+        Next
+      </button>
     </div>
   </div>
 </template>
 
+<script setup lang="ts">
+import { ref, onMounted, watch } from 'vue'
+import ItemPreview from '@/components/item/ItemPreview.vue' // Ensure ItemPreview is correctly imported
+import { fetchPagedPreviewItems, fetchPagedPreviewItemsByCategory } from '@/services/ItemService'
+import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item'
+
+const props = defineProps<{
+  categoryId: string | null
+  pageSize: number
+  emptyMessage?: string
+  paginationEnabled?: boolean // Added prop to explicitly enable/disable pagination controls if needed
+  // Removed fetchFunction prop as it wasn't used in HomeView and complicates standard usage
+}>()
+
+const items = ref<ItemPreviewType[]>([])
+const currentPage = ref(1)
+const totalPages = ref(0)
+const totalItems = ref(0)
+const loading = ref(true)
+const error = ref<string | null>(null)
+
+async function loadItems() {
+  loading.value = true
+  error.value = null
+
+  try {
+    let response: PaginatedItemPreviewResponse
+
+    // Use categoryId prop to determine which API function to call
+    if (props.categoryId) {
+      response = await fetchPagedPreviewItemsByCategory(
+        props.categoryId,
+        currentPage.value - 1, // API uses 0-based index
+        props.pageSize,
+      )
+    } else {
+      // No categoryId means fetch all items
+      response = await fetchPagedPreviewItems(
+        currentPage.value - 1, // API uses 0-based index
+        props.pageSize
+      )
+    }
+
+    items.value = response.content
+    totalItems.value = response.totalElements
+    totalPages.value = response.totalPages
+
+    // Handle cases where totalPages might be 0 from the API if no items exist
+    if (response.totalPages === 0 && response.totalElements === 0) {
+      totalPages.value = 1; // Treat as 1 page if empty
+    } else {
+      totalPages.value = response.totalPages;
+    }
+
+  } catch (err) {
+    error.value = 'Failed to load items.'
+    console.error(err)
+    items.value = [] // Clear items on error
+    totalPages.value = 0
+    totalItems.value = 0
+
+  } finally {
+    loading.value = false
+  }
+}
+
+function changePage(page: number) {
+  // Ensure page stays within valid bounds (1 to totalPages)
+  const newPage = Math.max(1, Math.min(page, totalPages.value || 1));
+  if (newPage !== currentPage.value) {
+    currentPage.value = newPage;
+    // loadItems() will be called by the watcher
+  }
+}
+
+// Watch for changes in the current page and reload items
+watch(currentPage, loadItems)
+
+// Watch for changes in categoryId, reset to page 1, and reload
+watch(
+  () => props.categoryId,
+  (newCategoryId, oldCategoryId) => {
+    // Reset to page 1 only if the category actually changes
+    if (newCategoryId !== oldCategoryId) {
+      currentPage.value = 1;
+      // loadItems() is called immediately after page reset if page was not 1,
+      // or called here if page was already 1. To avoid double call, only call if page didn't change.
+      if (currentPage.value === 1) {
+        loadItems();
+      }
+    }
+  },
+  { immediate: false } // Don't run immediately on mount, let onMounted handle initial load
+)
+
+// Initial load when the component mounts
+onMounted(loadItems)
+</script>
+
 <style scoped>
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.category-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.item-list-container {
   width: 100%;
 }
 
-.category-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  padding: 0.5rem 0;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.category-row::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-.category-wrapper {
-  flex-shrink: 0;
-  min-width: 90px;
-  cursor: pointer;
-}
-
-.all-categories-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-.all-categories-button:hover {
-  background-color: #f0f0f0;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.all-categories-button.active {
-  background-color: #e0f2fe;
-  border-color: #93c5fd;
-}
-
-.all-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 0.5rem;
-  color: #4b5563;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.all-icon :deep(svg) {
-  width: 32px;
-  height: 32px;
-}
-
-.all-categories-button.compact {
-  flex-direction: row;
-  justify-content: flex-start;
-  padding: 0.5rem 0.75rem;
-}
-
-.all-categories-button.compact .all-icon {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 0;
-  margin-right: 0.5rem;
-}
-
-.all-categories-button.compact .all-icon :deep(svg) {
-  width: 18px;
-  height: 18px;
-}
-
-.category-label {
-  font-size: 0.9rem;
-  font-weight: 500;
+.loading-indicator,
+.error-message,
+.no-items-message {
   text-align: center;
+  margin: 2rem 0;
+  color: var(--color-text); /* Ensure text is visible */
 }
 
-@media (max-width: 768px) {
-  .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 0.75rem;
-  }
+.items-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Default: 4 columns */
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
 
-  .category-row {
-    gap: 0.75rem;
-  }
-
-  .category-wrapper {
-    min-width: 80px;
-  }
-
-  .all-categories-button {
-    padding: 0.8rem;
-  }
-
-  .all-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .all-icon :deep(svg) {
-    width: 26px;
-    height: 26px;
-  }
-
-  .category-label {
-    font-size: 0.85rem;
+/* Responsive adjustments for grid columns */
+@media (max-width: 1200px) {
+  .items-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
   }
 }
 
-@media (max-width: 480px) {
-  .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 0.5rem;
+@media (max-width: 900px) {
+  .items-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
   }
+}
 
-  .category-row {
-    gap: 0.5rem;
+@media (max-width: 600px) {
+  .items-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for small mobile */
+    gap: 1rem; /* Adjust gap for smaller screens */
   }
+}
 
-  .category-wrapper {
-    min-width: 70px;
-  }
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  padding-bottom: 1rem; /* Add padding at the bottom */
+  gap: 1rem;
+}
 
-  .all-categories-button {
-    padding: 0.7rem;
-  }
+.pagination-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
 
-  .all-icon {
-    width: 36px;
-    height: 36px;
-    margin-bottom: 0.4rem;
-  }
+.pagination-button:hover:not(:disabled) {
+  background-color: var(--color-background-mute);
+}
 
-  .all-icon :deep(svg) {
-    width: 24px;
-    height: 24px;
-  }
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-  .category-label {
-    font-size: 0.8rem;
-  }
+.page-info {
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+/* Add default variables if not globally defined */
+:root {
+  --color-text: #333;
+  --color-background-soft: #f9f9f9;
+  --color-background-mute: #f0f0f0;
+  --color-border: #ddd;
 }
 </style>
