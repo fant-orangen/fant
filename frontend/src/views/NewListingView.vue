@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import MarketListingFormComponent from '@/components/forms/MarketListingFormComponent.vue';
+import MarketListingFormComponent from '@/components/item/MarketListingFormComponent.vue';
 
 export default {
   components: {

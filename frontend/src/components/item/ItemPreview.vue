@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import type { ItemPreviewType } from '@/models/Item';
-import HeartIcon from '@/components/toggle/HeartIcon.vue';
+import HeartIcon from '@/components/item/HeartIcon.vue';
 import router from "@/router"; //
 
 const props = defineProps<{ item: ItemPreviewType }>();
