@@ -17,11 +17,13 @@ import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.item.ItemCreateDto;
 import stud.ntnu.backend.data.item.ItemDetailsDto;
 import stud.ntnu.backend.data.item.ItemPreviewDto;
+import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.Favorite;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.ItemImage;
 import stud.ntnu.backend.model.ItemView;
 import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.repository.CategoryRepository;
 import stud.ntnu.backend.repository.FavoriteRepository;
 import stud.ntnu.backend.repository.ItemRepository;
 import stud.ntnu.backend.repository.ItemViewRepository;
@@ -53,16 +55,32 @@ public class ItemService {
   private final FavoriteRepository favoriteRepository;
 
   private final ModelMapper modelMapper;
+  private final CategoryRepository categoryRepository;
 
   @Transactional
   public ItemDetailsDto createItem(User seller, ItemCreateDto itemCreateDto) {
-    return mapToItemDetailsDto(itemRepository.save(fromCreateDto(seller, itemCreateDto)));
+    Category category = categoryRepository.findById(itemCreateDto.getCategoryId()).orElseThrow(
+        () -> new EntityNotFoundException(
+            "Category not found with id " + itemCreateDto.getCategoryId()));
+    Item item = modelMapper.map(itemCreateDto, Item.class);
+    item.setSeller(seller);
+    item.setCategory(category);
+    return mapToItemDetailsDto(itemRepository.save(item));
   }
 
   @Transactional
   public ItemDetailsDto updateItem(User seller, ItemCreateDto itemCreateDto, Long id) {
-    Item item = fromCreateDto(seller, itemCreateDto);
-    item.setId(id);
+    Item item = itemRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Item not found with id " + id));
+    if (!item.getSeller().equals(seller)) {
+      throw new BadCredentialsException("This is not your item!");
+    }
+    Category category = categoryRepository.findById(itemCreateDto.getCategoryId()).orElseThrow(
+        () -> new EntityNotFoundException(
+            "Category not found with id " + itemCreateDto.getCategoryId()));
+    modelMapper.map(itemCreateDto, item);
+    item.setSeller(seller);
+    item.setCategory(category);
     return mapToItemDetailsDto(itemRepository.save(item));
   }
 
@@ -144,7 +162,8 @@ public class ItemService {
     itemViewRepository.save(ItemView.builder().item(item).user(user).build());
   }
 
-  public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution, Pageable pageable) {
+  public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
+                                                     Pageable pageable) {
     int pageSize = pageable.getPageSize();
     int offset = (int) pageable.getOffset();
 
@@ -163,7 +182,8 @@ public class ItemService {
       return Page.empty(pageable);
     }
 
-    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, pageSize, random);
+    List<ItemPreviewDto> allItems =
+        selectRandomItems(categoryItemsMap, distribution, pageSize, random);
 
     // Apply pagination
     int end = Math.min(offset + pageSize, allItems.size());
@@ -275,12 +295,5 @@ public class ItemService {
     Page<Favorite> favoritesPage = favoriteRepository.findAllByUserId(userId, pageable);
 
     return favoritesPage.map(favorite -> mapToItemPreviewDto(favorite.getItem()));
-  }
-
-
-  private Item fromCreateDto(User seller, ItemCreateDto itemCreateDto) {
-    Item item = modelMapper.map(itemCreateDto, Item.class);
-    item.setSeller(seller);
-    return item;
   }
 }
