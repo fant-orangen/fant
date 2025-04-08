@@ -163,7 +163,7 @@ public class ItemService {
   }
 
   public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
-                                                     Pageable pageable) {
+      Pageable pageable) {
     int pageSize = pageable.getPageSize();
     int offset = (int) pageable.getOffset();
 
@@ -182,8 +182,8 @@ public class ItemService {
       return Page.empty(pageable);
     }
 
-    List<ItemPreviewDto> allItems =
-        selectRandomItems(categoryItemsMap, distribution, pageSize, random);
+    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, pageSize,
+        random);
 
     // Apply pagination
     int end = Math.min(offset + pageSize, allItems.size());
