@@ -10,6 +10,7 @@
     "REGISTRATION_NAVBAR": "Register",
     "REGISTRATION_ACCOUNT_QUESTION": "Do you have an account?",
     "ADMIN": "Admin",
+    "LOADING": "Laster...",
 
     "MY_ACCOUNT_TITLE": "My Account",
     "PROFILE_TILE_MY_ACCOUNT_TITLE": "Profile",
@@ -126,5 +127,8 @@
     "REJECTED": "Rejected",
     "NO_BIDS_PLACED": "You haven't placed any bids yet.",
     "CONFIRM_BID_DELETION": "Confirm Bid Deletion",
-    "DELETE_BID": "Delete Bid"
+    "DELETE_BID": "Delete Bid",
+
+    "ERROR_SEARCHING": "An error occurred while searching.",
+    "SEARCH_PLACEHOLDER": "Search here"
 }

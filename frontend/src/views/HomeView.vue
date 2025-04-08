@@ -1,6 +1,7 @@
 <template>
   <section class="homepage">
     <CategoryGrid @select="onCategoryClick" />
+    <h1>Search Products</h1>
     <ItemList
       :fetchFunction="fetchItems"
       :fetchParams="[selectedCategoryId]"
@@ -12,8 +13,16 @@
 </template>
 
 <script setup lang="ts">
+
+/*
+<SearchField
+      :apiCall=
+      placeholder="Search for products..."
+    /> - add to html to add searchbar.
+ */
 import CategoryGrid from '@/components/category/categoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
+import SearchField from '@/components/input/SearchField.vue';
 import { ref, onMounted } from 'vue'
 import {
   fetchPreviewItemsByCategoryId,
