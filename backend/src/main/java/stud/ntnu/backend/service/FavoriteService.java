@@ -80,15 +80,4 @@ public class FavoriteService {
   public Long countByItemId(Long itemId) {
     return favoriteRepository.countByItemId(itemId);
   }
-
-  /**
-   * <h3>Convert to DTO</h3>
-   * <p>Maps a Favorite entity to its response DTO.</p>
-   *
-   * @param favorite the favorite entity to convert
-   * @return the mapped {@link FavoriteResponseDto}
-   */
-  public FavoriteResponseDto toDto(Favorite favorite) {
-    return new FavoriteResponseDto(favorite.getItem().getId(), favorite.getCreatedAt());
-  }
 }

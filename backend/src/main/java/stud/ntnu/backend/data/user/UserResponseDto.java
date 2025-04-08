@@ -3,6 +3,7 @@ package stud.ntnu.backend.data.user;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <h2>UserResponseDto</h2>
@@ -10,6 +11,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserResponseDto {
 
   /**
