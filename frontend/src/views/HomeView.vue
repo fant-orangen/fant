@@ -4,10 +4,10 @@
     <h1>Search Products</h1>
     <ItemList
       :fetchFunction="fetchItems"
-      :fetchParams="[selectedCategoryId]"
+      :fetchParams="[selectedCategoryId ?? null]"
       emptyMessage="No items found. Try selecting a category."
-      :pageSize="12"
-      :paginationEnabled="false"
+      :pageSize="2"
+      :paginationEnabled="true"
     />
   </section>
 </template>

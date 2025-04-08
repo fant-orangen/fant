@@ -4,8 +4,8 @@
       :fetchFunction="fetchItems"
       :fetchParams="[props.categoryId]"
       emptyMessage="No items found in this category."
-      :pageSize="12"
-      :paginationEnabled="false"
+      :pageSize="10"
+      :paginationEnabled="true"
     />
   </div>
 </template>

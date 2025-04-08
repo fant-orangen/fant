@@ -27,10 +27,31 @@ export async function fetchPreviewItems(): Promise<PaginatedItemPreviewResponse>
     const response = await api.get<PaginatedItemPreviewResponse>('/items/all') //
     console.log('url: ' + api.defaults.baseURL + '/items/all')
     console.log('Data:' + response.data.totalElements)
+    console.log('Items per page' + response.data.size)
     return response.data
   } catch (error) {
     console.error('Error fetching items:', error)
     throw error
+  }
+}
+
+/**
+ * Fetches a paginated set of item previews from the backend.
+ *
+ * @param page - The page index to fetch (0-based)
+ * @param size - The number of items per page
+ * @returns A promise resolving to a paginated response of item previews
+ * @throws Error if the request fails
+ */
+export async function fetchPagedPreviewItems(page: number, size: number): Promise<PaginatedItemPreviewResponse> {
+  try {
+    const response = await api.get<PaginatedItemPreviewResponse>(`/items/page?page=${page}&size=${size}`);
+    console.log('Requested page:', page, 'with size:', size);
+    console.log('Backend returned:', response.data.totalElements, 'total items, size:', response.data.size);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching paginated items:', error);
+    throw error;
   }
 }
 

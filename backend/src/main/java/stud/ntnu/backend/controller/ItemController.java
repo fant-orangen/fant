@@ -1,12 +1,14 @@
 package stud.ntnu.backend.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +65,8 @@ public class ItemController {
     logger.info("Received request to create item");
     User currentUser = userService.getCurrentUser(principal);
     ItemDetailsDto createdItem = itemService.createItem(currentUser, requestDto);
-    logger.info("Item created with ID: {}", createdItem.getId()); // TODO: simplify this code per the new requirements of just id
+    logger.info("Item created with ID: {}",
+        createdItem.getId()); // TODO: simplify this code per the new requirements of just id
     return ResponseEntity.status(HttpStatus.CREATED).body(createdItem.getId());
   }
 
@@ -85,6 +88,15 @@ public class ItemController {
     itemService.deleteItem(currentUser, id);
     logger.info("Item deleted successfully for ID: {}", id);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/page")
+  public ResponseEntity<Page<ItemPreviewDto>> getPagedItems(
+      @Min(0) int page,
+      @Positive int size) {
+    Pageable pageable = PageRequest.of(page, size); // Use the provided page and size
+    Page<ItemPreviewDto> pagedItems = itemService.getAllItemPreviews(pageable);
+    return ResponseEntity.ok(pagedItems);
   }
 
   /**
@@ -155,7 +167,8 @@ public class ItemController {
     logger.info("Received request to record view for item ID: {}", id);
     User currentUser = userService.getCurrentUser(principal);
     itemService.recordView(id, currentUser);
-    logger.info("View recorded successfully for item ID: {} by user ID: {}", id, currentUser.getId());
+    logger.info("View recorded successfully for item ID: {} by user ID: {}", id,
+        currentUser.getId());
     return ResponseEntity.noContent().build();
   }
 
@@ -170,7 +183,8 @@ public class ItemController {
   public ResponseEntity<List<ItemPreviewDto>> getRecommendedItems(
       @Valid @RequestBody RecommendedItemsRequestDto requestDto) {
     logger.info("Received request for recommended items with limit: {}", requestDto.getLimit());
-    List<ItemPreviewDto> items = itemService.getItemsByDistribution(requestDto.getDistribution(), requestDto.getLimit());
+    List<ItemPreviewDto> items = itemService.getItemsByDistribution(requestDto.getDistribution(),
+        requestDto.getLimit());
     logger.info("Returning {} recommended items", items.size());
     return ResponseEntity.ok(items);
   }
