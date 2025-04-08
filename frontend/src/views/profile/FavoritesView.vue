@@ -5,7 +5,7 @@
     <ItemList
       :fetchFunction="fetchFavoriteItems"
       emptyMessage="You haven't added any items to your favorites yet."
-      :pageSize="10"
+      :pageSize="5"
       :paginationEnabled="true"
     />
   </div>
