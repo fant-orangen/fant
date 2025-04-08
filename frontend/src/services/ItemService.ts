@@ -1,5 +1,11 @@
 import api from '@/services/api/axiosInstance' // [cite: uploaded:src/services/api/axiosInstance.ts]
-import type {ItemPreviewType, ItemDetailsType, CreateItemType, ItemFavoritesType} from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
+import type {
+  ItemPreviewType,
+  ItemDetailsType,
+  CreateItemType,
+  ItemFavoritesType,
+  PaginatedItemPreviewResponse
+} from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
 // Define an interface for the expected paginated response (needed by fetchFavoriteItems)
@@ -16,11 +22,11 @@ export async function createItem(item: CreateItemType): Promise< number> {
 }
 
 // Existing function to fetch all preview items (potentially needs pagination update too)
-export async function fetchPreviewItems(): Promise<ItemPreviewType[]> {
+export async function fetchPreviewItems(): Promise<PaginatedItemPreviewResponse> {
   try {
-    const response = await api.get<ItemPreviewType[]>('/items/all') //
+    const response = await api.get<PaginatedItemPreviewResponse>('/items/all') //
     console.log('url: ' + api.defaults.baseURL + '/items/all')
-    console.log('Data:' + response.data)
+    console.log('Data:' + response.data.totalElements)
     return response.data
   } catch (error) {
     console.error('Error fetching items:', error)
