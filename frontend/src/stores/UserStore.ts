@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { fetchToken } from '@/services/api/authService';
-import { register } from '@/services/api/userService';
+import { fetchToken } from '@/services/AuthService.ts';
+import { register } from '@/services/RegisterService.ts';
 import { computed, ref } from 'vue';
 import api from '@/services/api/axiosInstance';
 

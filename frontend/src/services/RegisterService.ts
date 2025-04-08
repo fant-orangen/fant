@@ -1,4 +1,4 @@
-import axiosInstance from '@/axiosConfig'
+import axiosInstance from '@/axiosConfig.ts'
 
 
 export async function register(userData: {

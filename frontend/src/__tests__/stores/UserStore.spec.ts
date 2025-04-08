@@ -27,9 +27,9 @@ describe('UserStore', () => {
     vi.resetAllMocks();
 
 
-    authService = await import('@/services/api/authService');
-    userService = await import('@/services/api/userService');
-    api = (await import('@/services/api/axiosInstance')).default; // Get the mocked default export
+    authService = await import('@/services/AuthService.ts');
+    userService = await import('@/services/RegisterService.ts');
+    api = (await import('@/services/api/axiosInstance.ts')).default; // Get the mocked default export
 
     const store = useUserStore();
     store.logout();

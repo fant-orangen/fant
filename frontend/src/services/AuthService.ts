@@ -1,4 +1,4 @@
-import axiosInstance from '@/axiosConfig';
+import axiosInstance from '@/axiosConfig.ts';
 
 export async function fetchToken({ username, password }: { username: string, password: string }) {
   console.log('Sending auth request with:', { email: username, password });

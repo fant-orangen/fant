@@ -108,8 +108,8 @@
 
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router'; // <-- Import useRouter
-import ImageGallery from '@/components/show/ImageGallery.vue';
-import HeartIcon from '@/components/toggle/HeartIcon.vue';
+import ImageGallery from '@/components/images/ImageGallery.vue';
+import HeartIcon from '@/components/item/HeartIcon.vue';
 import BidModal from '@/components/modals/BidModal.vue';
 import type { ItemDetailsType } from '@/models/Item'; // Ensure ItemDetailsType includes sellerId
 import { fetchItem, recordItemView } from '@/services/ItemService.ts';

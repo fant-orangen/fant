@@ -122,10 +122,10 @@ import TextInput from '@/components/input/TextInput.vue';
 import SelectInput from '@/components/input/SelectInput.vue';
 import FileInput from '@/components/input/FileInput.vue';
 import ClickSelectMap from '@/components/map/ClickSelectMap.vue';
-import { fetchCategories } from '@/services/CategoryService';
-import { createItem } from '@/services/ItemService';
-import type { CreateItemType } from '@/models/Item';
-import type { Category } from '@/models/Category';
+import { fetchCategories } from '@/services/CategoryService.ts';
+import { createItem } from '@/services/ItemService.ts';
+import type { CreateItemType } from '@/models/Item.ts';
+import type { Category } from '@/models/Category.ts';
 
 const formData = ref<CreateItemType>({
   categoryId: 0,

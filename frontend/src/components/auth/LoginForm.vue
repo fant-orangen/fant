@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/UserStore'
+import { useUserStore } from '@/stores/UserStore.ts'
 import { isAxiosError } from 'axios'
 import TextInput from '@/components/input/TextInput.vue'
 

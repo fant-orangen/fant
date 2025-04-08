@@ -3,11 +3,11 @@
 </template>
 
 <script lang="ts">
-import MarketListingFormComponent from '@/components/forms/MarketListingFormComponent.vue';
+import NewItemComponent from '@/components/item/NewItemComponent.vue';
 
 export default {
   components: {
-    MarketListingFormComponent,
+    MarketListingFormComponent: NewItemComponent,
   },
 };
 </script>

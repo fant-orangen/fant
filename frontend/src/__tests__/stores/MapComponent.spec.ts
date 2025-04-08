@@ -10,7 +10,7 @@ describe('MapComponent.vue', () => {
   let itemService;
 
   beforeEach(async () => {
-    itemService = await import('@/services/ItemService');
+    itemService = await import('@/services/ItemService.ts');
     itemService.fetchPreviewItems.mockClear();
   });
 
