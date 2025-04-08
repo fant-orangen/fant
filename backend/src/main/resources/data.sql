@@ -128,8 +128,61 @@ VALUES (2, 1, 3, 'Yes, it is! Are you interested in buying it?', DATEADD('HOUR',
 INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
 VALUES (1, 2, 3, 'I am! How fresh is it?', CURRENT_TIMESTAMP(), false);
 
+-- Message pagination test
+
 INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
-VALUES (3, 1, 5, 'Hi!', DATEADD('HOUR', -1, CURRENT_TIMESTAMP()), false);
+VALUES (3, 1, 5, 'Hi!', DATEADD('HOUR', -18, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (1, 3, 5, 'Hi?', DATEADD('HOUR', -17, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'I want you alice', DATEADD('HOUR', -16, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (1, 3, 5, 'Im taken', DATEADD('HOUR', -15, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'No. Im coming to your house tonight', DATEADD('HOUR', -14, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'You should look forward to it', DATEADD('HOUR', -13, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (1, 3, 5, 'Im going to call the police', DATEADD('HOUR', -12, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Do it', DATEADD('HOUR', -11, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Theyll never believe you', DATEADD('HOUR', -10, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'I think about you alice', DATEADD('HOUR', -9, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Every day', DATEADD('HOUR', -8, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Are you there?', DATEADD('HOUR', -7, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Dont ignore me alice', DATEADD('HOUR', -6, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'I know youre reading this', DATEADD('HOUR', -5, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Answer me!', DATEADD('HOUR', -4, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Alice please', DATEADD('HOUR', -3, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Ill die without you', DATEADD('HOUR', -2, CURRENT_TIMESTAMP()), false);
+
+INSERT INTO messages (sender_id, receiver_id, item_id, content, sent_at, `read`)
+VALUES (3, 1, 5, 'Alice', DATEADD('HOUR', -1, CURRENT_TIMESTAMP()), false);
 
 -- Place test bids
 -- Multiple bids on item 1
