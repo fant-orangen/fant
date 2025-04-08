@@ -1,5 +1,5 @@
 import { setActivePinia, createPinia } from "pinia";
-import { useUserStore } from '@/stores/UserStore.ts';
+import { useUserStore } from "@/stores/UserStore.ts"
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
 vi.mock('@/services/api/authService');
