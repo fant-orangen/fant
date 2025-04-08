@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import stud.ntnu.backend.filter.JwtAuthFilter;
+import stud.ntnu.backend.filter.LoggingFilter;
 
 /**
  * <h2>SecurityConfig</h2>
@@ -46,6 +47,8 @@ public class SecurityConfig {
    * @see JwtAuthFilter
    */
   private final JwtAuthFilter jwtAuthFilter;
+
+  private final LoggingFilter loggingFilter;
 
   /**
    * <h3>Password Encoder</h3>
@@ -118,7 +121,9 @@ public class SecurityConfig {
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
+
 
     http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
