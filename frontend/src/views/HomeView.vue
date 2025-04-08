@@ -1,9 +1,5 @@
 <template>
   <section class="homepage">
-    <SearchField
-      :apiCall="searchProductsApi"
-      placeholder="Search for products..."
-    />
     <CategoryGrid @select="onCategoryClick" />
     <h1>Search Products</h1>
     <ItemList
@@ -17,6 +13,13 @@
 </template>
 
 <script setup lang="ts">
+
+/*
+<SearchField
+      :apiCall=
+      placeholder="Search for products..."
+    /> - add to html to add searchbar.
+ */
 import CategoryGrid from '@/components/category/categoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
 import SearchField from '@/components/input/SearchField.vue';
