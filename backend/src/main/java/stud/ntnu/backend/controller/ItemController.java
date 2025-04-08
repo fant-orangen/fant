@@ -92,10 +92,7 @@ public class ItemController {
   }
 
   @GetMapping("/page")
-  public ResponseEntity<Page<ItemPreviewDto>> getPagedItems(
-      @Min(0) int page,
-      @Positive int size) {
-    Pageable pageable = PageRequest.of(page, size); // Use the provided page and size
+  public ResponseEntity<Page<ItemPreviewDto>> getPagedItems(Pageable pageable) {
     Page<ItemPreviewDto> pagedItems = itemService.getAllItemPreviews(pageable);
     return ResponseEntity.ok(pagedItems);
   }
@@ -129,9 +126,7 @@ public class ItemController {
   @GetMapping("/category/{categoryId}/page")
   public ResponseEntity<Page<ItemPreviewDto>> getPagedItemsByCategory(
       @Positive @PathVariable Long categoryId,
-      @Min(0) @RequestParam int page,
-      @Positive @RequestParam int size) {
-    Pageable pageable = PageRequest.of(page, size);
+      Pageable pageable) {
     Page<ItemPreviewDto> pagedItems = itemService.getItemsByCategoryId(categoryId, pageable);
     return ResponseEntity.ok(pagedItems);
   }

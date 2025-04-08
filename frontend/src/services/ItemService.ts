@@ -4,7 +4,7 @@ import type {
   ItemDetailsType,
   CreateItemType,
   ItemFavoritesType,
-  PaginatedItemPreviewResponse
+  PaginatedItemPreviewResponse,
 } from '@/models/Item' // [cite: uploaded:src/models/Item.ts] Adjusted import
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
@@ -14,11 +14,11 @@ export interface PaginatedItemsResponse {
   totalItems: number
 }
 
-export async function createItem(item: CreateItemType): Promise< number> {
-  console.log("before post", item);
-  const response = await api.post<number>('/items', item);
-  console.log("after post", response.data);
-  return response.data;
+export async function createItem(item: CreateItemType): Promise<number> {
+  console.log('before post', item)
+  const response = await api.post<number>('/items', item)
+  console.log('after post', response.data)
+  return response.data
 }
 
 // Existing function to fetch all preview items (potentially needs pagination update too)
@@ -40,42 +40,69 @@ export async function fetchPreviewItems(): Promise<PaginatedItemPreviewResponse>
  *
  * @param page - The page index to fetch (0-based)
  * @param size - The number of items per page
+ * @param sort
  * @returns A promise resolving to a paginated response of item previews
  * @throws Error if the request fails
  */
-export async function fetchPagedPreviewItems(page: number, size: number): Promise<PaginatedItemPreviewResponse> {
+export async function fetchPagedPreviewItems(
+  page: number,
+  size: number,
+  sort?: string,
+): Promise<PaginatedItemPreviewResponse> {
   try {
-    const response = await api.get<PaginatedItemPreviewResponse>(`/items/page?page=${page}&size=${size}`);
-    console.log('Requested page:', page, 'with size:', size);
-    console.log('Backend returned:', response.data.totalElements, 'total items, size:', response.data.size);
-    return response.data;
+    // Build query params
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+    })
+
+    if (sort) {
+      params.append('sort', sort) // e.g., "price,desc"
+    }
+
+    const response = await api.get<PaginatedItemPreviewResponse>(`/items/page?${params.toString()}`)
+
+    console.log('Requested page:', page, 'size:', size, 'sort:', sort)
+    return response.data
   } catch (error) {
-    console.error('Error fetching paginated items:', error);
-    throw error;
+    console.error('Error fetching paginated items:', error)
+    throw error
   }
 }
 
 /**
- * Fetches a paginated set of item previews for a specific category.
+ * Fetches a paginated set of item previews for a specific category, with optional sorting.
  *
  * @param categoryId - The category to filter by
  * @param page - Page index (0-based)
  * @param size - Number of items per page
+ * @param sort - Optional sort string, e.g. "price,desc"
  * @returns A promise resolving to a paginated response of item previews
  */
 export async function fetchPagedPreviewItemsByCategory(
   categoryId: string,
   page: number,
-  size: number
+  size: number,
+  sort?: string,
 ): Promise<PaginatedItemPreviewResponse> {
   try {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+    })
+
+    if (sort) {
+      params.append('sort', sort)
+    }
+
     const response = await api.get<PaginatedItemPreviewResponse>(
-      `/items/category/${categoryId}/page?page=${page}&size=${size}`
-    );
-    return response.data;
+      `/items/category/${categoryId}/page?${params.toString()}`,
+    )
+
+    return response.data
   } catch (error) {
-    console.error(`Error fetching paginated items for category ${categoryId}:`, error);
-    throw error;
+    console.error(`Error fetching paginated items for category ${categoryId}:`, error)
+    throw error
   }
 }
 
@@ -139,17 +166,17 @@ export async function fetchItemsByDistribution(
 export async function recordItemView(itemId: string | number): Promise<{ status: number }> {
   try {
     // Send the item ID to the backend and capture the response
-    const response = await api.post(`/items/view/post/${itemId}`);
-    console.log(`View recorded for item ${itemId}`);
+    const response = await api.post(`/items/view/post/${itemId}`)
+    console.log(`View recorded for item ${itemId}`)
 
     // Return the status code from the response
-    return { status: response.status };
+    return { status: response.status }
   } catch (error) {
     // Log the error but still return something to avoid disrupting UI flow
-    console.error(`Failed to record view for item ${itemId}:`, error);
+    console.error(`Failed to record view for item ${itemId}:`, error)
 
     // Generic error code if we couldn't get a proper status
-    return { status: 500 };
+    return { status: 500 }
   }
 }
 
@@ -158,23 +185,23 @@ export async function recordItemView(itemId: string | number): Promise<{ status:
  * @returns Promise that resolves to an array of favorite items
  */
 export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
-  console.log("on way to fetch fav items");
-  const { data: favorites } = await api.get<ItemFavoritesType[]>('/favorite');
-  console.log("items fetched fav")
+  console.log('on way to fetch fav items')
+  const { data: favorites } = await api.get<ItemFavoritesType[]>('/favorite')
+  console.log('items fetched fav')
 
-  const fullItems: ItemPreviewType[] = [];
+  const fullItems: ItemPreviewType[] = []
   for (const fav of favorites) {
     try {
-      console.log(fav);
-      console.log("hello:",fav.itemId);
-      const { data: item } = await api.get<ItemPreviewType>(`/items/details/${fav.itemId}`);
-      fullItems.push(item);
+      console.log(fav)
+      console.log('hello:', fav.itemId)
+      const { data: item } = await api.get<ItemPreviewType>(`/items/details/${fav.itemId}`)
+      fullItems.push(item)
     } catch (error) {
-      console.error(`Error fetching item details for ID ${fav.itemId}:`, error);
+      console.error(`Error fetching item details for ID ${fav.itemId}:`, error)
     }
   }
 
-  return fullItems;
+  return fullItems
 }
 
 /**
@@ -182,12 +209,13 @@ export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
  * Requires the user to be logged in.
  * @returns A Promise resolving to an array of the user's items.
  */
-export async function fetchMyItems(): Promise<ItemPreviewType[]> { // <-- Add this function
+export async function fetchMyItems(): Promise<ItemPreviewType[]> {
+  // <-- Add this function
   try {
-    const response = await api.get<ItemPreviewType[]>('/items/my');
-    return response.data;
+    const response = await api.get<ItemPreviewType[]>('/items/my')
+    return response.data
   } catch (error) {
-    console.error('Error fetching logged-in user\'s items:', error);
-    throw error; // Re-throw the error to be caught by the component
+    console.error("Error fetching logged-in user's items:", error)
+    throw error // Re-throw the error to be caught by the component
   }
 }
