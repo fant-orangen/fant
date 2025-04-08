@@ -3,7 +3,7 @@
     <h2>{{ $t('MY_BIDS_TITLE') }}</h2>
 
     <div v-if="isLoading" class="loading-indicator">
-      <p>{{ $t('LOADING_BIDS') }}</p>
+      <p>Loading your bids...</p>
     </div>
 
     <div v-else-if="error" class="error-message">
@@ -11,35 +11,81 @@
     </div>
 
     <div v-else-if="myBids.length > 0" class="bids-list">
-      <div v-for="bid in sortedBids" :key="bid.id" class="bid-card-my" :class="`bid-status-${bid.status.toLowerCase()}`">
+      <div
+        v-for="bid in myBids"
+        :key="bid.id"
+        class="bid-card-my"
+        :class="`bid-status-${bid.status.toLowerCase()}`"
+      >
         <div class="bid-details">
           <p>
-            <span>{{ $t('ON_ITEM') }}: </span>
-            <router-link :to="{ name: 'item-detail', params: { id: bid.itemId } }" class="item-link">
-              {{ getItemTitle(bid.itemId) || `${$t('ITEM')} #${bid.itemId}` }}
+            <span>On item: </span>
+            <router-link
+              :to="{ name: 'item-detail', params: { id: bid.itemId } }"
+              class="item-link"
+            >
+              {{ getItemTitle(bid.itemId) || `Item #${bid.itemId}` }}
             </router-link>
           </p>
-          <p><strong>{{ $t('YOUR_BID_AMOUNT') }}:</strong> {{ formatPrice(bid.amount) }}</p>
-          <p v-if="bid.comment"><strong>{{ $t('YOUR_COMMENT') }}:</strong> {{ bid.comment }}</p>
-          <p><strong>{{ $t('STATUS') }}:</strong> <span class="bid-status-badge">{{ $t(bid.status) }}</span></p>
-          <p class="bid-timestamp">{{ $t('PLACED') }}: {{ formatDateTime(bid.createdAt) }}</p>
-          <p v-if="bid.createdAt !== bid.updatedAt" class="bid-timestamp">{{ $t('UPDATED') }}: {{ formatDateTime(bid.updatedAt) }}</p>
+          <p><strong>Your Bid Amount:</strong> {{ formatPrice(bid.amount) }}</p>
+          <p v-if="bid.comment"><strong>Your Comment:</strong> {{ bid.comment }}</p>
+          <p>
+            <strong>Status:</strong> <span class="bid-status-badge">{{ bid.status }}</span>
+          </p>
+          <p class="bid-timestamp">Placed: {{ formatDateTime(bid.createdAt) }}</p>
+          <p v-if="bid.createdAt !== bid.updatedAt" class="bid-timestamp">
+            Updated: {{ formatDateTime(bid.updatedAt) }}
+          </p>
         </div>
         <div class="bid-actions-my">
           <template v-if="bid.status === 'PENDING'">
-            <button @click="openUpdateBidModal(bid)" class="edit-button" :disabled="actionLoading === bid.id">{{ $t('UPDATE_BID') }}</button>
-            <button @click="promptDeleteBid(bid)" class="delete-button" :disabled="actionLoading === bid.id && bid.id === bidToDelete?.id">
-              <span v-if="actionLoading === bid.id && bid.id === bidToDelete?.id">...</span><span v-else>{{ $t('DELETE') }}</span>
+            <button
+              @click="openUpdateBidModal(bid)"
+              class="edit-button"
+              :disabled="actionLoading === bid.id"
+            >
+              Update Bid
+            </button>
+            <button
+              @click="promptDeleteBid(bid)"
+              class="delete-button"
+              :disabled="actionLoading === bid.id && bid.id === bidToDelete?.id"
+            >
+              <span v-if="actionLoading === bid.id && bid.id === bidToDelete?.id">...</span>
+              <span v-else>Delete</span>
             </button>
           </template>
-          <span v-else-if="bid.status === 'ACCEPTED'" class="status-indicator accepted">{{ $t('ACCEPTED') }}</span>
-          <span v-else-if="bid.status === 'REJECTED'" class="status-indicator rejected">{{ $t('REJECTED') }}</span>
+          <span v-else-if="bid.status === 'ACCEPTED'" class="status-indicator accepted"
+            >Accepted</span
+          >
+          <span v-else-if="bid.status === 'REJECTED'" class="status-indicator rejected"
+            >Rejected</span
+          >
         </div>
+      </div>
+
+      <!-- Pagination controls -->
+      <div v-if="totalPages > 1" class="pagination-controls">
+        <button
+          :disabled="currentPage <= 1"
+          @click="changePage(currentPage - 1)"
+          class="pagination-button"
+        >
+          Previous
+        </button>
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button
+          :disabled="currentPage >= totalPages"
+          @click="changePage(currentPage + 1)"
+          class="pagination-button"
+        >
+          Next
+        </button>
       </div>
     </div>
 
     <div v-else class="no-items-message">
-      <p>{{ $t('NO_BIDS_PLACED') }}</p>
+      <p>You haven't placed any bids yet.</p>
     </div>
 
     <div v-if="actionError" class="error-message action-error">
@@ -50,7 +96,6 @@
       :is-open="isBidModalOpen"
       :item-id="bidToEdit?.itemId ?? ''"
       :item-title="bidToEdit ? getItemTitle(bidToEdit.itemId) : ''"
-      :current-price="bidToEdit ? null : null"
       :initial-bid="bidToEdit"
       @close="closeBidModal"
       @bid-placed="handleBidResult"
@@ -60,8 +105,8 @@
     <ConfirmDeleteModal
       :is-open="showDeleteConfirmModal"
       :message="deleteConfirmationMessage"
-      :title="$t('CONFIRM_BID_DELETION')"
-      :confirm-text="$t('DELETE_BID')"
+      title="Confirm Bid Deletion"
+      confirm-text="Delete Bid"
       @confirm="confirmDeleteBid"
       @cancel="cancelDeleteBid"
     />
@@ -69,184 +114,143 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-// --- Import services and types ---
-import { fetchUserBids, deleteMyBid } from '@/services/BidService';
-import { fetchItem } from '@/services/ItemService';
-import type { BidResponseType } from '@/models/Bid';
-// --- Import Modals ---
-import BidModal from '@/components/modals/BidModal.vue';
-import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue'; // <-- Import the new modal
+import { ref, onMounted } from 'vue'
+import { fetchPagedUserBids, deleteMyBid } from '@/services/BidService'
+import { fetchItem } from '@/services/ItemService'
+import type { BidResponseType } from '@/models/Bid'
+import BidModal from '@/components/modals/BidModal.vue'
+import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue'
 
-// --- Component State ---
-const myBids = ref<BidResponseType[]>([]);
-const itemDetailsCache = ref<Record<string | number, string>>({});
-const isLoading = ref(false);
-const actionLoading = ref<string | number | null>(null);
-const error = ref<string | null>(null);
-const actionError = ref<string | null>(null);
+const myBids = ref<BidResponseType[]>([])
+const itemDetailsCache = ref<Record<string | number, string>>({})
+const isLoading = ref(false)
+const actionLoading = ref<string | number | null>(null)
+const error = ref<string | null>(null)
+const actionError = ref<string | null>(null)
 
-// State for Bid Modal (Update)
-const isBidModalOpen = ref(false);
-const bidToEdit = ref<BidResponseType | null>(null);
+const currentPage = ref(1)
+const totalPages = ref(0)
+const pageSize = ref(5)
+const sortOption = ref('createdAt,desc')
 
-// --- State for Delete Confirmation Modal ---
-const showDeleteConfirmModal = ref(false);
-const bidToDelete = ref<BidResponseType | null>(null);
-const deleteConfirmationMessage = ref('');
+const bidToEdit = ref<BidResponseType | null>(null)
+const showDeleteConfirmModal = ref(false)
+const bidToDelete = ref<BidResponseType | null>(null)
+const deleteConfirmationMessage = ref('')
+const isBidModalOpen = ref(false)
 
-// --- Load Bids ---
 async function loadMyBids() {
-  isLoading.value = true;
-  error.value = null;
-  actionError.value = null;
+  isLoading.value = true
+  error.value = null
   try {
-    myBids.value = await fetchUserBids(); // Assumes fetchUserBids handles potential string response
-    await fetchItemTitlesForBids(myBids.value);
+    const paginated = await fetchPagedUserBids(
+      currentPage.value - 1,
+      pageSize.value,
+      sortOption.value,
+    )
+    myBids.value = paginated.content
+    totalPages.value = paginated.totalPages
+    await fetchItemTitlesForBids(myBids.value)
   } catch (err: any) {
-    console.error("Failed to load user bids:", err);
-    error.value = err.message || 'Could not load your bids. Please try again later.';
-    myBids.value = [];
+    console.error('Failed to load user bids:', err)
+    error.value = err.message || 'Could not load your bids.'
+    myBids.value = []
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
-// --- Fetch Item Titles ---
+function changePage(page: number) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+    loadMyBids()
+  }
+}
+
 async function fetchItemTitlesForBids(bidsToFetch: BidResponseType[]) {
   const itemIdsToFetch = bidsToFetch
-  .map(bid => bid.itemId)
-  .filter((itemId): itemId is string | number => itemId != null && !itemDetailsCache.value[itemId]); // Type guard
-
-  const uniqueItemIds = [...new Set(itemIdsToFetch)];
-
-  if (uniqueItemIds.length === 0) return;
-
-  console.log(`Workspaceing titles for item IDs: ${uniqueItemIds.join(', ')}`);
-
-  const titlePromises = uniqueItemIds.map(id =>
-    fetchItem(id)
-    .then(itemData => ({ id, title: itemData.title }))
-    .catch(err => {
-      console.warn(`Could not fetch details for item ${id}:`, err);
-      return { id, title: `Item #${id}` }; // Fallback title
-    })
-  );
-
-  const results = await Promise.all(titlePromises);
-
-  results.forEach(result => {
-    if (result) {
-      itemDetailsCache.value[result.id] = result.title;
-    }
-  });
+    .map((b) => b.itemId)
+    .filter((id) => !itemDetailsCache.value[id])
+  const results = await Promise.all(
+    [...new Set(itemIdsToFetch)].map((id) =>
+      fetchItem(id)
+        .then((data) => ({ id, title: data.title }))
+        .catch(() => ({
+          id,
+          title: `Item #${id}`,
+        })),
+    ),
+  )
+  results.forEach((res) => (itemDetailsCache.value[res.id] = res.title))
 }
 
-// --- Get Item Title ---
 function getItemTitle(itemId: string | number | null): string {
-  if (itemId === null || itemId === undefined) return 'Unknown Item';
-  return itemDetailsCache.value[itemId] || `Item #${itemId}`;
+  return itemId != null ? itemDetailsCache.value[itemId] || `Item #${itemId}` : 'Unknown Item'
 }
 
-
-// --- Delete Bid Logic (Using Custom Modal) ---
-function promptDeleteBid(bid: BidResponseType) {
-  if (!bid.itemId) return;
-  bidToDelete.value = bid;
-  deleteConfirmationMessage.value = `Are you sure you want to delete your bid of ${formatPrice(bid.amount)} on "${getItemTitle(bid.itemId)}"? This action cannot be undone.`;
-  // Set state to show the modal
-  showDeleteConfirmModal.value = true;
-}
-
-// This function is now called when the ConfirmDeleteModal emits @confirm
-async function confirmDeleteBid() {
-  if (!bidToDelete.value || !bidToDelete.value.itemId || actionLoading.value) return;
-
-  const bidId = bidToDelete.value.id; // Store id for loading indicator
-  actionLoading.value = bidId;
-  actionError.value = null;
-  showDeleteConfirmModal.value = false; // Close the modal
-
-  try {
-    await deleteMyBid(bidToDelete.value.itemId);
-    bidToDelete.value = null; // Clear the bid to delete
-    await loadMyBids(); // Refresh list
-  } catch (err: any) {
-    console.error("Failed to delete bid:", err);
-    actionError.value = err.message || "Could not delete the bid.";
-  } finally {
-    // Ensure loading state is cleared only if it matches the current action
-    if (actionLoading.value === bidId) {
-      actionLoading.value = null;
-    }
-  }
-}
-
-// This function is now called when the ConfirmDeleteModal emits @cancel
-function cancelDeleteBid() {
-  showDeleteConfirmModal.value = false;
-  bidToDelete.value = null;
-}
-// --- End Delete Bid Logic ---
-
-
-// --- Update Bid Logic (Keep as is) ---
 function openUpdateBidModal(bid: BidResponseType) {
-  if (!bid.itemId) {
-    console.error("Cannot edit bid without item ID:", bid);
-    actionError.value = "Cannot edit this bid: missing item information.";
-    return;
-  }
-  bidToEdit.value = bid;
-  isBidModalOpen.value = true;
+  bidToEdit.value = bid
+  isBidModalOpen.value = true
 }
 
 function closeBidModal() {
-  isBidModalOpen.value = false;
-  bidToEdit.value = null;
+  isBidModalOpen.value = false
+  bidToEdit.value = null
 }
 
 function handleBidResult() {
-  closeBidModal();
-  loadMyBids();
-}
-// --- End Update Bid Logic ---
-
-
-// --- Computed: Sorted Bids (Keep as is) ---
-const sortedBids = computed(() => {
-  return [...myBids.value].sort((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  });
-});
-
-// --- Formatting Helpers (Keep as is) ---
-function formatPrice(price: number | null | undefined): string {
-  if (price === null || price === undefined) return 'N/A';
-  return price.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' });
+  closeBidModal()
+  loadMyBids()
 }
 
-function formatDateTime(dateTimeString: string | undefined): string {
-  if (!dateTimeString) return 'N/A';
+function promptDeleteBid(bid: BidResponseType) {
+  bidToDelete.value = bid
+  deleteConfirmationMessage.value = `Are you sure you want to delete your bid of ${formatPrice(bid.amount)} on \"${getItemTitle(bid.itemId)}\"? This action cannot be undone.`
+  showDeleteConfirmModal.value = true
+}
+
+async function confirmDeleteBid() {
+  if (!bidToDelete.value) return
+  actionLoading.value = bidToDelete.value.id
+  showDeleteConfirmModal.value = false
   try {
-    const date = new Date(dateTimeString);
-    return date.toLocaleString('no-NO', { dateStyle: 'short', timeStyle: 'short' });
-  } catch (e) {
-    return dateTimeString;
+    await deleteMyBid(bidToDelete.value.itemId)
+    bidToDelete.value = null
+    await loadMyBids()
+  } catch (err: any) {
+    actionError.value = err.message || 'Failed to delete bid.'
+  } finally {
+    actionLoading.value = null
   }
 }
 
-// --- Lifecycle Hook ---
-onMounted(() => {
-  loadMyBids();
-});
+function cancelDeleteBid() {
+  showDeleteConfirmModal.value = false
+  bidToDelete.value = null
+}
+
+function formatPrice(price: number | null | undefined): string {
+  return price != null
+    ? price.toLocaleString('no-NO', {
+        style: 'currency',
+        currency: 'NOK',
+      })
+    : 'N/A'
+}
+
+function formatDateTime(dateStr: string | undefined): string {
+  return dateStr
+    ? new Date(dateStr).toLocaleString('no-NO', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      })
+    : 'N/A'
+}
+
+onMounted(() => loadMyBids())
 </script>
 
 <style scoped>
-/* Styles remain the same as the previous version */
-/* ...(keep existing styles from previous ProfileMyBidsView.vue response)... */
 .my-bids-view {
   padding: 1rem;
   max-width: 1000px;
@@ -258,7 +262,6 @@ onMounted(() => {
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.5rem;
 }
-
 
 .loading-indicator,
 .error-message,
@@ -276,6 +279,7 @@ onMounted(() => {
   border: 1px solid red;
   border-radius: 4px;
 }
+
 .action-error {
   margin-top: 1rem;
 }
@@ -292,21 +296,22 @@ onMounted(() => {
   background-color: var(--color-background);
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Center items vertically */
+  align-items: center;
   gap: 1rem;
   transition: background-color 0.3s ease;
 }
 
-/* Style based on bid status */
 .bid-status-pending {
-  border-left: 4px solid #ffc107; /* Yellow for pending */
+  border-left: 4px solid #ffc107;
 }
+
 .bid-status-accepted {
-  border-left: 4px solid #28a745; /* Green for accepted */
+  border-left: 4px solid #28a745;
   background-color: #e9f5e9;
 }
+
 .bid-status-rejected {
-  border-left: 4px solid #dc3545; /* Red for rejected */
+  border-left: 4px solid #dc3545;
   opacity: 0.8;
 }
 
@@ -328,10 +333,10 @@ onMounted(() => {
   text-decoration: none;
   font-weight: 500;
 }
+
 .item-link:hover {
   text-decoration: underline;
 }
-
 
 .bid-timestamp {
   font-size: 0.85em;
@@ -341,9 +346,9 @@ onMounted(() => {
 
 .bid-actions-my {
   display: flex;
-  gap: 0.75rem; /* Space between buttons */
+  gap: 0.75rem;
   align-items: center;
-  flex-shrink: 0; /* Prevent actions area from shrinking */
+  flex-shrink: 0;
 }
 
 .bid-actions-my button {
@@ -354,19 +359,24 @@ onMounted(() => {
   text-align: center;
   border: 1px solid transparent;
   border-radius: 4px;
-  transition: background-color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease,
+    border-color 0.2s ease;
 }
+
 .bid-actions-my button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.edit-button { /* Renamed from edit-button, styles updated */
-  background-color: #007bff; /* Blue */
+.edit-button {
+  background-color: #007bff;
   color: white;
   border-color: #007bff;
-  min-width: 90px; /* Slightly wider for "Update Bid" */
+  min-width: 90px;
 }
+
 .edit-button:hover:not(:disabled) {
   background-color: #0056b3;
   border-color: #0056b3;
@@ -374,9 +384,10 @@ onMounted(() => {
 
 .delete-button {
   background-color: transparent;
-  color: #dc3545; /* Red */
+  color: #dc3545;
   border-color: #dc3545;
 }
+
 .delete-button:hover:not(:disabled) {
   background-color: #dc3545;
   color: white;
@@ -388,17 +399,18 @@ onMounted(() => {
   border-radius: 4px;
   font-size: 0.9em;
 }
+
 .status-indicator.accepted {
   color: #155724;
   background-color: #d4edda;
   border: 1px solid #c3e6cb;
 }
+
 .status-indicator.rejected {
   color: #721c24;
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
 }
-
 
 .bid-status-badge {
   display: inline-block;
@@ -407,21 +419,30 @@ onMounted(() => {
   font-weight: bold;
   border-radius: 4px;
   color: white;
-  vertical-align: middle; /* Align better with text */
+  vertical-align: middle;
 }
-/* Color coding */
-.bid-status-pending .bid-status-badge { background-color: #ffc107; color: #333;}
-.bid-status-accepted .bid-status-badge { background-color: #28a745; }
-.bid-status-rejected .bid-status-badge { background-color: #dc3545; }
 
+.bid-status-pending .bid-status-badge {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.bid-status-accepted .bid-status-badge {
+  background-color: #28a745;
+}
+
+.bid-status-rejected .bid-status-badge {
+  background-color: #dc3545;
+}
 
 @media (max-width: 650px) {
   .bid-card-my {
-    flex-direction: column; /* Stack details and actions vertically */
-    align-items: stretch; /* Stretch full width */
+    flex-direction: column;
+    align-items: stretch;
   }
+
   .bid-actions-my {
-    justify-content: flex-end; /* Align buttons to the right */
+    justify-content: flex-end;
     margin-top: 0.75rem;
   }
 }
