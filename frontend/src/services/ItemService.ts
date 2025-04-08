@@ -205,6 +205,35 @@ export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
 }
 
 /**
+ * Fetches a paginated list of favorite items for the currently logged-in user.
+ *
+ * @param page - Page index (0-based)
+ * @param size - Number of items per page
+ * @param sort - Optional sorting string (e.g., "createdAt,desc")
+ * @returns Promise resolving to a PaginatedItemPreviewResponse
+ */
+export async function fetchPagedFavoriteItems(
+  page: number,
+  size: number,
+  sort?: string
+): Promise<PaginatedItemPreviewResponse> {
+  try {
+    const params: any = { page, size };
+    if (sort) params.sort = sort;
+
+    console.log('Fetching paginated favorite items with:', params);
+    const { data } = await api.get<PaginatedItemPreviewResponse>('/favorite', { params });
+
+    console.log(`Fetched ${data.content.length} favorite items`);
+    return data;
+  } catch (error) {
+    console.error('Error fetching paginated favorite items:', error);
+    throw error;
+  }
+}
+
+
+/**
  * Fetches items listed by the currently authenticated user.
  * Requires the user to be logged in. TODO: Remove this function when we know it's not needed
  * @returns A Promise resolving to an array of the user's items.

@@ -38,97 +38,114 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import ItemPreview from '@/components/item/ItemPreview.vue';
-import {
-  fetchPagedPreviewItems,
-  fetchPagedPreviewItemsByCategory
-} from '@/services/ItemService';
-import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
+import { ref, onMounted, watch } from 'vue'
+import ItemPreview from '@/components/item/ItemPreview.vue'
+import { fetchPagedPreviewItems, fetchPagedPreviewItemsByCategory } from '@/services/ItemService'
+import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item'
 
 const props = defineProps<{
-  categoryId: string | null;
-  pageSize: number;
-  emptyMessage?: string;
-}>();
+  categoryId: string | null
+  pageSize: number
+  emptyMessage?: string
+  fetchFunction?: (
+    page: number,
+    size: number,
+    sort?: string,
+  ) => Promise<PaginatedItemPreviewResponse>
+}>()
 
-const items = ref<ItemPreviewType[]>([]);
-const currentPage = ref(1);
-const totalPages = ref(0);
-const totalItems = ref(0);
-const loading = ref(true);
-const error = ref<string | null>(null);
+const items = ref<ItemPreviewType[]>([])
+const currentPage = ref(1)
+const totalPages = ref(0)
+const totalItems = ref(0)
+const loading = ref(true)
+const error = ref<string | null>(null)
 
 async function loadItems() {
-  loading.value = true;
-  error.value = null;
+  loading.value = true
+  error.value = null
 
   try {
-    let response: PaginatedItemPreviewResponse;
+    let response: PaginatedItemPreviewResponse
 
-    if (props.categoryId) {
-      response = await fetchPagedPreviewItemsByCategory(props.categoryId, currentPage.value - 1, props.pageSize);
+    if (props.fetchFunction) {
+      response = await props.fetchFunction(currentPage.value - 1, props.pageSize)
+    } else if (props.categoryId) {
+      response = await fetchPagedPreviewItemsByCategory(
+        props.categoryId,
+        currentPage.value - 1,
+        props.pageSize,
+      )
     } else {
-      response = await fetchPagedPreviewItems(currentPage.value - 1, props.pageSize);
+      response = await fetchPagedPreviewItems(currentPage.value - 1, props.pageSize)
     }
 
-    items.value = response.content;
-    totalItems.value = response.totalElements;
-    totalPages.value = response.totalPages;
+    items.value = response.content
+    totalItems.value = response.totalElements
+    totalPages.value = response.totalPages
   } catch (err) {
-    error.value = 'Failed to load items.';
-    console.error(err);
+    error.value = 'Failed to load items.'
+    console.error(err)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
 function changePage(page: number) {
   if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
+    currentPage.value = page
   }
 }
 
-watch(currentPage, loadItems);
-watch(() => props.categoryId, () => {
-  currentPage.value = 1;
-  loadItems();
-});
+watch(currentPage, loadItems)
+watch(
+  () => props.categoryId,
+  () => {
+    currentPage.value = 1
+    loadItems()
+  },
+)
 
-onMounted(loadItems);
+onMounted(loadItems)
 </script>
 
 <style scoped>
 .item-list-container {
   width: 100%;
 }
+
 .loading-indicator,
 .error-message,
 .no-items-message {
   text-align: center;
   margin: 2rem 0;
 }
+
 .items-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
+
 @media (max-width: 1200px) {
   .items-container {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
 @media (max-width: 900px) {
   .items-container {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 600px) {
   .items-container {
     grid-template-columns: 1fr;
   }
 }
+
 .pagination-controls {
   display: flex;
   justify-content: center;
@@ -136,6 +153,7 @@ onMounted(loadItems);
   margin-top: 2rem;
   gap: 1rem;
 }
+
 .pagination-button {
   padding: 0.5rem 1rem;
   background-color: var(--color-background-soft);
@@ -143,10 +161,12 @@ onMounted(loadItems);
   border-radius: 4px;
   cursor: pointer;
 }
+
 .pagination-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 .page-info {
   font-size: 0.9rem;
 }

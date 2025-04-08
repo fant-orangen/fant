@@ -3,7 +3,8 @@
     <h2>{{ $t('MY_FAVORITES') }}</h2>
 
     <ItemList
-      :fetchFunction="fetchFavoriteItems"
+      :fetchFunction="fetchItems"
+      :categoryId="null"
       emptyMessage="You haven't added any items to your favorites yet."
       :pageSize="5"
       :paginationEnabled="true"
@@ -12,7 +13,11 @@
 </template>
 
 <script setup lang="ts">
+import { fetchPagedFavoriteItems } from '@/services/ItemService'
+import type { PaginatedItemPreviewResponse } from '@/models/Item'
+import ItemList from '@/components/item/ItemList.vue'
 
-import { fetchFavoriteItems } from '@/services/ItemService';
-import ItemList from '@/components/item/ItemList.vue';
+async function fetchItems(page: number, size: number, sort: string = 'createdAt,desc'): Promise<PaginatedItemPreviewResponse> {
+  return await fetchPagedFavoriteItems(page, size, sort)
+}
 </script>
