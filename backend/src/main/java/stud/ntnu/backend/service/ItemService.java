@@ -10,6 +10,7 @@ import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -143,17 +144,10 @@ public class ItemService {
     itemViewRepository.save(ItemView.builder().item(item).user(user).build());
   }
 
-  /**
-   * <h3>Get Recommended Items</h3>
-   * <p>Generates item recommendations based on category distribution.</p>
-   *
-   * @param distribution map of category probabilities
-   * @param limit        maximum items to return
-   * @return list of recommended {@link ItemPreviewDto}
-   */
-  public List<ItemPreviewDto> getItemsByDistribution(
-      Map<String, Double> distribution, Integer limit) {
-    int itemLimit = (limit != null && limit > 0) ? Math.min(limit, 1000) : 1000;
+  public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution, Pageable pageable) {
+    int pageSize = pageable.getPageSize();
+    int offset = (int) pageable.getOffset();
+
     Map<Long, List<Item>> categoryItemsMap = new HashMap<>();
     Random random = new Random();
 
@@ -166,10 +160,20 @@ public class ItemService {
     });
 
     if (categoryItemsMap.isEmpty()) {
-      return Collections.emptyList();
+      return Page.empty(pageable);
     }
 
-    return selectRandomItems(categoryItemsMap, distribution, itemLimit, random);
+    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, pageSize, random);
+
+    // Apply pagination
+    int end = Math.min(offset + pageSize, allItems.size());
+    if (offset > allItems.size()) {
+      return Page.empty(pageable);
+    }
+
+    List<ItemPreviewDto> paginatedItems = allItems.subList(offset, end);
+
+    return new PageImpl<>(paginatedItems, pageable, allItems.size());
   }
 
   /**

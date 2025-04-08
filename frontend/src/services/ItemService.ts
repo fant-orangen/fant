@@ -206,7 +206,7 @@ export async function fetchFavoriteItems(): Promise<ItemPreviewType[]> {
 
 /**
  * Fetches items listed by the currently authenticated user.
- * Requires the user to be logged in.
+ * Requires the user to be logged in. TODO: Remove this function when we know it's not needed
  * @returns A Promise resolving to an array of the user's items.
  */
 export async function fetchMyItems(): Promise<ItemPreviewType[]> {
@@ -217,5 +217,35 @@ export async function fetchMyItems(): Promise<ItemPreviewType[]> {
   } catch (error) {
     console.error("Error fetching logged-in user's items:", error)
     throw error // Re-throw the error to be caught by the component
+  }
+}
+
+/**
+ * Fetches a paginated set of items listed by the currently authenticated user.
+ *
+ * @param page - Page index (0-based)
+ * @param size - Number of items per page
+ * @param sort - Optional sorting (e.g., "createdAt,desc")
+ * @returns A promise resolving to a paginated response of the user's items
+ * @throws {Error} If the request fails
+ */
+export async function fetchMyPagedItems(
+  page: number,
+  size: number,
+  sort?: string,
+): Promise<PaginatedItemPreviewResponse> {
+  try {
+    const params: any = { page, size }
+    if (sort) {
+      params.sort = sort
+    }
+
+    const response = await api.get<PaginatedItemPreviewResponse>('/items/my', { params })
+
+    console.log(`Fetched my items - Page: ${page}, Size: ${size}, Sort: ${sort || 'unsorted'}`)
+    return response.data
+  } catch (error) {
+    console.error('Error fetching paginated items for current user:', error)
+    throw error
   }
 }

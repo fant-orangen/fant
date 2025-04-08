@@ -170,15 +170,17 @@ public class ItemController {
    * <p>Retrieves recommended items based on distribution.</p>
    *
    * @param requestDto the recommendation request parameters
-   * @return list of recommended {@link ItemPreviewDto}
+   * @param pageable   the pagination and sorting information
+   * @return paginated response of recommended {@link ItemPreviewDto}
    */
   @PostMapping("/view/recommended_items")
-  public ResponseEntity<List<ItemPreviewDto>> getRecommendedItems(
-      @Valid @RequestBody RecommendedItemsRequestDto requestDto) {
-    logger.info("Received request for recommended items with limit: {}", requestDto.getLimit());
-    List<ItemPreviewDto> items = itemService.getItemsByDistribution(requestDto.getDistribution(),
-        requestDto.getLimit());
-    logger.info("Returning {} recommended items", items.size());
+  public ResponseEntity<Page<ItemPreviewDto>> getRecommendedItems(
+      @Valid @RequestBody RecommendedItemsRequestDto requestDto,
+      Pageable pageable) {
+    logger.info("Received request for recommended items with pageable: {}", pageable);
+    Page<ItemPreviewDto> items = itemService.getItemsByDistribution(requestDto.getDistribution(),
+        pageable);
+    logger.info("Returning {} recommended items", items.getNumberOfElements());
     return ResponseEntity.ok(items);
   }
 }
