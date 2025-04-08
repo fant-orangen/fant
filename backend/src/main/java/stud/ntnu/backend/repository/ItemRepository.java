@@ -1,19 +1,24 @@
 package stud.ntnu.backend.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import stud.ntnu.backend.model.Item;
+import stud.ntnu.backend.model.enums.ItemStatus;
 
 /**
  * <h2>ItemRepository</h2>
  * <p>Repository for marketplace item data operations.</p>
  */
 @Repository
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long>, JpaSpecificationExecutor<Item> {
 
   /**
    * <h3>Find By Category ID</h3>
