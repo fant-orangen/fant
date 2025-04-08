@@ -1,107 +1,44 @@
 <script setup lang="ts">
-/**
- * @fileoverview Conversation View Component
- *
- * This component displays a messaging interface for a single conversation between users.
- * It provides real-time messaging, message history, and shows context about the item being discussed.
- *
- * Features:
- * - Real-time message updates
- * - Message sending and display
- * - User and item context information
- * - Automatic scrolling to latest messages
- * - Responsive design with distinct styling for sent vs received messages
- */
-
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Message, MessageUser} from '@/models/Message'
+import type { Message, MessageUser } from '@/models/Message'
+import type { PaginatedMessageResponse } from '@/models/Message'
 import type { ItemPreviewType } from '@/models/Item'
 import {
-  fetchMessages,
+  fetchPagedMessages,
   sendMessage,
   initializeMessaging,
   onNewMessage,
   removeMessageHandler,
-  fetchConversations, readMessages
+  fetchConversations,
+  readMessages,
 } from '@/services/MessageService'
 import { fetchCurrentUserId } from '@/services/UserService'
 
 const route = useRoute()
 
-/**
- * Array of messages in the current conversation
- * @type {Ref<Message[]>}
- */
 const messages = ref<Message[]>([])
-
-/**
- * Content of the new message being composed by the user
- * @type {Ref<string>}
- */
 const newMessageContent = ref('')
-
-/**
- * The other user in this conversation
- * @type {Ref<MessageUser|null>}
- */
 const otherUser = ref<MessageUser | null>(null)
-
-/**
- * Indicates if messages are currently being loaded
- * @type {Ref<boolean>}
- */
 const loading = ref(false)
-
-/**
- * Stores any error message that occurs during operations
- * @type {Ref<string|null>}
- */
 const error = ref<string | null>(null)
-
-/**
- * Indicates if a message is currently being sent
- * @type {Ref<boolean>}
- */
 const sending = ref(false)
-
-/**
- * Reference to the messages container DOM element for scrolling
- * @type {Ref<HTMLElement|null>}
- */
 const messagesContainerRef = ref<HTMLElement | null>(null)
-
-/**
- * ID of the current user
- * @type {Ref<string|number|null>}
- */
 const currentUserId = ref<string | number | null>(null)
-
-/**
- * Item that is the subject of this conversation
- * @type {Ref<ItemPreviewType|null>}
- */
 const item = ref<ItemPreviewType | null>(null)
 
-/**
- * The ID of the current conversation, derived from route parameters
- * @type {ComputedRef<string>}
- */
+const pageSize = 10
+const currentPage = ref(0)
+const totalPages = ref(1)
+const fetchingOlder = ref(false)
+
 const conversationId = computed(() => route.params.conversationId as string)
 
-/**
- * Handles new incoming messages from the messaging service
- * Adds relevant messages to the conversation and scrolls to bottom
- *
- * @param {Message} message - The newly received message
- */
 const handleNewMessage = (message: Message) => {
-  // Check if message belongs to this conversation
   const isRelevantMessage =
     (message.sender.id === otherUser.value?.id || message.receiver.id === otherUser.value?.id) &&
-    message.item?.id === item.value?.id;
+    message.item?.id === item.value?.id
 
-  // Check if message is not already in the list
   const isNewMessage = !messages.value.some((m) => m.id === message.id)
 
   if (isRelevantMessage && isNewMessage) {
@@ -110,15 +47,10 @@ const handleNewMessage = (message: Message) => {
   }
 }
 
-/**
- * Fetches conversation details including the other user and item information
- *
- * @returns {Promise<boolean>} Success status of the operation
- */
 async function getConversationDetails(): Promise<boolean> {
   try {
     const conversations = await fetchConversations()
-    const currentConversation = conversations.find(c => c.id.toString() === conversationId.value)
+    const currentConversation = conversations.find((c) => c.id.toString() === conversationId.value)
 
     if (!currentConversation) {
       error.value = 'Conversation not found.'
@@ -127,15 +59,14 @@ async function getConversationDetails(): Promise<boolean> {
     }
 
     if (currentConversation.item) {
-      item.value = currentConversation.item;
+      item.value = currentConversation.item
     } else {
       error.value = 'No item associated with this conversation.'
       item.value = null
-      return false;
+      return false
     }
 
     otherUser.value = currentConversation.otherUser
-
     return true
   } catch (err) {
     console.error('Failed to fetch conversation details:', err)
@@ -145,44 +76,32 @@ async function getConversationDetails(): Promise<boolean> {
   }
 }
 
-/**
- * Loads message history for the current item
- * Sorts messages by timestamp and scrolls to most recent
- */
-async function loadMessages() {
-  if (!item.value || !item.value.id) {
-    error.value = 'No item associated with this conversation.'
-    return
-  }
+async function loadMessagesPage(page: number) {
+  if (!item.value?.id) return
 
-  loading.value = true
-  error.value = null
-
+  fetchingOlder.value = true
   try {
-    const fetchedMessages = await fetchMessages(item.value.id)
-    await readMessages(fetchedMessages)
-    // Sort messages chronologically
-    messages.value = fetchedMessages.sort((a, b) =>
-      a.sentDate.getTime() - b.sentDate.getTime()
+    const response: PaginatedMessageResponse = await fetchPagedMessages(
+      item.value.id,
+      page,
+      pageSize,
+      'sentAt,desc',
     )
-    console.log("Fetched messages for itemId:", item.value.id)
-    scrollToBottom()
+    const newMessages = response.content.map((m) => ({ ...m, sentDate: new Date(m.sentDate) }))
+    messages.value = [...newMessages.reverse(), ...messages.value] // prepend older messages
+    totalPages.value = response.totalPages
+    await readMessages(newMessages)
   } catch (err) {
-    console.error(`Failed to fetch messages:`, err)
+    console.error('Failed to load messages:', err)
     error.value = 'Could not load messages.'
-    messages.value = []
   } finally {
-    loading.value = false
+    fetchingOlder.value = false
   }
 }
 
-/**
- * Handles sending a new message
- * Validates input, sends message to server, and updates UI
- */
 async function handleSendMessage() {
-  // Validate required data before sending
-  if (!newMessageContent.value.trim() || sending.value || !otherUser.value?.id || !item.value?.id) return
+  if (!newMessageContent.value.trim() || sending.value || !otherUser.value?.id || !item.value?.id)
+    return
 
   sending.value = true
   error.value = null
@@ -195,104 +114,38 @@ async function handleSendMessage() {
     newMessageContent.value = ''
     scrollToBottom()
   } catch (err) {
-    console.error(`Failed to send message:`, err)
+    console.error('Failed to send message:', err)
     error.value = 'Failed to send message.'
   } finally {
     sending.value = false
   }
 }
 
-/**
- * Initializes the conversation by loading user, conversation, and message data
- * Resets component state and loads fresh data
- */
 async function initializeConversation() {
-  loading.value = true;
-  error.value = null;
-  messages.value = [];
-  item.value = null;
-  otherUser.value = null;
+  loading.value = true
+  error.value = null
+  messages.value = []
+  item.value = null
+  otherUser.value = null
+  currentPage.value = 0
 
   try {
-    // Get current user ID for message ownership checks
     currentUserId.value = await fetchCurrentUserId()
-
-    // Load conversation metadata
     const success = await getConversationDetails()
     if (!success) {
-      loading.value = false;
+      loading.value = false
       return
     }
-
-    // Load message history
-    await loadMessages()
+    await loadMessagesPage(currentPage.value)
+    scrollToBottom()
   } catch (err) {
     console.error('Failed to initialize conversation:', err)
     error.value = 'Error loading conversation. Please try again.'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
-/**
- * Lifecycle hook - Component mount
- * Sets up messaging listeners and initializes conversation data
- */
-onMounted(async () => {
-  try {
-    await initializeMessaging()
-    onNewMessage(handleNewMessage)
-    await initializeConversation()
-  } catch (err) {
-    console.error('Failed to initialize messaging:', err)
-    error.value = 'Connection error. Please refresh.'
-  }
-})
-
-/**
- * Lifecycle hook - Component unmount
- * Removes message event listeners to prevent memory leaks
- */
-onUnmounted(() => {
-  removeMessageHandler(handleNewMessage)
-})
-
-/**
- * Watches for changes in the conversation ID (route parameter)
- * Reinitializes the conversation when the ID changes
- */
-watch(conversationId, async (newId, oldId) => {
-  if (newId !== oldId) {
-    await initializeConversation()
-  }
-})
-
-/**
- * Determines if a message was sent by the current user
- *
- * @param {Message} message - The message to check
- * @returns {boolean} True if message was sent by current user
- */
-function isMyMessage(message: Message): boolean {
-  return message.sender.id.toString() === currentUserId.value?.toString()
-}
-
-/**
- * Formats a timestamp into a readable time string
- *
- * @param {string|Date} date - The date to format
- * @returns {string} Formatted time string (HH:MM)
- */
-function formatTimestamp(date: string | Date): string {
-  if (!date) return ''
-  const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-/**
- * Scrolls the message container to the bottom
- * Uses Vue's nextTick to ensure DOM is updated first
- */
 function scrollToBottom() {
   nextTick(() => {
     const container = messagesContainerRef.value
@@ -302,6 +155,55 @@ function scrollToBottom() {
   })
 }
 
+function isMyMessage(message: Message): boolean {
+  return message.sender.id.toString() === currentUserId.value?.toString()
+}
+
+function formatTimestamp(date: string | Date): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function handleScroll() {
+  const container = messagesContainerRef.value
+  if (
+    container &&
+    container.scrollTop < 50 &&
+    !fetchingOlder.value &&
+    currentPage.value < totalPages.value - 1
+  ) {
+    currentPage.value++
+    loadMessagesPage(currentPage.value)
+  }
+}
+
+onMounted(async () => {
+  try {
+    await initializeMessaging()
+    onNewMessage(handleNewMessage)
+    await initializeConversation()
+    if (messagesContainerRef.value) {
+      messagesContainerRef.value.addEventListener('scroll', handleScroll)
+    }
+  } catch (err) {
+    console.error('Failed to initialize messaging:', err)
+    error.value = 'Connection error. Please refresh.'
+  }
+})
+
+onUnmounted(() => {
+  removeMessageHandler(handleNewMessage)
+  if (messagesContainerRef.value) {
+    messagesContainerRef.value.removeEventListener('scroll', handleScroll)
+  }
+})
+
+watch(conversationId, async (newId, oldId) => {
+  if (newId !== oldId) {
+    await initializeConversation()
+  }
+})
 </script>
 
 <template>
@@ -310,9 +212,7 @@ function scrollToBottom() {
     <div class="header">
       <!-- Top title bar with back button and chat partner name -->
       <div class="title-bar">
-        <router-link to="/messages" class="back-link">
-          &lt; {{ $t('BACK_TO_INBOX') }}
-        </router-link>
+        <router-link to="/messages" class="back-link"> &lt; {{ $t('BACK_TO_INBOX') }} </router-link>
         <h2 v-if="otherUser" class="chat-partner-name">
           {{ $t('CHAT_WITH') }}{{ otherUser.displayName }}
         </h2>
@@ -332,7 +232,10 @@ function scrollToBottom() {
 
         <!-- Item details -->
         <div class="item-info-header">
-          <router-link :to="{ name: 'item-detail', params: { id: item.id } }" class="item-title-link">
+          <router-link
+            :to="{ name: 'item-detail', params: { id: item.id } }"
+            class="item-title-link"
+          >
             <h3>{{ item.title }}</h3>
           </router-link>
           <p class="item-price-header">{{ $t('PRICE') }}: {{ item.price }} kr</p>
@@ -347,7 +250,9 @@ function scrollToBottom() {
     <!-- Messages container -->
     <div class="messages-container" ref="messagesContainerRef">
       <!-- Empty state message -->
-      <div v-if="!loading && messages.length === 0 && !error" class="empty-chat">Start the conversation!</div>
+      <div v-if="!loading && messages.length === 0 && !error" class="empty-chat">
+        Start the conversation!
+      </div>
 
       <!-- Message bubbles -->
       <div
@@ -371,7 +276,10 @@ function scrollToBottom() {
         @keyup.enter.prevent="handleSendMessage"
         :disabled="sending || loading || !!error"
       ></textarea>
-      <button @click="handleSendMessage" :disabled="!newMessageContent.trim() || sending || loading || !!error">
+      <button
+        @click="handleSendMessage"
+        :disabled="!newMessageContent.trim() || sending || loading || !!error"
+      >
         {{ $t('SEND') }}
       </button>
     </div>
@@ -593,7 +501,7 @@ function scrollToBottom() {
   padding: 0.5rem 0.8rem;
   border-radius: 15px;
   position: relative;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /**
