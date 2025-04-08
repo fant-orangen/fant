@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,7 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.item.ItemCreateDto;
 import stud.ntnu.backend.data.item.ItemPreviewDto;
 import stud.ntnu.backend.data.item.ItemDetailsDto;
+import stud.ntnu.backend.data.item.ItemSearchDto;
 import stud.ntnu.backend.data.item.RecommendedItemsRequestDto;
+import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.ItemService;
 import stud.ntnu.backend.service.UserService;
@@ -62,7 +65,7 @@ public class ItemController {
 
   @PostMapping
   public ResponseEntity<Long> createItem(@Valid @RequestBody ItemCreateDto requestDto,
-      Principal principal) {
+                                         Principal principal) {
     logger.info("Received request to create item");
     User currentUser = userService.getCurrentUser(principal);
     ItemDetailsDto createdItem = itemService.createItem(currentUser, requestDto);
@@ -73,8 +76,8 @@ public class ItemController {
 
   @PutMapping("/{id}")
   public ResponseEntity<ItemDetailsDto> updateItem(@Valid @RequestBody ItemCreateDto requestDto,
-      @Positive @PathVariable Long id,
-      Principal principal) {
+                                                   @Positive @PathVariable Long id,
+                                                   Principal principal) {
     logger.info("Received request to update item ID: {}", id);
     User currentUser = userService.getCurrentUser(principal);
     ItemDetailsDto updatedItem = itemService.updateItem(currentUser, requestDto, id);
@@ -91,10 +94,15 @@ public class ItemController {
     return ResponseEntity.ok().build();
   }
 
+  @GetMapping("/search")
+  public ResponseEntity<Page<ItemPreviewDto>> searchItems(
+      @Valid @ModelAttribute ItemSearchDto searchDto, Pageable pageable) {
+    return ResponseEntity.ok(itemService.searchItems(searchDto, pageable));
+  }
+
   @GetMapping("/page")
   public ResponseEntity<Page<ItemPreviewDto>> getPagedItems(Pageable pageable) {
-    Page<ItemPreviewDto> pagedItems = itemService.getAllItemPreviews(pageable);
-    return ResponseEntity.ok(pagedItems);
+    return ResponseEntity.ok(itemService.getAllItemPreviews(pageable));
   }
 
   /**
