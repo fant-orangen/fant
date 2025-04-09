@@ -1,7 +1,5 @@
-// src/services/FavoriteService.ts
 import api from '@/services/api/axiosInstance.ts'
 import type { ItemPreviewType, ItemFavoritesType } from '@/models/Item.ts';
-import {fetchFavoriteItems} from "@/services/ItemService.ts";
 
 export interface PaginatedItemsResponse {
   items: ItemPreviewType[]
@@ -32,13 +30,32 @@ export async function fetchFavoriteItemsShort(): Promise<ItemFavoritesType[]> {
   return data;
 }
 
+/**
+ * Checks if a specific item is favorited by the current user by calling the dedicated backend endpoint.
+ * @param itemId ID of the item to check
+ * @returns Promise resolving to true if favorited, false otherwise.
+ */
 export async function checkIsFavorite(itemId: string | number): Promise<boolean> {
-  if (!itemId) return false;
+  // Ensure itemId is valid before making the call
+  if (!itemId && itemId !== 0) { // Check for null, undefined, empty string, allow 0
+    console.warn('checkIsFavorite called with invalid itemId:', itemId);
+    return false;
+  }
 
   try {
-    const favorites = await fetchFavoriteItemsShort();
-    return favorites.some(fav => fav?.itemId?.toString() === itemId.toString());
-  } catch {
+    // Call the new backend endpoint GET /api/favorite/status/{itemId}
+    console.log(`Checking favorite status for item: ${itemId}`); // Add log
+    const response = await api.get<boolean>(`/favorite/status/${itemId}`);
+    console.log(`Favorite status for item ${itemId}: ${response.data}`); // Add log
+    return response.data; // Endpoint directly returns true or false
+  } catch (error: any) {
+    // If the backend returns 404 (e.g., item deleted), treat as not favorite
+    if (error.response?.status === 404) {
+      console.warn(`checkIsFavorite received 404 for item ${itemId}, treating as not favorite.`);
+      return false;
+    }
+    // Log other errors but return false as a safe default
+    console.error(`Error checking favorite status for item ${itemId}:`, error);
     return false;
   }
 }
