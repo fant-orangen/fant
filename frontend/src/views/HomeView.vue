@@ -95,7 +95,7 @@ const backendSortParam = computed(() => {
 async function fetchItems() {
   isLoading.value = true;
   error.value = null;
-  console.log(`Workspaceing items for page: ${currentPage.value}`);
+  console.log(`Workspacing items for page: ${currentPage.value}`);
 
   const params: ItemSearchParams = {
     searchTerm: searchTerm.value || null,
