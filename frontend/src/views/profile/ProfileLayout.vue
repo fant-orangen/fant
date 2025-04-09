@@ -1,5 +1,3 @@
-// Example: ProfileLayout.vue
-
 <template>
   <div class="profile-layout">
     <aside class="profile-sidebar">
@@ -9,7 +7,7 @@
           :key="tile.name"
           :to="tile.route"
           class="tile-link"
-          active-class="router-link-active"
+          exact-active-class="router-link-active"
         >
           <component :is="tile.icon" class="tile-icon" /> <span>{{ $t(tile.label) }}</span>
           <p>{{ $t(tile.description) }}</p>

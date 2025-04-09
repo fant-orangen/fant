@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { useUserStore } from '@/stores/UserStore';
+import { useUserStore } from '@/stores/UserStore.ts';
 import TextInput from '@/components/input/TextInput.vue';
 import { useI18n } from 'vue-i18n';
 
