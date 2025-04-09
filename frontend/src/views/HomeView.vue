@@ -12,6 +12,7 @@
         :is-location-available="isLocationAvailable" />
       <p v-if="locationError" class="location-error">{{ locationError }}</p>
       <p v-if="isFetchingLocation" class="location-info">Getting your location...</p>
+      <p v-if="insufficientItemViews" class="recommendation-info">Please browse more items to get your recommendations.</p> <!-- TODO: Use translations for these messages? -->
     </div>
 
     <div class="category-section">
@@ -44,10 +45,18 @@ import { ref, computed, onMounted, watch } from 'vue'
 import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
 import SearchBar from '@/components/search/searchBar.vue'
-import { searchItems, type ItemSearchParams } from '@/services/ItemService'
+import {
+  searchItems,
+  type ItemSearchParams,
+  fetchItemsByDistribution
+} from '@/services/ItemService'
 import type { ItemPreviewType } from '@/models/Item'
 import { fetchCategories } from '@/services/CategoryService';
 import type { Category } from '@/models/Category';
+import {
+  fetchCategoryRecommendations,
+  fetchUserViewCount
+} from '@/services/RecommendationService.ts'
 
 
 // --- Filter States ---
@@ -68,8 +77,11 @@ const totalPages = ref(1);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 const isFetchingLocation = ref(false);
+const insufficientItemViews = ref(false);
 const locationError = ref<string | null>(null);
 const pageSize = ref(8);
+
+const numOfViewsLimit = 10
 
 // --- Computed Properties ---
 const isLocationAvailable = computed(() => {
@@ -112,14 +124,40 @@ async function fetchItems() {
     sort: backendSortParam.value ?? undefined
   };
 
+
   try {
-    const response = await searchItems(params); // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
-    items.value = response.content ?? [];
-    totalPages.value = response.totalPages ?? 1;
-    if (currentPage.value > totalPages.value) {
-      currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+    console.log("Category ID:" + selectedCategoryId.value);
+    // If the category id is -1, fetch recommendations
+    if (selectedCategoryId.value === '-1') {
+      const numOfViews = await fetchUserViewCount();
+      console.log("Num of views:" + numOfViews);
+
+      // If the user has sufficient item views, fetch recommendation
+      if (numOfViews > numOfViewsLimit) {
+        const recommendations = await fetchCategoryRecommendations();
+        const response = await fetchItemsByDistribution(recommendations);
+        items.value = response.content ?? [];
+        totalPages.value = response.totalPages ?? 1;
+        if (currentPage.value > totalPages.value) {
+          currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+        }
+        console.log(`Workspaceed ${items.value.length} items. Total pages: ${totalPages.value}`);
+        // If the user has insufficient item views, show a message
+      } else {
+        insufficientItemViews.value = true;
+      }
+
+      // Otherwise, perform search
+    } else {
+      const response = await searchItems(params); // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
+      items.value = response.content ?? [];
+      totalPages.value = response.totalPages ?? 1;
+      if (currentPage.value > totalPages.value) {
+        currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+      }
+      console.log(`Workspaceed ${items.value.length} items. Total pages: ${totalPages.value}`);
     }
-    console.log(`Workspaceed ${items.value.length} items. Total pages: ${totalPages.value}`);
+
   } catch (err) {
     console.error("Error fetching items:", err);
     error.value = 'Failed to load items. Please try again later.';
@@ -251,6 +289,7 @@ watch(
 // --- Initial Data Load ---
 async function loadInitialData() {
   isLoading.value = true;
+
   try {
     categories.value = await fetchCategories(); // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
     await fetchItems();
@@ -301,6 +340,12 @@ onMounted(loadInitialData);
   font-size: 0.9em;
   text-align: center;
 }
+.recommendation-info {
+  color: #555;
+  font-size: 0.9em;
+  text-align: center;
+}
+
 .clear-category-button {
   padding: 0.5rem 1rem;
   margin-top: 0.5rem;
