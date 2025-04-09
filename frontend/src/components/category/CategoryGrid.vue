@@ -19,6 +19,7 @@ import furnitureIcon from '@/assets/icons/furnitureIcon.svg';
 import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
 import phoneIcon from '@/assets/icons/phoneIcon.svg';
 import artIcon from '@/assets/icons/artIcon.svg';
+import recommendedIcon from '@/assets/icons/recommended.svg';
 
 const props = defineProps<{
   layout?: 'vertical' | 'grid' | 'horizontal',
@@ -30,7 +31,7 @@ const isHorizontal = computed(() => props.layout === 'horizontal' || !props.layo
 
 const categories = ref<Category[]>([]);
 const emit = defineEmits<{
-  select: [categoryId: string]
+  select: [categoryId: string],
 }>();
 
 const iconMap: Record<string, string> = {
@@ -102,6 +103,11 @@ function handleCategoryClick(id: string) {
   emit('select', id);
 }
 
+function showRecommendedItems() {
+  emit('select', '-1');
+}
+
+
 function showAllItems() {
   emit('select', '');
 }
@@ -114,6 +120,26 @@ onMounted(loadCategories);
     isVertical ? 'category-list' :
     isHorizontal ? 'category-row' : 'category-grid'
   ]">
+    <!-- Recommended Items Button -->
+    <div
+      class="category-wrapper"
+      @click="showRecommendedItems"
+    >
+      <button
+        class="all-categories-button recommended-button"
+        :class="{
+          'active': selectedCategoryId === '-1',
+          'compact': isVertical
+        }"
+      >
+        <span class="category-icon all-icon">
+          <img :src="recommendedIcon" class="recommended-icon" alt="Recommended" width="32" height="32" />
+        </span>
+        <span class="category-label">{{ t('category.recommended') }}</span>
+      </button>
+    </div>
+
+    <!-- All Items Button -->
     <div
       class="category-wrapper"
       @click="showAllItems"
@@ -130,6 +156,7 @@ onMounted(loadCategories);
       </button>
     </div>
 
+    <!-- Category Buttons -->
     <div
       v-for="category in categories"
       :key="category.id?.toString() || `temp-${Math.random()}`"
@@ -246,6 +273,14 @@ onMounted(loadCategories);
 .all-categories-button.compact .all-icon :deep(svg) {
   width: 18px;
   height: 18px;
+}
+
+.recommended-icon {
+  filter: brightness(0) saturate(100%) invert(52%) sepia(78%) saturate(445%) hue-rotate(77deg) brightness(94%) contrast(92%);
+}
+
+.recommended-container {
+  border: 2px solid lightgray;
 }
 
 .category-label {
