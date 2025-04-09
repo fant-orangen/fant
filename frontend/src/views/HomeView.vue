@@ -103,9 +103,6 @@ const backendSortParam = computed(() => {
   }
 });
 
-
-
-
 // --- Methods ---
 async function fetchItems() {
   isLoading.value = true;
