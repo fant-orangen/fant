@@ -180,8 +180,7 @@ public class ItemService {
 
   // --- Other existing methods (getItemsByDistribution, mapToItemPreviewDto, etc.) ---
   public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
-      Pageable pageable) {
-    int pageSize = pageable.getPageSize();
+      Pageable pageable, Integer limit) {
     int offset = (int) pageable.getOffset();
 
     Map<Long, List<Item>> categoryItemsMap = new HashMap<>();
@@ -199,11 +198,11 @@ public class ItemService {
       return Page.empty(pageable);
     }
 
-    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, pageSize,
+    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, limit,
         random);
 
     // Apply pagination
-    int end = Math.min(offset + pageSize, allItems.size());
+    int end = Math.min(offset + limit, allItems.size());
     if (offset > allItems.size()) {
       return Page.empty(pageable);
     }

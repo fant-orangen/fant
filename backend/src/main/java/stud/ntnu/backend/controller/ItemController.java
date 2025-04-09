@@ -186,8 +186,9 @@ public class ItemController {
       @Valid @RequestBody RecommendedItemsRequestDto requestDto,
       Pageable pageable) {
     logger.info("Received request for recommended items with pageable: {}", pageable);
+    Integer limit = requestDto.getLimit();
     Page<ItemPreviewDto> items = itemService.getItemsByDistribution(requestDto.getDistribution(),
-        pageable);
+        pageable, limit);
     logger.info("Returning {} recommended items", items.getNumberOfElements());
     return ResponseEntity.ok(items);
   }

@@ -206,6 +206,7 @@ export async function fetchItemsByDistribution(
       distribution: recommendation.distribution,
       limit,
     })
+    console.log("Number of recommended items fetched:", response.data.totalElements)
 
     return response.data
   } catch (error) {

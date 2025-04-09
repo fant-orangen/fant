@@ -135,6 +135,8 @@ async function fetchItems() {
       if (numOfViews > numOfViewsLimit) {
         const recommendations = await fetchCategoryRecommendations();
         const response = await fetchItemsByDistribution(recommendations);
+        console.log("Recommendations distribution:" + recommendations.distribution);
+        console.log("Actual recommendations:" + response.content) // TODO: remove all these console logs
         items.value = response.content ?? [];
         totalPages.value = response.totalPages ?? 1;
         if (currentPage.value > totalPages.value) {
