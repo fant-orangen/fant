@@ -3,7 +3,6 @@
     <div v-if="loading" class="loading">Loading item data...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else>
-      <h2>Edit Listing</h2>
       <EditAddItem
         :existingItem="itemData"
         :isEditMode="true"
