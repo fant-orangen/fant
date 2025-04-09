@@ -12,7 +12,7 @@ interface Profile {
   email: string;
   firstName: string;
   lastName: string;
-  phoneNumber: string;
+  phone: string;
 }
 
 // Accept the profile object as a prop.
@@ -25,7 +25,7 @@ const { t } = useI18n();
 const email = ref(props.profile.email);
 const firstName = ref(props.profile.firstName);
 const lastName = ref(props.profile.lastName);
-const phoneNumber = ref(props.profile.phoneNumber);
+const phone = ref(props.profile.phone);
 
 // State for update process
 const isUpdating = ref(false);
@@ -37,7 +37,7 @@ watch(() => props.profile, (newProfile) => {
   email.value = newProfile.email;
   firstName.value = newProfile.firstName;
   lastName.value = newProfile.lastName;
-  phoneNumber.value = newProfile.phoneNumber;
+  phone.value = newProfile.phone;
 }, { deep: true });
 
 
@@ -53,7 +53,7 @@ async function handleProfileUpdate() {
     email: email.value,
     firstName: firstName.value,
     lastName: lastName.value,
-    phoneNumber: phoneNumber.value,
+    phone: phone.value,
   };
 
   try {
@@ -99,8 +99,8 @@ async function handleProfileUpdate() {
       :disabled="isUpdating"
     />
     <TextInput
-      id="phoneNumber"
-      v-model="phoneNumber"
+      id="phone"
+      v-model="phone"
       type="tel"
       :label="$t('PHONENUMBER')"
       :placeholder="$t('PHONENUMBER')"

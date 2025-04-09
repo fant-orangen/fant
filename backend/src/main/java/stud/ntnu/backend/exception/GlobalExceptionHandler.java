@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -80,7 +81,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(AlreadyFavoritedException.class)
-  public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException ex) {
+  public ResponseEntity<String> handleAlreadyFavoritedException(AlreadyFavoritedException ex) {
     log.warn(ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }

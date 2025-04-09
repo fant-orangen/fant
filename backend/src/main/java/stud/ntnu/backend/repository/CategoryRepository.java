@@ -20,4 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
    * @return {@link Optional} containing the matching category if found
    */
   Optional<Category> findByName(String name);
+
+  boolean existsByName(String name);
 }

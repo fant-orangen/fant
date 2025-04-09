@@ -117,6 +117,7 @@ public class SecurityConfig {
                 "/api/items/all",
                 "/api/items/details/**",
                 "/api/items/category/**",
+                  "/api/items/search/**",
                 "/api/category/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
@@ -140,7 +141,8 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(
-        Arrays.asList("http://localhost:5173", "http://localhost:5174"));
+        Arrays.asList("http://localhost:5173", "http://localhost:5174", "http://localhost:80",
+            "http://localhost"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
     configuration.setAllowCredentials(true);

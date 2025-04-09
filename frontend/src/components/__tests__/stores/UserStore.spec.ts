@@ -66,7 +66,7 @@ describe('UserStore', () => {
 
     store.token = 'fake_jwt_token';
     store.username = 'testuser';
-    store.profile = { email: 'test@example.com', firstName: 'TestFirstName', lastName: 'TestSurname', phoneNumber: '12345678'};
+    store.profile = { email: 'test@example.com', firstName: 'TestFirstName', lastName: 'TestSurname', phone: '12345678'};
 
     store.logout();
 
@@ -111,7 +111,6 @@ describe('UserStore', () => {
       email: 'newtestuser@example.com',
       firstName: 'Alice',
       lastName: 'Test',
-      birthDate: '2000-01-01',
     };
     const mockToken = 'registered_user_token';
 
@@ -170,7 +169,7 @@ describe('UserStore', () => {
         email: 'fetcheduser@example.com',
         firstName: 'Alice',
         lastName: 'Test',
-        phoneNumber: '12345678'
+        phone: '12345678'
       }
       api.get.mockResolvedValue({ data: mockProfileData });
 
@@ -200,14 +199,14 @@ describe('UserStore', () => {
       email: 'updateduser@example.com',
       firstName: 'Alice',
       lastName: 'Test',
-      phoneNumber: '12345678'
+      phone: '12345678'
     };
 
     const responseProfileData = {
       email: 'updateduser@example.com',
       firstName: 'Alice',
       lastName: 'Test',
-      phoneNumber: '12345678'
+      phone: '12345678'
     };
 
     it('updates profile successfully', async () => {
@@ -216,7 +215,7 @@ describe('UserStore', () => {
         email: 'unupdated@example.com',
         firstName: 'notAlice',
         lastName: 'notTest',
-        phoneNumber: '87654321'
+        phone: '87654321'
       };
       api.put.mockResolvedValue({ data: responseProfileData });
 
@@ -232,7 +231,7 @@ describe('UserStore', () => {
         email: 'unupdated@example.com',
         firstName: 'notAlice',
         lastName: 'notTest',
-        phoneNumber: '87654321'
+        phone: '87654321'
       };
       store.profile = { ...initalProfile };
 

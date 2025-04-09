@@ -1,13 +1,8 @@
 import axiosInstance from '@/axiosConfig'
 
 
-export async function register(userData: {
-  username: string;
-  password: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-}) {
+class RegistrationData {}
+
+export async function register(userData: RegistrationData) {
   return await axiosInstance.post('/auth/register', userData)
 }

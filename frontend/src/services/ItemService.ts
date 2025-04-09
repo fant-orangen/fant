@@ -212,7 +212,7 @@ export async function fetchPreviewItemsByCategoryId(
  */
 export async function fetchItemsByDistribution(
   recommendation: CategoryRecommendation,
-  limit: number = 5,
+  limit: number = 6, // This number can be changed to determine the number of items to display
 ): Promise<ItemPreviewType[]> {
   try {
     const response = await api.post<ItemPreviewType[]>('/items/view/recommended_items', {

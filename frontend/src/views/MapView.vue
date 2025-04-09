@@ -66,7 +66,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n';
 import MapComponent from '@/components/map/MapComponent.vue'
-import CategoryGrid from '@/components/category/categoryGrid.vue'
+import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import SearchBar from '@/components/search/searchBar.vue'
 import { fetchCategories } from '@/services/CategoryService'; // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
 import type { Category } from '@/models/Category'; // [cite: uploaded:frontend 6/frontend/src/models/Category.ts]
