@@ -6,6 +6,8 @@ import LoginView from '@/views/auth/LoginView.vue'
 import RegistrationView from '@/views/auth/RegistrationView.vue'
 import ItemDetailView from "@/views/ItemDetailView.vue";
 import CategoryEditView from "@/views/Administrator/CategoryEditView.vue";
+import AdminUserManagementView from '@/views/Administrator/AdminUserManagementView.vue';
+
 
 // --- Import Profile related views ---
 import ProfileLayout from "@/views/profile/ProfileLayout.vue";
@@ -17,6 +19,9 @@ import MapView from "@/views/MapView.vue";
 import ConversationView from "@/views/messaging/ConversationView.vue";
 import InboxView from "@/views/messaging/InboxView.vue";
 import ProfileFormView from "@/views/profile/ProfileFormView.vue";
+import AdminUserEditView from "@/views/Administrator/AdminUserEditView.vue";
+import CategoryEdit from "@/components/administrator/CategoryEdit.vue";
+import AdminLayout from "@/views/Administrator/AdminLayout.vue";
 // --- End Profile imports ---
 
 const routes = [
@@ -47,6 +52,39 @@ const routes = [
     meta: { title: 'Register - Fant' }
   },
   {
+    path: '/admin',
+    component: AdminLayout, // Use the new layout component for /admin path
+    meta: { requiresAuth: true, requiresAdmin: true }, // Protect the whole section
+    children: [
+      {
+        path: '', // Default admin view (optional, can redirect or show dashboard)
+        redirect: { name: 'admin-categories' } // Redirect /admin to /admin/categories by default
+      },
+      {
+        path: 'categories', // Path becomes /admin/categories
+        name: 'admin-categories',
+        // Point directly to the component used inside CategoryEditView.vue
+        component: CategoryEdit,
+        meta: { title: 'Admin - Categories' } // Titles set here apply to child routes
+      },
+      {
+        path: 'users', // Path becomes /admin/users
+        name: 'admin-users',
+        component: AdminUserManagementView,
+        meta: { title: 'Admin - Users' }
+      },
+      {
+        // This can remain a top-level admin route, or be nested if preferred
+        path: 'users/edit/:id', // Path becomes /admin/users/edit/:id
+        name: 'admin-user-edit',
+        component: AdminUserEditView,
+        props: true,
+        meta: { title: 'Admin - Edit User' }
+      }
+      // Add more admin child routes here (e.g., item moderation)
+    ]
+  },
+  {
     path: '/create-listing/start',
     name: 'create-listing-start',
     component: () => import('../views/NewListingView.vue'),
@@ -56,12 +94,6 @@ const routes = [
     path: '/edit-listing/:itemId',
     name: 'edit-listing',
     component: () => import('@/views/EditListingView.vue'),
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    component: CategoryEditView,
-    meta: { title: 'Administrator - category - Fant', requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/category/:categoryKey',
@@ -132,6 +164,7 @@ const routes = [
         meta: { title: 'My Bids - Fant' }
         // requiresAuth is inherited from parent '/profile'
       },
+
     ],
   }
   // ... fallback route ...
