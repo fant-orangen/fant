@@ -56,6 +56,7 @@ import {
   fetchCategoryRecommendations,
   fetchUserViewCount
 } from '@/services/RecommendationService.ts'
+import { useUserStore } from '@/stores/UserStore.ts'
 
 
 // --- Filter States ---
@@ -101,6 +102,12 @@ const backendSortParam = computed(() => {
   }
 });
 
+// Check if user is logged in
+const isLoggedInUser = computed(() => {
+  const userId = useUserStore().getUserId;
+  return userId !== null && userId !== '0';
+});
+
 
 // --- Methods ---
 async function fetchItems() {
@@ -125,43 +132,63 @@ async function fetchItems() {
 
   console.log("fetchItems was called");
   try {
-    console.log("Category ID:" + selectedCategoryId.value);
-    // If the category id is -1, fetch recommendations
-    if (selectedCategoryId.value === '-1') {
-      const numOfViews = await fetchUserViewCount();
-      console.log("Num of views:" + numOfViews);
+    console.log("Category ID:", selectedCategoryId.value);
+    console.log("User ID:", useUserStore().getUserId);
 
-      // If the user has sufficient item views, fetch recommendation
-      if (numOfViews > numOfViewsLimit) {
-        const recommendations = await fetchCategoryRecommendations();
-        const response = await fetchItemsByDistribution(recommendations);
-        console.log("Recommendations distribution:" + recommendations.distribution);
-        console.log("Actual recommendations:" + response.content) // TODO: remove all these console logs
+    const isRecommendationSelected = selectedCategoryId.value === '-1';
+
+    if (isLoggedInUser.value) {
+      if (isRecommendationSelected) {
+        const numOfViews = await fetchUserViewCount();
+        console.log("User view count:", numOfViews);
+
+        if (numOfViews > numOfViewsLimit) {
+          console.log("Fetching recommendations...");
+          const recommendations = await fetchCategoryRecommendations();
+          const response = await fetchItemsByDistribution(recommendations);
+          console.log("Fetched recommended items:", response.content);
+
+          items.value = response.content ?? [];
+          totalPages.value = response.totalPages ?? 1;
+
+          if (currentPage.value > totalPages.value) {
+            currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+          }
+        } else {
+          items.value = [];
+          totalPages.value = 1;
+          error.value = "You have insufficient item views to fetch recommendations.";
+          insufficientItemViews.value = true;
+        }
+      } else {
+        // Logged in and not viewing recommendations — search as normal
+        const response = await searchItems(params);
         items.value = response.content ?? [];
         totalPages.value = response.totalPages ?? 1;
+
         if (currentPage.value > totalPages.value) {
           currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
         }
-        console.log(`Workspaceed ${items.value.length} items. Total pages: ${totalPages.value}`);
-        // If the user has insufficient item views, show a message
-      } else {
-        insufficientItemViews.value = true;
-        items.value = [];
-        error.value = "You have insufficient item views to fetch recommendations.";
       }
-
-      // Otherwise, perform search
     } else {
-      console.log("Searching for items!");
-      const response = await searchItems(params); // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
-      items.value = response.content ?? [];
-      totalPages.value = response.totalPages ?? 1;
-      if (currentPage.value > totalPages.value) {
-        currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+      if (isRecommendationSelected) {
+        // Not logged in but selected recommended
+        items.value = [];
+        totalPages.value = 1;
+        error.value = "You must be logged in to view recommended items.";
+      } else {
+        // Not logged in, normal category
+        const response = await searchItems(params);
+        items.value = response.content ?? [];
+        totalPages.value = response.totalPages ?? 1;
+
+        if (currentPage.value > totalPages.value) {
+          currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+        }
       }
-      console.log(`Workspaceed ${items.value.length} items. Total pages: ${totalPages.value}`);
     }
 
+    console.log(`Fetched ${items.value.length} items. Total pages: ${totalPages.value}`);
   } catch (err) {
     console.error("Error fetching items:", err);
     error.value = 'Failed to load items. Please try again later.';
