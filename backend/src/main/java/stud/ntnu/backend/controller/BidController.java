@@ -174,7 +174,7 @@ public class BidController {
    * @param principal    the authenticated user
    * @return {@link ResponseEntity} containing the updated {@link BidResponseDto} if successful
    */
-  @PutMapping("/{itemId}")
+  @PutMapping("/update/{itemId}")
   @Operation(summary = "Update Bid", description = "Updates an existing bid for a specific item by the authenticated user.")
   @ApiResponse(responseCode = "200", description = "Bid updated successfully", content = @Content(schema = @Schema(implementation = BidResponseDto.class)))
   @ApiResponse(responseCode = "400", description = "Invalid bid update details", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))

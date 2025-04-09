@@ -192,7 +192,11 @@ interface BidUpdatePayload {
 
 export async function updateMyBid(bidUpdatePayload: BidUpdatePayload): Promise<{ status: number }> {
   try {
-    const response = await api.put('/orders/bid', bidUpdatePayload)
+    // Use the itemId in the URL path instead of the request body
+    const response = await api.put(`/orders/update/${bidUpdatePayload.itemId}`, {
+      amount: bidUpdatePayload.amount,
+      comment: bidUpdatePayload.comment
+    })
     console.log(`Updated own bid for item ${bidUpdatePayload.itemId}, Status: ${response.status}`)
     return { status: response.status }
   } catch (error: any) {
