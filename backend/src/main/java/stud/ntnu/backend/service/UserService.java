@@ -3,7 +3,6 @@ package stud.ntnu.backend.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.security.Principal;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -48,9 +47,9 @@ public class UserService {
   @Transactional
   public User createUser(UserCreateDto registrationDto) {
     User user = User.builder().email(registrationDto.getEmail())
-        .passwordHash(passwordEncoder.encode(registrationDto.getPassword())).firstName(
-            registrationDto.getFirstName()).lastName(registrationDto.getLastName()).phone(
-            registrationDto.getPhone()).displayName(registrationDto.getDisplayName())
+        .passwordHash(passwordEncoder.encode(registrationDto.getPassword()))
+        .firstName(registrationDto.getFirstName()).lastName(registrationDto.getLastName())
+        .phone(registrationDto.getPhone()).displayName(registrationDto.getDisplayName())
         .role(Role.USER).build();
     return userRepository.save(user);
   }

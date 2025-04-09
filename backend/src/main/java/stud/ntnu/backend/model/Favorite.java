@@ -13,8 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "favorites", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "item_id"})
-})
+    @UniqueConstraint(columnNames = {"user_id", "item_id"})})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

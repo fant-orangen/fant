@@ -28,7 +28,6 @@ import stud.ntnu.backend.repository.MessageRepository;
 import stud.ntnu.backend.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <h2>MessageService</h2>
@@ -80,13 +79,8 @@ public class MessageService {
     Item item = itemRepository.findById(messageDto.getItemId())
         .orElseThrow(() -> new EntityNotFoundException("Item not found"));
 
-    Message message = Message.builder()
-        .sender(sender)
-        .receiver(receiver)
-        .item(item)
-        .content(messageDto.getContent())
-        .read(false)
-        .build();
+    Message message = Message.builder().sender(sender).receiver(receiver).item(item)
+        .content(messageDto.getContent()).read(false).build();
 
     Message savedMessage = messageRepository.save(message);
     return mapToMessageResponseDto(savedMessage);
@@ -101,11 +95,9 @@ public class MessageService {
    */
   @Transactional
   public void sendWebSocketMessage(User sender, WebSocketMessageDto messageDto) {
-    MessageCreateDto createDto = MessageCreateDto.builder()
-        .senderId(sender.getId())
+    MessageCreateDto createDto = MessageCreateDto.builder().senderId(sender.getId())
         .receiverId(Long.valueOf(messageDto.getReceiver().getId()))
-        .itemId(Long.valueOf(messageDto.getItem().getId()))
-        .content(messageDto.getMessageContent())
+        .itemId(Long.valueOf(messageDto.getItem().getId())).content(messageDto.getMessageContent())
         .build();
 
     MessageResponseDto savedMessage = saveMessage(createDto);
@@ -123,12 +115,10 @@ public class MessageService {
     List<Message> allMessages = messageRepository.findAllByUserInvolved(user.getId());
     Map<String, List<Message>> grouped = groupMessagesByConversation(user, allMessages);
 
-    return grouped.values().stream()
-        .filter(conversation -> !conversation.isEmpty())
-        .map(messages -> buildConversationPreview(user, messages))
-        .sorted(Comparator.comparing((ConversationPreviewDto c) -> c.getLastMessage().getSentAt())
-            .reversed())
-        .toList();
+    return grouped.values().stream().filter(conversation -> !conversation.isEmpty())
+        .map(messages -> buildConversationPreview(user, messages)).sorted(
+            Comparator.comparing((ConversationPreviewDto c) -> c.getLastMessage().getSentAt())
+                .reversed()).toList();
   }
 
   /**
@@ -156,8 +146,7 @@ public class MessageService {
    * @param messages list of messages to group
    * @return map of grouped messages by conversation key
    */
-  public Map<String, List<Message>> groupMessagesByConversation(User user,
-                                                                List<Message> messages) {
+  public Map<String, List<Message>> groupMessagesByConversation(User user, List<Message> messages) {
     Map<String, List<Message>> grouped = new HashMap<>();
     for (Message m : messages) {
       User other = m.getSender().getId().equals(user.getId()) ? m.getReceiver() : m.getSender();
@@ -180,28 +169,27 @@ public class MessageService {
     // Sort oldest first to find the stable identifier
     messages.sort(Comparator.comparing(Message::getSentAt));
     Message firstMessage = messages.getFirst(); // Earliest message
-    Long conversationIdentifier = firstMessage.getId(); // Use earliest message ID as the main ID
+    Long conversationIdentifier = firstMessage.getId();
 
     // Sort newest first to find the last message for preview content
     messages.sort(Comparator.comparing(Message::getSentAt).reversed());
     Message lastMessage = messages.getFirst(); // Newest message for preview
 
     // Determine the other user based on the last message (or first, doesn't matter)
-    User otherUser = lastMessage.getSender().getId().equals(user.getId()) ?
-        lastMessage.getReceiver() : lastMessage.getSender();
+    User otherUser =
+        lastMessage.getSender().getId().equals(user.getId()) ? lastMessage.getReceiver() :
+            lastMessage.getSender();
 
     // Calculate unread count based on all messages in the thread
     int unreadCount = (int) messages.stream()
-        .filter(m -> m.getReceiver().getId().equals(user.getId()) && !m.isRead())
-        .count();
+        .filter(m -> m.getReceiver().getId().equals(user.getId()) && !m.isRead()).count();
 
     return ConversationPreviewDto.builder()
         .id(conversationIdentifier) // <-- USE EARLIEST MESSAGE ID HERE
         .otherUser(toUserDto(otherUser))
         .item(toItemDto(lastMessage.getItem())) // Item context from last message is fine
         .lastMessage(toMessageDto(lastMessage)) // Preview content from last message
-        .unreadMessagesCount(unreadCount)
-        .relatedItem(toRelatedItemDto(lastMessage.getItem()))
+        .unreadMessagesCount(unreadCount).relatedItem(toRelatedItemDto(lastMessage.getItem()))
         .build();
   }
 
@@ -213,17 +201,12 @@ public class MessageService {
    * @return {@link MessageResponseDto}
    */
   public MessageResponseDto mapToMessageResponseDto(Message message) {
-    return MessageResponseDto.builder()
-        .id(message.getId())
+    return MessageResponseDto.builder().id(message.getId())
         .sender(mapToMessageUserDto(message.getSender()))
-        .receiver(mapToMessageUserDto(message.getReceiver()))
-        .item(new MessageResponseDto.ItemReferenceDto(
-            message.getItem().getId(),
-            message.getItem().getBriefDescription()))
-        .messageContent(message.getContent())
-        .isRead(message.isRead())
-        .sentDate(message.getSentAt())
-        .build();
+        .receiver(mapToMessageUserDto(message.getReceiver())).item(
+            new MessageResponseDto.ItemReferenceDto(message.getItem().getId(),
+                message.getItem().getBriefDescription())).messageContent(message.getContent())
+        .isRead(message.isRead()).sentDate(message.getSentAt()).build();
   }
 
   /**
@@ -234,11 +217,8 @@ public class MessageService {
    * @return {@link MessageUserDto}
    */
   private MessageUserDto mapToMessageUserDto(User user) {
-    return MessageUserDto.builder()
-        .id(user.getId())
-        .email(user.getEmail())
-        .displayName(user.getDisplayName())
-        .build();
+    return MessageUserDto.builder().id(user.getId()).email(user.getEmail())
+        .displayName(user.getDisplayName()).build();
   }
 
   /**
@@ -249,11 +229,8 @@ public class MessageService {
    * @return {@link MessageUserDto}
    */
   public MessageUserDto toUserDto(User user) {
-    return MessageUserDto.builder()
-        .id(user.getId())
-        .displayName(user.getDisplayName())
-        .email(user.getEmail())
-        .build();
+    return MessageUserDto.builder().id(user.getId()).displayName(user.getDisplayName())
+        .email(user.getEmail()).build();
   }
 
   /**
@@ -264,12 +241,8 @@ public class MessageService {
    * @return {@link MessageDto}
    */
   public MessageDto toMessageDto(Message m) {
-    return MessageDto.builder()
-        .id(m.getId())
-        .content(m.getContent())
-        .sentAt(m.getSentAt())
-        .read(m.isRead())
-        .build();
+    return MessageDto.builder().id(m.getId()).content(m.getContent()).sentAt(m.getSentAt())
+        .read(m.isRead()).build();
   }
 
   /**
@@ -281,19 +254,12 @@ public class MessageService {
    */
   public ItemPreviewDto toItemDto(Item item) {
     String imageUrl = item.getImages() != null && !item.getImages().isEmpty() ?
-        item.getImages().stream()
-            .min(Comparator.comparing(ItemImage::getPosition))
-            .map(ItemImage::getImageUrl)
-            .orElse(null) : null;
+        item.getImages().stream().min(Comparator.comparing(ItemImage::getPosition))
+            .map(ItemImage::getImageUrl).orElse(null) : null;
 
-    return ItemPreviewDto.builder()
-        .id(item.getId())
-        .title(item.getBriefDescription())
-        .price(item.getPrice())
-        .imageUrl(imageUrl)
-        .latitude(item.getLatitude())
-        .longitude(item.getLongitude())
-        .build();
+    return ItemPreviewDto.builder().id(item.getId()).title(item.getBriefDescription())
+        .price(item.getPrice()).imageUrl(imageUrl).latitude(item.getLatitude())
+        .longitude(item.getLongitude()).build();
   }
 
   /**
@@ -304,10 +270,8 @@ public class MessageService {
    * @return {@link ConversationPreviewDto.RelatedItemDto}
    */
   public ConversationPreviewDto.RelatedItemDto toRelatedItemDto(Item item) {
-    return ConversationPreviewDto.RelatedItemDto.builder()
-        .id(item.getId())
-        .title(item.getBriefDescription())
-        .build();
+    return ConversationPreviewDto.RelatedItemDto.builder().id(item.getId())
+        .title(item.getBriefDescription()).build();
   }
 
   /**
@@ -333,18 +297,18 @@ public class MessageService {
    * @param currentUser The user initiating the conversation.
    * @param itemId      The ID of the item being discussed.
    * @return The ID of the earliest message in the conversation thread.
-   * @throws EntityNotFoundException If the item or seller doesn't exist.
+   * @throws EntityNotFoundException  If the item or seller doesn't exist.
    * @throws IllegalArgumentException If the user tries to start a conversation with themselves.
    */
   @Transactional // Make method transactional
   public Long findOrCreateConversation(User currentUser, Long itemId) {
-    log.info("Finding or creating conversation for item {} by user {}", itemId, currentUser.getId());
+    log.info("Finding or creating conversation for item {} by user {}", itemId,
+        currentUser.getId());
 
-    Item item = itemRepository.findById(itemId)
-        .orElseThrow(() -> {
-          log.error("Item not found with id: {}", itemId);
-          return new EntityNotFoundException("Item not found with id: " + itemId);
-        });
+    Item item = itemRepository.findById(itemId).orElseThrow(() -> {
+      log.error("Item not found with id: {}", itemId);
+      return new EntityNotFoundException("Item not found with id: " + itemId);
+    });
 
     User seller = item.getSeller();
 
@@ -354,32 +318,34 @@ public class MessageService {
     }
 
     if (currentUser.getId().equals(seller.getId())) {
-      log.warn("User {} attempted to start a conversation with themselves over item {}", currentUser.getId(), itemId);
+      log.warn("User {} attempted to start a conversation with themselves over item {}",
+          currentUser.getId(), itemId);
       throw new IllegalArgumentException("Cannot start a conversation with yourself.");
     }
 
     // 1. Check if any messages already exist for this item between these two users
-    List<Message> existingMessages = messageRepository.findConversation(currentUser.getId(), seller.getId(), itemId);
+    List<Message> existingMessages =
+        messageRepository.findConversation(currentUser.getId(), seller.getId(), itemId);
 
     if (!existingMessages.isEmpty()) {
       // Conversation exists, find the earliest message ID to use as a stable identifier
-      log.info("Found existing conversation for item {} between users {} and {}. Returning earliest message ID.",
+      log.info(
+          "Found existing conversation for item {} between users {} and {}. Returning earliest message ID.",
           itemId, currentUser.getId(), seller.getId());
-      return existingMessages.stream()
-          .min(Comparator.comparing(Message::getSentAt))
-          .map(Message::getId)
-          .orElseThrow(() -> new IllegalStateException("Conversation found but no messages retrieved.")); // Should not happen
+      return existingMessages.stream().min(Comparator.comparing(Message::getSentAt))
+          .map(Message::getId).orElseThrow(() -> new IllegalStateException(
+              "Conversation found but no messages retrieved.")); // Should not happen
     } else {
       // 2. No existing messages, create an initial "system" message to establish the thread
-      log.info("No existing conversation found for item {} between users {} and {}. Creating initial message.",
+      log.info(
+          "No existing conversation found for item {} between users {} and {}. Creating initial message.",
           itemId, currentUser.getId(), seller.getId());
-      Message initialMessage = Message.builder()
-          .sender(currentUser) // Or potentially a system user if you have one
-          .receiver(seller)
-          .item(item)
-          .content("@" + item.getBriefDescription()) // System message
-          .read(true) // Mark as read for sender, receiver will see it as unread initially
-          .build();
+      Message initialMessage =
+          Message.builder().sender(currentUser) // Or potentially a system user if you have one
+              .receiver(seller).item(item)
+              .content("@" + item.getBriefDescription()) // System message
+              .read(true) // Mark as read for sender, receiver will see it as unread initially
+              .build();
       Message savedInitialMessage = messageRepository.save(initialMessage);
       log.info("Initial message saved with ID: {}", savedInitialMessage.getId());
 

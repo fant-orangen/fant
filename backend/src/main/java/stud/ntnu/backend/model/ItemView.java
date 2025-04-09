@@ -19,34 +19,34 @@ import java.time.LocalDateTime;
 @Builder
 public class ItemView {
 
-    /**
-     * <h3>ID</h3>
-     * <p>Unique identifier for the view record.</p>
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  /**
+   * <h3>ID</h3>
+   * <p>Unique identifier for the view record.</p>
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    /**
-     * <h3>User</h3>
-     * <p>The user who viewed the item (required).</p>
-     */
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  /**
+   * <h3>User</h3>
+   * <p>The user who viewed the item (required).</p>
+   */
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-    /**
-     * <h3>Item</h3>
-     * <p>The item that was viewed (required).</p>
-     */
-    @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
+  /**
+   * <h3>Item</h3>
+   * <p>The item that was viewed (required).</p>
+   */
+  @ManyToOne
+  @JoinColumn(name = "item_id", nullable = false)
+  private Item item;
 
-    /**
-     * <h3>Viewed At</h3>
-     * <p>Timestamp when the view occurred (defaults to current time).</p>
-     */
-    @Column(name = "viewed_at")
-    private LocalDateTime viewedAt = LocalDateTime.now();
+  /**
+   * <h3>Viewed At</h3>
+   * <p>Timestamp when the view occurred (defaults to current time).</p>
+   */
+  @Column(name = "viewed_at")
+  private LocalDateTime viewedAt = LocalDateTime.now();
 }
