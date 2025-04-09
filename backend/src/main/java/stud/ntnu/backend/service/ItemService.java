@@ -60,6 +60,7 @@ public class ItemService {
         () -> new EntityNotFoundException(
             "Category not found with id " + itemCreateDto.getCategoryId()));
     Item item = modelMapper.map(itemCreateDto, Item.class);
+    item.setId(null); // This line is crucial! Otherwise the item overwrites an existing one.
     item.setSeller(seller);
     item.setCategory(category);
     return mapToItemDetailsDto(itemRepository.save(item));
