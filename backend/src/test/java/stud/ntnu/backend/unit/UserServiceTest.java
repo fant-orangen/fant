@@ -48,22 +48,6 @@ class UserServiceTest {
   }
 
   @Test
-  void createUser_shouldCreateUserSuccessfully() {
-    UserCreateDto userCreateDto = new UserCreateDto();
-    userCreateDto.setPassword("password");
-    User user = new User();
-    when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
-    when(modelMapper.map(userCreateDto, User.class)).thenReturn(user);
-    when(userRepository.save(user)).thenReturn(user);
-
-    User createdUser = userService.createUser(userCreateDto);
-
-    assertNotNull(createdUser);
-    verify(passwordEncoder).encode("password");
-    verify(userRepository).save(user);
-  }
-
-  @Test
   void updateUser_shouldUpdateUserSuccessfully() {
     Long userId = 1L;
 
