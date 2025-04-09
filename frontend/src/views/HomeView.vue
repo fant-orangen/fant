@@ -80,7 +80,7 @@ const insufficientItemViews = ref(false);
 const locationError = ref<string | null>(null);
 const pageSize = ref(8);
 
-const numOfViewsLimit = 10
+const numOfViewsLimit = 3
 
 // --- Computed Properties ---
 const isLocationAvailable = computed(() => {
@@ -123,7 +123,7 @@ async function fetchItems() {
     sort: backendSortParam.value ?? undefined
   };
 
-
+  console.log("fetchItems was called");
   try {
     console.log("Category ID:" + selectedCategoryId.value);
     // If the category id is -1, fetch recommendations
@@ -253,7 +253,7 @@ watch(
     searchTerm,
     minPrice,
     maxPrice,
-    selectedCategoryName, // Watch computed name derived from ID
+    selectedCategoryId, // Watch computed name derWived from ID
     sortOption,
     // Watch location refs directly
     currentLatitude,
