@@ -5,77 +5,77 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import heartIcon from '@/assets/icons/heart.svg'
-import heartRedIcon from '@/assets/icons/heart-red.svg'
-import { addFavorite, checkIsFavorite, removeFavorite } from '@/services/FavoriteService.ts'
-import { useUserStore } from '@/stores/UserStore.ts'
-import router from '@/router'
+import { ref, onMounted } from 'vue';
+import heartIcon from '@/assets/icons/heart.svg';
+import heartRedIcon from '@/assets/icons/heart-red.svg';
+import { addFavorite, removeFavorite, checkIsFavorite } from '@/services/FavoriteService.ts';
+import { useUserStore } from '@/stores/UserStore.ts';
+import router from '@/router';
 
 const props = defineProps<{
-  itemId: string
-}>()
+  itemId: string;
+}>();
 
-const isFavorite = ref(false)
+const isFavorite = ref(false);
 
 onMounted(async () => {
   if (!props.itemId) {
-    console.error('ItemId is undefined or empty')
-    return
+    console.error('ItemId is undefined or empty');
+    return;
   }
-
   try {
-    isFavorite.value = await checkIsFavorite(parseInt(props.itemId))
+    const favoriteStatus = await checkIsFavorite(parseInt(props.itemId));
+    isFavorite.value = favoriteStatus;
   } catch (error: unknown) {
-    console.error('Error checking favorite status:', error)
+    console.error('Error checking favorite status:', error);
   }
-})
+});
 
 async function toggleFavorite(event: Event) {
-  event.stopPropagation() // Prevent click from bubbling to parent elements
+  event.stopPropagation(); // Prevent click from bubbling to parent elements
 
   if (!props.itemId) {
-    console.error('Cannot toggle favorite: itemId is missing')
-    return
+    console.error('Cannot toggle favorite: itemId is missing');
+    return;
   }
 
   // --- Get User Store and Check Login ---
-  const userStore = useUserStore()
+  const userStore = useUserStore();
   if (!userStore.getUserId || userStore.getUserId === '0') {
-    await router.push('/login') // Redirect to login if user is not logged in
-    return
+    await router.push('/login'); // Redirect to login if user is not logged in
+    return;
   }
 
-  const itemId = parseInt(props.itemId)
-  console.log('UserId:' + userStore.getUserId) // Log UserID for debugging
+  const itemId = parseInt(props.itemId);
+  console.log('UserId:' + userStore.getUserId); // Log UserID for debugging
 
   try {
     if (isFavorite.value) {
       // If currently favorite, try to remove
-      await removeFavorite(itemId)
-      isFavorite.value = false // Update state only if removeFavorite succeeds
-      console.log(`Removed favorite: ${itemId}`)
+      await removeFavorite(itemId);
+      isFavorite.value = false; // Update state only if removeFavorite succeeds
+      console.log(`Removed favorite: ${itemId}`);
     } else {
       // If not currently favorite, try to add
-      await addFavorite(itemId)
-      isFavorite.value = true // Update state only if addFavorite succeeds
-      console.log(`Added favorite: ${itemId}`)
+      await addFavorite(itemId);
+      isFavorite.value = true; // Update state only if addFavorite succeeds
+      console.log(`Added favorite: ${itemId}`);
     }
   } catch (error: unknown) {
     // Use a type guard to check if the error is an Error with an optional response property
     if (error instanceof Error) {
-      const err = error as Error & { response?: { status?: number } }
+      const err = error as Error & { response?: { status?: number } };
       if (err.response?.status === 400 && err.message.includes('already has favorited')) {
-        console.warn('Syncing state: Item was already favorited.')
-        isFavorite.value = true
+        console.warn('Syncing state: Item was already favorited.');
+        isFavorite.value = true;
       } else if (err.response?.status === 404 && isFavorite.value) {
-        console.warn('Syncing state: Item was not favorited to begin with.')
-        isFavorite.value = false
+        console.warn('Syncing state: Item was not favorited to begin with.');
+        isFavorite.value = false;
       } else {
-        console.error('Error toggling favorite:', err.message)
+        console.error('Error toggling favorite:', err.message);
       }
     } else {
-      console.error('An unknown error occurred', error)
+      console.error('An unknown error occurred', error);
     }
   }
 }
