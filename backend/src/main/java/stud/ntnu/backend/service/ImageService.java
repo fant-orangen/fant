@@ -61,8 +61,7 @@ public class ImageService {
    * @param cloudinary      Client for Cloudinary API interactions
    */
   @Autowired
-  public ImageService(ImageRepository imageRepository,
-                      ItemRepository itemRepository,
+  public ImageService(ImageRepository imageRepository, ItemRepository itemRepository,
                       Cloudinary cloudinary) {
     this.imageRepository = imageRepository;
     this.itemRepository = itemRepository;
@@ -132,12 +131,12 @@ public class ImageService {
   @Transactional
   public void deleteImageForItem(Long itemId, String imageUrl) {
     // Verify item exists
-    Item item = itemRepository.findById(itemId)
-        .orElseThrow(() -> new IllegalArgumentException("Item with ID " + itemId + " does not exist."));
+    Item item = itemRepository.findById(itemId).orElseThrow(
+        () -> new IllegalArgumentException("Item with ID " + itemId + " does not exist."));
 
     // Find image with matching URL associated with the item
-    Image imageToDelete = imageRepository.findByItemIdAndUrl(itemId, imageUrl)
-        .orElseThrow(() -> new IllegalArgumentException("Image with URL not found for the specified item."));
+    Image imageToDelete = imageRepository.findByItemIdAndUrl(itemId, imageUrl).orElseThrow(
+        () -> new IllegalArgumentException("Image with URL not found for the specified item."));
 
     // Delete the image
     imageRepository.delete(imageToDelete);

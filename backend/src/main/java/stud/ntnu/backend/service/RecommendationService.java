@@ -26,12 +26,6 @@ public class RecommendationService {
   private final ItemViewRepository itemViewRepository;
 
   /**
-   * <h3>User Repository</h3>
-   * <p>Data access component for user accounts.</p>
-   */
-  private final UserRepository userRepository;
-
-  /**
    * <h3>Generate Category Recommendations</h3>
    * <p>Creates a probability distribution of preferred categories based on user's viewing history.</p>
    *

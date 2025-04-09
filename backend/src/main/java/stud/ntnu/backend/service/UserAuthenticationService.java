@@ -37,10 +37,8 @@ public class UserAuthenticationService implements UserDetailsService {
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    return new org.springframework.security.core.userdetails.User(
-        user.getEmail(),
+    return new org.springframework.security.core.userdetails.User(user.getEmail(),
         user.getPasswordHash(),
-        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-    );
+        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
   }
 }

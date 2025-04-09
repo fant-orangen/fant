@@ -134,7 +134,7 @@ public class AdminControllerTest {
     // Perform delete request
     mockMvc.perform(delete("/api/admin/users/{id}", testUser.getId())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     // Verify the user was deleted from the database
     assertFalse(userRepository.existsById(testUser.getId()));
@@ -167,7 +167,7 @@ public class AdminControllerTest {
             .with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(categoryDto)))
-        .andExpect(status().isOk())
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.name", is("New Category")))
         .andExpect(jsonPath("$.imageUrl", is("https://example.com/new-image.jpg")));
 
@@ -178,17 +178,10 @@ public class AdminControllerTest {
   @Test
   @WithMockUser(username = "admin@example.com", roles = {"ADMIN"})
   public void testDeleteItem() throws Exception {
-    // The ID used here should be a valid ID that exists in your test database
-    // You can set up a test item or use a known ID
     Long itemId = 1L; // Use an appropriate ID based on your test data
-
-    // Perform the delete request and expect either a success or a not found response
-    // depending on whether the item exists in your test database
     mockMvc.perform(delete("/api/admin/item/{id}", itemId)
             .with(csrf()))
-        .andExpect(status().is(anyOf(is(200), is(404))));
+        .andExpect(status().is(anyOf(is(204), is(404))));
 
-    // If you create a test item in your setup, you should verify it was deleted:
-    // assertFalse(itemRepository.existsById(itemId));
   }
 }
