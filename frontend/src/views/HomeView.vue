@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import CategoryGrid from '@/components/category/categoryGrid.vue'
+import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
 import SearchBar from '@/components/search/searchBar.vue'
 import { searchItems, type ItemSearchParams } from '@/services/ItemService'
@@ -95,7 +95,7 @@ const backendSortParam = computed(() => {
 async function fetchItems() {
   isLoading.value = true;
   error.value = null;
-  console.log(`Workspaceing items for page: ${currentPage.value}`);
+  console.log(`Workspacing items for page: ${currentPage.value}`);
 
   const params: ItemSearchParams = {
     searchTerm: searchTerm.value || null,

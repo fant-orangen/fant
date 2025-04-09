@@ -117,6 +117,7 @@ public class SecurityConfig {
                 "/api/items/all",
                 "/api/items/details/**",
                 "/api/items/category/**",
+                  "/api/items/search/**",
                 "/api/category/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
