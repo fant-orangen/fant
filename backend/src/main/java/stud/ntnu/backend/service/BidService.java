@@ -1,17 +1,13 @@
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional; // Import Optional
-import java.util.stream.Collectors;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

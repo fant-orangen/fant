@@ -3,7 +3,6 @@ package stud.ntnu.backend.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import jakarta.transaction.Transactional;
-import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +14,6 @@ import stud.ntnu.backend.repository.ItemRepository;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * <h2>ImageService</h2>
@@ -131,7 +129,7 @@ public class ImageService {
   @Transactional
   public void deleteImageForItem(Long itemId, String imageUrl) {
     // Verify item exists
-    Item item = itemRepository.findById(itemId).orElseThrow(
+    itemRepository.findById(itemId).orElseThrow(
         () -> new IllegalArgumentException("Item with ID " + itemId + " does not exist."));
 
     // Find image with matching URL associated with the item
