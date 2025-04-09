@@ -1,43 +1,62 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import TextInput from '@/components/input/TextInput.vue'; // Check path
+import TextInput from '@/components/input/TextInput.vue';
 import { useI18n } from 'vue-i18n';
 
-/**
- * Define the shape of the profile data the form handles.
- * Should align with the structure in UserStore.
- */
-interface Profile {
+// Define the shape of the profile data including displayName and password for the form
+interface ProfileFormData {
   email: string;
   firstName: string;
   lastName: string;
   phone: string;
+  displayName: string; // <-- Add displayName
+  password?: string;    // <-- Add password (make optional in form state if needed)
 }
-
-// Accept the profile object as a prop.
-const props = defineProps<{ profile: Profile }>();
 
 const userStore = useUserStore();
 const { t } = useI18n();
 
-// Create local reactive copies for editing.
-const email = ref(props.profile.email);
-const firstName = ref(props.profile.firstName);
-const lastName = ref(props.profile.lastName);
-const phone = ref(props.profile.phone);
+// Create local reactive copies, including displayName and password
+const email = ref(userStore.profile.email);
+const firstName = ref(userStore.profile.firstName);
+const lastName = ref(userStore.profile.lastName);
+const phone = ref(userStore.profile.phone);
+const displayName = ref(userStore.profile.displayName); // <-- Add displayName ref
+const password = ref(''); // <-- Add password ref, initialize empty
 
 // State for update process
 const isUpdating = ref(false);
 const updateError = ref('');
 const updateSuccess = ref(false);
+const isLoading = ref(false);
 
-// Watch for prop changes to update local refs if profile is re-fetched
-watch(() => props.profile, (newProfile) => {
+// Fetch profile data when the component is mounted
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    await userStore.fetchProfile(); // Fetches profile including displayName
+    // Update local refs after fetching
+    email.value = userStore.profile.email;
+    firstName.value = userStore.profile.firstName;
+    lastName.value = userStore.profile.lastName;
+    phone.value = userStore.profile.phone;
+    displayName.value = userStore.profile.displayName; // <-- Update displayName ref
+  } catch (err) {
+    console.error('Failed to fetch profile on mount:', err);
+    updateError.value = t('PROFILE_INFO_UNAVAILABLE');
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+// Watch the store's profile for changes
+watch(() => userStore.profile, (newProfile) => {
   email.value = newProfile.email;
   firstName.value = newProfile.firstName;
   lastName.value = newProfile.lastName;
   phone.value = newProfile.phone;
+  displayName.value = newProfile.displayName; // <-- Watch displayName
 }, { deep: true });
 
 
@@ -45,26 +64,39 @@ watch(() => props.profile, (newProfile) => {
  * Calls the store action to update the profile on the backend.
  */
 async function handleProfileUpdate() {
+  // Simple frontend validation for password presence
+  if (!password.value) {
+    updateError.value = 'Password is required to confirm changes.'; // Or use i18n key
+    return; // Stop submission if password is empty
+  }
+
   isUpdating.value = true;
   updateError.value = '';
   updateSuccess.value = false;
 
-  const updatedProfile: Profile = {
+  // Include displayName and password in the object sent to the store action
+  const updatedProfileData = { // Use a different name to avoid confusion with ProfileFormData interface if needed
     email: email.value,
     firstName: firstName.value,
     lastName: lastName.value,
     phone: phone.value,
+    displayName: displayName.value, // <-- Include displayName
+    password: password.value       // <-- Include password
   };
 
   try {
-    // Call the store action
-    await userStore.updateProfile(updatedProfile);
+    await userStore.updateProfile(updatedProfileData); // Pass the complete payload
     updateSuccess.value = true;
-    // Hide success message after a delay
+    password.value = ''; // Clear password field after successful update
     setTimeout(() => updateSuccess.value = false, 3000);
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to update profile:', err);
-    updateError.value = t('PROFILE_UPDATE_ERROR'); // Ensure key exists
+    // Display specific error if it's the known password requirement issue
+    if (err.message?.includes('Password is required')) {
+      updateError.value = 'Password is required to confirm changes.';
+    } else {
+      updateError.value = t('PROFILE_UPDATE_ERROR');
+    }
   } finally {
     isUpdating.value = false;
   }
@@ -72,7 +104,10 @@ async function handleProfileUpdate() {
 </script>
 
 <template>
-  <form class="profile-form" @submit.prevent="handleProfileUpdate">
+  <div v-if="isLoading" class="loading-message">
+    {{ $t('LOADING') }}
+  </div>
+  <form v-else class="profile-form" @submit.prevent="handleProfileUpdate">
     <TextInput
       id="email"
       v-model="email"
@@ -99,15 +134,28 @@ async function handleProfileUpdate() {
       :disabled="isUpdating"
     />
     <TextInput
+      id="displayName"
+      v-model="displayName"
+      :label="$t('USERNAME')" :placeholder="$t('USERNAME')"
+      required
+      :disabled="isUpdating"
+    />
+    <TextInput
       id="phone"
       v-model="phone"
       type="tel"
       :label="$t('PHONENUMBER')"
-      :placeholder="$t('PHONENUMBER')"
-      :disabled="isUpdating"
+      :placeholder="'+47 123 45 678'" :disabled="isUpdating"
     />
-
-    <p v-if="updateSuccess" class="success-message">{{ $t('PROFILE_UPDATE_SUCCESS') }}</p>
+    <small>Please use international format, e.g., +47 12345678</small>
+    <TextInput
+      id="password"
+      v-model="password"
+      :label="$t('PASSWORD')"
+      :placeholder="'Enter current password to save changes'" type="password"
+      required :disabled="isUpdating"
+      autocomplete="current-password" />
+    <small>Password is required by the backend to save any profile changes.</small> <p v-if="updateSuccess" class="success-message">{{ $t('PROFILE_UPDATE_SUCCESS') }}</p>
     <p v-if="updateError" class="error-message">{{ updateError }}</p>
 
     <button type="submit" :disabled="isUpdating">
@@ -117,10 +165,11 @@ async function handleProfileUpdate() {
 </template>
 
 <style scoped>
+/* Styles remain the same */
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem; /* Slightly more gap */
+  gap: 1.2rem;
 }
 button {
   padding: 0.8rem 1.5rem;
@@ -130,7 +179,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  align-self: flex-start; /* Align button to the left */
+  align-self: flex-start;
 }
 button:disabled {
   background-color: #ccc;
@@ -139,7 +188,6 @@ button:disabled {
 button:hover:not(:disabled) {
   background-color: #0056b3;
 }
-
 .success-message {
   color: green;
   font-weight: bold;
@@ -147,5 +195,15 @@ button:hover:not(:disabled) {
 .error-message {
   color: red;
   font-weight: bold;
+}
+.loading-message {
+  padding: 1rem;
+  text-align: center;
+  color: #555;
+}
+small {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: -0.8rem; /* Adjust spacing */
 }
 </style>
