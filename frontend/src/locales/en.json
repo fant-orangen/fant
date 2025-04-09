@@ -9,7 +9,7 @@
     "REGISTRATION_HEADER": "Register User",
     "REGISTRATION_BUTTON": "Register",
     "REGISTRATION_NAVBAR": "Register",
-    "REGISTRATION_ACCOUNT_QUESTION": "Do you have an account?",
+    "GO_TO_LOGIN_BUTTON": "Already have an account? Log In",
     "ADMIN": "Admin",
     "LOADING": "Laster...",
 
@@ -22,6 +22,7 @@
     "FIRSTNAME": "First Name",
     "EMAIL": "E-Mail",
     "PHONENUMBER": "Phone Number",
+    "PHONE_NUMBER_FORMAT_INVALID": "Phone number must be in international format (e.g., +47 12345678).",
     "PROFILE_RATINGS_LABEL": "Ratings",
     "PROFILE_VERIFY_VIPPS_BUTTON": "Verify Vipps",
     "PROFILE_VIPPS_PROMPT_TITLE": "Quick Purchases with Vipps",
@@ -162,5 +163,12 @@
     "MAX_DISTANCE_LABEL": "Max Distance: {distance} km",
     "DISTANCE_SLIDER_TITLE": "Adjust search distance",
     "DISTANCE_SLIDER_DISABLED": "Click 'Use My Location' first",
-    "USE_MY_LOCATION": "Use My Location"
+    "USE_MY_LOCATION": "Use My Location",
+
+    "PASSWORD_REQUIRED": "Password is required.",
+    "PASSWORD_COMPLEXITY": "Password must be 8+ characters long, with uppercase, lowercase, and number.",
+    "PASSWORD_SHOW": "Show password",
+    "PASSWORD_HIDE": "Hide password",
+    "PASSWORD_TOGGLE_SHOW": "Show",
+    "PASSWORD_TOGGLE_HIDE": "Hide"
 }
