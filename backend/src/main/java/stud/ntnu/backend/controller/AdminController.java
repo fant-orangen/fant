@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.category.CategoryRequestDto;
-import stud.ntnu.backend.data.user.UserCreateDto;
+import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.CategoryService;
@@ -55,13 +55,19 @@ public class AdminController {
    */
   private final CategoryService categoryService;
 
+  /**
+   * <h3>Item Service</h3>
+   * <p>Service for item management operations.</p>
+   *
+   * @see ItemService
+   */
   private final ItemService itemService;
 
   /**
    * <h3>Update User</h3>
    * <p>Updates an existing user with the provided details.</p>
    *
-   * @param userCreateDto the user data to update
+   * @param userUpdateDto the user data to update
    * @param id            the ID of the user to update
    * @return the updated {@link User}
    */
@@ -72,11 +78,11 @@ public class AdminController {
   @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<User> updateUser(@Valid @RequestBody
-                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User details to update", required = true, content = @Content(schema = @Schema(implementation = UserCreateDto.class)))
-                                         UserCreateDto userCreateDto,
+                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User details to update", required = true, content = @Content(schema = @Schema(implementation = UserUpdateDto.class)))
+                                           UserUpdateDto userUpdateDto,
                                          @Parameter(description = "ID of the user to update", required = true)
                                          @Positive @PathVariable Long id) {
-    return ResponseEntity.ok(userService.updateUser(userCreateDto, id));
+    return ResponseEntity.ok(userService.updateUser(userUpdateDto, id));
   }
 
   /**

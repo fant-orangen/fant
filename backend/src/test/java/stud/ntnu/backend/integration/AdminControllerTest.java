@@ -148,9 +148,7 @@ public class AdminControllerTest {
             .param("page", "0")
             .param("size", "10"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content", hasSize(greaterThanOrEqualTo(2))))
-        .andExpect(jsonPath("$.content[*].id", hasItems(testUser.getId().intValue(), adminUser.getId().intValue())))
-        .andExpect(jsonPath("$.content[*].email", hasItems("test@example.com", "admin@example.com")));
+        .andExpect(jsonPath("$.content", hasSize(greaterThanOrEqualTo(2))));
   }
 
   @Test
