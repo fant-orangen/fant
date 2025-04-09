@@ -33,29 +33,47 @@ onMounted(async () => {
 });
 
 async function toggleFavorite(event: Event) {
-  event.stopPropagation(); // Prevent click from bubbling to parent elements
+  event.stopPropagation();
 
   if (!props.itemId) {
     console.error('Cannot toggle favorite: itemId is missing');
     return;
   }
 
-  try {
-    const itemId = parseInt(props.itemId);
-    if (!useUserStore().getUserId || useUserStore().getUserId === '0') {
-      await router.push('/register')
-      return;
-    }
+  const userStore = useUserStore();
+  if (!userStore.getUserId || userStore.getUserId === '0') {
+    // Consider redirecting to login instead of register if user exists but isn't logged in
+    await router.push('/login');
+    return;
+  }
 
-    console.log('UserId:' + useUserStore().getUserId)
+  const itemId = parseInt(props.itemId);
+  let desiredState = !isFavorite.value; // What we want the state to become
+
+  try {
     if (isFavorite.value) {
+      // Try to remove
       await removeFavorite(itemId);
+      console.log(`Removed favorite: ${itemId}`);
+      isFavorite.value = false; // Update state only on success
     } else {
+      // Try to add
       await addFavorite(itemId);
+      console.log(`Added favorite: ${itemId}`);
+      isFavorite.value = true; // Update state only on success
     }
-    isFavorite.value = !isFavorite.value;
-  } catch (error) {
-    console.error('Error toggling favorite:', error);
+  } catch (error: any) {
+    console.error(`Error trying to set favorite status to ${desiredState}:`, error);
+
+    // Attempt to re-sync state based on common errors
+    if (error.response?.status === 400 && error.message?.includes('already has favorited')) {
+      console.warn('Syncing state: Item was already favorited.');
+      isFavorite.value = true; // Correct the local state if add failed because it exists
+    } else if (error.response?.status === 404 && !desiredState) { // If remove failed because it wasn't there
+      console.warn('Syncing state: Item was not favorited to begin with.');
+      isFavorite.value = false; // Correct the local state if remove failed because it doesn't exist
+    }
+    // Optionally show a user-friendly error message here
   }
 }
 </script>
