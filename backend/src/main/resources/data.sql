@@ -114,155 +114,156 @@ INSERT INTO items (seller_id, category_id, brief_description, full_description, 
 VALUES (2, 2, 'Diskotek', 'Selger gammelt diskotek; familiebusiness.', 9000000.00, 'ACTIVE', NOW(), NOW(), 62.4, 6.15);
 
 -- New Items
-INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (2, 6, 'iPhone 13 Pro', 'Recently serviced and updated.', 875.41, 'ACTIVE', NOW(), NOW(), 59.8762, 6.1148);
-INSERT INTO images (item_id, url)
-VALUES (1, 'link');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (7, 8, 'Mountain Bike', 'Minimal signs of use, clean and well-maintained.', 1015.33, 'ACTIVE', NOW(), NOW(), 60.1170, 8.7559);
-INSERT INTO images (item_id, url)
-VALUES (2, 'link');
+VALUES (6, 1, 'Travel Backpack', 'Selling due to upgrade, works perfectly.', 689.66, 'ACTIVE', NOW(), NOW(), 58.7622, 8.0288);
+INSERT INTO item_images (item_id, image_url)
+VALUES (10, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217389/backpack_lzwcps.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (5, 10, 'Gaming Laptop', 'Fully functional with no defects.', 1621.29, 'ACTIVE', NOW(), NOW(), 61.7899, 6.2533);
-INSERT INTO images (item_id, url)
-VALUES (3, 'link');
+VALUES (6, 1, 'Hiking Boots', 'Selling due to upgrade, works perfectly.', 1071.50, 'ACTIVE', NOW(), NOW(), 62.3815, 6.0692);
+INSERT INTO item_images (item_id, image_url)
+VALUES (11, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/hikingboots_ejkkus.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (8, 10, 'Smart TV 55"', 'In excellent condition, barely used.', 1477.15, 'ACTIVE', NOW(), NOW(), 60.3226, 7.1488);
-INSERT INTO images (item_id, url)
-VALUES (4, 'link');
+VALUES (5, 1, 'Suitcase Set', 'Recently serviced and updated.', 1148.48, 'ACTIVE', NOW(), NOW(), 60.3145, 5.8573);
+INSERT INTO item_images (item_id, image_url)
+VALUES (12, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/suitcase_set_ce8ui4.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (6, 3, 'AirPods Pro', 'Selling due to upgrade, works perfectly.', 165.98, 'ACTIVE', NOW(), NOW(), 59.6511, 6.9327);
-INSERT INTO images (item_id, url)
-VALUES (5, 'link');
+VALUES (3, 2, 'Blender', 'Clean and well-maintained.', 1852.83, 'ACTIVE', NOW(), NOW(), 60.8479, 10.0623);
+INSERT INTO item_images (item_id, image_url)
+VALUES (13, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217208/blender_cca71d.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (10, 7, 'Dining Table Set', 'Comes with all original packaging and accessories.', 433.69, 'ACTIVE', NOW(), NOW(), 59.2727, 10.1865);
-INSERT INTO images (item_id, url)
-VALUES (6, 'link');
+VALUES (6, 2, 'Microwave Oven', 'Clean and well-maintained.', 1846.57, 'ACTIVE', NOW(), NOW(), 60.1133, 9.5391);
+INSERT INTO item_images (item_id, image_url)
+VALUES (14, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/microwave_i4o9ty.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (7, 9, 'Leather Office Chair', 'Gently used, still under warranty.', 124.93, 'ACTIVE', NOW(), NOW(), 60.6637, 5.7882);
-INSERT INTO images (item_id, url)
-VALUES (7, 'link');
+VALUES (7, 2, 'Dishwasher', 'Fully functional with no defects.', 176.36, 'ACTIVE', NOW(), NOW(), 60.7759, 10.3393);
+INSERT INTO item_images (item_id, image_url)
+VALUES (15, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217208/dishwasher_g7osez.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (3, 4, 'Bluetooth Speaker', 'Recently serviced and updated.', 199.99, 'ACTIVE', NOW(), NOW(), 61.1212, 5.9974);
-INSERT INTO images (item_id, url)
-VALUES (8, 'link');
+VALUES (9, 3, 'Fishing Boat', 'Comes with original packaging.', 1232.21, 'ACTIVE', NOW(), NOW(), 58.9671, 5.3895);
+INSERT INTO item_images (item_id, image_url)
+VALUES (16, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217207/fishing_boat_axttfi.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (4, 2, '4K Action Camera', 'Perfect for outdoor activities and travel.', 229.00, 'ACTIVE', NOW(), NOW(), 60.5031, 6.3217);
-INSERT INTO images (item_id, url)
-VALUES (9, 'link');
+VALUES (9, 3, 'Inflatable Kayak', 'Comes with original packaging.', 1719.19, 'ACTIVE', NOW(), NOW(), 58.1406, 9.4779);
+INSERT INTO item_images (item_id, image_url)
+VALUES (17, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/inflatable_kayak_jrcngn.avif');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (1, 3, 'Robot Vacuum', 'Great for both home and office use.', 349.90, 'ACTIVE', NOW(), NOW(), 58.9344, 9.6522);
-INSERT INTO images (item_id, url)
-VALUES (10, 'link');
+VALUES (3, 4, 'Fantasy Novel Set', 'Clean and well-maintained.', 1386.38, 'ACTIVE', NOW(), NOW(), 59.4078, 10.3789);
+INSERT INTO item_images (item_id, image_url)
+VALUES (18, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/fantasynovels_ygootf.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (6, 8, 'Espresso Machine', 'In excellent condition, barely used.', 499.00, 'ACTIVE', NOW(), NOW(), 59.4023, 10.3271);
-INSERT INTO images (item_id, url)
-VALUES (11, 'link');
+VALUES (5, 4, 'Programming Book', 'Great for both home and travel use.', 1125.07, 'ACTIVE', NOW(), NOW(), 60.8354, 8.7327);
+INSERT INTO item_images (item_id, image_url)
+VALUES (19, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/programmingbook_zsm3ur.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (8, 4, 'Winter Jacket', 'Minimal signs of use, clean and well-maintained.', 149.50, 'ACTIVE', NOW(), NOW(), 60.7234, 5.8321);
-INSERT INTO images (item_id, url)
-VALUES (12, 'link');
+VALUES (1, 5, 'DSLR Camera', 'Selling due to upgrade, works perfectly.', 1175.18, 'ACTIVE', NOW(), NOW(), 60.9231, 6.1481);
+INSERT INTO item_images (item_id, image_url)
+VALUES (20, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/dslr_vpnsff.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (3, 1, 'Electric Scooter', 'Selling due to upgrade, works perfectly.', 699.99, 'ACTIVE', NOW(), NOW(), 58.7091, 9.1512);
-INSERT INTO images (item_id, url)
-VALUES (13, 'link');
+VALUES (2, 5, 'Tripod Stand', 'Recently serviced and updated.', 196.72, 'ACTIVE', NOW(), NOW(), 60.8781, 7.9468);
+INSERT INTO item_images (item_id, image_url)
+VALUES (21, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/tripod_stand_bgtupf.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (4, 5, 'Camping Tent', 'Comes with all original packaging and accessories.', 249.95, 'ACTIVE', NOW(), NOW(), 60.9412, 7.2312);
-INSERT INTO images (item_id, url)
-VALUES (14, 'link');
+VALUES (5, 6, 'Used Sedan', 'Fully functional with no defects.', 1686.30, 'ACTIVE', NOW(), NOW(), 62.1861, 10.7366);
+INSERT INTO item_images (item_id, image_url)
+VALUES (22, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/sedan_w4x7ii.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (9, 9, 'Desk Lamp', 'Gently used, still under warranty.', 45.00, 'ACTIVE', NOW(), NOW(), 62.0021, 6.4923);
-INSERT INTO images (item_id, url)
-VALUES (15, 'link');
+VALUES (8, 6, 'Electric Car Charger', 'In excellent condition, barely used.', 1226.99, 'ACTIVE', NOW(), NOW(), 61.1925, 6.1988);
+INSERT INTO item_images (item_id, image_url)
+VALUES (23, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217208/carcharger_j3ka4b.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (2, 2, 'Washing Machine', 'Fully functional with no defects.', 1200.00, 'ACTIVE', NOW(), NOW(), 59.8123, 5.9911);
-INSERT INTO images (item_id, url)
-VALUES (16, 'link');
+VALUES (2, 6, 'Car Roof Box', 'Clean and well-maintained.', 413.66, 'ACTIVE', NOW(), NOW(), 58.8753, 6.0057);
+INSERT INTO item_images (item_id, image_url)
+VALUES (24, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217207/car_roof_box_dcrmcp.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (1, 7, 'Bookshelf', 'Recently serviced and updated.', 320.75, 'ACTIVE', NOW(), NOW(), 61.0012, 6.0044);
-INSERT INTO images (item_id, url)
-VALUES (17, 'link');
+VALUES (3, 7, 'Leather Jacket', 'Selling due to upgrade, works perfectly.', 1006.28, 'ACTIVE', NOW(), NOW(), 59.6358, 6.2118);
+INSERT INTO item_images (item_id, image_url)
+VALUES (25, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/leatherjacket_aakts3.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (10, 6, 'Smartwatch', 'Perfect for outdoor activities and travel.', 269.00, 'ACTIVE', NOW(), NOW(), 60.1123, 9.3011);
-INSERT INTO images (item_id, url)
-VALUES (18, 'link');
+VALUES (6, 7, 'Summer Dress', 'Great for both home and travel use.', 350.73, 'ACTIVE', NOW(), NOW(), 58.2245, 8.8889);
+INSERT INTO item_images (item_id, image_url)
+VALUES (26, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/summerdress_ijyeg2.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (5, 3, 'Tablet 10.5"', 'Selling due to upgrade, works perfectly.', 499.00, 'ACTIVE', NOW(), NOW(), 59.1098, 10.1000);
-INSERT INTO images (item_id, url)
-VALUES (19, 'link');
+VALUES (4, 8, 'Gaming Laptop', 'Comes with original packaging.', 1047.58, 'ACTIVE', NOW(), NOW(), 60.1422, 9.3871);
+INSERT INTO item_images (item_id, image_url)
+VALUES (27, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217207/gaminglaptop_ihp4gq.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (6, 2, 'Graphic Drawing Tablet', 'Great for both home and office use.', 389.99, 'ACTIVE', NOW(), NOW(), 61.2201, 6.2011);
-INSERT INTO images (item_id, url)
-VALUES (20, 'link');
+VALUES (5, 8, 'Desktop PC', 'Recently serviced and updated.', 1463.84, 'ACTIVE', NOW(), NOW(), 61.7449, 10.5132);
+INSERT INTO item_images (item_id, image_url)
+VALUES (28, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217208/desktoppc_xggmrk.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (8, 10, 'Home Theater System', 'In excellent condition, barely used.', 999.99, 'ACTIVE', NOW(), NOW(), 60.1323, 8.1234);
-INSERT INTO images (item_id, url)
-VALUES (21, 'link');
+VALUES (7, 8, 'Computer Monitor', 'Selling due to upgrade, works perfectly.', 1703.86, 'ACTIVE', NOW(), NOW(), 60.2293, 8.7742);
+INSERT INTO item_images (item_id, image_url)
+VALUES (29, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/monitor_tc8ibs.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (9, 5, 'Fridge Freezer Combo', 'Recently serviced and updated.', 1299.00, 'ACTIVE', NOW(), NOW(), 59.4211, 6.8765);
-INSERT INTO images (item_id, url)
-VALUES (22, 'link');
+VALUES (4, 9, 'Dining Table', 'Great for both home and travel use.', 1732.58, 'ACTIVE', NOW(), NOW(), 58.2995, 5.5864);
+INSERT INTO item_images (item_id, image_url)
+VALUES (30, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217208/diningtable_rh9ane.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (3, 8, 'Garden Tools Set', 'Perfect for outdoor activities and travel.', 179.00, 'ACTIVE', NOW(), NOW(), 58.9356, 10.4412);
-INSERT INTO images (item_id, url)
-VALUES (23, 'link');
+VALUES (3, 9, 'Bookshelf', 'Great for both home and travel use.', 1954.49, 'ACTIVE', NOW(), NOW(), 61.6511, 10.0269);
+INSERT INTO item_images (item_id, image_url)
+VALUES (31, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217207/bookshelf_z9fsqt.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (2, 6, 'Pressure Washer', 'Selling due to upgrade, works perfectly.', 249.00, 'ACTIVE', NOW(), NOW(), 60.7452, 7.3021);
-INSERT INTO images (item_id, url)
-VALUES (24, 'link');
+VALUES (5, 9, 'Recliner Chair', 'Clean and well-maintained.', 1684.42, 'ACTIVE', NOW(), NOW(), 59.0707, 10.7555);
+INSERT INTO item_images (item_id, image_url)
+VALUES (32, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/recliner_dhjtyp.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (4, 4, 'Microwave Oven', 'Minimal signs of use, clean and well-maintained.', 139.90, 'ACTIVE', NOW(), NOW(), 59.1234, 5.8765);
-INSERT INTO images (item_id, url)
-VALUES (25, 'link');
+VALUES (8, 10, 'Sport Motorcycle', 'In excellent condition, barely used.', 1415.72, 'ACTIVE', NOW(), NOW(), 59.9698, 9.4122);
+INSERT INTO item_images (item_id, image_url)
+VALUES (33, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/motorcycle_ezkqih.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (10, 3, 'Pet Carrier', 'Comes with all original packaging and accessories.', 59.90, 'ACTIVE', NOW(), NOW(), 58.9123, 10.2012);
-INSERT INTO images (item_id, url)
-VALUES (26, 'link');
+VALUES (7, 10, 'Helmet', 'Comes with original packaging.', 148.91, 'ACTIVE', NOW(), NOW(), 61.7991, 8.2558);
+INSERT INTO item_images (item_id, image_url)
+VALUES (34, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217208/helmet_awejnv.jpg');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (1, 1, 'Baby Stroller', 'Gently used, still under warranty.', 450.00, 'ACTIVE', NOW(), NOW(), 60.8345, 6.4411);
-INSERT INTO images (item_id, url)
-VALUES (27, 'link');
+VALUES (2, 11, 'iPhone 14', 'Selling due to upgrade, works perfectly.', 1710.36, 'ACTIVE', NOW(), NOW(), 59.4015, 10.4854);
+INSERT INTO item_images (item_id, image_url)
+VALUES (35, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217209/iphone14_ccqzj0.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (6, 2, 'Portable AC Unit', 'Fully functional with no defects.', 549.00, 'ACTIVE', NOW(), NOW(), 59.7012, 8.1100);
-INSERT INTO images (item_id, url)
-VALUES (28, 'link');
+VALUES (4, 11, 'Google Pixel 9 Pro', 'Recently serviced and updated.', 860.25, 'ACTIVE', NOW(), NOW(), 62.0721, 5.9687);
+INSERT INTO item_images (item_id, image_url)
+VALUES (36, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217208/googlepixel9_i4lpdt.avif');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (5, 3, 'Fitness Tracker', 'Recently serviced and updated.', 89.90, 'ACTIVE', NOW(), NOW(), 58.9731, 9.9999);
-INSERT INTO images (item_id, url)
-VALUES (29, 'link');
+VALUES (1, 12, 'The Starry Night', 'Fully functional with no defects.', 950000, 'ACTIVE', NOW(), NOW(), 59.3042, 7.3704);
+INSERT INTO item_images (item_id, image_url)
+VALUES (37, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/oilpainting_tfvwyg.webp');
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (7, 10, 'Digital Piano', 'Great for both home and office use.', 799.00, 'ACTIVE', NOW(), NOW(), 60.1000, 6.6543);
-INSERT INTO images (item_id, url)
-VALUES (30, 'link');
+VALUES (2, 12, 'Sketchbook Set', 'Comes with original packaging.', 87.90, 'ACTIVE', NOW(), NOW(), 60.5015, 6.1922);
+INSERT INTO item_images (item_id, image_url)
+VALUES (38, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217210/sketchbook_set_aaefwj.jpg');
+
+INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
+VALUES (1, 12, 'Digital Drawing Tablet', 'Great for both home and travel use.', 934.66, 'ACTIVE', NOW(), NOW(), 61.1021, 5.3025);
+INSERT INTO item_images (item_id, image_url)
+VALUES (39, 'https://res.cloudinary.com/dsa5d788x/image/upload/v1744217992/digitaldrawingtablet_dzx9c3.jpg');
 
 -- Images for items
 
