@@ -108,6 +108,7 @@
         id="images"
         :label="$t('APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL')"
         :multiple="true"
+        :initialUrls="props.existingItem?.images ?? []"
         @update:files="handleFileUpload"
         class="form-field"
       />
@@ -147,7 +148,7 @@ const formData = ref<CreateItemType>({
   price: 0,
   latitude: undefined,
   longitude: undefined,
-  images: null,
+  images: [],
   ...(props.existingItem || {})
 });
 
@@ -199,11 +200,15 @@ watch(() => formData.value.longitude, (val) => {
 // File handler
 function handleFileUpload(files: File[]) {
   imageFiles.value = files;
-  formData.value.images = null;
 }
 
 async function handleSubmit() {
   try {
+    // Combine existing and newly uploaded images into `formData`
+    formData.value.images = props.existingItem?.images?.filter(url =>
+      imageFiles.value.every(file => URL.createObjectURL(file) !== url)
+    ) || [];
+
     const itemId = await props.onSubmit({ ...formData.value });
 
     if (imageFiles.value.length > 0) {

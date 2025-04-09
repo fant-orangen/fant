@@ -46,7 +46,7 @@ export interface CreateItemType {
   price: number;
   latitude?: number;
   longitude?: number;
-  images: null; // explicitly null when creating
+  images: string[]; // explicitly null when creating
 }
 
 export interface ItemImageType {

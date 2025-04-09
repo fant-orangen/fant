@@ -31,20 +31,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const props = defineProps<{
   id: string;
   label: string;
   multiple?: boolean;
+  initialUrls?: string[];
 }>();
+
 
 const emit = defineEmits<{
   (e: 'update:files', files: File[]): void;
 }>();
 
+
+const existingImageUrls = ref<string[]>(props.initialUrls || []);
 const files = ref<File[]>([]);
 const previews = ref<string[]>([]);
+
+onMounted(() => {
+  if (existingImageUrls.value.length > 0) {
+    previews.value.push(...existingImageUrls.value);
+  }
+});
 
 function handleFileChange(event: Event) {
   const target = event.target as HTMLInputElement;
@@ -62,6 +72,16 @@ function handleFileChange(event: Event) {
 }
 
 function removeImage(index: number) {
+  const preview = previews.value[index];
+
+  if (existingImageUrls.value.includes(preview)) {
+    existingImageUrls.value.splice(existingImageUrls.value.indexOf(preview), 1);
+  } else {
+    const fileIndex = files.value.findIndex((file) =>
+      URL.createObjectURL(file) === preview
+    );
+    if (fileIndex > -1) files.value.splice(fileIndex, 1);
+  }
   // Revoke the object URL
   URL.revokeObjectURL(previews.value[index]);
 

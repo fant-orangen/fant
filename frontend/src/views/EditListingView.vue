@@ -75,7 +75,7 @@ async function convertItemDetailsToCreateItem(item: ItemDetailsType): Promise<Cr
     price: item.price,
     latitude: item.latitude,
     longitude: item.longitude,
-    images: null, // Explicitly set to null until skybased is done.
+    images: item.imageUrls, // Explicitly set to null until skybased is done.
   };
 }
 
