@@ -62,6 +62,13 @@
           >
             Place Bid
           </button>
+          <div class="details-column">
+            <div v-if="isAdmin" class="admin-actions">  <button @click="confirmAdminDeleteItem" class="admin-delete-button">
+              Admin Delete Item
+            </button>
+            </div>
+
+          </div>
         </div>
 
         <div v-if="isUserSeller" class="seller-notice">
@@ -112,7 +119,7 @@ import ImageGallery from '@/components/image/ImageGallery.vue';
 import HeartIcon from '@/components/item/HeartIcon.vue';
 import BidModal from '@/components/modals/BidModal.vue';
 import type { ItemDetailsType } from '@/models/Item'; // Ensure ItemDetailsType includes sellerId
-import { fetchItem, recordItemView } from '@/services/ItemService.ts';
+import {adminDeleteItem, fetchItem, recordItemView} from '@/services/ItemService.ts';
 import { initiateConversation } from '@/services/MessageService'; // <-- Import the new service function
 import { useUserStore } from '@/stores/UserStore';
 
@@ -319,7 +326,36 @@ async function startConversation() {
   }
 }
 
-// --- Lifecycle Hooks ---
+/**
+ * Checks if you want to delete
+ */
+async function confirmAdminDeleteItem() {
+  if (!item.value) return;
+
+  const confirmDelete = confirm(
+    `ADMIN ACTION: Are you sure you want to permanently delete item "${item.value.title}" (ID: ${props.itemId})?`
+  );
+
+  if (confirmDelete) {
+    try {
+      await adminDeleteItem(props.itemId);
+      alert('Item deleted successfully by admin.');
+      router.push({ name: 'home' });
+    } catch (err) {
+      console.error("Admin item deletion failed:", err);
+      alert(`Failed to delete item: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
+  }
+}
+
+/**
+ * Checks if user is admin
+ */
+const isAdmin = computed(() => {
+  return userStore.getUserRole === 'ADMIN';
+});
+
+-
 
 // Load item data when the component is mounted
 onMounted(() => {

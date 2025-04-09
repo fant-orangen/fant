@@ -357,3 +357,9 @@ export async function fetchMyPagedItems(
     throw error
   }
 }
+
+export async function adminDeleteItem(id: number | string): Promise<void> {
+  console.log('Admin deleting item', id);
+  await api.delete(`/admin/item/${id}`);
+  console.log('Admin deleted item successfully');
+}
