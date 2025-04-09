@@ -38,7 +38,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 import { isAxiosError } from 'axios'
 import TextInput from '@/components/input/TextInput.vue'
-import PasswordInput from '@/components/input/PasswordInput.vue'; // Import PasswordInput
+import PasswordInput from '@/components/input/PasswordInput.vue';
 
 const username = ref('')
 const password = ref('')
