@@ -1,3 +1,63 @@
+<script setup lang="ts">
+import { ref, onMounted, watch } from 'vue';
+
+const props = defineProps<{
+  id: string;
+  label: string;
+  multiple?: boolean;
+  initialUrls?: string[];
+}>();
+
+const emit = defineEmits<{
+  (e: 'update:images', payload: { files: File[]; existingUrls: string[] }): void;
+}>();
+
+const files = ref<File[]>([]);
+const existingImageUrls = ref<string[]>(props.initialUrls || []);
+const previews = ref<string[]>([]);
+
+// Generate previews
+onMounted(() => {
+  previews.value = [...existingImageUrls.value];
+});
+
+watch([files, existingImageUrls], () => {
+  emit('update:images', {
+    files: files.value,
+    existingUrls: existingImageUrls.value
+  });
+});
+
+function handleFileChange(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (input.files) {
+    const newFiles = Array.from(input.files);
+    files.value = props.multiple ? [...files.value, ...newFiles] : newFiles;
+
+    newFiles.forEach(file => {
+      previews.value.push(URL.createObjectURL(file));
+    });
+  }
+}
+
+function removeImage(index: number) {
+  const preview = previews.value[index];
+
+  const existingIndex = existingImageUrls.value.indexOf(preview);
+  if (existingIndex !== -1) {
+    existingImageUrls.value.splice(existingIndex, 1);
+  } else {
+    const objectUrlIndex = files.value.findIndex(f => URL.createObjectURL(f) === preview);
+    if (objectUrlIndex !== -1) {
+      files.value.splice(objectUrlIndex, 1);
+    }
+  }
+
+  URL.revokeObjectURL(preview);
+  previews.value.splice(index, 1);
+}
+</script>
+
 <template>
   <div class="file-upload">
     <label :for="id" class="upload-label">{{ label }}</label>
@@ -5,7 +65,7 @@
     <div class="upload-area">
       <label :for="id" class="upload-button">
         <span class="button-icon">+</span>
-        {{ multiple ? $t('APP_LISTING_CREATE_NEW_IMAGES_LABEL') : $t('APP_LISTING_CREATE_NEW_IMAGES_LABEL') }}
+        {{ multiple ? 'Add images' : 'Add image' }}
         <input
           type="file"
           :id="id"
@@ -18,81 +78,13 @@
     </div>
 
     <div v-if="previews.length" class="preview-container">
-      <div
-        v-for="(src, index) in previews"
-        :key="index"
-        class="preview-image"
-      >
+      <div v-for="(src, index) in previews" :key="index" class="preview-image">
         <img :src="src" :alt="'Preview ' + (index + 1)" />
         <button type="button" class="remove-btn" @click="removeImage(index)">✕</button>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-
-const props = defineProps<{
-  id: string;
-  label: string;
-  multiple?: boolean;
-  initialUrls?: string[];
-}>();
-
-
-const emit = defineEmits<{
-  (e: 'update:files', files: File[]): void;
-}>();
-
-
-const existingImageUrls = ref<string[]>(props.initialUrls || []);
-const files = ref<File[]>([]);
-const previews = ref<string[]>([]);
-
-onMounted(() => {
-  if (existingImageUrls.value.length > 0) {
-    previews.value.push(...existingImageUrls.value);
-  }
-});
-
-function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  if (target.files) {
-    const newFiles = Array.from(target.files);
-    files.value = props.multiple ? [...files.value, ...newFiles] : newFiles;
-
-    // Generate previews
-    newFiles.forEach(file => {
-      previews.value.push(URL.createObjectURL(file));
-    });
-
-    emit('update:files', files.value);
-  }
-}
-
-function removeImage(index: number) {
-  const preview = previews.value[index];
-
-  if (existingImageUrls.value.includes(preview)) {
-    existingImageUrls.value.splice(existingImageUrls.value.indexOf(preview), 1);
-  } else {
-    const fileIndex = files.value.findIndex((file) =>
-      URL.createObjectURL(file) === preview
-    );
-    if (fileIndex > -1) files.value.splice(fileIndex, 1);
-  }
-  // Revoke the object URL
-  URL.revokeObjectURL(previews.value[index]);
-
-  // Remove the file and preview at that index
-  files.value.splice(index, 1);
-  previews.value.splice(index, 1);
-
-  emit('update:files', files.value);
-}
-</script>
-
 <style scoped>
 .file-upload {
   display: flex;

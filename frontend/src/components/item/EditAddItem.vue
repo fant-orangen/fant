@@ -109,7 +109,7 @@
         :label="$t('APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL')"
         :multiple="true"
         :initialUrls="props.existingItem?.images ?? []"
-        @update:files="handleFileUpload"
+        @update:images="handleFileUpload"
         class="form-field"
       />
 
@@ -158,6 +158,8 @@ const latitudeInput = ref(formData.value.latitude?.toString() || '');
 const longitudeInput = ref(formData.value.longitude?.toString() || '');
 const isMapMode = ref(true);
 const imageFiles = ref<File[]>([]);
+const keptExistingUrls = ref<string[]>([]);
+const newImageFiles = ref<File[]>([]);
 
 const categories = ref<Category[]>([]);
 const categoryOptions = ref<string[]>([]);
@@ -198,21 +200,42 @@ watch(() => formData.value.longitude, (val) => {
 });
 
 // File handler
-function handleFileUpload(files: File[]) {
-  imageFiles.value = files;
+function handleFileUpload({ files, existingUrls }: { files: File[], existingUrls: string[] }) {
+  newImageFiles.value = files;
+  keptExistingUrls.value = existingUrls;
 }
 
 async function handleSubmit() {
   try {
-    // Combine existing and newly uploaded images into `formData`
-    formData.value.images = props.existingItem?.images?.filter(url =>
-      imageFiles.value.every(file => URL.createObjectURL(file) !== url)
-    ) || [];
+    // Find deleted images by comparing original images with kept existing URLs
+    const deletedImages = (props.existingItem?.images || []).filter(
+      (url) => !keptExistingUrls.value.includes(url)
+    );
 
+    // Set images property to kept URLs
+    formData.value.images = keptExistingUrls.value;
+
+    // Submit the form data to create/update the item
     const itemId = await props.onSubmit({ ...formData.value });
 
-    if (imageFiles.value.length > 0) {
-      await ImageService.uploadImages(imageFiles.value, itemId);
+    // Delete images that were removed
+    for (const url of deletedImages) {
+      try {
+        await ImageService.deleteImage(itemId, url);
+      } catch (error) {
+        console.error(`Failed to delete image ${url}:`, error);
+        // Continue with other operations even if one delete fails
+      }
+    }
+
+    // Upload new images if any
+    if (newImageFiles.value.length > 0) {
+      const uploadedUrls = await ImageService.uploadImages(newImageFiles.value, itemId);
+
+      // Update form data with new image URLs
+      if (Array.isArray(uploadedUrls)) {
+        formData.value.images = [...formData.value.images, ...uploadedUrls];
+      }
     }
 
     alert(props.isEditMode ? 'Item updated!' : 'Item created!');
