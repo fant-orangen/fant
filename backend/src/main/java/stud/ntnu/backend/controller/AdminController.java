@@ -1,8 +1,13 @@
 package stud.ntnu.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +35,7 @@ import stud.ntnu.backend.service.UserService;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@Tag(name = "Admin", description = "Administrative operations for users, categories, and items.")
 public class AdminController {
 
   /**
@@ -55,11 +61,19 @@ public class AdminController {
    * <p>Updates an existing user with the provided details.</p>
    *
    * @param userCreateDto the user data to update
-   * @param id             the ID of the user to update
+   * @param id            the ID of the user to update
    * @return the updated {@link User}
    */
   @PutMapping("/users/{id}")
-  public ResponseEntity<User> updateUser(@Valid @RequestBody UserCreateDto userCreateDto,
+  @Operation(summary = "Update User", description = "Updates an existing user with the provided details.")
+  @ApiResponse(responseCode = "200", description = "User updated successfully", content = @Content(schema = @Schema(implementation = User.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid request parameters or body")
+  @ApiResponse(responseCode = "404", description = "User not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<User> updateUser(@Valid @RequestBody
+                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User details to update", required = true, content = @Content(schema = @Schema(implementation = UserCreateDto.class)))
+                                         UserCreateDto userCreateDto,
+                                         @Parameter(description = "ID of the user to update", required = true)
                                          @Positive @PathVariable Long id) {
     return ResponseEntity.ok(userService.updateUser(userCreateDto, id));
   }
@@ -72,7 +86,14 @@ public class AdminController {
    * @return empty response with OK status
    */
   @DeleteMapping("/users/{id}")
-  public ResponseEntity<Void> deleteUser(@Valid @PathVariable Long id) {
+  @Operation(summary = "Delete User", description = "Deletes a user with the specified ID.")
+  @ApiResponse(responseCode = "200", description = "User deleted successfully")
+  @ApiResponse(responseCode = "204", description = "No content (user deleted)")
+  @ApiResponse(responseCode = "404", description = "User not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Void> deleteUser(
+      @Parameter(description = "ID of the user to delete", required = true) @Valid @PathVariable
+      Long id) {
     userService.deleteUser(id);
     return ResponseEntity.ok().build();
   }
@@ -84,7 +105,13 @@ public class AdminController {
    * @return list of all {@link User} entities
    */
   @GetMapping("/users")
-  public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
+  @Operation(summary = "Get All Users", description = "Retrieves a paginated list of all users in the system.")
+  @ApiResponse(responseCode = "200", description = "A paginated list of users", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      User.class})))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Page<User>> getAllUsers(
+      @Parameter(description = "Pagination information (page number, size, sort)")
+      Pageable pageable) {
     return ResponseEntity.ok(userService.getAll(pageable));
   }
 
@@ -96,8 +123,13 @@ public class AdminController {
    * @return the created {@link Category}
    */
   @PostMapping("/category")
-  public ResponseEntity<Category> createCategory(
-      @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+  @Operation(summary = "Create Category", description = "Creates a new category with the provided details.")
+  @ApiResponse(responseCode = "200", description = "Category created successfully", content = @Content(schema = @Schema(implementation = Category.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid request body")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Category> createCategory(@Valid @RequestBody
+                                                 @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Category details to create", required = true, content = @Content(schema = @Schema(implementation = CategoryRequestDto.class)))
+                                                 CategoryRequestDto categoryRequestDto) {
     return ResponseEntity.ok(categoryService.create(categoryRequestDto));
   }
 
@@ -110,8 +142,15 @@ public class AdminController {
    * @return the updated {@link Category}
    */
   @PutMapping("/category/{id}")
+  @Operation(summary = "Update Category", description = "Updates an existing category with the provided details.")
+  @ApiResponse(responseCode = "200", description = "Category updated successfully", content = @Content(schema = @Schema(implementation = Category.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid request parameters or body")
+  @ApiResponse(responseCode = "404", description = "Category not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<Category> updateCategory(@Valid @RequestBody
+                                                 @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Category details to update", required = true, content = @Content(schema = @Schema(implementation = CategoryRequestDto.class)))
                                                  CategoryRequestDto categoryRequestDto,
+                                                 @Parameter(description = "ID of the category to update", required = true)
                                                  @Positive @PathVariable Long id) {
     return ResponseEntity.ok(categoryService.update(categoryRequestDto, id));
   }
@@ -124,13 +163,34 @@ public class AdminController {
    * @return empty response with OK status
    */
   @DeleteMapping("/category/{id}")
-  public ResponseEntity<Void> deleteCategory(@Positive @PathVariable Long id) {
+  @Operation(summary = "Delete Category", description = "Deletes a category with the specified ID.")
+  @ApiResponse(responseCode = "200", description = "Category deleted successfully")
+  @ApiResponse(responseCode = "204", description = "No content (category deleted)")
+  @ApiResponse(responseCode = "404", description = "Category not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Void> deleteCategory(
+      @Parameter(description = "ID of the category to delete", required = true) @Positive
+      @PathVariable Long id) {
     categoryService.delete(id);
     return ResponseEntity.ok().build();
   }
 
+  /**
+   * <h3>Delete item</h3>
+   * <p>Deletes an item with the specified ID.</p>
+   *
+   * @param id the ID of the item to delete
+   * @return empty response with OK status
+   */
   @DeleteMapping("/item/{id}")
-  public ResponseEntity<Void> deleteItem(@Positive @PathVariable Long id) {
+  @Operation(summary = "Delete Item (Admin)", description = "Deletes an item with the specified ID (admin privilege required).")
+  @ApiResponse(responseCode = "200", description = "Item deleted successfully")
+  @ApiResponse(responseCode = "204", description = "No content (item deleted)")
+  @ApiResponse(responseCode = "404", description = "Item not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Void> deleteItem(
+      @Parameter(description = "ID of the item to delete", required = true) @Positive @PathVariable
+      Long id) {
     itemService.adminDeleteItem(id);
     return ResponseEntity.ok().build();
   }

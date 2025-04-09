@@ -1,9 +1,14 @@
 package stud.ntnu.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +45,17 @@ public class UserController {
    * <p>Retrieves user details by user ID.</p>
    *
    * @param id the user ID
-   * @return {@link UserResponseDto} with user details
+   * @return {@link ResponseEntity} containing {@link UserResponseDto} with user details
    */
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponseDto> getUser(@Positive @PathVariable Long id) {
+  @Operation(summary = "Get User by ID", description = "Retrieves user details based on the provided user ID.")
+  @ApiResponse(responseCode = "200", description = "User details retrieved successfully", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid user ID")
+  @ApiResponse(responseCode = "404", description = "User not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<UserResponseDto> getUser(
+      @Parameter(description = "ID of the user to retrieve", required = true) @Positive
+      @PathVariable Long id) {
     return ResponseEntity.ok(userService.getUserById(id));
   }
 
@@ -52,12 +64,18 @@ public class UserController {
    * <p>Updates the current user's profile information.</p>
    *
    * @param userCreateDto the updated user data
-   * @param principal      the authenticated user
-   * @return updated {@link User} entity
+   * @param principal     the authenticated user
+   * @return {@link ResponseEntity} containing the updated {@link User} entity
    */
   @PutMapping("/profile")
-  public ResponseEntity<User> updateUser(@Valid @RequestBody UserCreateDto userCreateDto,
-                                         Principal principal) {
+  @Operation(summary = "Update User Profile", description = "Updates the profile information of the currently authenticated user.")
+  @ApiResponse(responseCode = "200", description = "User profile updated successfully", content = @Content(schema = @Schema(implementation = User.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid user details")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<User> updateUser(@Valid @RequestBody
+                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated user details", required = true, content = @Content(schema = @Schema(implementation = UserCreateDto.class)))
+                                         UserCreateDto userCreateDto,
+                                         @Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(
         userService.updateUser(userCreateDto, userService.getCurrentUserId(principal)));
   }
@@ -67,10 +85,13 @@ public class UserController {
    * <p>Retrieves details of the currently authenticated user.</p>
    *
    * @param principal the authenticated user
-   * @return current {@link User} entity
+   * @return {@link ResponseEntity} containing the current {@link User} entity
    */
   @GetMapping("/profile")
-  public ResponseEntity<User> getCurrentUser(Principal principal) {
+  @Operation(summary = "Get Current User Profile", description = "Retrieves the profile information of the currently authenticated user.")
+  @ApiResponse(responseCode = "200", description = "Current user profile retrieved successfully", content = @Content(schema = @Schema(implementation = User.class)))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<User> getCurrentUser(@Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(userService.getCurrentUser(principal));
   }
 
@@ -79,10 +100,13 @@ public class UserController {
    * <p>Retrieves the ID of the currently authenticated user.</p>
    *
    * @param principal the authenticated user
-   * @return the user ID
+   * @return {@link ResponseEntity} containing the ID of the current user
    */
   @GetMapping("/id")
-  public ResponseEntity<Long> getCurrentUserId(Principal principal) {
+  @Operation(summary = "Get Current User ID", description = "Retrieves the ID of the currently authenticated user.")
+  @ApiResponse(responseCode = "200", description = "Current user ID retrieved successfully", content = @Content(schema = @Schema(implementation = Long.class)))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Long> getCurrentUserId(@Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(userService.getCurrentUserId(principal));
   }
 }

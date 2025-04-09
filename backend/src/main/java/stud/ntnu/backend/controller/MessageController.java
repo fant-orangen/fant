@@ -1,8 +1,15 @@
 package stud.ntnu.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,13 +21,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.message.MessageReadRequestDto;
 import stud.ntnu.backend.data.message.ConversationPreviewDto;
+import stud.ntnu.backend.data.message.MessageReadRequestDto;
 import stud.ntnu.backend.data.message.MessageResponseDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.MessageService;
-
-import java.util.List;
 import stud.ntnu.backend.service.UserService;
 
 /**
@@ -30,6 +35,7 @@ import stud.ntnu.backend.service.UserService;
 @RestController
 @RequestMapping("/api/messaging")
 @RequiredArgsConstructor
+@Tag(name = "Messaging", description = "Operations for managing messages and conversations between users.")
 public class MessageController {
 
   /**
@@ -53,10 +59,15 @@ public class MessageController {
    * <p>Retrieves all conversations for the current user.</p>
    *
    * @param principal the authenticated user
-   * @return list of {@link ConversationPreviewDto}
+   * @return {@link ResponseEntity} containing a list of {@link ConversationPreviewDto}
    */
   @GetMapping("/conversations")
-  public ResponseEntity<List<ConversationPreviewDto>> getConversations(Principal principal) {
+  @Operation(summary = "Get User Conversations", description = "Retrieves a list of all conversations for the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "List of user's conversations", content = @Content(schema = @Schema(implementation = List.class, subTypes = {
+      ConversationPreviewDto.class})))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<List<ConversationPreviewDto>> getConversations(
+      @Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(
         messageService.getUserConversations(userService.getCurrentUser(principal)));
   }
@@ -67,33 +78,57 @@ public class MessageController {
    *
    * @param itemId    the ID of the item
    * @param principal the authenticated user
-   * @return list of {@link MessageResponseDto}
+   * @param pageable  pagination information
+   * @return {@link ResponseEntity} containing a paginated list of {@link MessageResponseDto}
    */
   @GetMapping("/messages")
+  @Operation(summary = "Get Messages for Item", description = "Retrieves messages related to a specific item for the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "Paginated list of messages for the item", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      MessageResponseDto.class})))
+  @ApiResponse(responseCode = "400", description = "Invalid item ID")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<Page<MessageResponseDto>> getItemMessages(
-      @Positive @RequestParam Long itemId,
-      Principal principal,
+      @Parameter(description = "ID of the item to retrieve messages for", required = true) @Positive
+      @RequestParam Long itemId, @Parameter(hidden = true) Principal principal,
+      @Parameter(description = "Pagination information (page number, size, sort)")
       Pageable pageable) {
     return ResponseEntity.ok(
         messageService.getItemMessages(userService.getCurrentUser(principal), itemId, pageable));
   }
 
+  /**
+   * <h3>Mark Messages as Read</h3>
+   * <p>Marks a list of messages as read by the current user.</p>
+   *
+   * @param request   the request containing the IDs of the messages to mark as read
+   * @param principal the authenticated user
+   * @return {@link ResponseEntity} with status OK if the messages were successfully marked as read
+   */
   @PostMapping("/readall")
+  @Operation(summary = "Mark Messages as Read", description = "Marks a list of messages as read by the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "Messages marked as read successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid request")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<Void> markMessagesAsRead(
-      @RequestBody MessageReadRequestDto request,
-      Principal principal) {
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Request containing the IDs of the messages to mark as read", required = true, content = @Content(schema = @Schema(implementation = MessageReadRequestDto.class)))
+      @RequestBody MessageReadRequestDto request, @Parameter(hidden = true) Principal principal) {
     messageService.markMessagesAsRead(request.getMessageIds(),
         userService.getCurrentUser(principal));
     return ResponseEntity.ok().build();
   }
+
   @PostMapping("/conversations/initiate")
+  @Operation(summary = "Initiate Conversation for Item", description = "Initiates a new conversation related to a specific item.")
+  @ApiResponse(responseCode = "200", description = "Conversation initiated/found successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(name = "Conversation ID Response", value = "{\"conversationId\": 123}")))
+  @ApiResponse(responseCode = "400", description = "Invalid item ID")
+  @ApiResponse(responseCode = "404", description = "Item not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<Map<String, Long>> initiateConversation(
-      @RequestParam @Positive Long itemId,
-      Principal principal) {
+      @Parameter(description = "ID of the item to initiate conversation for", required = true)
+      @RequestParam @Positive Long itemId, @Parameter(hidden = true) Principal principal) {
 
     User currentUser = userService.getCurrentUser(principal);
-    // Delegate logic to MessageService
-    Long conversationIdentifier = messageService.findOrCreateConversation(currentUser, itemId); // Calls the service
+    Long conversationIdentifier = messageService.findOrCreateConversation(currentUser, itemId);
 
     Map<String, Long> response = new HashMap<>();
     response.put("conversationId", conversationIdentifier);

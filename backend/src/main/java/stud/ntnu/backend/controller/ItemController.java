@@ -1,14 +1,18 @@
 package stud.ntnu.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +24,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.item.ItemCreateDto;
-import stud.ntnu.backend.data.item.ItemPreviewDto;
 import stud.ntnu.backend.data.item.ItemDetailsDto;
+import stud.ntnu.backend.data.item.ItemPreviewDto;
 import stud.ntnu.backend.data.item.ItemSearchDto;
 import stud.ntnu.backend.data.item.RecommendedItemsRequestDto;
-import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.ItemService;
 import stud.ntnu.backend.service.UserService;
 
-import java.util.List;
 
 /**
  * <h2>ItemController</h2>
@@ -41,6 +42,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/items")
 @RequiredArgsConstructor
+@Tag(name = "Items", description = "Operations for managing and retrieving marketplace items.")
 public class ItemController {
 
   /**
@@ -59,25 +61,57 @@ public class ItemController {
    */
   private final UserService userService;
 
-  // Logger instance - Ensure this line exists
+  /**
+   * Logger instance for the ItemController class.
+   */
   private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
-
+  /**
+   * <h3>Create Item</h3>
+   * <p>Creates a new item listed by the currently authenticated user.</p>
+   *
+   * @param requestDto the details of the item to create
+   * @param principal  the authenticated user
+   * @return {@link ResponseEntity} containing the ID of the created item
+   */
   @PostMapping
-  public ResponseEntity<Long> createItem(@Valid @RequestBody ItemCreateDto requestDto,
-                                         Principal principal) {
+  @Operation(summary = "Create Item", description = "Creates a new item listed by the authenticated user.")
+  @ApiResponse(responseCode = "201", description = "Item created successfully", content = @Content(schema = @Schema(implementation = Long.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid item details")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Long> createItem(@Valid @RequestBody
+                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Details of the item to create", required = true, content = @Content(schema = @Schema(implementation = ItemCreateDto.class)))
+                                         ItemCreateDto requestDto,
+                                         @Parameter(hidden = true) Principal principal) {
     logger.info("Received request to create item");
     User currentUser = userService.getCurrentUser(principal);
     ItemDetailsDto createdItem = itemService.createItem(currentUser, requestDto);
-    logger.info("Item created with ID: {}",
-        createdItem.getId()); // TODO: simplify this code per the new requirements of just id
+    logger.info("Item created with ID: {}", createdItem.getId());
     return ResponseEntity.status(HttpStatus.CREATED).body(createdItem.getId());
   }
 
+  /**
+   * <h3>Update Item</h3>
+   * <p>Updates an existing item with the provided details.</p>
+   *
+   * @param requestDto the updated details of the item
+   * @param id         the ID of the item to update
+   * @param principal  the authenticated user
+   * @return {@link ResponseEntity} containing the updated {@link ItemDetailsDto}
+   */
   @PutMapping("/{id}")
-  public ResponseEntity<ItemDetailsDto> updateItem(@Valid @RequestBody ItemCreateDto requestDto,
+  @Operation(summary = "Update Item", description = "Updates an existing item with the provided details.")
+  @ApiResponse(responseCode = "200", description = "Item updated successfully", content = @Content(schema = @Schema(implementation = ItemDetailsDto.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid item details")
+  @ApiResponse(responseCode = "403", description = "User not authorized to update this item")
+  @ApiResponse(responseCode = "404", description = "Item not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<ItemDetailsDto> updateItem(@Valid @RequestBody
+                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated details of the item", required = true, content = @Content(schema = @Schema(implementation = ItemCreateDto.class)))
+                                                   ItemCreateDto requestDto,
+                                                   @Parameter(description = "ID of the item to update", required = true)
                                                    @Positive @PathVariable Long id,
-                                                   Principal principal) {
+                                                   @Parameter(hidden = true) Principal principal) {
     logger.info("Received request to update item ID: {}", id);
     User currentUser = userService.getCurrentUser(principal);
     ItemDetailsDto updatedItem = itemService.updateItem(currentUser, requestDto, id);
@@ -85,8 +119,23 @@ public class ItemController {
     return ResponseEntity.ok(updatedItem);
   }
 
+  /**
+   * <h3>Delete Item</h3>
+   * <p>Deletes a specific item.</p>
+   *
+   * @param id        the ID of the item to delete
+   * @param principal the authenticated user
+   * @return {@link ResponseEntity} with status OK if the item was successfully deleted
+   */
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteItem(@Positive @PathVariable Long id, Principal principal) {
+  @Operation(summary = "Delete Item", description = "Deletes a specific item.")
+  @ApiResponse(responseCode = "200", description = "Item deleted successfully")
+  @ApiResponse(responseCode = "403", description = "User not authorized to delete this item")
+  @ApiResponse(responseCode = "404", description = "Item not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Void> deleteItem(
+      @Parameter(description = "ID of the item to delete", required = true) @Positive @PathVariable
+      Long id, @Parameter(hidden = true) Principal principal) {
     logger.info("Received request to delete item ID: {}", id);
     User currentUser = userService.getCurrentUser(principal);
     itemService.deleteItem(currentUser, id);
@@ -94,25 +143,60 @@ public class ItemController {
     return ResponseEntity.ok().build();
   }
 
+  /**
+   * <h3>Search Items</h3>
+   * <p>Searches for items based on the provided criteria.</p>
+   *
+   * @param searchDto the search criteria
+   * @param pageable  pagination information
+   * @return {@link ResponseEntity} containing a paginated list of {@link ItemPreviewDto} matching the search criteria
+   */
   @GetMapping("/search")
+  @Operation(summary = "Search Items", description = "Searches for items based on the provided criteria.")
+  @ApiResponse(responseCode = "200", description = "List of items matching the search criteria", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      ItemPreviewDto.class})))
+  @ApiResponse(responseCode = "400", description = "Invalid search criteria")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<Page<ItemPreviewDto>> searchItems(
-      @Valid @ModelAttribute ItemSearchDto searchDto, Pageable pageable) {
+      @Valid @ModelAttribute @Parameter(description = "Search criteria") ItemSearchDto searchDto,
+      @Parameter(description = "Pagination information (page number, size, sort)")
+      Pageable pageable) {
     return ResponseEntity.ok(itemService.searchItems(searchDto, pageable));
   }
 
+  /**
+   * <h3>Get Paged Items</h3>
+   * <p>Retrieves a paginated list of item previews.</p>
+   *
+   * @param pageable pagination information
+   * @return {@link ResponseEntity} containing a paginated list of {@link ItemPreviewDto}
+   */
   @GetMapping("/page")
-  public ResponseEntity<Page<ItemPreviewDto>> getPagedItems(Pageable pageable) {
+  @Operation(summary = "Get Paged Items", description = "Retrieves a paginated list of item previews.")
+  @ApiResponse(responseCode = "200", description = "Paginated list of item previews", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      ItemPreviewDto.class})))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Page<ItemPreviewDto>> getPagedItems(
+      @Parameter(description = "Pagination information (page number, size, sort)")
+      Pageable pageable) {
     return ResponseEntity.ok(itemService.getAllItemPreviews(pageable));
   }
 
   /**
    * <h3>Get All Items</h3>
-   * <p>Retrieves preview information for all items.</p>
+   * <p>Retrieves preview information for all items in a paginated manner.</p>
    *
-   * @return list of {@link ItemPreviewDto}
+   * @param pageable pagination information
+   * @return {@link ResponseEntity} containing a paginated list of {@link ItemPreviewDto}
    */
   @GetMapping("/all")
-  public ResponseEntity<Page<ItemPreviewDto>> getAllItems(Pageable pageable) {
+  @Operation(summary = "Get All Items (Paged)", description = "Retrieves a paginated list of preview information for all items.")
+  @ApiResponse(responseCode = "200", description = "Paginated list of all item previews", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      ItemPreviewDto.class})))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Page<ItemPreviewDto>> getAllItems(
+      @Parameter(description = "Pagination information (page number, size, sort)")
+      Pageable pageable) {
     return ResponseEntity.ok(itemService.getAllItemPreviews(pageable));
   }
 
@@ -121,19 +205,42 @@ public class ItemController {
    * <p>Retrieves detailed information for a specific item.</p>
    *
    * @param id the ID of the item
-   * @return {@link ItemDetailsDto} for the requested item
+   * @return {@link ResponseEntity} containing the {@link ItemDetailsDto} for the requested item
    */
   @GetMapping("/details/{id}")
-  public ResponseEntity<ItemDetailsDto> getItemDetails(@Positive @PathVariable Long id) {
+  @Operation(summary = "Get Item Details", description = "Retrieves detailed information for a specific item.")
+  @ApiResponse(responseCode = "200", description = "Details of the requested item", content = @Content(schema = @Schema(implementation = ItemDetailsDto.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid item ID")
+  @ApiResponse(responseCode = "404", description = "Item not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<ItemDetailsDto> getItemDetails(
+      @Parameter(description = "ID of the item to retrieve details for", required = true) @Positive
+      @PathVariable Long id) {
     logger.info("Received request for item details ID: {}", id);
     ItemDetailsDto itemDetails = itemService.getItemDetailsById(id);
     logger.info("Returning details for item ID: {}", id);
     return ResponseEntity.ok(itemDetails);
   }
 
+  /**
+   * <h3>Get Paged Items by Category</h3>
+   * <p>Retrieves a paginated list of item previews for a specific category.</p>
+   *
+   * @param categoryId the ID of the category
+   * @param pageable   pagination information
+   * @return {@link ResponseEntity} containing a paginated list of {@link ItemPreviewDto} in the specified category
+   */
   @GetMapping("/category/{categoryId}/page")
+  @Operation(summary = "Get Paged Items by Category", description = "Retrieves a paginated list of item previews for a specific category.")
+  @ApiResponse(responseCode = "200", description = "Paginated list of items in the category", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      ItemPreviewDto.class})))
+  @ApiResponse(responseCode = "400", description = "Invalid category ID")
+  @ApiResponse(responseCode = "404", description = "Category not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<Page<ItemPreviewDto>> getPagedItemsByCategory(
+      @Parameter(description = "ID of the category to retrieve items from", required = true)
       @Positive @PathVariable Long categoryId,
+      @Parameter(description = "Pagination information (page number, size, sort)")
       Pageable pageable) {
     Page<ItemPreviewDto> pagedItems = itemService.getItemsByCategoryId(categoryId, pageable);
     return ResponseEntity.ok(pagedItems);
@@ -141,17 +248,23 @@ public class ItemController {
 
   /**
    * <h3>Get My Items</h3>
-   * <p>Retrieves items listed by the currently authenticated user.</p>
+   * <p>Retrieves items listed by the currently authenticated user in a paginated manner.</p>
    *
    * @param principal the authenticated user
-   * @return list of {@link ItemPreviewDto} listed by the user
+   * @param pageable  pagination information
+   * @return {@link ResponseEntity} containing a paginated list of {@link ItemPreviewDto} listed by the user
    */
   @GetMapping("/my")
-  public ResponseEntity<Page<ItemPreviewDto>> getMyItems(Principal principal, Pageable pageable) {
-    // Use the imported User class here
+  @Operation(summary = "Get My Items (Paged)", description = "Retrieves a paginated list of items listed by the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "Paginated list of user's items", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      ItemPreviewDto.class})))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Page<ItemPreviewDto>> getMyItems(
+      @Parameter(hidden = true) Principal principal,
+      @Parameter(description = "Pagination information (page number, size, sort)")
+      Pageable pageable) {
     User currentUser = userService.getCurrentUser(principal);
     Page<ItemPreviewDto> items = itemService.getItemsBySellerId(currentUser.getId(), pageable);
-    // Use the declared logger variable here
     return ResponseEntity.ok(items);
   }
 
@@ -161,10 +274,17 @@ public class ItemController {
    *
    * @param id        the ID of the viewed item
    * @param principal the authenticated user
-   * @return empty response with no content status
+   * @return {@link ResponseEntity} with no content status upon successful recording
    */
   @PostMapping("/view/post/{id}")
-  public ResponseEntity<Void> recordItemView(@Positive @PathVariable Long id, Principal principal) {
+  @Operation(summary = "Record Item View", description = "Records when the authenticated user views a specific item.")
+  @ApiResponse(responseCode = "204", description = "Item view recorded successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID")
+  @ApiResponse(responseCode = "404", description = "Item not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Void> recordItemView(
+      @Parameter(description = "ID of the item being viewed", required = true) @Positive
+      @PathVariable Long id, @Parameter(hidden = true) Principal principal) {
     logger.info("Received request to record view for item ID: {}", id);
     User currentUser = userService.getCurrentUser(principal);
     itemService.recordView(id, currentUser);
@@ -175,20 +295,27 @@ public class ItemController {
 
   /**
    * <h3>Get Recommended Items</h3>
-   * <p>Retrieves recommended items based on distribution.</p>
+   * <p>Retrieves recommended items based on the provided distribution criteria.</p>
    *
-   * @param requestDto the recommendation request parameters
+   * @param requestDto the recommendation request parameters including the distribution type and optional limit
    * @param pageable   the pagination and sorting information
-   * @return paginated response of recommended {@link ItemPreviewDto}
+   * @return {@link ResponseEntity} containing a paginated list of recommended {@link ItemPreviewDto}
    */
   @PostMapping("/view/recommended_items")
-  public ResponseEntity<Page<ItemPreviewDto>> getRecommendedItems(
-      @Valid @RequestBody RecommendedItemsRequestDto requestDto,
-      Pageable pageable) {
+  @Operation(summary = "Get Recommended Items", description = "Retrieves recommended items based on the specified distribution.")
+  @ApiResponse(responseCode = "200", description = "List of recommended items", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+      ItemPreviewDto.class})))
+  @ApiResponse(responseCode = "400", description = "Invalid recommendation request")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Page<ItemPreviewDto>> getRecommendedItems(@Valid @RequestBody
+                                                                  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Recommendation request parameters", required = true, content = @Content(schema = @Schema(implementation = RecommendedItemsRequestDto.class)))
+                                                                  RecommendedItemsRequestDto requestDto,
+                                                                  @Parameter(description = "Pagination information (page number, size, sort)")
+                                                                  Pageable pageable) {
     logger.info("Received request for recommended items with pageable: {}", pageable);
     Integer limit = requestDto.getLimit();
-    Page<ItemPreviewDto> items = itemService.getItemsByDistribution(requestDto.getDistribution(),
-        pageable, limit);
+    Page<ItemPreviewDto> items =
+        itemService.getItemsByDistribution(requestDto.getDistribution(), pageable, limit);
     logger.info("Returning {} recommended items", items.getNumberOfElements());
     return ResponseEntity.ok(items);
   }

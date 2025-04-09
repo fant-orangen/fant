@@ -99,29 +99,15 @@ public class SecurityConfig {
    */
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable).sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/v3/api-docs/**",
-                "/ws",
-                "/ws/**",
-                "/topic/**",
-                "/app/**",
-                "/h2-console/**",
-                "/api/items/all",
-                "/api/items/details/**",
-                "/api/items/category/**",
-                  "/api/items/search/**",
-                "/api/category/**").permitAll()
-            .requestMatchers("/api/admin/**").hasRole("ADMIN")
-            .anyRequest().authenticated()
-        )
+        .authorizeHttpRequests(
+            auth -> auth.requestMatchers("/auth/**", "/swagger-ui/**", "/swagger-ui.html",
+                    "/v3/api-docs/**", "/ws", "/ws/**", "/topic/**", "/app/**", "/h2-console/**",
+                    "/api/items/all", "/api/items/details/**", "/api/items/category/**",
+                    "/api/items/search/**", "/api/category/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN").anyRequest().authenticated())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
 

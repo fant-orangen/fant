@@ -2,13 +2,8 @@ package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import stud.ntnu.backend.data.favorite.FavoriteResponseDto;
-import stud.ntnu.backend.data.item.ItemPreviewDto;
 import stud.ntnu.backend.exception.AlreadyFavoritedException;
 import stud.ntnu.backend.model.Favorite;
 import stud.ntnu.backend.model.Item;

@@ -1,5 +1,11 @@
 package stud.ntnu.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +24,7 @@ import stud.ntnu.backend.service.CategoryService;
 @RestController
 @RequestMapping("/api/category")
 @RequiredArgsConstructor
+@Tag(name = "Category", description = "Public operations for retrieving categories.")
 public class CategoryController {
 
   /**
@@ -33,10 +40,17 @@ public class CategoryController {
    * <p>Retrieves a single category by its identifier.</p>
    *
    * @param id the ID of the category to retrieve
-   * @return the requested {@link Category}
+   * @return the requested {@link ResponseEntity} containing the {@link Category}
    */
   @GetMapping("/{id}")
-  public ResponseEntity<Category> getCategoryById(@Positive @PathVariable Long id) {
+  @Operation(summary = "Get Category by ID", description = "Retrieves a category based on its unique identifier.")
+  @ApiResponse(responseCode = "200", description = "Category found", content = @Content(schema = @Schema(implementation = Category.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid category ID")
+  @ApiResponse(responseCode = "404", description = "Category not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<Category> getCategoryById(
+      @Parameter(description = "ID of the category to retrieve", required = true) @Positive
+      @PathVariable Long id) {
     return ResponseEntity.ok(categoryService.getCategoryById(id));
   }
 
@@ -44,9 +58,13 @@ public class CategoryController {
    * <h3>Get All Categories</h3>
    * <p>Retrieves all available categories.</p>
    *
-   * @return list of all {@link Category} entities
+   * @return the {@link ResponseEntity} containing a list of all {@link Category} entities
    */
   @GetMapping("/all")
+  @Operation(summary = "Get All Categories", description = "Retrieves a list of all available categories.")
+  @ApiResponse(responseCode = "200", description = "List of all categories", content = @Content(schema = @Schema(implementation = List.class, subTypes = {
+      Category.class})))
+  @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<List<Category>> getAllCategories() {
     return ResponseEntity.ok(categoryService.getAll());
   }
