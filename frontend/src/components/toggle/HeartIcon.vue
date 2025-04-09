@@ -9,6 +9,8 @@ import { ref, onMounted } from 'vue';
 import heartIcon from '@/assets/icons/heart.svg';
 import heartRedIcon from '@/assets/icons/heart-red.svg';
 import { addFavorite, removeFavorite, checkIsFavorite } from '@/services/FavoriteService.ts';
+import { useUserStore } from '@/stores/UserStore.ts'
+import router from '@/router'
 
 const props = defineProps<{
   itemId: string;
@@ -40,6 +42,12 @@ async function toggleFavorite(event: Event) {
 
   try {
     const itemId = parseInt(props.itemId);
+    if (!useUserStore().getUserId || useUserStore().getUserId === '0') {
+      await router.push('/register')
+      return;
+    }
+
+    console.log('UserId:' + useUserStore().getUserId)
     if (isFavorite.value) {
       await removeFavorite(itemId);
     } else {
