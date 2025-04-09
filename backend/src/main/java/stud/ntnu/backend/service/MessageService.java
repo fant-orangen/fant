@@ -377,7 +377,7 @@ public class MessageService {
           .sender(currentUser) // Or potentially a system user if you have one
           .receiver(seller)
           .item(item)
-          .content("Conversation started about: " + item.getBriefDescription()) // System message
+          .content("@" + item.getBriefDescription()) // System message
           .read(true) // Mark as read for sender, receiver will see it as unread initially
           .build();
       Message savedInitialMessage = messageRepository.save(initialMessage);
