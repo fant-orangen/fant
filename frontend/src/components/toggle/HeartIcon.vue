@@ -9,8 +9,9 @@ import { ref, onMounted } from 'vue';
 import heartIcon from '@/assets/icons/heart.svg';
 import heartRedIcon from '@/assets/icons/heart-red.svg';
 import { addFavorite, removeFavorite, checkIsFavorite } from '@/services/FavoriteService.ts';
-import { useUserStore } from '@/stores/UserStore.ts'
-import router from '@/router'
+import { useUserStore } from '@/stores/UserStore.ts';
+import router from '@/router';
+import { AxiosError } from 'axios';
 
 const props = defineProps<{
   itemId: string;
@@ -27,7 +28,7 @@ onMounted(async () => {
   try {
     const favoriteStatus = await checkIsFavorite(parseInt(props.itemId));
     isFavorite.value = favoriteStatus;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error checking favorite status:', error);
   }
 });
@@ -42,38 +43,42 @@ async function toggleFavorite(event: Event) {
 
   const userStore = useUserStore();
   if (!userStore.getUserId || userStore.getUserId === '0') {
-    // Consider redirecting to login instead of register if user exists but isn't logged in
+    // If the user is not logged in, redirect to login.
     await router.push('/login');
     return;
   }
 
   const itemId = parseInt(props.itemId);
-  let desiredState = !isFavorite.value; // What we want the state to become
+  const desiredState = !isFavorite.value; // The state we want to reach
 
   try {
     if (isFavorite.value) {
-      // Try to remove
+      // Remove favorite
       await removeFavorite(itemId);
       console.log(`Removed favorite: ${itemId}`);
       isFavorite.value = false; // Update state only on success
     } else {
-      // Try to add
+      // Add favorite
       await addFavorite(itemId);
       console.log(`Added favorite: ${itemId}`);
       isFavorite.value = true; // Update state only on success
     }
-  } catch (error: any) {
-    console.error(`Error trying to set favorite status to ${desiredState}:`, error);
-
-    // Attempt to re-sync state based on common errors
-    if (error.response?.status === 400 && error.message?.includes('already has favorited')) {
-      console.warn('Syncing state: Item was already favorited.');
-      isFavorite.value = true; // Correct the local state if add failed because it exists
-    } else if (error.response?.status === 404 && !desiredState) { // If remove failed because it wasn't there
-      console.warn('Syncing state: Item was not favorited to begin with.');
-      isFavorite.value = false; // Correct the local state if remove failed because it doesn't exist
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 400 && error.message.includes('already has favorited')) {
+        console.warn('Syncing state: Item was already favorited.');
+        isFavorite.value = true;
+      } else if (error.response?.status === 404 && !desiredState) {
+        console.warn('Syncing state: Item was not favorited to begin with.');
+        isFavorite.value = false;
+      } else {
+        console.error(`Error trying to set favorite status to ${desiredState}:`, error);
+      }
+    } else if (error instanceof Error) {
+      console.error('Error:', error.message);
+    } else {
+      console.error('An unknown error occurred', error);
     }
-    // Optionally show a user-friendly error message here
   }
 }
 </script>
