@@ -200,8 +200,8 @@ onMounted(loadCategories);
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  border-left: 1px solid lightgray;
-  border-right: 1px solid lightgray;
+  border-left: 2px solid lightgray;
+  border-right: 2px solid lightgray;
   border-radius: 0px
 }
 
