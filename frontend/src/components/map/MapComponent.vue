@@ -36,7 +36,7 @@ const isLoading = ref(false);
 const error = ref<string | null>(null);
 const categories = ref<Category[]>([]);
 
-// Ensure that drawnItems is a valid Leaflet FeatureGroup. Later, when adding it to the map, we cast it as any to satisfy TS.
+// Ensure that drawnItems is a valid Leaflet FeatureGroup.
 const drawnItems = ref<L.FeatureGroup | null>(null);
 // Ref for draw control
 const drawControl = ref<L.Control.Draw | null>(null);
@@ -69,14 +69,14 @@ function initializeMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map.value);
+  }).addTo(map.value as L.Map);
 
   // --- Initialize Leaflet.draw ---
   drawnItems.value = new L.FeatureGroup();
-  // Casting drawnItems to any to satisfy TS (Leaflet will assign _map at runtime)
+  // Cast drawnItems to any to satisfy TS since Leaflet adds _map at runtime.
   map.value.addLayer(drawnItems.value as any);
 
-  // Configure Draw Control with type assertion on featureGroup
+  // Configure Draw Control with type assertion on featureGroup.
   const drawControlOptions: L.Control.DrawConstructorOptions = {
     position: 'topright',
     draw: {
@@ -97,7 +97,7 @@ function initializeMap() {
       }
     },
     edit: {
-      // Cast drawnItems.value to any here to meet the expected type
+      // Cast drawnItems.value to any here to meet the expected type.
       featureGroup: drawnItems.value! as any,
       edit: false,
       remove: false
@@ -108,16 +108,17 @@ function initializeMap() {
   map.value.addControl(drawControl.value);
 
   // --- Leaflet.draw Event Listeners ---
-  map.value.on(L.Draw.Event.CREATED as any, (event: L.DrawEvents.Created) => {
-    const layer = event.layer;
+  // For the CREATED event: use a generic event parameter and cast it inside.
+  map.value.on(L.Draw.Event.CREATED, (event: any) => {
+    const createdEvent = event as L.DrawEvents.Created;
     if (drawnItems.value) {
       drawnItems.value.clearLayers();
-      drawnItems.value.addLayer(layer);
+      drawnItems.value.addLayer(createdEvent.layer);
     }
 
-    if (event.layerType === 'circle' && layer instanceof L.Circle) {
-      const center = layer.getLatLng();
-      const radius = layer.getRadius(); // in meters
+    if (createdEvent.layerType === 'circle' && createdEvent.layer instanceof L.Circle) {
+      const center = createdEvent.layer.getLatLng();
+      const radius = createdEvent.layer.getRadius(); // in meters
       console.log(`Circle drawn: Center=${center}, Radius=${radius}m`);
       emit('update-search-area', {
         latitude: center.lat,
@@ -127,8 +128,10 @@ function initializeMap() {
     }
   });
 
-  map.value.on(L.Draw.Event.EDITED as any, (event: L.DrawEvents.Edited) => {
-    event.layers.eachLayer(layer => {
+  // For the EDITED event: use a generic event parameter and cast it inside.
+  map.value.on(L.Draw.Event.EDITED, (event: any) => {
+    const editedEvent = event as L.DrawEvents.Edited;
+    editedEvent.layers.eachLayer(layer => {
       if (layer instanceof L.Circle) {
         const center = layer.getLatLng();
         const radius = layer.getRadius();
@@ -142,9 +145,9 @@ function initializeMap() {
     });
   });
 
-  map.value.on(L.Draw.Event.DELETED as any, () => {
+  map.value.on(L.Draw.Event.DELETED, (event: any) => {
     console.log("Drawn search area deleted");
-    // Optionally emit an event to notify parent that the search area has been cleared.
+    // Optionally, emit an event to notify parent that the search area has been cleared.
   });
 
   map.value.whenReady(() => {
@@ -161,11 +164,11 @@ async function loadItemsAndAddMarkers() {
   error.value = null;
   console.log("MapComponent: Loading items with props:", props);
 
-  // Remove existing markers (but not the drawn circle)
+  // Remove existing markers (but not the drawn circle).
   markers.value.forEach(marker => marker.remove());
   markers.value = [];
 
-  // Convert any null values from props into undefined for the API call
+  // Convert null values from props into undefined as needed.
   const params: ItemSearchParams = {
     searchTerm: props.searchTerm ?? undefined,
     minPrice: props.minPrice ?? undefined,
@@ -204,7 +207,7 @@ async function loadItemsAndAddMarkers() {
           `;
 
         const marker = L.marker([item.latitude, item.longitude])
-        .addTo(map.value)
+        .addTo(map.value as L.Map)
         .bindPopup(popupContent);
 
         markers.value.push(marker);
@@ -220,7 +223,7 @@ async function loadItemsAndAddMarkers() {
 }
 
 // --- Watchers ---
-// Watch for changes in search parameters to reload items
+// Watch for changes in search parameters to reload items.
 watch(
   [
     categoryName,
@@ -239,7 +242,7 @@ watch(
   { deep: true }
 );
 
-// Watcher to clear the drawn circle when triggered by parent
+// Watcher to clear the drawn circle when triggered by parent.
 watch(() => props.clearDrawnAreaTrigger, () => {
   if (drawnItems.value) {
     console.log("MapComponent: Clearing drawn search area via trigger.");
@@ -258,7 +261,7 @@ onMounted(async () => {
     error.value = "Failed to load initial map data.";
   }
 
-  // Resize Observer to handle container size changes
+  // Resize Observer to handle container size changes.
   let resizeObserver: ResizeObserver | null = null;
   if (mapContainer.value) {
     resizeObserver = new ResizeObserver(() => {
@@ -269,7 +272,7 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  // Cleanup map on component unmount
+  // Cleanup map on component unmount.
   map.value?.remove();
   map.value = null;
   console.log("MapComponent unmounted, map removed.");
