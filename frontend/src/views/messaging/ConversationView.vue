@@ -27,7 +27,7 @@ const messagesContainerRef = ref<HTMLElement | null>(null)
 const currentUserId = ref<string | number | null>(null)
 const item = ref<ItemPreviewType | null>(null)
 
-const pageSize = 10
+const pageSize = 12
 const currentPage = ref(0)
 const totalPages = ref(1)
 const fetchingOlder = ref(false)

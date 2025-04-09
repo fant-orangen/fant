@@ -49,38 +49,6 @@ export async function fetchConversations(): Promise<ConversationPreview[]> {
   }
 }
 
-/**
- * Fetches all messages related to a specific item.
- * TODO: remove this function when we know it's not needed
- * @param itemId - The ID of the item to fetch messages for
- * @returns A promise that resolves to an array of messages
- * @throws {Error} If the request fails
- */
-export async function fetchMessages(itemId: string | number): Promise<Message[]> {
-  try {
-    const response = await api.get<Message[]>('/messaging/messages', {
-      params: { itemId },
-    })
-    const messages = response.data.map((message) => ({
-      ...message,
-      sentDate: new Date(message.sentDate),
-    }))
-    const unreadMessages = messages.filter((message) => !message.isRead)
-    console.log(
-      `Fetched ${messages.length} messages for itemId: ${itemId}. Unread: ${unreadMessages.length}`,
-    )
-
-    // Transform dates from strings to Date objects
-    return response.data.map((message) => ({
-      ...message,
-      sentDate: new Date(message.sentDate),
-    }))
-  } catch (error) {
-    console.error('Error fetching messages for item:', error)
-    throw error
-  }
-}
-
 export async function fetchPagedMessages(
   itemId: string | number,
   page: number,
