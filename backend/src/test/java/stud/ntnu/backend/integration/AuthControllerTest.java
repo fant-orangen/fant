@@ -72,7 +72,7 @@ public class AuthControllerTest {
             .with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(registerDto)))
-        .andExpect(status().isOk())
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.token").isNotEmpty());
 
     // Verify the user is saved
