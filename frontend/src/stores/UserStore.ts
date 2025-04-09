@@ -1,5 +1,3 @@
-// src/stores/UserStore.ts
-
 import { defineStore } from 'pinia';
 import { fetchToken } from '@/services/api/authService';
 import { register } from '@/services/api/userService';

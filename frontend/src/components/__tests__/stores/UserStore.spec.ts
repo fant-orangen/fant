@@ -169,8 +169,9 @@ describe('UserStore', () => {
         email: 'fetcheduser@example.com',
         firstName: 'Alice',
         lastName: 'Test',
-        phone: '12345678'
-      }
+        phone: '12345678',
+        displayName: 'AliceFetched'
+      };
       api.get.mockResolvedValue({ data: mockProfileData });
 
       await store.fetchProfile();
@@ -199,14 +200,18 @@ describe('UserStore', () => {
       email: 'updateduser@example.com',
       firstName: 'Alice',
       lastName: 'Test',
-      phone: '12345678'
+      phone: '+4712345678',
+      displayName: 'AliceTest',
+      password: 'testPassword123'
     };
 
+    // Optional: Update response data mock if needed (though not causing the current failure)
     const responseProfileData = {
       email: 'updateduser@example.com',
       firstName: 'Alice',
       lastName: 'Test',
-      phone: '12345678'
+      phone: '+4712345678',
+      displayName: 'AliceTest'
     };
 
     it('updates profile successfully', async () => {
