@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useUserStore } from "@/stores/UserStore.ts";
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'http://localhost:8080/api',
 })
 
 api.interceptors.request.use((config) => {
