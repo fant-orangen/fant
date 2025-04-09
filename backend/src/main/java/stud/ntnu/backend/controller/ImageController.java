@@ -71,4 +71,28 @@ public class ImageController {
           .body("Failed to upload images: " + e.getMessage());
     }
   }
+
+  /**
+   * <h3>Delete Image</h3>
+   * <p>Endpoint for deleting a specific image associated with a marketplace item.</p>
+   * <p>Removes the image reference from the database based on the item ID and image URL.</p>
+   *
+   * @param itemId   ID of the item the image is associated with
+   * @param imageUrl URL of the image to delete
+   * @return {@link ResponseEntity} containing success message or error details
+   */
+  @DeleteMapping("/delete")
+  public ResponseEntity<String> deleteImage(
+      @RequestParam("itemId") Long itemId,
+      @RequestParam("imageUrl") String imageUrl) {
+    try {
+      imageService.deleteImageForItem(itemId, imageUrl);
+      return ResponseEntity.ok("Image deleted successfully");
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body("Invalid request: " + e.getMessage());
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError()
+          .body("Failed to delete image: " + e.getMessage());
+    }
+  }
 }

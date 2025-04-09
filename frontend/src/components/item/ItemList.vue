@@ -101,6 +101,7 @@ function changePage(page: number) {
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin-top: 1.5rem;
+  border-top: 2px solid lightgray;
 }
 @media (max-width: 1200px) {
   .items-container { grid-template-columns: repeat(3, 1fr); }

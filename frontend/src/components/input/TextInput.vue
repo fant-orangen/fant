@@ -57,10 +57,60 @@ export default {
 </script>
 
 <style scoped>
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
 .text-input {
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  overflow: auto;
+  resize: vertical;
+  min-height: 42px; /* Match the select height */
+  height: 42px; /* Fixed height for inputs */
+}
+
+input.text-input {
+  height: 42px; /* Fixed height specifically for input elements */
+}
+
+.text-input:hover {
+  border-color: #3498db;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.text-input::placeholder {
+  color: #999;
+  opacity: 0.7;
+}
+
+textarea.text-input {
+  min-height: 80px;
+  line-height: 1.5;
+  height: auto; /* Allow textareas to grow */
 }
 </style>

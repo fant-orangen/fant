@@ -70,16 +70,40 @@ public class ItemService {
   public ItemDetailsDto updateItem(User seller, ItemCreateDto itemCreateDto, Long id) {
     Item item = itemRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Item not found with id " + id));
-    if (!item.getSeller().getId().equals(seller.getId())) { // Use ID comparison
+
+    if (!item.getSeller().getId().equals(seller.getId())) {
       throw new BadCredentialsException("This is not your item!");
     }
+
     Category category = categoryRepository.findById(itemCreateDto.getCategoryId()).orElseThrow(
         () -> new EntityNotFoundException(
             "Category not found with id " + itemCreateDto.getCategoryId()));
-    modelMapper.map(itemCreateDto, item);
-    // Ensure seller and category are set correctly after mapping
+
+    // Preserve the original images and ID
+    List<ItemImage> originalImages = item.getImages();
+    Long originalId = item.getId();
+
+    // Manually update properties instead of using modelMapper
+    item.setBriefDescription(itemCreateDto.getBriefDescription());
+    item.setFullDescription(itemCreateDto.getFullDescription());
+    item.setPrice(itemCreateDto.getPrice());
+    item.setLatitude(itemCreateDto.getLatitude());
+    item.setLongitude(itemCreateDto.getLongitude());
+
+    // Set seller and category
     item.setSeller(seller);
     item.setCategory(category);
+
+    // Handle images if provided in the DTO
+    if (itemCreateDto.getImages() != null && !itemCreateDto.getImages().isEmpty()) {
+      // Clear existing images and add new ones
+      originalImages.clear();
+      for (ItemImage newImage : itemCreateDto.getImages()) {
+        newImage.setItem(item);
+        originalImages.add(newImage);
+      }
+    }
+
     return mapToItemDetailsDto(itemRepository.save(item));
   }
 
@@ -180,8 +204,7 @@ public class ItemService {
 
   // --- Other existing methods (getItemsByDistribution, mapToItemPreviewDto, etc.) ---
   public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
-      Pageable pageable) {
-    int pageSize = pageable.getPageSize();
+      Pageable pageable, Integer limit) {
     int offset = (int) pageable.getOffset();
 
     Map<Long, List<Item>> categoryItemsMap = new HashMap<>();
@@ -199,11 +222,11 @@ public class ItemService {
       return Page.empty(pageable);
     }
 
-    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, pageSize,
+    List<ItemPreviewDto> allItems = selectRandomItems(categoryItemsMap, distribution, limit,
         random);
 
     // Apply pagination
-    int end = Math.min(offset + pageSize, allItems.size());
+    int end = Math.min(offset + limit, allItems.size());
     if (offset > allItems.size()) {
       return Page.empty(pageable);
     }

@@ -29,6 +29,19 @@ export async function createItem(item: CreateItemType): Promise<number> {
   return response.data
 }
 
+export async function updateItem(id: number, item: CreateItemType): Promise<CreateItemType> {
+  console.log('before put', id, item);
+  const response = await api.put<CreateItemType>(`/items/${id}`, item);
+  console.log('after put', response.data);
+  return response.data;
+}
+
+export async function deleteItem(id: number): Promise<void> {
+  console.log('before delete', id);
+  await api.delete(`/items/${id}`);
+  console.log('after delete');
+}
+
 // Existing function to fetch all preview items (potentially needs pagination update too)
 export async function fetchPreviewItems(): Promise<PaginatedItemPreviewResponse> {
   try {
@@ -200,12 +213,13 @@ export async function fetchPreviewItemsByCategoryId(
 export async function fetchItemsByDistribution(
   recommendation: CategoryRecommendation,
   limit: number = 6, // This number can be changed to determine the number of items to display
-): Promise<ItemPreviewType[]> {
+): Promise<PaginatedItemPreviewResponse> {
   try {
-    const response = await api.post<ItemPreviewType[]>('/items/view/recommended_items', {
+    const response = await api.post<PaginatedItemPreviewResponse>('/items/view/recommended_items', {
       distribution: recommendation.distribution,
       limit,
     })
+    console.log("Number of recommended items fetched:", response.data.totalElements)
 
     return response.data
   } catch (error) {

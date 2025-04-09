@@ -64,8 +64,8 @@ CREATE TABLE favorites
     item_id    INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY (user_id, item_id),
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (item_id) REFERENCES items (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETe CASCADE,
+    FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE
 );
 
 -- Assumes each message references a specific item that's being discussed
@@ -80,7 +80,7 @@ CREATE TABLE messages
     `read`      BOOLEAN   DEFAULT FALSE,
     FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE SET NULL
+    FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE
 );
 
 CREATE TABLE orders
@@ -93,9 +93,9 @@ CREATE TABLE orders
     price        DECIMAL(10, 2) NOT NULL,
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (buyer_id) REFERENCES users (id),
-    FOREIGN KEY (seller_id) REFERENCES users (id),
-    FOREIGN KEY (item_id) REFERENCES items (id)
+    FOREIGN KEY (buyer_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE
 );
 
 CREATE TABLE bids
