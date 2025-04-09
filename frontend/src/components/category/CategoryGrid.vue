@@ -23,7 +23,8 @@ import recommendedIcon from '@/assets/icons/recommended.svg';
 
 const props = defineProps<{
   layout?: 'vertical' | 'grid' | 'horizontal',
-  selectedCategoryId?: string | null
+  selectedCategoryId?: string | null,
+  noRecommendations?: boolean
 }>();
 
 const isVertical = computed(() => props.layout === 'vertical');
@@ -124,9 +125,10 @@ onMounted(loadCategories);
     <div
       class="category-wrapper"
       @click="showRecommendedItems"
+      v-if="!props.noRecommendations"
     >
       <button
-        class="all-categories-button recommended-button"
+        class="all-categories-button"
         :class="{
           'active': selectedCategoryId === '-1',
           'compact': isVertical
