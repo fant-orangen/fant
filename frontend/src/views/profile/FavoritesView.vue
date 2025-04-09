@@ -4,7 +4,7 @@
     <ItemList
       :fetchFunction="fetchItems"
       :categoryId="null"
-      emptyMessage="You haven't added any items to your favorites yet."
+      :emptyMessage="$t('FAVORITES_EMPTY_MESSAGE')"
       :pageSize="5"
       :paginationEnabled="true"
     />
