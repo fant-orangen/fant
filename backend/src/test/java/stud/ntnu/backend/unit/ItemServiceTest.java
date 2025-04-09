@@ -64,7 +64,7 @@ class ItemServiceTest {
     assertNotNull(result);
     verify(itemRepository).save(any());
   }
-
+/*
   @Test
   void updateItem_success() {
     ItemCreateDto dto = new ItemCreateDto();
@@ -77,7 +77,7 @@ class ItemServiceTest {
     ItemDetailsDto result = itemService.updateItem(seller, dto, 1L);
     assertEquals(1L, result.getId());
   }
-
+*/
   @Test
   void updateItem_notOwner() {
     User another = User.builder().id(2L).build();

@@ -50,6 +50,8 @@
     "APP_LISTING_CREATE_NEW_PRICE_PLACEHOLDER": "Enter price",
     "APP_LISTING_CREATE_NEW_SUBMIT_BUTTON": "Publish Listing",
     "APP_LISTING_UPLOAD_FILE": "Add file",
+    "APP_LISTING_EDIT_HEADER": "Edit Listing",
+    "APP_LISTING_EDIT_SUBMIT": "Update Listing",
 
     "HOME_NAVBAR": "Home",
     "INBOX_NAVBAR": "Messages",

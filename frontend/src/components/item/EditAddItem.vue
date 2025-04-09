@@ -1,7 +1,9 @@
 <template>
   <div class="listing-form-container">
-    <form @submit.prevent="submitForm" class="listing-form">
-      <h1 class="form-title">{{ $t('APP_LISTING_CREATE_NEW') }}</h1>
+    <form @submit.prevent="handleSubmit" class="listing-form">
+      <h1 class="form-title">
+        {{ isEditMode ? $t('APP_LISTING_EDIT_HEADER') : $t('APP_LISTING_CREATE_NEW') }}
+      </h1>
       <div class="form-divider"></div>
 
       <!-- Title -->
@@ -106,27 +108,38 @@
         id="images"
         :label="$t('APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL')"
         :multiple="true"
-        @update:files="handleFileUpload"
+        :initialUrls="props.existingItem?.images ?? []"
+        @update:images="handleFileUpload"
         class="form-field"
       />
 
       <!-- Submit -->
-      <button type="submit" class="submit-button">{{ $t('APP_LISTING_CREATE_NEW_SUBMIT_BUTTON') }}</button>
+      <button type="submit" class="submit-button">
+        {{ isEditMode ? $t('APP_LISTING_EDIT_SUBMIT') : $t('APP_LISTING_CREATE_NEW_SUBMIT_BUTTON') }}
+      </button>
     </form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import TextInput from '@/components/input/TextInput.vue';
 import SelectInput from '@/components/input/SelectInput.vue';
 import FileInput from '@/components/input/FileInput.vue';
 import ClickSelectMap from '@/components/map/ClickSelectMap.vue';
 import { fetchCategories } from '@/services/CategoryService';
-import { createItem } from '@/services/ItemService';
+import ImageService from '@/services/ImageService';
+
 import type { CreateItemType } from '@/models/Item';
 import type { Category } from '@/models/Category';
-import ImageService from '@/services/ImageService';
+
+const props = defineProps<{
+  existingItem?: Partial<CreateItemType>;
+  isEditMode?: boolean;
+  onSubmit: (item: CreateItemType) => Promise<number>;
+}>();
+
+const emit = defineEmits(['success']);
 
 const formData = ref<CreateItemType>({
   categoryId: 0,
@@ -135,39 +148,40 @@ const formData = ref<CreateItemType>({
   price: 0,
   latitude: undefined,
   longitude: undefined,
-  images: null,
+  images: [],
+  ...(props.existingItem || {})
 });
 
-// UI-controlled values
 const selectedCategoryName = ref('');
-const priceInput = ref('');
-const latitudeInput = ref('');
-const longitudeInput = ref('');
+const priceInput = ref(formData.value.price.toString());
+const latitudeInput = ref(formData.value.latitude?.toString() || '');
+const longitudeInput = ref(formData.value.longitude?.toString() || '');
 const isMapMode = ref(true);
-const imageFiles = ref<File[]>([]);
+const keptExistingUrls = ref<string[]>([]);
+const newImageFiles = ref<File[]>([]);
 
-// Backend-fetched categories
 const categories = ref<Category[]>([]);
 const categoryOptions = ref<string[]>([]);
 
-// Load categories from backend
 onMounted(async () => {
   try {
     const cats = await fetchCategories();
     categories.value = cats;
-    categoryOptions.value = cats.map(cat => cat.name);
-  } catch (error) {
-    console.error('Failed to fetch categories:', error);
+    categoryOptions.value = cats.map(c => c.name);
+    if (props.existingItem?.categoryId) {
+      const matched = cats.find(c => c.id === props.existingItem!.categoryId);
+      if (matched) selectedCategoryName.value = matched.name;
+    }
+  } catch (err) {
+    console.error('Error loading categories', err);
   }
 });
 
-// Sync selected name to categoryId
-watch(selectedCategoryName, (newName) => {
-  const match = categories.value.find((c) => c.name === newName);
-  formData.value.categoryId = match ? Number(match.id) : 0;
+// Watchers
+watch(selectedCategoryName, (name) => {
+  const matched = categories.value.find((c) => c.name === name);
+  formData.value.categoryId = matched ? Number(matched.id) : 0;
 });
-
-// Sync numeric inputs
 watch(priceInput, (val) => {
   formData.value.price = val ? Number(val) : 0;
 });
@@ -177,8 +191,6 @@ watch(latitudeInput, (val) => {
 watch(longitudeInput, (val) => {
   formData.value.longitude = val ? Number(val) : undefined;
 });
-
-// Reflect back values from formData to inputs (when using map picker)
 watch(() => formData.value.latitude, (val) => {
   latitudeInput.value = val !== undefined ? val.toString() : '';
 });
@@ -186,28 +198,62 @@ watch(() => formData.value.longitude, (val) => {
   longitudeInput.value = val !== undefined ? val.toString() : '';
 });
 
-// File upload handler
-function handleFileUpload(files: File[]) {
-  imageFiles.value = files;
-  formData.value.images = null; // or send files separately
+// File handler
+function handleFileUpload({ files, existingUrls }: { files: File[], existingUrls: string[] }) {
+  newImageFiles.value = files;
+  keptExistingUrls.value = existingUrls;
 }
 
-async function submitForm() {
+async function handleSubmit() {
   try {
-    // 1. Send the item data first
-    const payload: CreateItemType = { ...formData.value };
-    const createdItemId = await createItem(payload); // this should return the new item's ID
-    console.log('Item created successfully:', createdItemId);
+    // Create a copy of the form data for submission
+    const submissionData = { ...formData.value };
 
-    // 2. Upload images afterward, using the returned item ID
-    if (imageFiles.value.length > 0) {
-      await ImageService.uploadImages(imageFiles.value, createdItemId);
+    // Set images to null initially when sending to backend
+    submissionData.images = [];
+
+    // Find deleted images by comparing original with kept
+    const deletedImages = (props.existingItem?.images || []).filter(
+      url => !keptExistingUrls.value.includes(url)
+    );
+
+    // Submit the form data to create/update the item
+    const itemId = await props.onSubmit(submissionData);
+
+    // Track if we need to update the form data
+    let hasChanges = false;
+
+    // Only process deletions if there are images to delete
+    if (deletedImages.length > 0) {
+      for (const url of deletedImages) {
+        try {
+          await ImageService.deleteImage(itemId, url);
+          hasChanges = true;
+        } catch (error) {
+          console.error(`Failed to delete image ${url}:`, error);
+        }
+      }
     }
 
-    alert('Item and images uploaded successfully!');
-  } catch (error) {
-    console.error('Error creating item or uploading images:', error);
-    alert('Failed to create item or upload images.');
+    // Only upload if there are new files
+    if (newImageFiles.value.length > 0) {
+      const uploadedUrls = await ImageService.uploadImages(newImageFiles.value, itemId);
+
+      if (Array.isArray(uploadedUrls) && uploadedUrls.length > 0) {
+
+        // Add the new URLs to the kept existing ones
+        formData.value.images = [...keptExistingUrls.value, ...uploadedUrls];
+      }
+    } else if (keptExistingUrls.value.length > 0) {
+      // If no new uploads but we still have kept URLs, update form data
+      formData.value.images = keptExistingUrls.value;
+    }
+
+    alert(props.isEditMode ? 'Item updated!' : 'Item created!');
+    emit('success');
+  } catch (err) {
+    console.error('Submission failed:', err);
+    alert('Submission failed.');
   }
 }
 </script>
@@ -218,24 +264,24 @@ async function submitForm() {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: var(--color-background-soft, #f8f9fa);
 }
 
 .listing-form {
   width: 100%;
   max-width: 800px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 30px;
+  background: var(--color-background, white);
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  padding: 35px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 }
 
 .form-title {
-  color: #333;
-  font-size: 24px;
+  color: var(--color-heading, #2c3e50);
+  font-size: 26px;
   font-weight: 600;
   margin: 0 0 10px 0;
   text-align: center;
@@ -243,14 +289,22 @@ async function submitForm() {
 
 .form-divider {
   width: 100%;
-  height: 1px;
-  background-color: #e0e0e0;
+  height: 2px;
+  background-color: var(--color-border, #e0e0e0);
   margin-bottom: 15px;
 }
 
 .form-field {
   width: 100%;
   margin-bottom: 5px;
+}
+
+.location-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: var(--color-heading, #2c3e50);
+  font-size: 14px;
 }
 
 .form-row {
@@ -264,125 +318,130 @@ async function submitForm() {
   min-width: 0;
 }
 
-.location-section {
-  margin-top: 5px;
-}
-
-.location-label {
+.input-label {
   font-weight: 600;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   display: block;
-  color: #333;
-}
-
-.location-helper {
+  color: var(--color-heading, #2c3e50);
   font-size: 14px;
-  color: #666;
-  margin: 4px 0 10px;
-}
-
-.map-container {
-  width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.location-display {
-  background-color: #f0f8ff;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #0066cc;
-  display: inline-block;
-  margin-top: 5px;
 }
 
 .location-toggle {
   display: flex;
   margin-bottom: 15px;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border, #e0e0e0);
   width: fit-content;
   position: relative;
-  z-index: 1000; /* Ensure buttons stay above map */
-}
-
-.map-container {
-  width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  position: relative; /* Contain the map */
-}
-
-/* Add this new style */
-.location-section .leaflet-container {
-  z-index: 1; /* Lower z-index than the toggle buttons */
+  z-index: 10;
 }
 
 .toggle-btn {
-  padding: 8px 16px;
-  background: #f5f5f5;
+  padding: 10px 20px;
+  background: var(--color-background-mute, #f5f5f5);
   border: none;
   cursor: pointer;
   flex: 1;
-  min-width: 100px;
+  min-width: 110px;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
 .toggle-btn.active {
-  background: #4CAF50;
+  background: #3498db;;
   color: white;
 }
 
 .toggle-btn:first-child {
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--color-border, #e0e0e0);
 }
 
 .map-mode, .coordinates-mode {
   margin-top: 10px;
 }
 
-.preview-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.location-display {
+  background-color: var(--color-background-mute, #e6f0fa);
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3498db;;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.location-icon {
+  margin-right: 6px;
+  font-size: 16px;
 }
 
 .submit-button {
-  background-color: #4CAF50;
+  background-color: #3498db;
   color: white;
   font-size: 16px;
   font-weight: 600;
-  padding: 12px 24px;
+  padding: 12px 28px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  align-self: center;
-  margin-top: 10px;
+  transition: all 0.2s ease;
   width: auto;
   min-width: 200px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+  align-self: center;
 }
 
 .submit-button:hover {
-  background-color: #45a049;
+  background-color: #3498db;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.submit-button:active {
+  transform: translateY(0px);
+}
+
+.add-to-list-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text, #555);
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.add-to-list-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3498db;
+  cursor: pointer;
+}
+
+.add-to-list-option label {
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
-    gap: 5px;
+    gap: 15px;
   }
 
   .listing-form {
-    padding: 20px;
+    padding: 25px;
+    gap: 18px;
+  }
+
+  .toggle-btn {
+    min-width: 100px;
+    padding: 8px 15px;
   }
 }
 </style>

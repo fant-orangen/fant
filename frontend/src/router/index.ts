@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // Import existing Views
 import HomeView from '../views/HomeView.vue'
-import LoginView from '@/views/LoginView.vue'
-import RegistrationView from '@/views/RegistrationView.vue'
+import LoginView from '@/views/auth/LoginView.vue'
+import RegistrationView from '@/views/auth/RegistrationView.vue'
 import ItemDetailView from "@/views/ItemDetailView.vue";
 import CategoryEditView from "@/views/Administrator/CategoryEditView.vue";
 
@@ -51,6 +51,11 @@ const routes = [
     name: 'create-listing-start',
     component: () => import('../views/NewListingView.vue'),
     meta: { title: 'Create Listing - Fant', requiresAuth: true }
+  },
+  {
+    path: '/edit-listing/:itemId',
+    name: 'edit-listing',
+    component: () => import('@/views/EditListingView.vue'),
   },
   {
     path: '/admin',

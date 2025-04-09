@@ -1,5 +1,6 @@
 package stud.ntnu.backend.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import stud.ntnu.backend.model.Image;
@@ -13,5 +14,13 @@ import stud.ntnu.backend.model.Image;
  */
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
+  /**
+   * Find an image by its associated item ID and URL
+   *
+   * @param itemId ID of the item
+   * @param url URL of the image
+   * @return Optional containing the image if found
+   */
+  Optional<Image> findByItemIdAndUrl(Long itemId, String url);
 
 }

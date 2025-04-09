@@ -29,6 +29,19 @@ export async function createItem(item: CreateItemType): Promise<number> {
   return response.data
 }
 
+export async function updateItem(id: number, item: CreateItemType): Promise<CreateItemType> {
+  console.log('before put', id, item);
+  const response = await api.put<CreateItemType>(`/items/${id}`, item);
+  console.log('after put', response.data);
+  return response.data;
+}
+
+export async function deleteItem(id: number): Promise<void> {
+  console.log('before delete', id);
+  await api.delete(`/items/${id}`);
+  console.log('after delete');
+}
+
 // Existing function to fetch all preview items (potentially needs pagination update too)
 export async function fetchPreviewItems(): Promise<PaginatedItemPreviewResponse> {
   try {

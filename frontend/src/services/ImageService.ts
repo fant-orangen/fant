@@ -33,6 +33,34 @@ export async function uploadImages(files: File[], itemId: number): Promise<void>
   }
 }
 
+/**
+ * Deletes an image for an item from the backend and Cloudinary.
+ *
+ * @param itemId The ID of the item the image belongs to
+ * @param imageUrl The URL of the image to delete
+ * @returns A promise that resolves when the deletion is complete
+ * @throws Error if deletion fails
+ */
+export async function deleteImage(itemId: number, imageUrl: string): Promise<void> {
+  try {
+    console.log("try to delete picture");
+    const response = await api.delete('/images/delete', {
+      params: {
+        itemId,
+        imageUrl
+      }
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Unexpected response status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Image deletion failed:', error);
+    throw error;
+  }
+}
+
 export default {
   uploadImages,
+  deleteImage,
 };
