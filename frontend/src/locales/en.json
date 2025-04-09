@@ -130,5 +130,24 @@
     "DELETE_BID": "Delete Bid",
 
     "ERROR_SEARCHING": "An error occurred while searching.",
-    "SEARCH_PLACEHOLDER": "Search here"
+
+
+
+    "SEARCH_LABEL": "Search:",
+    "SEARCH_PLACEHOLDER": "Search by title...",
+    "ADVANCED_TOGGLE_TITLE": "Toggle Advanced Search",
+    "ADVANCED_MORE": "[+ More Filters]",
+    "ADVANCED_LESS": "[- Less]",
+    "MIN_PRICE_LABEL": "Min Price:",
+    "MIN_PRICE_PLACEHOLDER": "e.g., 100",
+    "MAX_PRICE_LABEL": "Max Price:",
+    "MAX_PRICE_PLACEHOLDER": "e.g., 500",
+    "SORT_LABEL": "Sort By:",
+    "SORT_DEFAULT": "Default",
+    "SORT_PRICE_LOW_HIGH": "Price: Low to High",
+    "SORT_PRICE_HIGH_LOW": "Price: High to Low",
+    "MAX_DISTANCE_LABEL": "Max Distance: {distance} km",
+    "DISTANCE_SLIDER_TITLE": "Adjust search distance",
+    "DISTANCE_SLIDER_DISABLED": "Click 'Use My Location' first",
+    "USE_MY_LOCATION": "Use My Location"
 }

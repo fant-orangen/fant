@@ -1,7 +1,6 @@
 <template>
   <div class="profile-favorites-view">
     <h2>{{ $t('MY_FAVORITES') }}</h2>
-
     <ItemList
       :fetchFunction="fetchItems"
       :categoryId="null"

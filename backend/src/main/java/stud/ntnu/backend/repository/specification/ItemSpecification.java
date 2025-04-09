@@ -41,26 +41,23 @@ public class ItemSpecification {
 
       // Category name
       if (StringUtils.hasText(searchDto.getCategoryName())) {
-        Join<Item, Category> categoryJoin = root.join("category");
+        Join<Item, Category> categoryJoin = root.join("category", JoinType.LEFT); // Use LEFT JOIN if category might be optional or to avoid errors if join fails unexpectedly
         predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(categoryJoin.get("name")),
             searchDto.getCategoryName().toLowerCase()));
       }
 
-      // Location-based search (using Haversine formula for distance calculation)
-      if (searchDto.getUserLatitude() != null && searchDto.getUserLongitude() != null && searchDto.getMaxDistance() != null) {
-        // MySQL's ST_Distance_Sphere function calculates distance in meters between two points
-        // Convert km to meters
-        double maxDistanceMeters = searchDto.getMaxDistance() * 1000;
+      // --- REMOVED Location-based search using ST_Distance_Sphere ---
+      // The distance filtering will now be handled in the service layer.
+      // Optionally, add a basic bounding box filter here if performance becomes an issue:
+      // if (searchDto.getUserLatitude() != null && searchDto.getUserLongitude() != null && searchDto.getMaxDistance() != null) {
+      //    // Basic Bounding Box Predicates (less precise, but faster DB query)
+      //    // Calculate min/max lat/lon based on maxDistance and add predicates here
+      // }
 
-        Expression<Double> distance = criteriaBuilder.function(
-            "ST_Distance_Sphere",
-            Double.class,
-            criteriaBuilder.function("POINT", Object.class, root.get("longitude"), root.get("latitude")),
-            criteriaBuilder.function("POINT", Object.class, criteriaBuilder.literal(searchDto.getUserLongitude()), criteriaBuilder.literal(searchDto.getUserLatitude()))
-        );
 
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(distance, maxDistanceMeters));
-      }
+      // Ensure the query does not generate duplicates if multiple joins are used
+      query.distinct(true);
+
 
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     };

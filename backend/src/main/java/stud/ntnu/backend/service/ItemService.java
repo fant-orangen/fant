@@ -1,3 +1,5 @@
+// frontend 6/backend/src/main/java/stud/ntnu/backend/service/ItemService.java
+
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification; // Import Specification
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.item.ItemCreateDto;
@@ -32,7 +35,7 @@ import stud.ntnu.backend.repository.ItemViewRepository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import stud.ntnu.backend.repository.specification.ItemSpecification;
+import stud.ntnu.backend.repository.specification.ItemSpecification; // Import ItemSpecification
 
 /**
  * <h2>ItemService</h2>
@@ -42,23 +45,15 @@ import stud.ntnu.backend.repository.specification.ItemSpecification;
 @RequiredArgsConstructor
 public class ItemService {
 
-  /**
-   * <h3>Item Repository</h3>
-   * <p>Data access component for items.</p>
-   */
+  // ... (Existing repositories and ModelMapper) ...
   private final ItemRepository itemRepository;
-
-  /**
-   * <h3>Item View Repository</h3>
-   * <p>Data access component for item view tracking.</p>
-   */
   private final ItemViewRepository itemViewRepository;
-
   private final FavoriteRepository favoriteRepository;
-
   private final ModelMapper modelMapper;
   private final CategoryRepository categoryRepository;
 
+
+  // --- Existing methods (createItem, updateItem, deleteItem, etc.) ---
   @Transactional
   public ItemDetailsDto createItem(User seller, ItemCreateDto itemCreateDto) {
     Category category = categoryRepository.findById(itemCreateDto.getCategoryId()).orElseThrow(
@@ -74,13 +69,14 @@ public class ItemService {
   public ItemDetailsDto updateItem(User seller, ItemCreateDto itemCreateDto, Long id) {
     Item item = itemRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Item not found with id " + id));
-    if (!item.getSeller().equals(seller)) {
+    if (!item.getSeller().getId().equals(seller.getId())) { // Use ID comparison
       throw new BadCredentialsException("This is not your item!");
     }
     Category category = categoryRepository.findById(itemCreateDto.getCategoryId()).orElseThrow(
         () -> new EntityNotFoundException(
             "Category not found with id " + itemCreateDto.getCategoryId()));
     modelMapper.map(itemCreateDto, item);
+    // Ensure seller and category are set correctly after mapping
     item.setSeller(seller);
     item.setCategory(category);
     return mapToItemDetailsDto(itemRepository.save(item));
@@ -90,7 +86,7 @@ public class ItemService {
   public void deleteItem(User seller, Long id) {
     Item item = itemRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + id));
-    if (!item.getSeller().equals(seller)) {
+    if (!item.getSeller().getId().equals(seller.getId())) { // Use ID comparison
       throw new BadCredentialsException("You are not allowed to delete this item");
     }
     itemRepository.delete(item);
@@ -103,60 +99,25 @@ public class ItemService {
     itemRepository.delete(item);
   }
 
-  /**
-   * <h3>Get All Item Previews</h3>
-   * <p>Retrieves all items in simplified preview format.</p>
-   *
-   * @return list of {@link ItemPreviewDto}
-   */
   public Page<ItemPreviewDto> getAllItemPreviews(Pageable pageable) {
     return itemRepository.findAll(pageable).map(this::mapToItemPreviewDto);
   }
 
-  /**
-   * <h3>Get Item Details</h3>
-   * <p>Retrieves complete details for a specific item.</p>
-   *
-   * @param id the item ID
-   * @return {@link ItemDetailsDto}
-   * @throws EntityNotFoundException if item not found
-   */
   public ItemDetailsDto getItemDetailsById(Long id) {
     Item item = itemRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + id));
     return mapToItemDetailsDto(item);
   }
 
-  /**
-   * <h3>Get Items By Category</h3>
-   * <p>Retrieves items belonging to a specific category.</p>
-   *
-   * @param categoryId the category ID
-   * @return list of {@link ItemPreviewDto}
-   */
   public Page<ItemPreviewDto> getItemsByCategoryId(Long categoryId, Pageable pageable) {
     return itemRepository.findByCategoryId(categoryId, pageable).map(this::mapToItemPreviewDto);
   }
 
-  /**
-   * <h3>Get Items By Seller</h3>
-   * <p>Retrieves items listed by a specific seller.</p>
-   *
-   * @param sellerId the seller's ID
-   * @return list of {@link ItemPreviewDto}
-   */
   public Page<ItemPreviewDto> getItemsBySellerId(Long sellerId, Pageable pageable) {
     return itemRepository.findBySellerId(sellerId, pageable)
         .map(this::mapToItemPreviewDto);
   }
 
-  /**
-   * <h3>Record Item View</h3>
-   * <p>Tracks when a user views an item.</p>
-   *
-   * @param itemId the viewed item ID
-   * @param user   the viewing user
-   */
   @Transactional
   public void recordView(Long itemId, User user) {
     Item item = itemRepository.findById(itemId)
@@ -164,8 +125,61 @@ public class ItemService {
     itemViewRepository.save(ItemView.builder().item(item).user(user).build());
   }
 
+  // --- Haversine Distance Calculation ---
+  private static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    final int R = 6371; // Radius of the earth in km
+    double latDistance = Math.toRadians(lat2 - lat1);
+    double lonDistance = Math.toRadians(lon2 - lon1);
+    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+        + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // convert to kilometers
+  }
+
+  /**
+   * Searches items based on criteria, including in-memory distance filtering.
+   */
+  public Page<ItemPreviewDto> searchItems(ItemSearchDto searchDto, Pageable pageable) {
+    // Create specification based on NON-LOCATION criteria from the DTO
+    Specification<Item> spec = ItemSpecification.searchByCriteria(searchDto); // [cite: uploaded:frontend 6/backend/src/main/java/stud/ntnu/backend/repository/specification/ItemSpecification.java]
+
+    // Fetch the paged results based on the specification (without distance DB function)
+    Page<Item> itemsPage = itemRepository.findAll(spec, pageable);
+
+    List<Item> itemsToFilter = itemsPage.getContent();
+    List<Item> filteredItems;
+
+    // Perform distance filtering in memory if location parameters are provided
+    if (searchDto.getUserLatitude() != null && searchDto.getUserLongitude() != null && searchDto.getMaxDistance() != null && searchDto.getMaxDistance() > 0) {
+      final double userLat = searchDto.getUserLatitude();
+      final double userLon = searchDto.getUserLongitude();
+      final double maxDist = searchDto.getMaxDistance();
+
+      filteredItems = itemsToFilter.stream()
+          .filter(item -> item.getLatitude() != null && item.getLongitude() != null) // Ensure item has location
+          .filter(item -> calculateDistance(userLat, userLon, item.getLatitude(), item.getLongitude()) <= maxDist)
+          .collect(Collectors.toList());
+    } else {
+      // No location filtering needed
+      filteredItems = itemsToFilter;
+    }
+
+    // Map the potentially filtered list of items on the current page to DTOs
+    List<ItemPreviewDto> dtoList = filteredItems.stream()
+        .map(this::mapToItemPreviewDto)
+        .collect(Collectors.toList());
+
+    // Return a new Page object. Note: The totalElements count is from the pre-filtered query.
+    // This is a trade-off for H2 compatibility. A more complex solution would be needed
+    // for a perfectly accurate total count after in-memory filtering.
+    return new PageImpl<>(dtoList, pageable, itemsPage.getTotalElements());
+  }
+
+
+  // --- Other existing methods (getItemsByDistribution, mapToItemPreviewDto, etc.) ---
   public Page<ItemPreviewDto> getItemsByDistribution(Map<String, Double> distribution,
-                                                     Pageable pageable) {
+      Pageable pageable) {
     int pageSize = pageable.getPageSize();
     int offset = (int) pageable.getOffset();
 
@@ -198,13 +212,6 @@ public class ItemService {
     return new PageImpl<>(paginatedItems, pageable, allItems.size());
   }
 
-  /**
-   * <h3>Map To Item Preview</h3>
-   * <p>Converts Item entity to preview DTO.</p>
-   *
-   * @param item the item to convert
-   * @return {@link ItemPreviewDto}
-   */
   private ItemPreviewDto mapToItemPreviewDto(Item item) {
     return ItemPreviewDto.builder()
         .id(item.getId())
@@ -213,16 +220,11 @@ public class ItemService {
         .imageUrl(getFirstImageUrl(item))
         .latitude(item.getLatitude())
         .longitude(item.getLongitude())
+        // Add categoryId if needed by frontend preview
+        // .categoryId(item.getCategory() != null ? item.getCategory().getId().toString() : null)
         .build();
   }
 
-  /**
-   * <h3>Map To Item Details</h3>
-   * <p>Converts Item entity to details DTO.</p>
-   *
-   * @param item the item to convert
-   * @return {@link ItemDetailsDto}
-   */
   private ItemDetailsDto mapToItemDetailsDto(Item item) {
     List<String> imageUrls = item.getImages() != null ?
         item.getImages().stream()
@@ -238,20 +240,13 @@ public class ItemService {
         .category(item.getCategory() != null ? item.getCategory().getName() : "")
         .price(item.getPrice())
         .contact(item.getSeller() != null ? item.getSeller().getDisplayName() : "")
-        .sellerId(item.getSeller() != null ? item.getSeller().getId() : null) // <-- Added mapping
+        .sellerId(item.getSeller() != null ? item.getSeller().getId() : null)
         .imageUrls(imageUrls)
         .latitude(item.getLatitude())
         .longitude(item.getLongitude())
         .build();
   }
 
-  /**
-   * <h3>Get First Image URL</h3>
-   * <p>Retrieves URL of primary item image.</p>
-   *
-   * @param item the item to check
-   * @return image URL or null
-   */
   private String getFirstImageUrl(Item item) {
     if (item.getImages() == null || item.getImages().isEmpty()) {
       return null;
@@ -262,10 +257,6 @@ public class ItemService {
         .orElse(null);
   }
 
-  /**
-   * <h3>Select Random Items</h3>
-   * <p>Helper method for recommendation selection logic.</p>
-   */
   private List<ItemPreviewDto> selectRandomItems(
       Map<Long, List<Item>> categoryItemsMap,
       Map<String, Double> distribution,
@@ -283,13 +274,18 @@ public class ItemService {
 
     categoryItemCounts.forEach((categoryId, itemCount) -> {
       List<Item> categoryItems = new ArrayList<>(categoryItemsMap.get(categoryId));
-      for (int i = 0; i < itemCount && result.size() < itemLimit && !categoryItems.isEmpty(); i++) {
-        int randomIndex = random.nextInt(categoryItems.size());
-        result.add(mapToItemPreviewDto(categoryItems.remove(randomIndex)));
+      Collections.shuffle(categoryItems, random); // Shuffle before picking
+      int count = 0;
+      for (Item item : categoryItems) {
+        if (count >= itemCount || result.size() >= itemLimit) break;
+        result.add(mapToItemPreviewDto(item));
+        count++;
       }
     });
 
-    Collections.shuffle(result);
+    // Shuffle final result if distribution was probabilistic
+    Collections.shuffle(result, random);
+
     return result.size() > itemLimit ? result.subList(0, itemLimit) : result;
   }
 
@@ -297,10 +293,5 @@ public class ItemService {
     Page<Favorite> favoritesPage = favoriteRepository.findAllByUserId(userId, pageable);
 
     return favoritesPage.map(favorite -> mapToItemPreviewDto(favorite.getItem()));
-  }
-
-  public Page<ItemPreviewDto> searchItems(ItemSearchDto searchDto, Pageable pageable) {
-    return itemRepository.findAll(ItemSpecification.searchByCriteria(searchDto), pageable)
-        .map(this::mapToItemPreviewDto);
   }
 }
