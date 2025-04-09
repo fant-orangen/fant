@@ -80,4 +80,16 @@ public class FavoriteService {
   public Long countByItemId(Long itemId) {
     return favoriteRepository.countByItemId(itemId);
   }
+
+  /**
+   * <h3>Check Favorite Status</h3>
+   * <p>Checks if a user has favorited a specific item.</p>
+   *
+   * @param userId the ID of the user
+   * @param itemId the ID of the item
+   * @return true if the item is favorited by the user, false otherwise
+   */
+  public boolean checkFavoriteStatus(Long userId, Long itemId) {
+    return favoriteRepository.existsByUserIdAndItemId(userId, itemId);
+  }
 }
