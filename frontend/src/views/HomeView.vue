@@ -79,7 +79,7 @@ const error = ref<string | null>(null);
 const isFetchingLocation = ref(false);
 const insufficientItemViews = ref(false);
 const locationError = ref<string | null>(null);
-const pageSize = ref(8);
+const pageSize = ref(12);
 
 const numOfViewsLimit = 3
 
