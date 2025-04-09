@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.data.user.UserResponseDto;
 import stud.ntnu.backend.model.User;
+import stud.ntnu.backend.model.enums.Role;
 import stud.ntnu.backend.repository.UserRepository;
 
 /**
@@ -46,9 +47,12 @@ public class UserService {
    */
   @Transactional
   public User createUser(UserCreateDto registrationDto) {
-    User user = modelMapper.map(registrationDto, User.class);
-    user.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword()));
-    return userRepository.save(modelMapper.map(registrationDto, User.class));
+    User user = User.builder().email(registrationDto.getEmail())
+        .passwordHash(passwordEncoder.encode(registrationDto.getPassword())).firstName(
+            registrationDto.getFirstName()).lastName(registrationDto.getLastName()).phone(
+            registrationDto.getPhone()).displayName(registrationDto.getDisplayName())
+        .role(Role.USER).build();
+    return userRepository.save(user);
   }
 
   /**
@@ -63,8 +67,12 @@ public class UserService {
   public User updateUser(UserCreateDto userCreateDto, Long id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
-    modelMapper.map(userCreateDto, user);
+    user.setEmail(userCreateDto.getEmail());
     user.setPasswordHash(passwordEncoder.encode(userCreateDto.getPassword()));
+    user.setDisplayName(userCreateDto.getDisplayName());
+    user.setFirstName(userCreateDto.getFirstName());
+    user.setLastName(userCreateDto.getLastName());
+    user.setPhone(userCreateDto.getPhone());
     return userRepository.save(user);
   }
 

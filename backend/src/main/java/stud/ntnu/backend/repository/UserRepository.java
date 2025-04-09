@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
    * @return {@link Optional} containing the matching {@link User} if found
    */
   Optional<User> findByEmail(String email);
+
+  boolean existsByEmail(String mail);
 }
