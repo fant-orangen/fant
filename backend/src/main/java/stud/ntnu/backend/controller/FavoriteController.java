@@ -100,4 +100,20 @@ public class FavoriteController {
   public ResponseEntity<Long> getFavoriteCountByItem(@Positive @PathVariable long itemId) {
     return ResponseEntity.ok(favoriteService.countByItemId(itemId));
   }
+
+  /**
+   * <h3>Check Favorite Status</h3>
+   * <p>Checks if the current user has favorited a specific item.</p>
+   *
+   * @param itemId    the ID of the item to check
+   * @param principal the authenticated user
+   * @return true if favorited, false otherwise
+   */
+  @GetMapping("/status/{itemId}")
+  public ResponseEntity<Boolean> isFavorite(@PathVariable long itemId, Principal principal) {
+    boolean isFav = favoriteService.checkFavoriteStatus(userService.getCurrentUserId(principal), itemId);
+    return ResponseEntity.ok(isFav);
+  }
+
+
 }

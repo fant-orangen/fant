@@ -9,8 +9,8 @@ import { ref, onMounted } from 'vue';
 import heartIcon from '@/assets/icons/heart.svg';
 import heartRedIcon from '@/assets/icons/heart-red.svg';
 import { addFavorite, removeFavorite, checkIsFavorite } from '@/services/FavoriteService.ts';
-import { useUserStore } from '@/stores/UserStore.ts'
-import router from '@/router'
+import { useUserStore } from '@/stores/UserStore.ts';
+import router from '@/router';
 
 const props = defineProps<{
   itemId: string;
@@ -23,11 +23,10 @@ onMounted(async () => {
     console.error('ItemId is undefined or empty');
     return;
   }
-
   try {
     const favoriteStatus = await checkIsFavorite(parseInt(props.itemId));
     isFavorite.value = favoriteStatus;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error checking favorite status:', error);
   }
 });
@@ -40,22 +39,44 @@ async function toggleFavorite(event: Event) {
     return;
   }
 
-  try {
-    const itemId = parseInt(props.itemId);
-    if (!useUserStore().getUserId || useUserStore().getUserId === '0') {
-      await router.push('/register')
-      return;
-    }
+  // --- Get User Store and Check Login ---
+  const userStore = useUserStore();
+  if (!userStore.getUserId || userStore.getUserId === '0') {
+    await router.push('/login'); // Redirect to login if user is not logged in
+    return;
+  }
 
-    console.log('UserId:' + useUserStore().getUserId)
+  const itemId = parseInt(props.itemId);
+  console.log('UserId:' + userStore.getUserId); // Log UserID for debugging
+
+  try {
     if (isFavorite.value) {
+      // If currently favorite, try to remove
       await removeFavorite(itemId);
+      isFavorite.value = false; // Update state only if removeFavorite succeeds
+      console.log(`Removed favorite: ${itemId}`);
     } else {
+      // If not currently favorite, try to add
       await addFavorite(itemId);
+      isFavorite.value = true; // Update state only if addFavorite succeeds
+      console.log(`Added favorite: ${itemId}`);
     }
-    isFavorite.value = !isFavorite.value;
-  } catch (error) {
-    console.error('Error toggling favorite:', error);
+  } catch (error: unknown) {
+    // Use a type guard to check if the error is an Error with an optional response property
+    if (error instanceof Error) {
+      const err = error as Error & { response?: { status?: number } };
+      if (err.response?.status === 400 && err.message.includes('already has favorited')) {
+        console.warn('Syncing state: Item was already favorited.');
+        isFavorite.value = true;
+      } else if (err.response?.status === 404 && isFavorite.value) {
+        console.warn('Syncing state: Item was not favorited to begin with.');
+        isFavorite.value = false;
+      } else {
+        console.error('Error toggling favorite:', err.message);
+      }
+    } else {
+      console.error('An unknown error occurred', error);
+    }
   }
 }
 </script>
