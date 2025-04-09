@@ -1,42 +1,42 @@
 -- The BCryptPasswordEncoder has encoded the password 'password123'
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('alice@example.com', 'alice', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('alice@example.com', 'alice', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash, role)
-VALUES ('jakob@mail.com', 'jakob', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW', 'ADMIN');
+VALUES ('jakob@mail.com', 'jakob', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2', 'ADMIN');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('ola@norge.no', 'ola', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('ola@norge.no', 'ola', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('mariah@example.com', 'mariah', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('mariah@example.com', 'mariah', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('kevinh@example.com', 'kevinh', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('kevinh@example.com', 'kevinh', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('sofia@example.com', 'sofia', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('sofia@example.com', 'sofia', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('julian@example.com', 'julian', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('julian@example.com', 'julian', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('oliverb@example.com', 'oliverb', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('oliverb@example.com', 'oliverb', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('emilys@example.com', 'emilys', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('emilys@example.com', 'emilys', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('danielm@example.com', 'danielm', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('danielm@example.com', 'danielm', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('lucia@example.com', 'lucia', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('lucia@example.com', 'lucia', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('noahk@example.com', 'noahk', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('noahk@example.com', 'noahk', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO users (email, display_name, password_hash)
-VALUES ('ameliaw@example.com', 'ameliaw', '$2a$10$9JB0yUlymHFA23jzoN9VWOPF6UIjLPCWFxwYV02kI/MlYdNJsDlBW');
+VALUES ('ameliaw@example.com', 'ameliaw', '$2a$12$LoAYy4FBlI/QeeJ6ZsmXHuOhp4irHJjPhsLiELCjZJekQLiicPbL2');
 
 INSERT INTO categories (name, image_url)
 VALUES ('Travel', 'travel');
