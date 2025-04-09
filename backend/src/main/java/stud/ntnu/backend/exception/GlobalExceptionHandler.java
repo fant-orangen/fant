@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(AlreadyFavoritedException.class)
-  public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException ex) {
+  public ResponseEntity<String> handleAlreadyFavoritedException(AlreadyFavoritedException ex) {
     log.warn(ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
@@ -161,14 +161,6 @@ public class GlobalExceptionHandler {
       MissingServletRequestPartException ex) {
     log.warn(ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-  }
-
-  @ExceptionHandler(DataIntegrityViolationException.class)
-  public ResponseEntity<String> handleDataIntegrityViolationException(
-      DataIntegrityViolationException ex) {
-    log.error(ex.getMessage());
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body("An unexpected error occurred");
   }
 
   /**

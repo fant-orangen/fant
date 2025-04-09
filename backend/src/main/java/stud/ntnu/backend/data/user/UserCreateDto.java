@@ -4,13 +4,17 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <h2>UserRequestDto</h2>
  * <p>Data transfer object for user registration and profile updates.</p>
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCreateDto {
 
   /**

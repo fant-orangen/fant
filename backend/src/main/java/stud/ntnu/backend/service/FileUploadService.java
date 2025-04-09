@@ -20,8 +20,7 @@ public class FileUploadService {
     }
 
     String contentType = file.getContentType();
-    if (contentType == null ||
-        (!contentType.equals("image/jpeg") && !contentType.equals("image/png") &&
+    if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png") &&
             !contentType.equals("image/img"))) {
       throw new FileFormatException("File format not supported");
     }

@@ -3,9 +3,11 @@ package stud.ntnu.backend.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import jakarta.transaction.Transactional;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import stud.ntnu.backend.exception.FileFormatException;
 import stud.ntnu.backend.model.Image;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.repository.ImageRepository;
@@ -60,8 +62,8 @@ public class ImageService {
    */
   @Autowired
   public ImageService(ImageRepository imageRepository,
-      ItemRepository itemRepository,
-      Cloudinary cloudinary) {
+                      ItemRepository itemRepository,
+                      Cloudinary cloudinary) {
     this.imageRepository = imageRepository;
     this.itemRepository = itemRepository;
     this.cloudinary = cloudinary;
@@ -88,12 +90,17 @@ public class ImageService {
    */
   @Transactional
   public void uploadImagesForItem(MultipartFile[] files, Long itemId) throws IOException {
-    Optional<Item> itemOpt = itemRepository.findById(itemId);
-    if (itemOpt.isEmpty()) {
-      throw new IllegalArgumentException("Item with ID " + itemId + " does not exist.");
-    }
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> new IllegalArgumentException("Item not found with ID: " + itemId));
 
-    Item item = itemOpt.get();
+    for (MultipartFile file : files) {
+      String contentType = file.getContentType();
+      if (contentType == null ||
+          (!contentType.equals("image/jpeg") && !contentType.equals("image/png") &&
+              !contentType.equals("image/img"))) {
+        throw new FileFormatException("File format not supported");
+      }
+    }
 
     for (MultipartFile file : files) {
       Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
