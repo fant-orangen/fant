@@ -5,12 +5,13 @@ import { useUserStore } from '@/stores/UserStore'
 import { isAxiosError } from 'axios'
 import TextInput from '@/components/input/TextInput.vue'
 
-const username = ref('')
+// Renamed 'username' to 'displayName' to match backend DTO
+const displayName = ref('')
 const password = ref('')
 const email = ref('')
 const firstName = ref('')
 const lastName = ref('')
-const phoneNumber = ref('')
+const phoneNumber = ref('') // Keep as phoneNumber for input, maps to 'phone' in store/service
 
 const error = ref('')
 const isLoading = ref(false)
@@ -27,19 +28,22 @@ async function registerUser() {
   isLoading.value = true
 
   try {
+    // Pass the correct fields to the store action
     await userStore.registerUser({
-      username: username.value,
-      password: password.value,
       email: email.value,
+      password: password.value,
+      displayName: displayName.value, // Pass displayName
       firstName: firstName.value,
       lastName: lastName.value,
-      birthDate: phoneNumber.value
+      phone: phoneNumber.value // Pass phoneNumber as 'phone'
     })
     router.push('/')
   } catch (err: unknown) {
     if (isAxiosError(err)) {
       error.value = err.response?.data?.message ?? 'Registration Failed'
     } else {
+      // It's helpful to log the actual error for debugging
+      console.error('Unknown registration error:', err);
       error.value = 'Unknown error during registration'
     }
   } finally {
@@ -53,17 +57,10 @@ async function registerUser() {
     <h1>{{ $t('REGISTRATION_HEADER') }}</h1>
     <form class="form" @submit.prevent="registerUser">
       <TextInput
-        id="username"
-        v-model="username"
+        id="displayName"
+        v-model="displayName"
         :label="$t('USERNAME')"
-        :placeholder="$t('USERNAME')"
-      />
-      <TextInput
-        id="password"
-        v-model="password"
-        type="password"
-        :label="$t('PASSWORD')"
-        :placeholder="$t('PASSWORD')"
+      :placeholder="$t('USERNAME')"
       />
       <TextInput
         id="email"
@@ -71,6 +68,13 @@ async function registerUser() {
         type="email"
         :label="$t('EMAIL')"
         :placeholder="$t('EMAIL')"
+      />
+      <TextInput
+        id="password"
+        v-model="password"
+        type="password"
+        :label="$t('PASSWORD')"
+        :placeholder="$t('PASSWORD')"
       />
       <TextInput
         id="firstName"
@@ -97,4 +101,3 @@ async function registerUser() {
     <router-link to="/login">{{ $t('REGISTRATION_ACCOUNT_QUESTION') }}</router-link>
   </div>
 </template>
-
