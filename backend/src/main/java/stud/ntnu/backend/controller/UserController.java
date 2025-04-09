@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +18,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.data.user.UserResponseDto;
+import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.UserService;
 
@@ -65,7 +64,7 @@ public class UserController {
    * <h3>Update User Profile</h3>
    * <p>Updates the current user's profile information.</p>
    *
-   * @param userCreateDto the updated user data
+   * @param userUpdateDto the updated user data
    * @param principal     the authenticated user
    * @return {@link ResponseEntity} containing the updated {@link User} entity
    */
@@ -75,11 +74,11 @@ public class UserController {
   @ApiResponse(responseCode = "400", description = "Invalid user details", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<User> updateUser(@Valid @RequestBody
-                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated user details", required = true, content = @Content(schema = @Schema(implementation = UserCreateDto.class)))
-                                         UserCreateDto userCreateDto,
+                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated user details", required = true, content = @Content(schema = @Schema(implementation = UserUpdateDto.class)))
+                                         UserUpdateDto userUpdateDto,
                                          @Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(
-        userService.updateUser(userCreateDto, userService.getCurrentUserId(principal)));
+        userService.updateUser(userUpdateDto, userService.getCurrentUserId(principal)));
   }
 
   /**
