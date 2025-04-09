@@ -43,18 +43,32 @@ function handleFileChange(event: Event) {
 function removeImage(index: number) {
   const preview = previews.value[index];
 
-  const existingIndex = existingImageUrls.value.indexOf(preview);
-  if (existingIndex !== -1) {
-    existingImageUrls.value.splice(existingIndex, 1);
+  // Check if this is an existing image URL (from the server)
+  const isExistingUrl = existingImageUrls.value.includes(preview);
+
+  if (isExistingUrl) {
+    // Remove from existing URLs array
+    existingImageUrls.value = existingImageUrls.value.filter(url => url !== preview);
   } else {
-    const objectUrlIndex = files.value.findIndex(f => URL.createObjectURL(f) === preview);
-    if (objectUrlIndex !== -1) {
-      files.value.splice(objectUrlIndex, 1);
+    // Find the corresponding file and remove it
+    const fileIndex = files.value.findIndex(
+      (_, i) => previews.value[index] === URL.createObjectURL(files.value[i])
+    );
+
+    if (fileIndex !== -1) {
+      files.value.splice(fileIndex, 1);
     }
+    URL.revokeObjectURL(preview);
   }
 
-  URL.revokeObjectURL(preview);
+  // Remove from previews array
   previews.value.splice(index, 1);
+
+  // Emit update event
+  emit('update:images', {
+    files: files.value,
+    existingUrls: existingImageUrls.value
+  });
 }
 </script>
 

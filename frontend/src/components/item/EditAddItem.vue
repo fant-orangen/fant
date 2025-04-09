@@ -157,7 +157,6 @@ const priceInput = ref(formData.value.price.toString());
 const latitudeInput = ref(formData.value.latitude?.toString() || '');
 const longitudeInput = ref(formData.value.longitude?.toString() || '');
 const isMapMode = ref(true);
-const imageFiles = ref<File[]>([]);
 const keptExistingUrls = ref<string[]>([]);
 const newImageFiles = ref<File[]>([]);
 
@@ -207,35 +206,47 @@ function handleFileUpload({ files, existingUrls }: { files: File[], existingUrls
 
 async function handleSubmit() {
   try {
-    // Find deleted images by comparing original images with kept existing URLs
+    // Create a copy of the form data for submission
+    const submissionData = { ...formData.value };
+
+    // Set images to null initially when sending to backend
+    submissionData.images = [];
+
+    // Find deleted images by comparing original with kept
     const deletedImages = (props.existingItem?.images || []).filter(
-      (url) => !keptExistingUrls.value.includes(url)
+      url => !keptExistingUrls.value.includes(url)
     );
 
-    // Set images property to kept URLs
-    formData.value.images = keptExistingUrls.value;
-
     // Submit the form data to create/update the item
-    const itemId = await props.onSubmit({ ...formData.value });
+    const itemId = await props.onSubmit(submissionData);
 
-    // Delete images that were removed
-    for (const url of deletedImages) {
-      try {
-        await ImageService.deleteImage(itemId, url);
-      } catch (error) {
-        console.error(`Failed to delete image ${url}:`, error);
-        // Continue with other operations even if one delete fails
+    // Track if we need to update the form data
+    let hasChanges = false;
+
+    // Only process deletions if there are images to delete
+    if (deletedImages.length > 0) {
+      for (const url of deletedImages) {
+        try {
+          await ImageService.deleteImage(itemId, url);
+          hasChanges = true;
+        } catch (error) {
+          console.error(`Failed to delete image ${url}:`, error);
+        }
       }
     }
 
-    // Upload new images if any
+    // Only upload if there are new files
     if (newImageFiles.value.length > 0) {
       const uploadedUrls = await ImageService.uploadImages(newImageFiles.value, itemId);
 
-      // Update form data with new image URLs
-      if (Array.isArray(uploadedUrls)) {
-        formData.value.images = [...formData.value.images, ...uploadedUrls];
+      if (Array.isArray(uploadedUrls) && uploadedUrls.length > 0) {
+
+        // Add the new URLs to the kept existing ones
+        formData.value.images = [...keptExistingUrls.value, ...uploadedUrls];
       }
+    } else if (keptExistingUrls.value.length > 0) {
+      // If no new uploads but we still have kept URLs, update form data
+      formData.value.images = keptExistingUrls.value;
     }
 
     alert(props.isEditMode ? 'Item updated!' : 'Item created!');
