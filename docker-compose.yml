@@ -1,7 +1,7 @@
 services:
   backend:
     container_name: backend
-    build: /backend
+    build: backend
     ports:
       - "8080:8080"
     networks:
@@ -10,7 +10,7 @@ services:
 
   frontend:
     container_name: frontend
-    build: /frontend
+    build: frontend
     ports:
       - "80:80"
     networks:
