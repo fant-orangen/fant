@@ -34,7 +34,7 @@
         :total-pages="totalPages"
         @change-page="onPageChange"
         emptyMessage="No items found matching your criteria. Try adjusting filters."
-        :paginationEnabled="true" />
+        :paginationEnabled="paginationEnabled" />
     </div>
   </section>
 </template>
@@ -82,6 +82,7 @@ const locationError = ref<string | null>(null);
 const pageSize = ref(12);
 
 const numOfViewsLimit = 3
+const paginationEnabled = ref(true); // Or false to test infinite scroll
 
 // --- Computed Properties ---
 const isLocationAvailable = computed(() => {
@@ -117,74 +118,48 @@ async function fetchItems() {
     maxPrice: maxPrice.value,
     status: 'ACTIVE',
     categoryName: selectedCategoryName.value,
-    userLatitude: currentLatitude.value, // Pass directly
-    userLongitude: currentLongitude.value, // Pass directly
-    // Only send distance if location coords are available
+    userLatitude: currentLatitude.value,
+    userLongitude: currentLongitude.value,
     maxDistance: isLocationAvailable.value ? maxDistance.value : null,
     page: currentPage.value - 1,
     size: pageSize.value,
     sort: backendSortParam.value ?? undefined
   };
 
-  console.log("fetchItems was called");
   try {
-    console.log("Category ID:", selectedCategoryId.value);
-    console.log("User ID:", useUserStore().getUserId);
-
     const isRecommendationSelected = selectedCategoryId.value === '-1';
 
-    if (useUserStore().isLoggedInUser) {
-      if (isRecommendationSelected) {
-        const numOfViews = await fetchUserViewCount();
-        console.log("User view count:", numOfViews);
-
-        if (numOfViews > numOfViewsLimit) {
-          console.log("Fetching recommendations...");
-          const recommendations = await fetchCategoryRecommendations();
-          const response = await fetchItemsByDistribution(recommendations);
-          console.log("Fetched recommended items:", response.content);
-
-          items.value = response.content ?? [];
-          totalPages.value = response.totalPages ?? 1;
-
-          if (currentPage.value > totalPages.value) {
-            currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
-          }
-        } else {
-          items.value = [];
-          totalPages.value = 1;
-          error.value = "You have insufficient item views to fetch recommendations.";
-          insufficientItemViews.value = true;
-        }
-      } else {
-        // Logged in and not viewing recommendations — search as normal
-        const response = await searchItems(params);
+    if (useUserStore().isLoggedInUser && isRecommendationSelected) {
+      const numOfViews = await fetchUserViewCount();
+      if (numOfViews > numOfViewsLimit) {
+        const recommendations = await fetchCategoryRecommendations();
+        const response = await fetchItemsByDistribution(recommendations);
         items.value = response.content ?? [];
         totalPages.value = response.totalPages ?? 1;
-
-        if (currentPage.value > totalPages.value) {
-          currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
-        }
-      }
-    } else {
-      if (isRecommendationSelected) {
-        // Not logged in but selected recommended
+      } else {
         items.value = [];
         totalPages.value = 1;
-        error.value = "You must be logged in to view recommended items.";
-      } else {
-        // Not logged in, normal category
-        const response = await searchItems(params);
-        items.value = response.content ?? [];
-        totalPages.value = response.totalPages ?? 1;
-
-        if (currentPage.value > totalPages.value) {
-          currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
-        }
+        error.value = "You have insufficient item views to fetch recommendations.";
+        insufficientItemViews.value = true;
       }
-    }
+    } else if (!useUserStore().isLoggedInUser && isRecommendationSelected) {
+      items.value = [];
+      totalPages.value = 1;
+      error.value = "You must be logged in to view recommended items.";
+    } else {
+      const response = await searchItems(params);
 
-    console.log(`Fetched ${items.value.length} items. Total pages: ${totalPages.value}`);
+      // 🔁 Append mode only when infinite scroll
+      if (paginationEnabled.value && currentPage.value === 1) {
+        items.value = response.content ?? [];
+      } else if (!paginationEnabled.value && currentPage.value > 1) {
+        items.value.push(...(response.content ?? []));
+      } else {
+        items.value = response.content ?? [];
+      }
+
+      totalPages.value = response.totalPages ?? 1;
+    }
   } catch (err) {
     console.error("Error fetching items:", err);
     error.value = 'Failed to load items. Please try again later.';
