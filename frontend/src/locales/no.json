@@ -130,7 +130,24 @@
 "DELETE_BID": "Slett bud",
 
 "ERROR_SEARCHING": "En feil skjedde under søk. ",
-"SEARCH_PLACEHOLDER": "Søk her"
+
+    "SEARCH_LABEL": "Søk:",
+    "SEARCH_PLACEHOLDER": "Søk etter tittel...",
+    "ADVANCED_TOGGLE_TITLE": "Bytt avansert søk",
+    "ADVANCED_MORE": "[+ Flere filtre]",
+    "ADVANCED_LESS": "[- Mindre]",
+    "MIN_PRICE_LABEL": "Min pris:",
+    "MIN_PRICE_PLACEHOLDER": "f.eks., 100",
+    "MAX_PRICE_LABEL": "Maks pris:",
+    "MAX_PRICE_PLACEHOLDER": "f.eks., 500",
+    "SORT_LABEL": "Sorter etter:",
+    "SORT_DEFAULT": "Standard",
+    "SORT_PRICE_LOW_HIGH": "Pris: Lav til Høy",
+    "SORT_PRICE_HIGH_LOW": "Pris: Høy til Lav",
+    "MAX_DISTANCE_LABEL": "Maks avstand: {distance} km",
+    "DISTANCE_SLIDER_TITLE": "Juster søkeavstand",
+    "DISTANCE_SLIDER_DISABLED": "Klikk 'Bruk min posisjon' først",
+    "USE_MY_LOCATION": "Bruk min posisjon"
 
 
 
