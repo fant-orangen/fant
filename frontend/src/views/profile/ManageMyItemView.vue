@@ -9,6 +9,7 @@
     </div>
     <div v-else-if="item" class="item-section">
       <h2>Manage Your Item: {{ item.title }}</h2>
+
       <div class="item-details-display">
         <img
           :src="item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : '/placeholder-image.png'"
@@ -20,9 +21,24 @@
           <p><strong>Description:</strong> {{ item.description || 'No description provided.' }}</p>
           <p><strong>Category:</strong> {{ item.category }}</p>
           <p><strong>Price:</strong> {{ formatPrice(item.price) }}</p>
-          <button @click="goToEditItem">Edit Item</button> </div>
-      </div>
 
+          <div class="item-actions">
+            <button @click="goToEditItem">Edit Item</button>
+            <button @click="openDeleteModal">Delete Item</button>
+            <ConfirmDeleteModal
+              :isOpen="isDeleteModalOpen"
+              title="Delete Item"
+              message="Are you sure you want to delete this item? This action cannot be undone."
+              confirmText="Delete"
+              cancelText="Cancel"
+              @confirm="handleDeleteConfirm"
+              @cancel="handleDeleteCancel"
+            />
+          </div>
+        </div> <!-- CLOSE item-info -->
+      </div> <!-- CLOSE item-details-display -->
+
+      <!-- BIDS SECTION -->
       <div class="bids-section">
         <h3>Received Bids</h3>
         <div v-if="bidsLoading" class="loading-indicator">
@@ -32,7 +48,12 @@
           <p>Error loading bids: {{ bidsError }}</p>
         </div>
         <div v-else-if="bids.length > 0" class="bids-list">
-          <div v-for="bid in sortedBids" :key="bid.id" class="bid-card" :class="`bid-status-${bid.status.toLowerCase()}`">
+          <div
+            v-for="bid in sortedBids"
+            :key="bid.id"
+            class="bid-card"
+            :class="`bid-status-${bid.status.toLowerCase()}`"
+          >
             <div class="bid-info">
               <p><strong>Bidder:</strong> {{ bid.bidderUsername }}</p>
               <p><strong>Amount:</strong> {{ formatPrice(bid.amount) }}</p>
@@ -57,15 +78,12 @@
         <div v-else class="no-bids-message">
           <p>No bids have been placed on this item yet.</p>
         </div>
-      </div>
+      </div> <!-- CLOSE bids-section -->
+
       <div v-if="actionError" class="error-message action-error">
         {{ actionError }}
       </div>
-
-    </div>
-    <div v-else class="error-message">
-      <p>Item data could not be loaded.</p>
-    </div>
+    </div> <!-- CLOSE item-section -->
 
   </div>
 </template>
@@ -73,13 +91,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { fetchItem } from '@/services/ItemService';
+import { fetchItem, deleteItem } from '@/services/ItemService';
 import { fetchBidsForItem, acceptBid, rejectBid } from '@/services/BidService'; // Import bid services
 import type { ItemDetailsType } from '@/models/Item';
 import type { BidResponseType } from '@/models/Bid';
+import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue';
 
 const route = useRoute();
 const router = useRouter();
+const isDeleteModalOpen = ref(false);
 
 const itemId = ref<string | number | null>(null);
 const item = ref<ItemDetailsType | null>(null);
@@ -174,10 +194,24 @@ const sortedBids = computed(() => {
 // Function to navigate to edit page (implement later)
 function goToEditItem() {
   if(itemId.value) {
-    // Assuming you have an edit route like 'edit-item'
-    // router.push({ name: 'edit-item', params: { id: itemId.value }});
-    alert(`Maps to edit page for item ${itemId.value}`);
+    router.push({ name: 'edit-listing', params: { itemId: itemId.value }});
   }
+}
+function openDeleteModal() {
+  isDeleteModalOpen.value = true;
+}
+async function handleDeleteConfirm() {
+  isDeleteModalOpen.value = false;
+  console.log("handleDeleteConfirm method");
+  if (itemId.value !== null) {
+    await deleteItem(Number(itemId.value));
+  }
+  console.log('Item deleted');
+  router.push('/profile/listings');
+}
+function handleDeleteCancel() {
+  isDeleteModalOpen.value = false;
+  console.log('Delete action canceled');
 }
 
 

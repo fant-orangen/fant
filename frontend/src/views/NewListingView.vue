@@ -1,13 +1,17 @@
 <template>
-  <MarketListingFormComponent />
+  <EditAddItem
+    :onSubmit="createItem"
+  />
 </template>
 
 <script lang="ts">
-import MarketListingFormComponent from '@/components/item/MarketListingFormComponent.vue';
+import EditAddItem from "@/components/item/EditAddItem.vue";
+import {createItem} from "@/services/ItemService.ts";
 
 export default {
+  methods: {createItem},
   components: {
-    MarketListingFormComponent,
+    EditAddItem,
   },
 };
 </script>

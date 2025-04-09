@@ -53,6 +53,11 @@ const routes = [
     meta: { title: 'Create Listing - Fant', requiresAuth: true }
   },
   {
+    path: '/edit-listing/:itemId',
+    name: 'edit-listing',
+    component: () => import('@/views/EditListingView.vue'),
+  },
+  {
     path: '/admin',
     name: 'admin',
     component: CategoryEditView,
