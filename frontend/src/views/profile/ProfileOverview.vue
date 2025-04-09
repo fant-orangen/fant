@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/UserStore';
-import ProfileForm from '@/components/profile/ProfileForm.vue';
+import ProfileFormView from '@/views/profile/ProfileFormView.vue';
 import { useI18n } from 'vue-i18n';
 
 const userStore = useUserStore();
@@ -13,7 +13,7 @@ const { t } = useI18n();
     <h1>{{ t('PROFILE_TILE_MY_ACCOUNT_TITLE') }}</h1>
 
     <div v-if="userStore.profile">
-      <ProfileForm :profile="userStore.profile" />
+      <ProfileFormView :profile="userStore.profile" />
     </div>
     <div v-else>
       <p>{{ t('PROFILE_INFO_UNAVAILABLE') }}</p>

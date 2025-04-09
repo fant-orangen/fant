@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useUserStore } from '@/stores/UserStore'
-import ProfileForm from '@/components/profile/ProfileForm.vue'
+import ProfileFormView from '@/views/profile/ProfileFormView.vue'
 import { useI18n } from 'vue-i18n';
 
 const userStore = useUserStore();
@@ -36,7 +36,7 @@ onMounted(() => {
   <section class="profile-view">
     <h1>{{ t('PROFILE_TITLE') }}</h1>
     <div v-if="loading">{{ t('LOADING') }}</div>
-    <ProfileForm :profile="userStore.profile"/>
+    <ProfileFormView :profile="userStore.profile"/>
     <p v-if="error" class="error">{{ error }}</p>
   </section>
 </template>

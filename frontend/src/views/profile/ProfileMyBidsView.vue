@@ -19,7 +19,7 @@
       >
         <div class="bid-details">
           <p>
-            <span>On item: </span>
+            <span>{{ $t('ON_ITEM') }}: </span>
             <router-link
               :to="{ name: 'item-detail', params: { id: bid.itemId } }"
               class="item-link"
@@ -27,12 +27,15 @@
               {{ getItemTitle(bid.itemId) || `Item #${bid.itemId}` }}
             </router-link>
           </p>
-          <p><strong>Your Bid Amount:</strong> {{ formatPrice(bid.amount) }}</p>
-          <p v-if="bid.comment"><strong>Your Comment:</strong> {{ bid.comment }}</p>
-          <p>
-            <strong>Status:</strong> <span class="bid-status-badge">{{ bid.status }}</span>
+          <p><strong>{{ $t('YOUR_BID_AMOUNT') }}:</strong> {{ formatPrice(bid.amount) }}</p>
+          <p v-if="bid.comment">
+            <strong>{{ $t('YOUR_COMMENT') }}:</strong> {{ bid.comment }}
           </p>
-          <p class="bid-timestamp">Placed: {{ formatDateTime(bid.createdAt) }}</p>
+          <p>
+            <strong>{{ $t('STATUS') }}:</strong>
+            <span class="bid-status-badge">{{ bid.status }}</span>
+          </p>
+          <p class="bid-timestamp">{{ $t('PLACED') }}: {{ formatDateTime(bid.createdAt) }}</p>
           <p v-if="bid.createdAt !== bid.updatedAt" class="bid-timestamp">
             Updated: {{ formatDateTime(bid.updatedAt) }}
           </p>
@@ -44,7 +47,7 @@
               class="edit-button"
               :disabled="actionLoading === bid.id"
             >
-              Update Bid
+              {{ $t('UPDATE_BID') }}
             </button>
             <button
               @click="promptDeleteBid(bid)"
@@ -52,15 +55,15 @@
               :disabled="actionLoading === bid.id && bid.id === bidToDelete?.id"
             >
               <span v-if="actionLoading === bid.id && bid.id === bidToDelete?.id">...</span>
-              <span v-else>Delete</span>
+              <span v-else>{{ $t('DELETE') }}</span>
             </button>
           </template>
-          <span v-else-if="bid.status === 'ACCEPTED'" class="status-indicator accepted"
-            >Accepted</span
-          >
-          <span v-else-if="bid.status === 'REJECTED'" class="status-indicator rejected"
-            >Rejected</span
-          >
+          <span v-else-if="bid.status === 'ACCEPTED'" class="status-indicator accepted">{{
+            $t('ACCEPTED')
+          }}</span>
+          <span v-else-if="bid.status === 'REJECTED'" class="status-indicator rejected">{{
+            $t('REJECTED')
+          }}</span>
         </div>
       </div>
 
@@ -85,7 +88,7 @@
     </div>
 
     <div v-else class="no-items-message">
-      <p>You haven't placed any bids yet.</p>
+      <p>{{ $t('NO_BIDS_YET') }}}</p>
     </div>
 
     <div v-if="actionError" class="error-message action-error">

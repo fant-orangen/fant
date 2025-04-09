@@ -9,7 +9,6 @@ import CategoryEditView from "@/views/Administrator/CategoryEditView.vue";
 
 // --- Import Profile related views ---
 import ProfileLayout from "@/views/profile/ProfileLayout.vue";
-import ProfileOverview from '@/views/profile/ProfileOverview.vue';
 import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
 import FavoritesView from "@/views/profile/FavoritesView.vue";
 import ManageMyItemView from "@/views/profile/ManageMyItemView.vue";
@@ -17,6 +16,7 @@ import ProfileMyBidsView from "@/views/profile/ProfileMyBidsView.vue"; // <-- Im
 import MapView from "@/views/MapView.vue";
 import ConversationView from "@/views/messaging/ConversationView.vue";
 import InboxView from "@/views/messaging/InboxView.vue";
+import ProfileFormView from "@/views/profile/ProfileFormView.vue";
 // --- End Profile imports ---
 
 const routes = [
@@ -103,7 +103,7 @@ const routes = [
       {
         path: '', // Overview at /profile
         name: 'profile-overview',
-        component: ProfileOverview,
+        component: ProfileFormView,
         meta: { title: 'Profile Overview - Fant' }
       },
       {
