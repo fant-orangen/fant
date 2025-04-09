@@ -10,6 +10,8 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +56,7 @@ public class RecommendationController {
   @GetMapping("/categories")
   @Operation(summary = "Get Category Recommendations", description = "Generates personalized category recommendations based on the authenticated user's view history.")
   @ApiResponse(responseCode = "200", description = "Category recommendations generated successfully", content = @Content(schema = @Schema(implementation = CategoryRecommendationDto.class)))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<CategoryRecommendationDto> getCategoryRecommendations(
       @Parameter(hidden = true) Principal principal) {
     CategoryRecommendationDto recommendations =
@@ -73,12 +75,12 @@ public class RecommendationController {
   @GetMapping("/views/count")
   @Operation(summary = "Get User View Count", description = "Retrieves the total number of items viewed by the authenticated user.")
   @ApiResponse(responseCode = "200", description = "User view count retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(name = "View Count Response", value = "{\"totalViews\": 15}")))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Map<String, Integer>> getUserViewCount(
       @Parameter(hidden = true) Principal principal) {
     int totalViews = recommendationService.getUserViewCount(userService.getCurrentUser(principal));
     Map<String, Integer> response = new HashMap<>();
     response.put("totalViews", totalViews);
-    return ResponseEntity.ok(response);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

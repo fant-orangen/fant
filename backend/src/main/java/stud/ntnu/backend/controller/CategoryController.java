@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,9 +46,9 @@ public class CategoryController {
   @GetMapping("/{id}")
   @Operation(summary = "Get Category by ID", description = "Retrieves a category based on its unique identifier.")
   @ApiResponse(responseCode = "200", description = "Category found", content = @Content(schema = @Schema(implementation = Category.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid category ID")
-  @ApiResponse(responseCode = "404", description = "Category not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid category ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Category> getCategoryById(
       @Parameter(description = "ID of the category to retrieve", required = true) @Positive
       @PathVariable Long id) {
@@ -64,7 +65,7 @@ public class CategoryController {
   @Operation(summary = "Get All Categories", description = "Retrieves a list of all available categories.")
   @ApiResponse(responseCode = "200", description = "List of all categories", content = @Content(schema = @Schema(implementation = List.class, subTypes = {
       Category.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<List<Category>> getAllCategories() {
     return ResponseEntity.ok(categoryService.getAll());
   }

@@ -3,9 +3,11 @@ package stud.ntnu.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,9 +70,9 @@ public class ImageController {
   @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Upload Images for Item", description = "Uploads one or more images for a specific item.")
   @ApiResponse(responseCode = "200", description = "Images uploaded successfully", content = @Content(mediaType = "text/plain"))
-  @ApiResponse(responseCode = "400", description = "Invalid request: Item ID is missing or invalid.")
-  @ApiResponse(responseCode = "404", description = "Item not found.")
-  @ApiResponse(responseCode = "500", description = "Failed to upload images due to server error.")
+  @ApiResponse(responseCode = "400", description = "Invalid request: Item ID is missing or invalid.", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found.", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Failed to upload images due to server error.", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<String> uploadImages(
       @Parameter(description = "Array of image files to upload", required = true)
       @RequestParam("files") MultipartFile[] files,
@@ -94,14 +96,14 @@ public class ImageController {
    *
    * @param itemId   ID of the item the image is associated with
    * @param imageUrl URL of the image to delete
-   * @return {@link ResponseEntity} containing a success message if the image is deleted, or an error message otherwise
+   * @return {@link ResponseEntity} with status OK if the image is deleted, or an error message otherwise
    */
   @DeleteMapping("/delete")
   @Operation(summary = "Delete Image for Item", description = "Deletes a specific image associated with an item using its URL.")
   @ApiResponse(responseCode = "200", description = "Image deleted successfully", content = @Content(mediaType = "text/plain"))
-  @ApiResponse(responseCode = "400", description = "Invalid request: Item ID or Image URL is missing or invalid.")
-  @ApiResponse(responseCode = "404", description = "Item or image not found.")
-  @ApiResponse(responseCode = "500", description = "Failed to delete image due to server error.")
+  @ApiResponse(responseCode = "400", description = "Invalid request: Item ID or Image URL is missing or invalid.", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item or image not found.", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Failed to delete image due to server error.", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<String> deleteImage(
       @Parameter(description = "ID of the item the image belongs to", required = true)
       @RequestParam("itemId") Long itemId,

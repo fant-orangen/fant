@@ -11,6 +11,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,19 +59,19 @@ public class BidController {
    *
    * @param bidCreateDto the bid details
    * @param principal    the authenticated user
-   * @return {@link ResponseEntity} containing the created {@link BidResponseDto}
+   * @return {@link ResponseEntity} containing the created {@link BidResponseDto} with HTTP status 201 (Created)
    */
   @PostMapping("/bid")
   @Operation(summary = "Create Bid", description = "Creates a new bid for an item by the authenticated user.")
-  @ApiResponse(responseCode = "200", description = "Bid created successfully", content = @Content(schema = @Schema(implementation = BidResponseDto.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid bid details")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "201", description = "Bid created successfully", content = @Content(schema = @Schema(implementation = BidResponseDto.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid bid details", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<BidResponseDto> createBid(@Valid @RequestBody
                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Bid details to create", required = true, content = @Content(schema = @Schema(implementation = BidCreateDto.class)))
                                                   BidCreateDto bidCreateDto,
                                                   @Parameter(hidden = true) Principal principal) {
-    return ResponseEntity.ok(
-        bidService.createBid(bidCreateDto, userService.getCurrentUser(principal)));
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(bidService.createBid(bidCreateDto, userService.getCurrentUser(principal)));
   }
 
   /**
@@ -84,7 +86,7 @@ public class BidController {
   @Operation(summary = "Get User Bids", description = "Retrieves all bids placed by the authenticated user.")
   @ApiResponse(responseCode = "200", description = "List of user's bids", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       BidResponseDto.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<BidResponseDto>> getUserBids(
       @Parameter(hidden = true) Principal principal,
       @Parameter(description = "Pagination information (page number, size, sort)")
@@ -99,18 +101,18 @@ public class BidController {
    *
    * @param itemId    the ID of the item associated with the bid
    * @param principal the authenticated user
-   * @return {@link ResponseEntity} with status OK if successful
+   * @return {@link ResponseEntity} with status NO_CONTENT if successful
    */
   @DeleteMapping("/delete/{itemId}")
   @Operation(summary = "Delete Bid", description = "Deletes a specific bid placed by the authenticated user for an item.")
-  @ApiResponse(responseCode = "200", description = "Bid deleted successfully")
-  @ApiResponse(responseCode = "404", description = "Bid not found or not owned by the user")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Bid deleted successfully")
+  @ApiResponse(responseCode = "404", description = "Bid not found or not owned by the user", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> deleteBid(
       @Parameter(description = "ID of the item associated with the bid to delete", required = true)
       @Positive @PathVariable Long itemId, @Parameter(hidden = true) Principal principal) {
     bidService.deleteBidByItemIdAndBidder(itemId, userService.getCurrentUser(principal));
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -120,22 +122,22 @@ public class BidController {
    * @param itemId    ID of the item being bid on
    * @param bidderId  ID of the user who made the bid
    * @param principal the authenticated user (must be seller)
-   * @return {@link ResponseEntity} with status OK if successful
+   * @return {@link ResponseEntity} with status NO_CONTENT if successful
    */
   @PostMapping("/accept")
   @Operation(summary = "Accept Bid", description = "Accepts a specific bid for an item by the seller.")
-  @ApiResponse(responseCode = "200", description = "Bid accepted successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid item or bidder ID")
-  @ApiResponse(responseCode = "403", description = "User not authorized to accept this bid")
-  @ApiResponse(responseCode = "404", description = "Bid or item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Bid accepted successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid item or bidder ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "403", description = "User not authorized to accept this bid", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Bid or item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> acceptBid(
       @Parameter(description = "ID of the item for which the bid is being accepted", required = true)
       @RequestParam @Positive Long itemId,
       @Parameter(description = "ID of the bidder whose bid is being accepted", required = true)
       @RequestParam @Positive Long bidderId, @Parameter(hidden = true) Principal principal) {
     bidService.acceptBid(itemId, bidderId, userService.getCurrentUser(principal));
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -145,22 +147,22 @@ public class BidController {
    * @param itemId    ID of the item being bid on
    * @param bidderId  ID of the user who made the bid
    * @param principal the authenticated user (must be seller)
-   * @return {@link ResponseEntity} with status OK if successful
+   * @return {@link ResponseEntity} with status NO_CONTENT if successful
    */
   @PostMapping("/reject")
   @Operation(summary = "Reject Bid", description = "Rejects a specific bid for an item by the seller.")
-  @ApiResponse(responseCode = "200", description = "Bid rejected successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid item or bidder ID")
-  @ApiResponse(responseCode = "403", description = "User not authorized to reject this bid")
-  @ApiResponse(responseCode = "404", description = "Bid or item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Bid rejected successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid item or bidder ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "403", description = "User not authorized to reject this bid", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Bid or item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> rejectBid(
       @Parameter(description = "ID of the item for which the bid is being rejected", required = true)
       @RequestParam @Positive Long itemId,
       @Parameter(description = "ID of the bidder whose bid is being rejected", required = true)
       @RequestParam @Positive Long bidderId, @Parameter(hidden = true) Principal principal) {
     bidService.rejectBid(itemId, bidderId, userService.getCurrentUser(principal));
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -175,9 +177,9 @@ public class BidController {
   @PutMapping("/{itemId}")
   @Operation(summary = "Update Bid", description = "Updates an existing bid for a specific item by the authenticated user.")
   @ApiResponse(responseCode = "200", description = "Bid updated successfully", content = @Content(schema = @Schema(implementation = BidResponseDto.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid bid update details")
-  @ApiResponse(responseCode = "404", description = "Bid not found or not owned by the user")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid bid update details", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Bid not found or not owned by the user", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<BidResponseDto> updateBid(@Valid @RequestBody
                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Bid details to update", required = true, content = @Content(schema = @Schema(implementation = BidUpdateDto.class)))
                                                   BidUpdateDto bidUpdateDto,

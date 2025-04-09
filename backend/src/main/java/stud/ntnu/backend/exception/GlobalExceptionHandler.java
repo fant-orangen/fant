@@ -134,14 +134,14 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(IOException.class)
   public ResponseEntity<String> handleIOException(IOException ex) {
     log.warn(ex.getMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file");
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<String> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException ex) {
     log.warn(ex.getMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
   }
 
   @ExceptionHandler(FileFormatException.class)
@@ -159,6 +159,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MissingServletRequestPartException.class)
   public ResponseEntity<String> handleMissingServletRequestPartException(
       MissingServletRequestPartException ex) {
+    log.warn(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
     log.warn(ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }

@@ -14,6 +14,8 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,7 +67,7 @@ public class MessageController {
   @Operation(summary = "Get User Conversations", description = "Retrieves a list of all conversations for the authenticated user.")
   @ApiResponse(responseCode = "200", description = "List of user's conversations", content = @Content(schema = @Schema(implementation = List.class, subTypes = {
       ConversationPreviewDto.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<List<ConversationPreviewDto>> getConversations(
       @Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(
@@ -85,8 +87,8 @@ public class MessageController {
   @Operation(summary = "Get Messages for Item", description = "Retrieves messages related to a specific item for the authenticated user.")
   @ApiResponse(responseCode = "200", description = "Paginated list of messages for the item", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       MessageResponseDto.class})))
-  @ApiResponse(responseCode = "400", description = "Invalid item ID")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<MessageResponseDto>> getItemMessages(
       @Parameter(description = "ID of the item to retrieve messages for", required = true) @Positive
       @RequestParam Long itemId, @Parameter(hidden = true) Principal principal,
@@ -107,8 +109,8 @@ public class MessageController {
   @PostMapping("/readall")
   @Operation(summary = "Mark Messages as Read", description = "Marks a list of messages as read by the authenticated user.")
   @ApiResponse(responseCode = "200", description = "Messages marked as read successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid request")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> markMessagesAsRead(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Request containing the IDs of the messages to mark as read", required = true, content = @Content(schema = @Schema(implementation = MessageReadRequestDto.class)))
       @RequestBody MessageReadRequestDto request, @Parameter(hidden = true) Principal principal) {
@@ -117,12 +119,20 @@ public class MessageController {
     return ResponseEntity.ok().build();
   }
 
+  /**
+   * <h3>Initiate Conversation for Item</h3>
+   * <p>Initiates a new conversation related to a specific item.</p>
+   *
+   * @param itemId    ID of the item to initiate conversation for
+   * @param principal the authenticated user
+   * @return {@link ResponseEntity} containing a map with the conversation ID
+   */
   @PostMapping("/conversations/initiate")
   @Operation(summary = "Initiate Conversation for Item", description = "Initiates a new conversation related to a specific item.")
   @ApiResponse(responseCode = "200", description = "Conversation initiated/found successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class), examples = @io.swagger.v3.oas.annotations.media.ExampleObject(name = "Conversation ID Response", value = "{\"conversationId\": 123}")))
-  @ApiResponse(responseCode = "400", description = "Invalid item ID")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Map<String, Long>> initiateConversation(
       @Parameter(description = "ID of the item to initiate conversation for", required = true)
       @RequestParam @Positive Long itemId, @Parameter(hidden = true) Principal principal) {
@@ -132,6 +142,6 @@ public class MessageController {
 
     Map<String, Long> response = new HashMap<>();
     response.put("conversationId", conversationIdentifier);
-    return ResponseEntity.ok(response);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

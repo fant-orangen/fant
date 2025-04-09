@@ -11,6 +11,8 @@ import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,19 +63,19 @@ public class FavoriteController {
    *
    * @param itemId    the ID of the item to favorite
    * @param principal the authenticated user
-   * @return {@link ResponseEntity} with status OK if the item was successfully added to favorites
+   * @return {@link ResponseEntity} with status NO_CONTENT if the item was successfully added to favorites
    */
   @PostMapping("/{itemId}")
   @Operation(summary = "Add Item to Favorites", description = "Adds a specific item to the authenticated user's favorites.")
-  @ApiResponse(responseCode = "200", description = "Item added to favorites successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid item ID")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Item added to favorites successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> addFavorite(
       @Parameter(description = "ID of the item to add to favorites", required = true) @Positive
       @PathVariable long itemId, @Parameter(hidden = true) Principal principal) {
     favoriteService.add(userService.getCurrentUser(principal), itemId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -82,19 +84,19 @@ public class FavoriteController {
    *
    * @param itemId    the ID of the item to remove
    * @param principal the authenticated user
-   * @return {@link ResponseEntity} with status OK if the item was successfully removed from favorites
+   * @return {@link ResponseEntity} with status NO_CONTENT if the item was successfully removed from favorites
    */
   @DeleteMapping("/{itemId}")
   @Operation(summary = "Remove Item from Favorites", description = "Removes a specific item from the authenticated user's favorites.")
-  @ApiResponse(responseCode = "200", description = "Item removed from favorites successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid item ID")
-  @ApiResponse(responseCode = "404", description = "Item not found in favorites")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Item removed from favorites successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found in favorites", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> removeFavorite(
       @Parameter(description = "ID of the item to remove from favorites", required = true) @Positive
       @PathVariable long itemId, @Parameter(hidden = true) Principal principal) {
     favoriteService.delete(userService.getCurrentUserId(principal), itemId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -109,7 +111,7 @@ public class FavoriteController {
   @Operation(summary = "Get User's Favorite Items", description = "Retrieves a paginated list of items that the authenticated user has marked as favorites.")
   @ApiResponse(responseCode = "200", description = "List of favorite items", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       ItemPreviewDto.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<ItemPreviewDto>> getFavorites(
       @Parameter(hidden = true) Principal principal,
       @Parameter(description = "Pagination information (page number, size, sort)")
@@ -128,9 +130,9 @@ public class FavoriteController {
   @GetMapping("/count/{itemId}")
   @Operation(summary = "Get Favorite Count for Item", description = "Retrieves the number of users who have added a specific item to their favorites.")
   @ApiResponse(responseCode = "200", description = "Favorite count for the item", content = @Content(schema = @Schema(implementation = Long.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid item ID")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Long> getFavoriteCountByItem(
       @Parameter(description = "ID of the item to get the favorite count for", required = true)
       @Positive @PathVariable long itemId) {

@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,9 +68,9 @@ public class AdminController {
   @PutMapping("/users/{id}")
   @Operation(summary = "Update User", description = "Updates an existing user with the provided details.")
   @ApiResponse(responseCode = "200", description = "User updated successfully", content = @Content(schema = @Schema(implementation = User.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid request parameters or body")
-  @ApiResponse(responseCode = "404", description = "User not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid request parameters or body", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<User> updateUser(@Valid @RequestBody
                                          @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User details to update", required = true, content = @Content(schema = @Schema(implementation = UserCreateDto.class)))
                                          UserCreateDto userCreateDto,
@@ -83,32 +84,31 @@ public class AdminController {
    * <p>Deletes a user with the specified ID.</p>
    *
    * @param id the ID of the user to delete
-   * @return empty response with OK status
+   * @return empty response with NO_CONTENT status
    */
   @DeleteMapping("/users/{id}")
   @Operation(summary = "Delete User", description = "Deletes a user with the specified ID.")
-  @ApiResponse(responseCode = "200", description = "User deleted successfully")
-  @ApiResponse(responseCode = "204", description = "No content (user deleted)")
-  @ApiResponse(responseCode = "404", description = "User not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "User deleted successfully")
+  @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> deleteUser(
       @Parameter(description = "ID of the user to delete", required = true) @Valid @PathVariable
       Long id) {
     userService.deleteUser(id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
    * <h3>Get All Users</h3>
    * <p>Retrieves a list of all users in the system.</p>
    *
-   * @return list of all {@link User} entities
+   * @return list of all {@link User} entities in a paginated response
    */
   @GetMapping("/users")
   @Operation(summary = "Get All Users", description = "Retrieves a paginated list of all users in the system.")
   @ApiResponse(responseCode = "200", description = "A paginated list of users", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       User.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<User>> getAllUsers(
       @Parameter(description = "Pagination information (page number, size, sort)")
       Pageable pageable) {
@@ -120,17 +120,17 @@ public class AdminController {
    * <p>Creates a new category with the provided details.</p>
    *
    * @param categoryRequestDto the category data to create
-   * @return the created {@link Category}
+   * @return the created {@link Category} with HTTP status 201 (CREATED)
    */
   @PostMapping("/category")
   @Operation(summary = "Create Category", description = "Creates a new category with the provided details.")
-  @ApiResponse(responseCode = "200", description = "Category created successfully", content = @Content(schema = @Schema(implementation = Category.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid request body")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "201", description = "Category created successfully", content = @Content(schema = @Schema(implementation = Category.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Category> createCategory(@Valid @RequestBody
                                                  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Category details to create", required = true, content = @Content(schema = @Schema(implementation = CategoryRequestDto.class)))
                                                  CategoryRequestDto categoryRequestDto) {
-    return ResponseEntity.ok(categoryService.create(categoryRequestDto));
+    return ResponseEntity.status(201).body(categoryService.create(categoryRequestDto));
   }
 
   /**
@@ -144,9 +144,9 @@ public class AdminController {
   @PutMapping("/category/{id}")
   @Operation(summary = "Update Category", description = "Updates an existing category with the provided details.")
   @ApiResponse(responseCode = "200", description = "Category updated successfully", content = @Content(schema = @Schema(implementation = Category.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid request parameters or body")
-  @ApiResponse(responseCode = "404", description = "Category not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid request parameters or body", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Category> updateCategory(@Valid @RequestBody
                                                  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Category details to update", required = true, content = @Content(schema = @Schema(implementation = CategoryRequestDto.class)))
                                                  CategoryRequestDto categoryRequestDto,
@@ -160,19 +160,18 @@ public class AdminController {
    * <p>Deletes a category with the specified ID.</p>
    *
    * @param id the ID of the category to delete
-   * @return empty response with OK status
+   * @return empty response with NO_CONTENT status
    */
   @DeleteMapping("/category/{id}")
   @Operation(summary = "Delete Category", description = "Deletes a category with the specified ID.")
-  @ApiResponse(responseCode = "200", description = "Category deleted successfully")
-  @ApiResponse(responseCode = "204", description = "No content (category deleted)")
-  @ApiResponse(responseCode = "404", description = "Category not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Category deleted successfully")
+  @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> deleteCategory(
       @Parameter(description = "ID of the category to delete", required = true) @Positive
       @PathVariable Long id) {
     categoryService.delete(id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -180,18 +179,17 @@ public class AdminController {
    * <p>Deletes an item with the specified ID.</p>
    *
    * @param id the ID of the item to delete
-   * @return empty response with OK status
+   * @return empty response with NO_CONTENT status
    */
   @DeleteMapping("/item/{id}")
   @Operation(summary = "Delete Item (Admin)", description = "Deletes an item with the specified ID (admin privilege required).")
-  @ApiResponse(responseCode = "200", description = "Item deleted successfully")
-  @ApiResponse(responseCode = "204", description = "No content (item deleted)")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Item deleted successfully")
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> deleteItem(
       @Parameter(description = "ID of the item to delete", required = true) @Positive @PathVariable
       Long id) {
     itemService.adminDeleteItem(id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 }

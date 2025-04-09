@@ -2,6 +2,7 @@ package stud.ntnu.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,8 +51,8 @@ public class WebSocketController {
   @MessageMapping("/chat.send")
   @Operation(summary = "Send WebSocket Message", description = "Processes and delivers real-time messages via WebSocket.")
   @ApiResponse(responseCode = "200", description = "Message sent successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid message format")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid message format", content = @Content(mediaType = "text/plain"))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
   public void sendMessage(
       @Parameter(description = "Message content and metadata", required = true) @Payload @Valid
       WebSocketMessageDto messageDto,

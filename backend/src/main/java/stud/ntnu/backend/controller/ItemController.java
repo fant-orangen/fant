@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,13 +73,13 @@ public class ItemController {
    *
    * @param requestDto the details of the item to create
    * @param principal  the authenticated user
-   * @return {@link ResponseEntity} containing the ID of the created item
+   * @return {@link ResponseEntity} containing the ID of the created item with HTTP status 201 (Created)
    */
   @PostMapping
   @Operation(summary = "Create Item", description = "Creates a new item listed by the authenticated user.")
   @ApiResponse(responseCode = "201", description = "Item created successfully", content = @Content(schema = @Schema(implementation = Long.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid item details")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid item details", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Long> createItem(@Valid @RequestBody
                                          @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Details of the item to create", required = true, content = @Content(schema = @Schema(implementation = ItemCreateDto.class)))
                                          ItemCreateDto requestDto,
@@ -102,10 +103,10 @@ public class ItemController {
   @PutMapping("/{id}")
   @Operation(summary = "Update Item", description = "Updates an existing item with the provided details.")
   @ApiResponse(responseCode = "200", description = "Item updated successfully", content = @Content(schema = @Schema(implementation = ItemDetailsDto.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid item details")
-  @ApiResponse(responseCode = "403", description = "User not authorized to update this item")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid item details", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "403", description = "User not authorized to update this item", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<ItemDetailsDto> updateItem(@Valid @RequestBody
                                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated details of the item", required = true, content = @Content(schema = @Schema(implementation = ItemCreateDto.class)))
                                                    ItemCreateDto requestDto,
@@ -125,14 +126,14 @@ public class ItemController {
    *
    * @param id        the ID of the item to delete
    * @param principal the authenticated user
-   * @return {@link ResponseEntity} with status OK if the item was successfully deleted
+   * @return {@link ResponseEntity} with status NO_CONTENT if the item was successfully deleted
    */
   @DeleteMapping("/{id}")
   @Operation(summary = "Delete Item", description = "Deletes a specific item.")
-  @ApiResponse(responseCode = "200", description = "Item deleted successfully")
-  @ApiResponse(responseCode = "403", description = "User not authorized to delete this item")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "204", description = "Item deleted successfully")
+  @ApiResponse(responseCode = "403", description = "User not authorized to delete this item", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> deleteItem(
       @Parameter(description = "ID of the item to delete", required = true) @Positive @PathVariable
       Long id, @Parameter(hidden = true) Principal principal) {
@@ -140,7 +141,7 @@ public class ItemController {
     User currentUser = userService.getCurrentUser(principal);
     itemService.deleteItem(currentUser, id);
     logger.info("Item deleted successfully for ID: {}", id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -155,8 +156,8 @@ public class ItemController {
   @Operation(summary = "Search Items", description = "Searches for items based on the provided criteria.")
   @ApiResponse(responseCode = "200", description = "List of items matching the search criteria", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       ItemPreviewDto.class})))
-  @ApiResponse(responseCode = "400", description = "Invalid search criteria")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid search criteria", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<ItemPreviewDto>> searchItems(
       @Valid @ModelAttribute @Parameter(description = "Search criteria") ItemSearchDto searchDto,
       @Parameter(description = "Pagination information (page number, size, sort)")
@@ -175,7 +176,7 @@ public class ItemController {
   @Operation(summary = "Get Paged Items", description = "Retrieves a paginated list of item previews.")
   @ApiResponse(responseCode = "200", description = "Paginated list of item previews", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       ItemPreviewDto.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<ItemPreviewDto>> getPagedItems(
       @Parameter(description = "Pagination information (page number, size, sort)")
       Pageable pageable) {
@@ -193,7 +194,7 @@ public class ItemController {
   @Operation(summary = "Get All Items (Paged)", description = "Retrieves a paginated list of preview information for all items.")
   @ApiResponse(responseCode = "200", description = "Paginated list of all item previews", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       ItemPreviewDto.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<ItemPreviewDto>> getAllItems(
       @Parameter(description = "Pagination information (page number, size, sort)")
       Pageable pageable) {
@@ -210,9 +211,9 @@ public class ItemController {
   @GetMapping("/details/{id}")
   @Operation(summary = "Get Item Details", description = "Retrieves detailed information for a specific item.")
   @ApiResponse(responseCode = "200", description = "Details of the requested item", content = @Content(schema = @Schema(implementation = ItemDetailsDto.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid item ID")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<ItemDetailsDto> getItemDetails(
       @Parameter(description = "ID of the item to retrieve details for", required = true) @Positive
       @PathVariable Long id) {
@@ -234,9 +235,9 @@ public class ItemController {
   @Operation(summary = "Get Paged Items by Category", description = "Retrieves a paginated list of item previews for a specific category.")
   @ApiResponse(responseCode = "200", description = "Paginated list of items in the category", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       ItemPreviewDto.class})))
-  @ApiResponse(responseCode = "400", description = "Invalid category ID")
-  @ApiResponse(responseCode = "404", description = "Category not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid category ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<ItemPreviewDto>> getPagedItemsByCategory(
       @Parameter(description = "ID of the category to retrieve items from", required = true)
       @Positive @PathVariable Long categoryId,
@@ -258,7 +259,7 @@ public class ItemController {
   @Operation(summary = "Get My Items (Paged)", description = "Retrieves a paginated list of items listed by the authenticated user.")
   @ApiResponse(responseCode = "200", description = "Paginated list of user's items", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       ItemPreviewDto.class})))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<ItemPreviewDto>> getMyItems(
       @Parameter(hidden = true) Principal principal,
       @Parameter(description = "Pagination information (page number, size, sort)")
@@ -279,9 +280,9 @@ public class ItemController {
   @PostMapping("/view/post/{id}")
   @Operation(summary = "Record Item View", description = "Records when the authenticated user views a specific item.")
   @ApiResponse(responseCode = "204", description = "Item view recorded successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid item ID")
-  @ApiResponse(responseCode = "404", description = "Item not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid item ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Void> recordItemView(
       @Parameter(description = "ID of the item being viewed", required = true) @Positive
       @PathVariable Long id, @Parameter(hidden = true) Principal principal) {
@@ -305,8 +306,8 @@ public class ItemController {
   @Operation(summary = "Get Recommended Items", description = "Retrieves recommended items based on the specified distribution.")
   @ApiResponse(responseCode = "200", description = "List of recommended items", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
       ItemPreviewDto.class})))
-  @ApiResponse(responseCode = "400", description = "Invalid recommendation request")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid recommendation request", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<ItemPreviewDto>> getRecommendedItems(@Valid @RequestBody
                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Recommendation request parameters", required = true, content = @Content(schema = @Schema(implementation = RecommendedItemsRequestDto.class)))
                                                                   RecommendedItemsRequestDto requestDto,

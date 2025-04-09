@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,9 +52,9 @@ public class UserController {
   @GetMapping("/{id}")
   @Operation(summary = "Get User by ID", description = "Retrieves user details based on the provided user ID.")
   @ApiResponse(responseCode = "200", description = "User details retrieved successfully", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid user ID")
-  @ApiResponse(responseCode = "404", description = "User not found")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid user ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(implementation = String.class)))
+  @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<UserResponseDto> getUser(
       @Parameter(description = "ID of the user to retrieve", required = true) @Positive
       @PathVariable Long id) {
@@ -70,8 +72,8 @@ public class UserController {
   @PutMapping("/profile")
   @Operation(summary = "Update User Profile", description = "Updates the profile information of the currently authenticated user.")
   @ApiResponse(responseCode = "200", description = "User profile updated successfully", content = @Content(schema = @Schema(implementation = User.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid user details")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "400", description = "Invalid user details", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<User> updateUser(@Valid @RequestBody
                                          @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated user details", required = true, content = @Content(schema = @Schema(implementation = UserCreateDto.class)))
                                          UserCreateDto userCreateDto,
@@ -90,7 +92,7 @@ public class UserController {
   @GetMapping("/profile")
   @Operation(summary = "Get Current User Profile", description = "Retrieves the profile information of the currently authenticated user.")
   @ApiResponse(responseCode = "200", description = "Current user profile retrieved successfully", content = @Content(schema = @Schema(implementation = User.class)))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<User> getCurrentUser(@Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(userService.getCurrentUser(principal));
   }
@@ -105,7 +107,7 @@ public class UserController {
   @GetMapping("/id")
   @Operation(summary = "Get Current User ID", description = "Retrieves the ID of the currently authenticated user.")
   @ApiResponse(responseCode = "200", description = "Current user ID retrieved successfully", content = @Content(schema = @Schema(implementation = Long.class)))
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Long> getCurrentUserId(@Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(userService.getCurrentUserId(principal));
   }

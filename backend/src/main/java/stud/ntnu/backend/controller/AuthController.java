@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -65,8 +67,8 @@ public class AuthController {
   @Operation(summary = "Authenticate user", description = "Authenticates user credentials and returns JWT token")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Authentication successful", content = @Content(schema = @Schema(implementation = AuthResponseDto.class))),
-      @ApiResponse(responseCode = "401", description = "Invalid credentials"),
-      @ApiResponse(responseCode = "500", description = "Internal server error")})
+      @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string"))),
+      @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))})
   @PostMapping("/login")
   public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody
                                                @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authentication credentials", required = true, content = @Content(schema = @Schema(implementation = AuthRequestDto.class)))
@@ -81,17 +83,17 @@ public class AuthController {
    * <p>Creates new user account and returns JWT token.</p>
    *
    * @param request the user registration data
-   * @return {@link AuthResponseDto} containing JWT token
+   * @return {@link AuthResponseDto} containing JWT token with HTTP status 201 (Created)
    */
   @Operation(summary = "Register user", description = "Creates new user account and returns JWT token")
-  @ApiResponse(responseCode = "200", description = "Registration successful", content = @Content(schema = @Schema(implementation = AuthResponseDto.class)))
-  @ApiResponse(responseCode = "400", description = "Invalid registration data")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ApiResponse(responseCode = "201", description = "Registration successful", content = @Content(schema = @Schema(implementation = AuthResponseDto.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid registration data", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   @PostMapping("/register")
   public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody
                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User registration details", required = true, content = @Content(schema = @Schema(implementation = UserCreateDto.class)))
                                                   UserCreateDto request) {
-    return ResponseEntity.ok(
+    return ResponseEntity.status(HttpStatus.CREATED).body(
         new AuthResponseDto(jwtUtil.generateToken(userService.createUser(request).getEmail())));
   }
 }
