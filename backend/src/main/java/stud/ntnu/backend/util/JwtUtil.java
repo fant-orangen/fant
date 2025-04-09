@@ -29,12 +29,6 @@ public class JwtUtil {
   private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
   // TODO: secure secret key (env?)
 
-  /**
-   * <h3>JWT expiration time</h3>
-   * <p>Token validity time in milliseconds (5 hours).</p>
-   */
-  private final long jwtExpirationMs = 1000 * 60 * 60 * 5;
-
   private final UserRepository userRepository;
 
   // Add constructor for dependency injection
@@ -69,6 +63,7 @@ public class JwtUtil {
    */
   private String createToken(Map<String, Object> claims, String subject) {
     Date now = new Date();
+    long jwtExpirationMs = 1000 * 60 * 60 * 5;
     Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
     return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(now)

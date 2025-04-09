@@ -44,8 +44,9 @@ VALUES ('Phone', 'phone');
 INSERT INTO categories (name, image_url)
 VALUES ('Art', 'art');
 
-INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at, latitude, longitude)
-VALUES (1, 1, 'Test', 'Test', 500.00, 'ACTIVE', NOW(), NOW(),62,5.7);
+INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at,
+                   latitude, longitude)
+VALUES (1, 1, 'Test', 'Test', 500.00, 'ACTIVE', NOW(), NOW(), 62, 5.7);
 
 INSERT INTO items (seller_id, category_id, brief_description, full_description, price, status, published_at, updated_at,
                    latitude, longitude)

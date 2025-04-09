@@ -6,7 +6,6 @@ import stud.ntnu.backend.data.category.CategoryRecommendationDto;
 import stud.ntnu.backend.model.ItemView;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.ItemViewRepository;
-import stud.ntnu.backend.repository.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
