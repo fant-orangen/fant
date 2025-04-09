@@ -20,6 +20,7 @@ import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
 import phoneIcon from '@/assets/icons/phoneIcon.svg';
 import artIcon from '@/assets/icons/artIcon.svg';
 import recommendedIcon from '@/assets/icons/recommended.svg';
+import { useUserStore } from '@/stores/UserStore.ts'
 
 const props = defineProps<{
   layout?: 'vertical' | 'grid' | 'horizontal',
@@ -125,7 +126,7 @@ onMounted(loadCategories);
     <div
       class="category-wrapper"
       @click="showRecommendedItems"
-      v-if="!props.noRecommendations"
+      v-if="!props.noRecommendations && useUserStore().isLoggedInUser"
     >
       <button
         class="all-categories-button recommended-button"

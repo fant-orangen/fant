@@ -102,11 +102,7 @@ const backendSortParam = computed(() => {
   }
 });
 
-// Check if user is logged in
-const isLoggedInUser = computed(() => {
-  const userId = useUserStore().getUserId;
-  return userId !== null && userId !== '0';
-});
+
 
 
 // --- Methods ---
@@ -137,7 +133,7 @@ async function fetchItems() {
 
     const isRecommendationSelected = selectedCategoryId.value === '-1';
 
-    if (isLoggedInUser.value) {
+    if (useUserStore().isLoggedInUser) {
       if (isRecommendationSelected) {
         const numOfViews = await fetchUserViewCount();
         console.log("User view count:", numOfViews);
