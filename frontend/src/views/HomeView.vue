@@ -44,10 +44,10 @@ import { ref, computed, onMounted, watch } from 'vue'
 import CategoryGrid from '@/components/category/categoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
 import SearchBar from '@/components/search/searchBar.vue'
-import { searchItems, type ItemSearchParams } from '@/services/ItemService' // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
-import type { ItemPreviewType } from '@/models/Item' // [cite: uploaded:frontend 6/frontend/src/models/Item.ts]
-import { fetchCategories } from '@/services/CategoryService'; // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
-import type { Category } from '@/models/Category'; // [cite: uploaded:frontend 6/frontend/src/models/Category.ts]
+import { searchItems, type ItemSearchParams } from '@/services/ItemService'
+import type { ItemPreviewType } from '@/models/Item'
+import { fetchCategories } from '@/services/CategoryService';
+import type { Category } from '@/models/Category';
 
 
 // --- Filter States ---
@@ -109,7 +109,7 @@ async function fetchItems() {
     maxDistance: isLocationAvailable.value ? maxDistance.value : null,
     page: currentPage.value - 1,
     size: pageSize.value,
-    sort: backendSortParam.value
+    sort: backendSortParam.value ?? undefined
   };
 
   try {
