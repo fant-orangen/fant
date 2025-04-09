@@ -173,6 +173,9 @@ onMounted(loadCategories);
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  border-left: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  border-radius: 0px
 }
 
 .category-row::-webkit-scrollbar {
@@ -263,6 +266,8 @@ onMounted(loadCategories);
 
   .category-wrapper {
     min-width: 80px;
+    border: 1px solid #ddd;
+    border-radius: 1px;
   }
 
   .all-categories-button {
@@ -291,6 +296,8 @@ onMounted(loadCategories);
 
   .category-wrapper {
     min-width: 70px;
+    border: 1px solid #ddd;
+    border-radius: 1px;
   }
 
   .all-categories-button {
