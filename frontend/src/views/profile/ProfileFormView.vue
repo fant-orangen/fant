@@ -4,16 +4,6 @@ import { useUserStore } from '@/stores/UserStore.ts';
 import TextInput from '@/components/input/TextInput.vue';
 import { useI18n } from 'vue-i18n';
 
-// Define the shape of the profile data including displayName and password for the form
-interface ProfileFormData {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  displayName: string; // <-- Add displayName
-  password?: string;    // <-- Add password (make optional in form state if needed)
-}
-
 const userStore = useUserStore();
 const { t } = useI18n();
 
@@ -22,8 +12,8 @@ const email = ref(userStore.profile.email);
 const firstName = ref(userStore.profile.firstName);
 const lastName = ref(userStore.profile.lastName);
 const phone = ref(userStore.profile.phone);
-const displayName = ref(userStore.profile.displayName); // <-- Add displayName ref
-const password = ref(''); // <-- Add password ref, initialize empty
+const displayName = ref(userStore.profile.displayName);
+const password = ref('');
 
 // State for update process
 const isUpdating = ref(false);
@@ -80,8 +70,8 @@ async function handleProfileUpdate() {
     firstName: firstName.value,
     lastName: lastName.value,
     phone: phone.value,
-    displayName: displayName.value, // <-- Include displayName
-    password: password.value       // <-- Include password
+    displayName: displayName.value,
+    password: password.value
   };
 
   try {
@@ -147,15 +137,15 @@ async function handleProfileUpdate() {
       :label="$t('PHONENUMBER')"
       :placeholder="'+47 123 45 678'" :disabled="isUpdating"
     />
-    <small>Please use international format, e.g., +47 12345678</small>
+    <small>{{ $t('INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT') }}</small>
     <TextInput
       id="password"
       v-model="password"
       :label="$t('PASSWORD')"
-      :placeholder="'Enter current password to save changes'" type="password"
+      :placeholder="$t('PASSWORD_CURRENT_REQUIRED')" type="password"
       required :disabled="isUpdating"
       autocomplete="current-password" />
-    <small>Password is required by the backend to save any profile changes.</small> <p v-if="updateSuccess" class="success-message">{{ $t('PROFILE_UPDATE_SUCCESS') }}</p>
+    <small>{{ t('PASSWORD_NEEDED') }};</small> <p v-if="updateSuccess" class="success-message">{{ $t('PROFILE_UPDATE_SUCCESS') }}</p>
     <p v-if="updateError" class="error-message">{{ updateError }}</p>
 
     <button type="submit" :disabled="isUpdating">
@@ -165,7 +155,6 @@ async function handleProfileUpdate() {
 </template>
 
 <style scoped>
-/* Styles remain the same */
 .profile-form {
   display: flex;
   flex-direction: column;

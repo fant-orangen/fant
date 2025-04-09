@@ -27,6 +27,12 @@
     "PROFILE_VIPPS_PROMPT_TITLE": "Quick Purchases with Vipps",
     "PROFILE_VIPPS_PROMPT_DESC": "Activate your Vipps account for quick and safe payments",
     "PROFILE_MY_FAVORITES_DESC": "My Favorites - Description",
+    "PASSWORD_NEEDED": "Password is required to confirm changes",
+    "PASSWORD_CURRENT_REQUIRED": "Current password is required to make update",
+    "INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT": "Please use international format, e.g., +47 12345678",
+    "FAVORITES_EMPTY_MESSAGE": "You haven't added any items to your favorites yet.",
+
+
 
     "APP_LISTING_CREATE_NEW": "New Listing",
     "APP_LISTING_CREATE_NEW_CATEGORY_LABEL": "Category",
@@ -114,6 +120,9 @@
     "PROFILE_TILE_FAVORITES_DESC": "View Favorites",
     "PROFILE_TILE_MY_BIDS_DESC": "View bids you have placed",
     "PROFILE_TILE_MY_LISTINGS_DESC": "View Listings",
+    "NO_BIDS_YET": "You haven't placed any bids yet",
+    "YOUR_COMMENT_COLON": "Your Comment:",
+
 
     "LOADING_BIDS": "Loading your bids...",
     "ON_ITEM": "On item",
