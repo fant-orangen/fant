@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import CategoryGrid from '@/components/category/categoryGrid.vue'
+import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
 import SearchBar from '@/components/search/searchBar.vue'
 import { searchItems, type ItemSearchParams } from '@/services/ItemService'

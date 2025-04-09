@@ -213,8 +213,8 @@ onMounted(loadCategories);
 }
 
 .all-icon {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   margin-bottom: 0.5rem;
   color: #4b5563;
   display: flex;
@@ -267,11 +267,6 @@ onMounted(loadCategories);
 
   .all-categories-button {
     padding: 0.8rem;
-  }
-
-  .all-icon {
-    width: 40px;
-    height: 40px;
   }
 
   .all-icon :deep(svg) {

@@ -68,7 +68,7 @@ defineProps<{
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1.5rem;
 
   /* Interaction styling */
   cursor: pointer;
@@ -96,8 +96,8 @@ defineProps<{
  * Category icon styling in standard mode
  */
 .category-icon {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   margin-bottom: 0.5rem; /* Space between icon and label */
 }
 
