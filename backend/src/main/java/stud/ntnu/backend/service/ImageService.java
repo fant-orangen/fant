@@ -106,4 +106,33 @@ public class ImageService {
       imageRepository.save(image);
     }
   }
+
+  /**
+   * <h3>Delete Image For Item</h3>
+   * <p>Deletes a specific image associated with an item based on the item ID and image URL.</p>
+   *
+   * <p>This method performs the following operations:</p>
+   * <ol>
+   *   <li>Verifies the existence of the specified item</li>
+   *   <li>Finds the image with the matching URL for the given item</li>
+   *   <li>Deletes the image record from the database</li>
+   * </ol>
+   *
+   * @param itemId   ID of the item the image is associated with
+   * @param imageUrl URL of the image to delete
+   * @throws IllegalArgumentException If the item does not exist or the image was not found
+   */
+  @Transactional
+  public void deleteImageForItem(Long itemId, String imageUrl) {
+    // Verify item exists
+    Item item = itemRepository.findById(itemId)
+        .orElseThrow(() -> new IllegalArgumentException("Item with ID " + itemId + " does not exist."));
+
+    // Find image with matching URL associated with the item
+    Image imageToDelete = imageRepository.findByItemIdAndUrl(itemId, imageUrl)
+        .orElseThrow(() -> new IllegalArgumentException("Image with URL not found for the specified item."));
+
+    // Delete the image
+    imageRepository.delete(imageToDelete);
+  }
 }
