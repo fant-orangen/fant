@@ -12,7 +12,6 @@
         :is-location-available="isLocationAvailable" />
       <p v-if="locationError" class="location-error">{{ locationError }}</p>
       <p v-if="isFetchingLocation" class="location-info">Getting your location...</p>
-      <p v-if="insufficientItemViews" class="recommendation-info">Please browse more items to get your recommendations.</p> <!-- TODO: Use translations for these messages? -->
     </div>
 
     <div class="category-section">
@@ -145,10 +144,13 @@ async function fetchItems() {
         // If the user has insufficient item views, show a message
       } else {
         insufficientItemViews.value = true;
+        items.value = [];
+        error.value = "You have insufficient item views to fetch recommendations.";
       }
 
       // Otherwise, perform search
     } else {
+      console.log("Searching for items!");
       const response = await searchItems(params); // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
       items.value = response.content ?? [];
       totalPages.value = response.totalPages ?? 1;
