@@ -77,28 +77,31 @@ function removeImage(index: number) {
 .file-upload {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  font-family: 'Inter', sans-serif;
+  gap: 0.75rem;
+  font-family: inherit;
+  width: 100%;
 }
 
 .upload-label {
-  font-weight: 600;
-  color: #333;
+  display: block;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.9rem;
 }
 
 .upload-area {
   padding: 1.5rem;
   border: 2px dashed #d1d5db;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   background-color: #f9fafb;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .upload-area:hover {
-  border-color: #9ca3af;
+  border-color: #3498db;
 }
 
 .upload-button {
@@ -106,14 +109,15 @@ function removeImage(index: number) {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background-color: #4f46e5;
+  background-color: #3498db;
   color: white;
-  font-weight: 600;
-  border-radius: 0.5rem;
+  font-weight: 500;
+  border-radius: 6px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   transition: background 0.3s ease;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
 }
 
 .button-icon {
@@ -122,7 +126,7 @@ function removeImage(index: number) {
 }
 
 .upload-button:hover {
-  background-color: #4338ca;
+  background-color: #2980b9;
 }
 
 .hidden-input {
@@ -140,13 +144,15 @@ function removeImage(index: number) {
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 1rem;
   margin-top: 0.5rem;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .preview-image {
   position: relative;
   aspect-ratio: 1;
   height: 120px;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   border: 1px solid #e5e7eb;
@@ -179,6 +185,6 @@ function removeImage(index: number) {
 }
 
 .remove-btn:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(52, 152, 219, 0.9);
 }
 </style>

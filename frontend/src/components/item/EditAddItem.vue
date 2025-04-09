@@ -241,7 +241,7 @@ async function handleSubmit() {
 }
 
 .form-title {
-  color: #333;
+  color: #2c3e50;
   font-size: 24px;
   font-weight: 600;
   margin: 0 0 10px 0;
@@ -276,10 +276,11 @@ async function handleSubmit() {
 }
 
 .location-label {
-  font-weight: 600;
-  margin-bottom: 5px;
   display: block;
-  color: #333;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #2c3e50;
+  font-size: 0.9rem;
 }
 
 .location-helper {
@@ -297,12 +298,12 @@ async function handleSubmit() {
 }
 
 .location-display {
-  background-color: #f0f8ff;
+  background-color: rgba(52, 152, 219, 0.1);
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
-  color: #0066cc;
+  color: #3498db;
   display: inline-block;
   margin-top: 5px;
 }
@@ -315,7 +316,7 @@ async function handleSubmit() {
   border: 1px solid #e0e0e0;
   width: fit-content;
   position: relative;
-  z-index: 1000; /* Ensure buttons stay above map */
+  z-index: 1000;
 }
 
 .map-container {
@@ -324,12 +325,11 @@ async function handleSubmit() {
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: 10px;
-  position: relative; /* Contain the map */
+  position: relative;
 }
 
-/* Add this new style */
 .location-section .leaflet-container {
-  z-index: 1; /* Lower z-index than the toggle buttons */
+  z-index: 1;
 }
 
 .toggle-btn {
@@ -344,7 +344,7 @@ async function handleSubmit() {
 }
 
 .toggle-btn.active {
-  background: #4CAF50;
+  background: #3498db;
   color: white;
 }
 
@@ -363,7 +363,7 @@ async function handleSubmit() {
 }
 
 .submit-button {
-  background-color: #4CAF50;
+  background-color: #3498db;
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -376,10 +376,11 @@ async function handleSubmit() {
   margin-top: 10px;
   width: auto;
   min-width: 200px;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
 }
 
 .submit-button:hover {
-  background-color: #45a049;
+  background-color: #2980b9;
 }
 
 @media (max-width: 768px) {
