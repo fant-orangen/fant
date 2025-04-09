@@ -1,25 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed, nextTick } from 'vue';
+import { ref, onMounted, watch, computed, nextTick, onUnmounted } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css'; // Import leaflet-draw CSS
 import L from 'leaflet';
 import 'leaflet-draw'; // Import leaflet-draw JS
 
-import { searchItems, type ItemSearchParams } from '@/services/ItemService';
-import type { ItemPreviewType } from '@/models/Item';
-import type { MapComponentProps } from '@/models/MapComponent.ts';
-import { fetchCategories } from '@/services/CategoryService';
+import { searchItems, type ItemSearchParams } from '@/services/ItemService'; // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
+import type { MapComponentProps } from '@/models/MapComponent';
+import { fetchCategories } from '@/services/CategoryService'; // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
 import type { Category } from '@/models/Category';
 
 // --- Define Emits ---
-// Event emitted when a circle is drawn
 const emit = defineEmits<{
   (e: 'update-search-area', payload: { latitude: number; longitude: number; radiusKm: number }): void
 }>();
 
 // --- Props ---
 const props = defineProps<MapComponentProps & {
-  // Filters (passed from MapView)
   categoryId?: string | null;
   searchTerm?: string | null;
   latitude?: number | null;    // Search center latitude (could be user's or drawn circle's)
@@ -28,7 +25,6 @@ const props = defineProps<MapComponentProps & {
   minPrice?: number | null;
   maxPrice?: number | null;
   sortOption?: string;
-  // Prop to trigger clearing the drawn area from the parent
   clearDrawnAreaTrigger?: number; // Increment this number in parent to clear
 }>();
 
@@ -39,8 +35,11 @@ const markers = ref<L.Marker[]>([]);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 const categories = ref<Category[]>([]);
-const drawnItems = ref<L.FeatureGroup | null>(null); // Ref for the drawn layer group
-const drawControl = ref<L.Control.Draw | null>(null); // Ref for draw control
+
+// Ensure that drawnItems is a valid Leaflet FeatureGroup. Later, when adding it to the map, we cast it as any to satisfy TS.
+const drawnItems = ref<L.FeatureGroup | null>(null);
+// Ref for draw control
+const drawControl = ref<L.Control.Draw | null>(null);
 
 // --- Computed ---
 const categoryName = computed(() => {
@@ -74,32 +73,34 @@ function initializeMap() {
 
   // --- Initialize Leaflet.draw ---
   drawnItems.value = new L.FeatureGroup();
-  map.value.addLayer(drawnItems.value);
+  // Casting drawnItems to any to satisfy TS (Leaflet will assign _map at runtime)
+  map.value.addLayer(drawnItems.value as any);
 
-  // Configure Draw Control
+  // Configure Draw Control with type assertion on featureGroup
   const drawControlOptions: L.Control.DrawConstructorOptions = {
-    position: 'topright', // Or 'topleft', etc.
+    position: 'topright',
     draw: {
-      polygon: false, // Disable polygon
-      polyline: false, // Disable polyline
-      rectangle: false, // Disable rectangle
-      marker: false, // Disable marker
-      circlemarker: false, // Disable circle marker
-      circle: { // Enable Circle options
+      polygon: false,
+      polyline: false,
+      rectangle: false,
+      marker: false,
+      circlemarker: false,
+      circle: {
         shapeOptions: {
-          color: '#007bff', // Example color
+          color: '#007bff',
           weight: 4,
           opacity: 0.7
         },
-        showRadius: true, // Show radius while drawing
-        metric: true, // Use metric units (meters)
-        feet: false // Don't use feet
+        showRadius: true,
+        metric: true,
+        feet: false
       }
     },
     edit: {
-      featureGroup: drawnItems.value,
-      edit: false,   // Disable edit button
-      remove: false  // Disable delete button
+      // Cast drawnItems.value to any here to meet the expected type
+      featureGroup: drawnItems.value! as any,
+      edit: false,
+      remove: false
     }
   };
 
@@ -107,30 +108,26 @@ function initializeMap() {
   map.value.addControl(drawControl.value);
 
   // --- Leaflet.draw Event Listeners ---
-  map.value.on(L.Draw.Event.CREATED, (event: L.DrawEvents.Created) => {
+  map.value.on(L.Draw.Event.CREATED as any, (event: L.DrawEvents.Created) => {
     const layer = event.layer;
     if (drawnItems.value) {
-      drawnItems.value.clearLayers(); // Clear previous drawings
-      drawnItems.value.addLayer(layer); // Add the new one
+      drawnItems.value.clearLayers();
+      drawnItems.value.addLayer(layer);
     }
 
     if (event.layerType === 'circle' && layer instanceof L.Circle) {
       const center = layer.getLatLng();
-      const radius = layer.getRadius(); // Radius in meters
-
+      const radius = layer.getRadius(); // in meters
       console.log(`Circle drawn: Center=${center}, Radius=${radius}m`);
-
-      // Emit event to parent with circle data
       emit('update-search-area', {
         latitude: center.lat,
         longitude: center.lng,
-        radiusKm: radius / 1000 // Convert to KM
+        radiusKm: radius / 1000 // convert meters to kilometers
       });
     }
   });
 
-  // Optional: Handle edit event if needed
-  map.value.on(L.Draw.Event.EDITED, (event: L.DrawEvents.Edited) => {
+  map.value.on(L.Draw.Event.EDITED as any, (event: L.DrawEvents.Edited) => {
     event.layers.eachLayer(layer => {
       if (layer instanceof L.Circle) {
         const center = layer.getLatLng();
@@ -145,22 +142,17 @@ function initializeMap() {
     });
   });
 
-  // Handle deletion
-  map.value.on(L.Draw.Event.DELETED, () => {
+  map.value.on(L.Draw.Event.DELETED as any, () => {
     console.log("Drawn search area deleted");
-    // Optionally tell the parent to revert to default search
-    // This could be done by emitting null values or a specific event
-    // For now, the parent should handle the state based on presence of drawn coords
+    // Optionally emit an event to notify parent that the search area has been cleared.
   });
 
-  // Invalidate size when ready
   map.value.whenReady(() => {
     map.value?.invalidateSize();
   });
 
-  loadItemsAndAddMarkers(); // Initial load
+  loadItemsAndAddMarkers(); // Initial load of markers
 }
-
 
 // --- Data Loading and Marker Logic ---
 async function loadItemsAndAddMarkers() {
@@ -169,31 +161,28 @@ async function loadItemsAndAddMarkers() {
   error.value = null;
   console.log("MapComponent: Loading items with props:", props);
 
-
-  // Clear existing markers (but not the drawn circle)
+  // Remove existing markers (but not the drawn circle)
   markers.value.forEach(marker => marker.remove());
   markers.value = [];
 
-  // Use props directly as they contain either geolocation or drawn circle info
+  // Convert any null values from props into undefined for the API call
   const params: ItemSearchParams = {
-    searchTerm: props.searchTerm || null,
-    minPrice: props.minPrice,
-    maxPrice: props.maxPrice,
+    searchTerm: props.searchTerm ?? undefined,
+    minPrice: props.minPrice ?? undefined,
+    maxPrice: props.maxPrice ?? undefined,
     status: 'ACTIVE',
-    categoryName: categoryName.value,
-    userLatitude: props.latitude, // Use the latitude from props
-    userLongitude: props.longitude, // Use the longitude from props
-    maxDistance: (props.latitude !== null && props.longitude !== null) ? props.maxDistance : null, // Use radius from props
+    categoryName: categoryName.value ?? undefined,
+    userLatitude: props.latitude ?? undefined,
+    userLongitude: props.longitude ?? undefined,
+    maxDistance: (props.latitude !== null && props.longitude !== null) ? (props.maxDistance ?? undefined) : undefined,
     page: 0,
-    size: 200, // Fetch a large number for map view
-    sort: backendSortParam.value
+    size: 200,
+    sort: backendSortParam.value ?? undefined
   };
 
-
   try {
-    const response = await searchItems(params); // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
+    const response = await searchItems(params);
     const items = response.content ?? [];
-
     console.log(`MapComponent: Received ${items.length} items from search.`);
 
     items.forEach(item => {
@@ -210,7 +199,7 @@ async function loadItemsAndAddMarkers() {
           <div class="popup-content" style="text-align: center; padding: 5px;">
               ${imageUrlContent}
               <a href="${itemDetailPath}" target="_blank" rel="noopener noreferrer" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff; font-weight: bold;">
-              ${linkText} </a>
+              ${linkText}</a>
           </div>
           `;
 
@@ -222,7 +211,6 @@ async function loadItemsAndAddMarkers() {
       }
     });
     console.log(`MapComponent: Added ${markers.value.length} markers.`);
-
   } catch (err) {
     console.error('MapComponent: Failed to load items:', err);
     error.value = 'Failed to load items for the map.';
@@ -232,23 +220,19 @@ async function loadItemsAndAddMarkers() {
 }
 
 // --- Watchers ---
-// Watch for changes in *final search parameters* props to reload items
-// These props are now controlled by MapView based on either geolocation or drawn circle
+// Watch for changes in search parameters to reload items
 watch(
   [
     categoryName,
     () => props.searchTerm,
     () => props.minPrice,
     () => props.maxPrice,
-    () => props.latitude,    // Watch the final search center lat
-    () => props.longitude,   // Watch the final search center lng
-    () => props.maxDistance, // Watch the final search radius
+    () => props.latitude,
+    () => props.longitude,
+    () => props.maxDistance,
     backendSortParam,
   ],
-  (newValues, oldValues) => {
-    // Avoid reload if only coordinates/distance change slightly without user interaction
-    // (e.g., high accuracy geolocation updates) - requires more complex logic if needed.
-    // For now, reload on any change.
+  () => {
     console.log("MapComponent: Search parameters changed, reloading items.");
     loadItemsAndAddMarkers();
   },
@@ -260,41 +244,36 @@ watch(() => props.clearDrawnAreaTrigger, () => {
   if (drawnItems.value) {
     console.log("MapComponent: Clearing drawn search area via trigger.");
     drawnItems.value.clearLayers();
-    // Note: Parent (MapView) is responsible for setting its drawnLat/Lng/RadiusKm
-    // back to null after incrementing the trigger.
   }
 });
-
 
 // --- Lifecycle Hooks ---
 onMounted(async () => {
-  // Need to wait for the DOM element to be ready
   await nextTick();
   try {
-    categories.value = await fetchCategories(); // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
+    categories.value = await fetchCategories();
     initializeMap();
   } catch (err) {
-    console.error("MapComponent: Failed to fetch categories on mount:", err);
+    console.error("MapComponent: Failed to fetch categories or initialize map on mount:", err);
     error.value = "Failed to load initial map data.";
   }
 
-  // Resize Observer
-  const resizeObserver = new ResizeObserver(() => {
-    map.value?.invalidateSize();
-  });
+  // Resize Observer to handle container size changes
+  let resizeObserver: ResizeObserver | null = null;
   if (mapContainer.value) {
+    resizeObserver = new ResizeObserver(() => {
+      map.value?.invalidateSize();
+    });
     resizeObserver.observe(mapContainer.value);
   }
-
-  // Cleanup
-  return () => {
-    if (mapContainer.value) {
-      resizeObserver.unobserve(mapContainer.value);
-    }
-    map.value?.remove();
-  };
 });
 
+onUnmounted(() => {
+  // Cleanup map on component unmount
+  map.value?.remove();
+  map.value = null;
+  console.log("MapComponent unmounted, map removed.");
+});
 </script>
 
 <template>
@@ -310,25 +289,20 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* leaflet-draw styles are now handled by the global import */
-/* import 'leaflet-draw/dist/leaflet.draw.css'; */ /* Keep the import in <script setup> */
-
 .map-component-wrapper {
   position: relative;
   height: 100%;
   width: 100%;
 }
 .map-container {
-  height: 100%;
-  width: 100%;
   min-height: 400px;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--color-border, #ddd);
   z-index: 0;
 }
-
-.loading-overlay, .error-overlay {
+.loading-overlay,
+.error-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -337,27 +311,52 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.7);
-  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1000;
   font-size: 1.2em;
   color: #333;
-  border-radius: 8px; /* Match container */
-  pointer-events: none; /* Allow map interaction through overlay */
+  border-radius: 8px;
+  pointer-events: none;
+  text-align: center;
+  padding: 20px;
 }
 .error-overlay {
   color: red;
+  font-weight: bold;
 }
-
-/* Ensure Leaflet controls are interactable */
 :deep(.leaflet-control-container) {
   z-index: 10 !important;
 }
-
-/* Optional: Adjust draw control general appearance if needed */
-:deep(.leaflet-draw) {
-  /* Example: Add a slight shadow */
-  /* box-shadow: 0 1px 5px rgba(0,0,0,0.65); */
-  /* border-radius: 4px; */
+:deep(.leaflet-popup-content-wrapper) {
+  border-radius: 6px;
+  padding: 1px;
 }
-
+:deep(.leaflet-popup-content) {
+  margin: 0 !important;
+  padding: 0;
+  line-height: initial;
+}
+:deep(.popup-content) {
+  text-align: center;
+  padding: 10px;
+  min-width: 150px;
+}
+:deep(.popup-content img) {
+  max-width: 120px;
+  max-height: 100px;
+  display: block;
+  margin: 5px auto 10px auto;
+  border-radius: 4px;
+}
+:deep(.popup-content a) {
+  display: block;
+  margin-top: 8px;
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+  font-size: 0.95em;
+}
+:deep(.popup-content a:hover) {
+  text-decoration: underline;
+}
 </style>
