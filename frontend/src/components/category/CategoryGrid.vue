@@ -19,10 +19,13 @@ import furnitureIcon from '@/assets/icons/furnitureIcon.svg';
 import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
 import phoneIcon from '@/assets/icons/phoneIcon.svg';
 import artIcon from '@/assets/icons/artIcon.svg';
+import recommendedIcon from '@/assets/icons/recommended.svg';
+import { useUserStore } from '@/stores/UserStore.ts'
 
 const props = defineProps<{
   layout?: 'vertical' | 'grid' | 'horizontal',
-  selectedCategoryId?: string | null
+  selectedCategoryId?: string | null,
+  noRecommendations?: boolean
 }>();
 
 const isVertical = computed(() => props.layout === 'vertical');
@@ -30,7 +33,7 @@ const isHorizontal = computed(() => props.layout === 'horizontal' || !props.layo
 
 const categories = ref<Category[]>([]);
 const emit = defineEmits<{
-  select: [categoryId: string]
+  select: [categoryId: string],
 }>();
 
 const iconMap: Record<string, string> = {
@@ -102,6 +105,11 @@ function handleCategoryClick(id: string) {
   emit('select', id);
 }
 
+function showRecommendedItems() {
+  emit('select', '-1');
+}
+
+
 function showAllItems() {
   emit('select', '');
 }
@@ -114,6 +122,27 @@ onMounted(loadCategories);
     isVertical ? 'category-list' :
     isHorizontal ? 'category-row' : 'category-grid'
   ]">
+    <!-- Recommended Items Button -->
+    <div
+      class="category-wrapper"
+      @click="showRecommendedItems"
+      v-if="!props.noRecommendations && useUserStore().isLoggedInUser"
+    >
+      <button
+        class="all-categories-button recommended-button"
+        :class="{
+          'active': selectedCategoryId === '-1',
+          'compact': isVertical
+        }"
+      >
+        <span class="category-icon all-icon">
+          <img :src="recommendedIcon" class="recommended-icon" alt="Recommended" width="32" height="32" />
+        </span>
+        <span class="category-label">{{ t('category.recommended') }}</span>
+      </button>
+    </div>
+
+    <!-- All Items Button -->
     <div
       class="category-wrapper"
       @click="showAllItems"
@@ -130,6 +159,7 @@ onMounted(loadCategories);
       </button>
     </div>
 
+    <!-- Category Buttons -->
     <div
       v-for="category in categories"
       :key="category.id?.toString() || `temp-${Math.random()}`"
@@ -173,8 +203,8 @@ onMounted(loadCategories);
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  border-left: 1px solid lightgray;
-  border-right: 1px solid lightgray;
+  border-left: 2px solid lightgray;
+  border-right: 2px solid lightgray;
   border-radius: 0px
 }
 
@@ -248,6 +278,14 @@ onMounted(loadCategories);
   height: 18px;
 }
 
+.recommended-icon {
+  filter: brightness(0) saturate(100%) invert(52%) sepia(78%) saturate(445%) hue-rotate(77deg) brightness(94%) contrast(92%);
+}
+
+.recommended-container {
+  border: 2px solid lightgray;
+}
+
 .category-label {
   font-size: 0.9rem;
   font-weight: 500;
@@ -283,6 +321,17 @@ onMounted(loadCategories);
     font-size: 0.85rem;
   }
 }
+
+.recommended-button {
+  border-width: 2px;
+  border-color: #22c55e; /* Tailwind's emerald-500: a nice green */
+}
+
+.recommended-button.active {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
 
 @media (max-width: 480px) {
   .category-grid {

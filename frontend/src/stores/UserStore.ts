@@ -190,6 +190,11 @@ export const useUserStore = defineStore("user", () => {
     localStorage.removeItem('userId'); // Remove userId from storage
   }
 
+  // Check whether user is logged in
+  const isLoggedInUser = computed(() => {
+    return userId.value !== null && userId.value !== '0';
+  })
+
   // Computed getters for accessing state reactively.
   const loggedIn = computed(() => token.value !== null);
   const getUsername = computed(() => username.value); // This holds the email
@@ -213,6 +218,7 @@ export const useUserStore = defineStore("user", () => {
     getUsername,
     getToken,
     getUserId,
-    getUserRole
+    getUserRole,
+    isLoggedInUser
   };
 });

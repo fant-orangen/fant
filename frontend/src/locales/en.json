@@ -94,7 +94,8 @@
         "furniture": "Furniture",
         "motorcycle": "Motorcycle",
         "phone": "Phone",
-        "travel": "Travel"
+        "travel": "Travel",
+        "recommended": "Your recommendations"
     },
 
     "MAP": "Map",

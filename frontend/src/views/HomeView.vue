@@ -44,10 +44,19 @@ import { ref, computed, onMounted, watch } from 'vue'
 import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import ItemList from '@/components/item/ItemList.vue'
 import SearchBar from '@/components/search/searchBar.vue'
-import { searchItems, type ItemSearchParams } from '@/services/ItemService'
+import {
+  searchItems,
+  type ItemSearchParams,
+  fetchItemsByDistribution
+} from '@/services/ItemService'
 import type { ItemPreviewType } from '@/models/Item'
 import { fetchCategories } from '@/services/CategoryService';
 import type { Category } from '@/models/Category';
+import {
+  fetchCategoryRecommendations,
+  fetchUserViewCount
+} from '@/services/RecommendationService.ts'
+import { useUserStore } from '@/stores/UserStore.ts'
 
 
 // --- Filter States ---
@@ -68,8 +77,11 @@ const totalPages = ref(1);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 const isFetchingLocation = ref(false);
+const insufficientItemViews = ref(false);
 const locationError = ref<string | null>(null);
 const pageSize = ref(8);
+
+const numOfViewsLimit = 3
 
 // --- Computed Properties ---
 const isLocationAvailable = computed(() => {
@@ -89,6 +101,8 @@ const backendSortParam = computed(() => {
     default: return null;
   }
 });
+
+
 
 
 // --- Methods ---
@@ -112,14 +126,65 @@ async function fetchItems() {
     sort: backendSortParam.value ?? undefined
   };
 
+  console.log("fetchItems was called");
   try {
-    const response = await searchItems(params); // [cite: uploaded:frontend 6/frontend/src/services/ItemService.ts]
-    items.value = response.content ?? [];
-    totalPages.value = response.totalPages ?? 1;
-    if (currentPage.value > totalPages.value) {
-      currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+    console.log("Category ID:", selectedCategoryId.value);
+    console.log("User ID:", useUserStore().getUserId);
+
+    const isRecommendationSelected = selectedCategoryId.value === '-1';
+
+    if (useUserStore().isLoggedInUser) {
+      if (isRecommendationSelected) {
+        const numOfViews = await fetchUserViewCount();
+        console.log("User view count:", numOfViews);
+
+        if (numOfViews > numOfViewsLimit) {
+          console.log("Fetching recommendations...");
+          const recommendations = await fetchCategoryRecommendations();
+          const response = await fetchItemsByDistribution(recommendations);
+          console.log("Fetched recommended items:", response.content);
+
+          items.value = response.content ?? [];
+          totalPages.value = response.totalPages ?? 1;
+
+          if (currentPage.value > totalPages.value) {
+            currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+          }
+        } else {
+          items.value = [];
+          totalPages.value = 1;
+          error.value = "You have insufficient item views to fetch recommendations.";
+          insufficientItemViews.value = true;
+        }
+      } else {
+        // Logged in and not viewing recommendations — search as normal
+        const response = await searchItems(params);
+        items.value = response.content ?? [];
+        totalPages.value = response.totalPages ?? 1;
+
+        if (currentPage.value > totalPages.value) {
+          currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+        }
+      }
+    } else {
+      if (isRecommendationSelected) {
+        // Not logged in but selected recommended
+        items.value = [];
+        totalPages.value = 1;
+        error.value = "You must be logged in to view recommended items.";
+      } else {
+        // Not logged in, normal category
+        const response = await searchItems(params);
+        items.value = response.content ?? [];
+        totalPages.value = response.totalPages ?? 1;
+
+        if (currentPage.value > totalPages.value) {
+          currentPage.value = totalPages.value > 0 ? totalPages.value : 1;
+        }
+      }
     }
-    console.log(`Workspaceed ${items.value.length} items. Total pages: ${totalPages.value}`);
+
+    console.log(`Fetched ${items.value.length} items. Total pages: ${totalPages.value}`);
   } catch (err) {
     console.error("Error fetching items:", err);
     error.value = 'Failed to load items. Please try again later.';
@@ -213,7 +278,7 @@ watch(
     searchTerm,
     minPrice,
     maxPrice,
-    selectedCategoryName, // Watch computed name derived from ID
+    selectedCategoryId, // Watch computed name derWived from ID
     sortOption,
     // Watch location refs directly
     currentLatitude,
@@ -251,6 +316,7 @@ watch(
 // --- Initial Data Load ---
 async function loadInitialData() {
   isLoading.value = true;
+
   try {
     categories.value = await fetchCategories(); // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
     await fetchItems();
@@ -301,6 +367,12 @@ onMounted(loadInitialData);
   font-size: 0.9em;
   text-align: center;
 }
+.recommendation-info {
+  color: #555;
+  font-size: 0.9em;
+  text-align: center;
+}
+
 .clear-category-button {
   padding: 0.5rem 1rem;
   margin-top: 0.5rem;

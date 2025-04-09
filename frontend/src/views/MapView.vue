@@ -28,6 +28,7 @@
             @select="onCategoryClick"
             layout="vertical"
             :selectedCategoryId="selectedCategoryId"
+            :noRecommendations="true"
           />
         </div>
       </div>
