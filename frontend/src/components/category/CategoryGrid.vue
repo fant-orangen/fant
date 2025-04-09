@@ -128,7 +128,7 @@ onMounted(loadCategories);
       v-if="!props.noRecommendations"
     >
       <button
-        class="all-categories-button"
+        class="all-categories-button recommended-button"
         :class="{
           'active': selectedCategoryId === '-1',
           'compact': isVertical
@@ -320,6 +320,17 @@ onMounted(loadCategories);
     font-size: 0.85rem;
   }
 }
+
+.recommended-button {
+  border-width: 2px;
+  border-color: #22c55e; /* Tailwind's emerald-500: a nice green */
+}
+
+.recommended-button.active {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
 
 @media (max-width: 480px) {
   .category-grid {
