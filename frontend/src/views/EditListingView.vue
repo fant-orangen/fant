@@ -80,7 +80,7 @@ async function convertItemDetailsToCreateItem(item: ItemDetailsType): Promise<Cr
 }
 
 function onSuccess() {
-  router.push(`/manage/${itemId.value}`);
+  router.push(`/profile/listings`);
 }
 </script>
 

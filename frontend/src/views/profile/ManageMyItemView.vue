@@ -23,8 +23,8 @@
           <p><strong>Price:</strong> {{ formatPrice(item.price) }}</p>
 
           <div class="item-actions">
-            <button @click="goToEditItem">Edit Item</button>
-            <button @click="openDeleteModal">Delete Item</button>
+            <button class="edit-button" @click="goToEditItem">Edit Item</button>
+            <button class="delete-button" @click="openDeleteModal">Delete Item</button>
             <ConfirmDeleteModal
               :isOpen="isDeleteModalOpen"
               title="Delete Item"
@@ -420,6 +420,51 @@ function handleImageError(event: Event) {
   border-radius: 4px;
   color: white;
 }
+
+.edit-button,
+.delete-button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-width: 90px;
+  text-align: center;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease,
+    border-color 0.2s ease;
+  font-weight: 600;
+}
+
+.edit-button:disabled,
+.delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.edit-button {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.edit-button:hover:not(:disabled){
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.delete-button {
+  background-color: transparent;
+  color: #dc3545;
+  margin: 1rem;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #dc3545;
+  color: white;
+}
+
 /* Color coding for status badges */
 .bid-status-pending .bid-status-badge { background-color: #ffc107; color: #333;}
 .bid-status-accepted .bid-status-badge { background-color: #28a745; }

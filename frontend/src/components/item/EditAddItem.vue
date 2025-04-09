@@ -264,24 +264,24 @@ async function handleSubmit() {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: var(--color-background-soft, #f8f9fa);
 }
 
 .listing-form {
   width: 100%;
   max-width: 800px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 30px;
+  background: var(--color-background, white);
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  padding: 35px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 }
 
 .form-title {
-  color: #333;
-  font-size: 24px;
+  color: var(--color-heading, #2c3e50);
+  font-size: 26px;
   font-weight: 600;
   margin: 0 0 10px 0;
   text-align: center;
@@ -289,14 +289,22 @@ async function handleSubmit() {
 
 .form-divider {
   width: 100%;
-  height: 1px;
-  background-color: #e0e0e0;
+  height: 2px;
+  background-color: var(--color-border, #e0e0e0);
   margin-bottom: 15px;
 }
 
 .form-field {
   width: 100%;
   margin-bottom: 5px;
+}
+
+.location-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: var(--color-heading, #2c3e50);
+  font-size: 14px;
 }
 
 .form-row {
@@ -310,125 +318,130 @@ async function handleSubmit() {
   min-width: 0;
 }
 
-.location-section {
-  margin-top: 5px;
-}
-
-.location-label {
+.input-label {
   font-weight: 600;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   display: block;
-  color: #333;
-}
-
-.location-helper {
+  color: var(--color-heading, #2c3e50);
   font-size: 14px;
-  color: #666;
-  margin: 4px 0 10px;
-}
-
-.map-container {
-  width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.location-display {
-  background-color: #f0f8ff;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #0066cc;
-  display: inline-block;
-  margin-top: 5px;
 }
 
 .location-toggle {
   display: flex;
   margin-bottom: 15px;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border, #e0e0e0);
   width: fit-content;
   position: relative;
-  z-index: 1000; /* Ensure buttons stay above map */
-}
-
-.map-container {
-  width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  position: relative; /* Contain the map */
-}
-
-/* Add this new style */
-.location-section .leaflet-container {
-  z-index: 1; /* Lower z-index than the toggle buttons */
+  z-index: 10;
 }
 
 .toggle-btn {
-  padding: 8px 16px;
-  background: #f5f5f5;
+  padding: 10px 20px;
+  background: var(--color-background-mute, #f5f5f5);
   border: none;
   cursor: pointer;
   flex: 1;
-  min-width: 100px;
+  min-width: 110px;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-size: 14px;
 }
 
 .toggle-btn.active {
-  background: #4CAF50;
+  background: #3498db;;
   color: white;
 }
 
 .toggle-btn:first-child {
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--color-border, #e0e0e0);
 }
 
 .map-mode, .coordinates-mode {
   margin-top: 10px;
 }
 
-.preview-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.location-display {
+  background-color: var(--color-background-mute, #e6f0fa);
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3498db;;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.location-icon {
+  margin-right: 6px;
+  font-size: 16px;
 }
 
 .submit-button {
-  background-color: #4CAF50;
+  background-color: #3498db;
   color: white;
   font-size: 16px;
   font-weight: 600;
-  padding: 12px 24px;
+  padding: 12px 28px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  align-self: center;
-  margin-top: 10px;
+  transition: all 0.2s ease;
   width: auto;
   min-width: 200px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+  align-self: center;
 }
 
 .submit-button:hover {
-  background-color: #45a049;
+  background-color: #3498db;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.submit-button:active {
+  transform: translateY(0px);
+}
+
+.add-to-list-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text, #555);
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.add-to-list-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3498db;
+  cursor: pointer;
+}
+
+.add-to-list-option label {
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
-    gap: 5px;
+    gap: 15px;
   }
 
   .listing-form {
-    padding: 20px;
+    padding: 25px;
+    gap: 18px;
+  }
+
+  .toggle-btn {
+    min-width: 100px;
+    padding: 8px 15px;
   }
 }
 </style>
