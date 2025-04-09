@@ -2,6 +2,8 @@ package stud.ntnu.backend.controller;
 
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.message.MessageReadRequestDto;
 import stud.ntnu.backend.data.message.ConversationPreviewDto;
 import stud.ntnu.backend.data.message.MessageResponseDto;
+import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.MessageService;
 
 import java.util.List;
@@ -82,5 +85,18 @@ public class MessageController {
     messageService.markMessagesAsRead(request.getMessageIds(),
         userService.getCurrentUser(principal));
     return ResponseEntity.ok().build();
+  }
+  @PostMapping("/conversations/initiate")
+  public ResponseEntity<Map<String, Long>> initiateConversation(
+      @RequestParam @Positive Long itemId,
+      Principal principal) {
+
+    User currentUser = userService.getCurrentUser(principal);
+    // Delegate logic to MessageService
+    Long conversationIdentifier = messageService.findOrCreateConversation(currentUser, itemId); // Calls the service
+
+    Map<String, Long> response = new HashMap<>();
+    response.put("conversationId", conversationIdentifier);
+    return ResponseEntity.ok(response);
   }
 }
