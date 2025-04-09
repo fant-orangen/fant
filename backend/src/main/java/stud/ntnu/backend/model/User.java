@@ -60,7 +60,7 @@ public class User {
    * <p>User's system role/permissions level.</p>
    */
   @Enumerated(EnumType.STRING)
-  private Role role;
+  private Role role = Role.USER;
 
   /**
    * <h3>First Name</h3>
