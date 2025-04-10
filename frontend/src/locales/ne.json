@@ -28,6 +28,7 @@
   "PROFILE_VIPPS_PROMPT_TITLE": "विप्ससँग छिटो खरिद",
   "PROFILE_VIPPS_PROMPT_DESC": "छिटो र सुरक्षित भुक्तानीको लागि आफ्नो विप्स खाता सक्रिय गर्नुहोस्",
   "PROFILE_MY_FAVORITES_DESC": "मेरो मनपर्ने - विवरण",
+  "CURRENT_PASSWORD": "हालको पासवर्ड",
   "PASSWORD_NEEDED": "परिवर्तन पुष्टि गर्न पासवर्ड आवश्यक छ",
   "PASSWORD_CURRENT_REQUIRED": "अपडेट गर्नको लागि वर्तमान पासवर्ड आवश्यक छ",
   "INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT": "कृपया अन्तर्राष्ट्रिय ढाँचामा प्रयोग गर्नुहोस्, जस्तै +47 12345678",

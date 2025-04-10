@@ -2,27 +2,7 @@ import api from '@/services/api/axiosInstance'
 import type { BidPayload, BidResponseType, PaginatedBidResponse } from '@/models/Bid' // Keep BidResponseType
 
 // Define an interface representing the raw structure from GET /api/orders/bids
-// Based on Bid.java entity structure
-interface RawBidResponse {
-  id: number | string
-  item: {
-    // Nested item object
-    id: number | string
-    // Add other item fields if needed, e.g., briefDescription
-    briefDescription?: string
-  } | null // Item might be null? Check backend constraints/logic
-  bidder: {
-    // Nested bidder object
-    id: number | string
-    displayName: string // Or username, based on User.java
-    // Add other user fields if needed
-  } | null // Bidder might be null? Check backend constraints/logic
-  amount: number
-  comment?: string
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' // Assuming BidStatus enum values
-  createdAt: string // Assuming ISO date string
-  updatedAt: string // Assuming ISO date string
-}
+
 
 /**
  * Places a new bid for an item.

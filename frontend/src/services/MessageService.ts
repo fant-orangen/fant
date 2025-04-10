@@ -160,13 +160,13 @@ export async function sendMessage(
  * Register handler for new messages
  */
 export function onNewMessage(handler: (message: Message) => void): void {
-  fetchCurrentUserId()
-    .then((userId) => {
-      webSocketService.onMessage(userId.toString(), handler)
-    })
-    .catch((error) => {
-      console.error('Error registering message handler:', error)
-    })
+  const userId = useUserStore().getUserId;
+
+  if (userId) {
+    webSocketService.onMessage(userId.toString(), handler);
+  } else {
+    console.error('Error registering message handler: User ID not available');
+  }
 }
 
 /**

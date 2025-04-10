@@ -38,8 +38,6 @@ export async function register(userData: UserCreatePayload) {
   return await axiosInstance.post('/auth/register', userData)
 }
 
-
-
 /**
  * Interface representing the structure of a User object
  * as returned by the backend API (matching backend User.java entity).
