@@ -16,6 +16,33 @@ defaults:
     working-directory: ./frontend
 
 jobs:
+  start-server:
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: ./backend
+  
+      steps:
+        - uses: actions/checkout@v4
+  
+        #Sets up java environment with Maven
+        - name: Set up JDK 21
+          uses: actions/setup-java@v4
+          with:
+            java-version: '21'
+            distribution: 'temurin'
+            cache: maven
+  
+        - run: mvn -B dependency:resolve --file backend/pom.xml
+        - run: |
+                cd backend
+                mvn spring-boot:run &
+                echo "Backend server started"
+                # Give the server some time to start
+                sleep 30
+
+          
+        
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -32,6 +59,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
 
+      
       - run: npm ci
       - run: npm run build --if-present
       - run: npm run test:unit
