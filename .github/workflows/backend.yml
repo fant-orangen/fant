@@ -34,6 +34,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build and test with Maven
+        run: mvn -B test --file pom.xml
+
+      - name: Upload JaCoCo exec file
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: jacoco-report
+          path: |
+            **/target/jacoco.exec
+            **/build/jacoco/test.exec
+          retention-days: 7
 

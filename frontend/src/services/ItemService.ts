@@ -180,7 +180,6 @@ export async function fetchItemsByDistribution(
       distribution: recommendation.distribution,
       limit,
     })
-
     return response.data
   } catch (error) {
     throw error

@@ -32,7 +32,7 @@ export interface ItemPreviewType {
    * URL to the primary image for the item.
    * @type {string}
    */
-  imageUrl: string;
+  imageUrl?: string;
 
   /**
    * The listed price of the item.

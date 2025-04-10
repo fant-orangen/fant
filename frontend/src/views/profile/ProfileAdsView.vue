@@ -18,7 +18,7 @@
         @click="navigateToManageItem(item.id)"
       >
         <img
-          :src="item.imageUrl || '/placeholder-image.png'"
+          :src="item.imageUrl || placeholderImage"
           :alt="item.title"
           class="item-image"
           @error="handleImageError"
@@ -45,6 +45,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchMyPagedItems } from '@/services/ItemService'
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item'
+import placeholderImage from '@/assets/images/placeholderItem.jpg'
 
 const router = useRouter()
 const userItems = ref<ItemPreviewType[]>([])
@@ -82,7 +83,7 @@ async function loadUserItems() {
 
 function handleImageError(event: Event) {
   const imgElement = event.target as HTMLImageElement
-  imgElement.src = '/placeholder-image.png'
+  imgElement.src = placeholderImage
 }
 
 function formatPrice(price: number | null | undefined): string {

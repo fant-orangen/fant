@@ -200,6 +200,7 @@ export const useUserStore = defineStore("user", () => {
     // The payload for update must match UserCreateDto, so it needs password and displayName
   interface UpdatePayload extends UserProfile {
     password?: string; // Password might be optional if backend handles it, but DTO requires it
+    currentPassword: string;
   }
 
   /**
@@ -213,35 +214,30 @@ export const useUserStore = defineStore("user", () => {
    */
   async function updateProfile(updatedProfile: UpdatePayload) { // Use the extended payload type
     try {
-      // Construct the payload matching UserCreateDto
-      // Crucially includes displayName and password
+      // Require currentPassword to proceed
+      if (!updatedProfile.currentPassword) {
+        throw new Error("Current password is required to update profile.");
+      }
+      // Construct payload matching backend expectations (UserUpdateDto)
       const payload = {
         email: updatedProfile.email,
         firstName: updatedProfile.firstName,
         lastName: updatedProfile.lastName,
         phone: updatedProfile.phone,
-        displayName: updatedProfile.displayName, // <-- Include displayName
-        password: updatedProfile.password        // <-- Include password
+        displayName: updatedProfile.displayName,
+        password: updatedProfile.password,               // Optional: New password (if user changes it)
+        currentPassword: updatedProfile.currentPassword  // Required: to authorize the change
       };
-
-      // Check if password is provided, if not, handle error or send a dummy (as per backend requirement)
-      if (!payload.password) {
-        // Option A: Throw an error asking user for password
-        throw new Error("Password is required to update profile.");
-        // Option B: Send a dummy password (ONLY if backend validation is the ONLY reason)
-        // payload.password = "DUMMY_PASSWORD_FOR_VALIDATION"; // Use with caution!
-      }
-
 
       const response = await api.put('/users/profile', payload);
 
-      // Update local profile state with the response from the backend
+      // Update local state on success
       profile.value = {
         email: response.data.email || '',
         firstName: response.data.firstName || '',
         lastName: response.data.lastName || '',
         phone: response.data.phone || '',
-        displayName: response.data.displayName || '' // <-- Update displayName
+        displayName: response.data.displayName || ''
       };
     } catch (error) {
       console.error("Failed to update profile:", error);

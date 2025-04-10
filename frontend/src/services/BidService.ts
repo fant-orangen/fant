@@ -154,7 +154,6 @@ export async function deleteMyBid(itemId: string | number): Promise<{ status: nu
   }
 }
 
-
 /**
  * Payload for updating an existing bid.
  * @interface BidUpdatePayload

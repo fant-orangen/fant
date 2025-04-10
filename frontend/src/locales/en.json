@@ -28,6 +28,7 @@
     "PROFILE_VIPPS_PROMPT_TITLE": "Quick Purchases with Vipps",
     "PROFILE_VIPPS_PROMPT_DESC": "Activate your Vipps account for quick and safe payments",
     "PROFILE_MY_FAVORITES_DESC": "My Favorites - Description",
+    "CURRENT_PASSWORD": "Current Password",
     "PASSWORD_NEEDED": "Password is required to confirm changes",
     "PASSWORD_CURRENT_REQUIRED": "Current password is required to make update",
     "INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT": "Please use international format, e.g., +47 12345678",
@@ -138,6 +139,8 @@
 
     "SCROLL_SETTING_SCROLL": "Scroll",
     "SCROLL_SETTING_PAGE": "Page",
+
+    "GO_TO_LOCATION": "Find Location",
 
     "MAP": "Map",
     "COORDINATES": "Coordinates",

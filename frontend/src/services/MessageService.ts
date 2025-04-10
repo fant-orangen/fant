@@ -147,7 +147,6 @@ export async function sendMessage(
   }
 }
 
-
 /**
  * Registers a handler function for incoming messages over WebSocket.
  *
@@ -157,12 +156,13 @@ export async function sendMessage(
  * @returns {void}
  */
 export function onNewMessage(handler: (message: Message) => void): void {
-  fetchCurrentUserId()
-    .then((userId) => {
-      webSocketService.onMessage(userId.toString(), handler)
-    })
-    .catch((error) => {
-    })
+  const userId = useUserStore().getUserId;
+
+  if (userId) {
+    webSocketService.onMessage(userId.toString(), handler);
+  } else {
+    console.error('Error registering message handler: User ID not available');
+  }
 }
 
 /**

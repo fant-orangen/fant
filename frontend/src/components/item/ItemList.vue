@@ -70,6 +70,7 @@ import {
   onMounted,
   onUnmounted,
   watch,
+  nextTick,
 } from 'vue';
 import ItemPreview from '@/components/item/ItemPreview.vue';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
@@ -182,16 +183,30 @@ function changePage(page: number) {
 function onScroll() {
   if (props.paginationEnabled) return;
 
-  const scrollThreshold = 300;
+  const scrollThreshold = 200;
   const scrollPosition = window.innerHeight + window.scrollY;
-  const bottom = document.documentElement.offsetHeight;
+  // Use scrollHeight to ensure we capture the full content height
+  const scrollHeight = document.documentElement.scrollHeight;
 
   if (
-    scrollPosition >= bottom - scrollThreshold &&
+    scrollPosition >= scrollHeight - scrollThreshold &&
+    !props.isLoading &&
+    props.currentPage < props.totalPages
+  ) {
+    emit('change-page', props.currentPage + 1);
+  }
+}
+
+function maybeLoadMoreItemsIfNotScrollable() {
+  const scrollHeight = document.documentElement.scrollHeight
+  const clientHeight = window.innerHeight
+
+  if (
+    scrollHeight <= clientHeight &&
     !props.isLoading &&
     props.currentPage! < props.totalPages!
   ) {
-    emit('change-page', props.currentPage! + 1);
+    emit('change-page', props.currentPage! + 1)
   }
 }
 
@@ -200,9 +215,10 @@ function onScroll() {
  */
 onMounted(() => {
   if (!props.paginationEnabled) {
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll)
+    maybeLoadMoreItemsIfNotScrollable()
   }
-});
+})
 
 /**
  * Cleans up scroll event listener on component destruction
@@ -211,6 +227,7 @@ onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
 });
 
+// Watch for pagination toggle to attach/remove scroll listener
 /**
  * Updates scroll event listeners when pagination mode changes
  * <p>Adds listener for infinite scroll, removes for pagination mode</p>
@@ -218,11 +235,26 @@ onUnmounted(() => {
  */
 watch(() => props.paginationEnabled, (newVal) => {
   if (!newVal) {
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll)
+    maybeLoadMoreItemsIfNotScrollable()
   } else {
-    window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('scroll', onScroll)
   }
-});
+})
+
+// Watch for item updates to trigger scroll check
+watch(
+  () => props.items,
+  async () => {
+    if (!props.paginationEnabled) {
+      await nextTick()
+      setTimeout(() => {
+        maybeLoadMoreItemsIfNotScrollable()
+      }, 100) // let layout settle
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
@@ -247,7 +279,7 @@ watch(() => props.paginationEnabled, (newVal) => {
   transition: all 0.3s ease;
 }
 .items-container.small-thumbnails {
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.75rem;
 }
 

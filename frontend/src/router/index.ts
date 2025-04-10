@@ -20,13 +20,11 @@ import ItemDetailView from "@/views/ItemDetailView.vue";
 import CategoryEditView from "@/views/Administrator/CategoryEditView.vue";
 import AdminUserManagementView from '@/views/Administrator/AdminUserManagementView.vue';
 
-
-// --- Import Profile related views ---
 import ProfileLayout from "@/views/profile/ProfileLayout.vue";
 import ProfileAdsView from "@/views/profile/ProfileAdsView.vue";
 import FavoritesView from "@/views/profile/FavoritesView.vue";
 import ManageMyItemView from "@/views/profile/ManageMyItemView.vue";
-import ProfileMyBidsView from "@/views/profile/ProfileMyBidsView.vue"; // <-- Import new view
+import ProfileMyBidsView from "@/views/profile/ProfileMyBidsView.vue";
 import MapView from "@/views/MapView.vue";
 import ConversationView from "@/views/messaging/ConversationView.vue";
 import InboxView from "@/views/messaging/InboxView.vue";
@@ -34,14 +32,13 @@ import ProfileFormView from "@/views/profile/ProfileFormView.vue";
 import AdminUserEditView from "@/views/Administrator/AdminUserEditView.vue";
 import CategoryEdit from "@/components/administrator/CategoryEdit.vue";
 import AdminLayout from "@/views/Administrator/AdminLayout.vue";
-// --- End Profile imports ---
+import type { RouteLocationNormalized } from 'vue-router';
 
 /**
  * Route configuration array defining the application's navigation structure.
  * Each route object specifies component mapping, metadata, and optional nested routes.
  */
 const routes = [
-  // ... other routes (home, item-detail, login, etc.) ...
   {
     path: '/',
     name: 'home',
@@ -49,7 +46,7 @@ const routes = [
     meta: { title: 'Home - Fant' }
   },
   {
-    path: '/item-detail/:id', // Public item detail view
+    path: '/item-detail/:id',
     name: 'item-detail',
     component: ItemDetailView,
     props: true,
@@ -69,35 +66,32 @@ const routes = [
   },
   {
     path: '/admin',
-    component: AdminLayout, // Use the new layout component for /admin path
-    meta: { requiresAuth: true, requiresAdmin: true }, // Protect the whole section
+    component: AdminLayout,
+    meta: { requiresAuth: true, requiresAdmin: true },
     children: [
       {
-        path: '', // Default admin view (optional, can redirect or show dashboard)
-        redirect: { name: 'admin-categories' } // Redirect /admin to /admin/categories by default
+        path: '',
+        redirect: { name: 'admin-categories' }
       },
       {
-        path: 'categories', // Path becomes /admin/categories
+        path: 'categories',
         name: 'admin-categories',
-        // Point directly to the component used inside CategoryEditView.vue
         component: CategoryEdit,
-        meta: { title: 'Admin - Categories' } // Titles set here apply to child routes
+        meta: { title: 'Admin - Categories' }
       },
       {
-        path: 'users', // Path becomes /admin/users
+        path: 'users',
         name: 'admin-users',
         component: AdminUserManagementView,
         meta: { title: 'Admin - Users' }
       },
       {
-        // This can remain a top-level admin route, or be nested if preferred
-        path: 'users/edit/:id', // Path becomes /admin/users/edit/:id
+        path: 'users/edit/:id',
         name: 'admin-user-edit',
         component: AdminUserEditView,
         props: true,
         meta: { title: 'Admin - Edit User' }
       }
-      // Add more admin child routes here (e.g., item moderation)
     ]
   },
   {
@@ -122,17 +116,17 @@ const routes = [
     path: '/map',
     name: 'map',
     component: MapView,
-    props: true,
+    props: (route: RouteLocationNormalized) => ({
+      highlightItemId: route.query.highlightItem || null
+    }),
     meta: { title: 'Map - Fant' }
   },
-
   {
     path: '/messages',
     name: 'messages-inbox',
     component: InboxView,
     meta: { title: "Message Overview - Fant", requiresAuth: true }
   },
-
   {
     path: '/messages/:conversationId',
     name: 'messages-conversation',
@@ -140,50 +134,44 @@ const routes = [
     props: true,
     meta: { title: "Conversation - Fant", requiresAuth: true }
   },
-
-
-  // Profile Section with nested routes
   {
     path: '/profile',
     component: ProfileLayout,
     meta: { requiresAuth: true },
     children: [
       {
-        path: '', // Overview at /profile
+        path: '',
         name: 'profile-overview',
         component: ProfileFormView,
         meta: { title: 'Profile Overview - Fant' }
       },
       {
-        path: 'listings', // My Listings at /profile/listings
+        path: 'listings',
         name: 'profile-listings',
         component: ProfileAdsView,
         meta: { title: 'My Listings - Fant' }
       },
       {
-        path: 'listings/manage/:id', // Manage specific listing at /profile/listings/manage/:id
+        path: 'listings/manage/:id',
         name: 'manage-my-item',
         component: ManageMyItemView,
         props: true,
         meta: { title: 'Manage Item - Fant' }
       },
       {
-        path: 'favorites', // My Favorites at /profile/favorites
+        path: 'favorites',
         name: 'profile-favorites',
         component: FavoritesView,
         meta: { title: 'My Favorites - Fant' }
       },
-      { // <-- Add this new route object
-        path: 'my-bids', // My Bids at /profile/my-bids
+      {
+        path: 'my-bids',
         name: 'profile-my-bids',
         component: ProfileMyBidsView,
         meta: { title: 'My Bids - Fant' }
-        // requiresAuth is inherited from parent '/profile'
-      },
-
+      }
     ],
   }
-  // ... fallback route ...
 ]
 
 /**
