@@ -124,13 +124,19 @@ public class UserService {
   private void updateUser(User user, String email, String password, String displayName,
                           String firstName, String lastName, String phone) {
     if (email != null) {
-      user.setEmail(email);
+      if (!email.isBlank()) {
+        user.setEmail(email);
+      }
     }
     if (password != null) {
-      user.setPasswordHash(passwordEncoder.encode(password));
+      if (!password.isBlank()) {
+        user.setPasswordHash(passwordEncoder.encode(password));
+      }
     }
     if (displayName != null) {
-      user.setDisplayName(displayName);
+      if (!displayName.isBlank()) {
+        user.setDisplayName(displayName);
+      }
     }
     if (firstName != null) {
       user.setFirstName(firstName);

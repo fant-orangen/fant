@@ -27,7 +27,7 @@ public class AdminUserUpdateDto {
    * <h3>Password</h3>
    * <p>Account password (min 8 characters, and at least one capital letter and number).</p>
    */
-  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one digit")
+  @Pattern(regexp = "^(?:(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}|)$", message = "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one digit")
   private String password;
 
   /**
@@ -55,7 +55,7 @@ public class AdminUserUpdateDto {
    * <h3>Phone Number</h3>
    * <p>International format phone number (e.g., +47 123 45 678).</p>
    */
-  @Pattern(regexp = "^\\+(?:[0-9] ?){6,14}[0-9]$", message = "Phone number must be in international format (+XX XXXX XXX XXX)")
+  @Pattern(regexp = "^(?:\\+(?:[0-9] ?){6,14}[0-9]|)$", message = "Phone number must be in international format (+XX XXXX XXX XXX)")
   private String phone;
 
   /**

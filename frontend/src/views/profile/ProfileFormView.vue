@@ -3,20 +3,61 @@
     {{ $t('LOADING') }}
   </div>
   <form v-else class="profile-form" @submit.prevent="handleProfileUpdate">
-    <TextInput id="email" v-model="email" :label="$t('EMAIL')" :placeholder="$t('EMAIL')" type="email" required :disabled="isUpdating" />
-    <PasswordInput id="new_password" v-model="newPassword" :label="$t('NEW_PASSWORD')" :placeholder="$t('NEW_PASSWORD')" required :disabled="isUpdating"/>
-    <TextInput id="firstName" v-model="firstName" :label="$t('FIRSTNAME')" :placeholder="$t('FIRSTNAME')" :disabled="isUpdating" />
-    <TextInput id="lastName" v-model="lastName" :label="$t('LASTNAME')" :placeholder="$t('LASTNAME')" :disabled="isUpdating" />
-    <TextInput id="displayName" v-model="displayName" :label="$t('USERNAME')" :placeholder="$t('USERNAME')" required :disabled="isUpdating" />
+    <TextInput
+      id="email"
+      v-model="email"
+      :label="$t('EMAIL')"
+      :placeholder="$t('EMAIL')"
+      type="email"
+      required
+      :disabled="isUpdating"
+    />
+    <PasswordInput
+      id="new_password"
+      v-model="newPassword"
+      :label="$t('NEW_PASSWORD')"
+      :placeholder="$t('NEW_PASSWORD_FIELD')"
+      :disabled="isUpdating"
+    />
+    <TextInput
+      id="displayName"
+      v-model="displayName"
+      :label="$t('USERNAME')"
+      :placeholder="$t('USERNAME')"
+      required
+      :disabled="isUpdating"
+    />
+    <TextInput
+      id="firstName"
+      v-model="firstName"
+      :label="$t('FIRSTNAME')"
+      :placeholder="$t('FIRSTNAME')"
+      :disabled="isUpdating"
+    />
+    <TextInput
+      id="lastName"
+      v-model="lastName"
+      :label="$t('LASTNAME')"
+      :placeholder="$t('LASTNAME')"
+      :disabled="isUpdating"
+    />
 
     <PhoneNumberInput
-        id="phone"
-        v-model="phone"
-        :label="$t('PHONENUMBER')"
-        :placeholder="$t('INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT')"
-        :disabled="isUpdating"
-        @update:isValid="isValid => isPhoneNumberValid = isValid" />
-    <PasswordInput id="password" v-model="password" :label="$t('PASSWORD')" :placeholder="$t('PASSWORD_CURRENT_REQUIRED')" required :disabled="isUpdating"/>
+      id="phone"
+      v-model="phone"
+      :label="$t('PHONENUMBER')"
+      :placeholder="$t('INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT')"
+      :disabled="isUpdating"
+      @update:isValid="(isValid) => (isPhoneNumberValid = isValid)"
+    />
+    <PasswordInput
+      id="password"
+      v-model="password"
+      :label="$t('PASSWORD')"
+      :placeholder="$t('PASSWORD_CURRENT_REQUIRED')"
+      required
+      :disabled="isUpdating"
+    />
     <small>{{ t('PASSWORD_NEEDED') }}</small>
 
     <p v-if="updateSuccess" class="success-message">{{ $t('PROFILE_UPDATE_SUCCESS') }}</p>
@@ -60,24 +101,24 @@ import PasswordInput from '@/components/input/PasswordInput.vue';
 import PhoneNumberInput from '@/components/input/PhoneNumberInput.vue'; // Import PhoneNumberInput
 import { useI18n } from 'vue-i18n';
 
-const userStore = useUserStore();
-const { t } = useI18n();
+const userStore = useUserStore()
+const { t } = useI18n()
 
 // Local reactive copies
-const email = ref('');
+const email = ref('')
 const newPassword = ref('')
-const firstName = ref('');
-const lastName = ref('');
-const phone = ref(''); // Initialize potentially from store later
-const displayName = ref('');
-const password = ref(''); // Current password required for update
+const firstName = ref('')
+const lastName = ref('')
+const phone = ref('') // Initialize potentially from store later
+const displayName = ref('')
+const password = ref('') // Current password required for update
 
 // State for update process
-const isUpdating = ref(false);
-const updateError = ref('');
-const updateSuccess = ref(false);
-const isLoading = ref(false);
-const isPhoneNumberValid = ref(true); // Tracks phone validity
+const isUpdating = ref(false)
+const updateError = ref('')
+const updateSuccess = ref(false)
+const isLoading = ref(false)
+const isPhoneNumberValid = ref(true) // Tracks phone validity
 
 /**
  * Lifecycle hook that runs when the component is mounted.
@@ -94,31 +135,34 @@ const isPhoneNumberValid = ref(true); // Tracks phone validity
  * @returns {Promise<void>}
  */
 onMounted(async () => {
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    await userStore.fetchProfile();
+    await userStore.fetchProfile()
     // Update local refs after fetching
-    email.value = userStore.profile.email;
-    firstName.value = userStore.profile.firstName;
-    lastName.value = userStore.profile.lastName;
-    phone.value = userStore.profile.phone; // Update phone ref
-    displayName.value = userStore.profile.displayName;
+    email.value = userStore.profile.email
+    firstName.value = userStore.profile.firstName
+    lastName.value = userStore.profile.lastName
+    phone.value = userStore.profile.phone // Update phone ref
+    displayName.value = userStore.profile.displayName
   } catch (err) {
     updateError.value = t('PROFILE_INFO_UNAVAILABLE');
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
+})
 
 // Watch the store's profile for external changes
-watch(() => userStore.profile, (newProfile) => {
-  email.value = newProfile.email;
-  firstName.value = newProfile.firstName;
-  lastName.value = newProfile.lastName;
-  phone.value = newProfile.phone; // Watch phone
-  displayName.value = newProfile.displayName;
-}, { deep: true });
-
+watch(
+  () => userStore.profile,
+  (newProfile) => {
+    email.value = newProfile.email
+    firstName.value = newProfile.firstName
+    lastName.value = newProfile.lastName
+    phone.value = newProfile.phone // Watch phone
+    displayName.value = newProfile.displayName
+  },
+  { deep: true },
+)
 
 /**
  * Handles the profile update form submission.
@@ -127,16 +171,16 @@ watch(() => userStore.profile, (newProfile) => {
  * @returns {Promise<void>}
  */
 async function handleProfileUpdate() {
-  updateError.value = '';
-  updateSuccess.value = false;
+  updateError.value = ''
+  updateSuccess.value = false
 
   if (!password.value) {
-    updateError.value = t('PASSWORD_NEEDED');
-    return;
+    updateError.value = t('PASSWORD_NEEDED')
+    return
   }
   // Don't block submission based on optional phone number validity
 
-  isUpdating.value = true;
+  isUpdating.value = true
 
   const updatedProfileData = {
     email: email.value,
@@ -146,22 +190,22 @@ async function handleProfileUpdate() {
     // Pass phone number regardless of frontend validation state, let backend handle if needed
     phone: phone.value,
     displayName: displayName.value,
-    currentPassword: password.value
-  };
+    currentPassword: password.value,
+  }
 
   try {
-    await userStore.updateProfile(updatedProfileData);
-    updateSuccess.value = true;
-    password.value = '';
-    setTimeout(() => updateSuccess.value = false, 3000);
+    await userStore.updateProfile(updatedProfileData)
+    updateSuccess.value = true
+    password.value = ''
+    setTimeout(() => (updateSuccess.value = false), 3000)
   } catch (err: any) {
     if (err.message?.includes('Password is required')) {
-      updateError.value = t('PASSWORD_NEEDED');
+      updateError.value = t('PASSWORD_NEEDED')
     } else {
-      updateError.value = err.response?.data?.message || t('PROFILE_UPDATE_ERROR');
+      updateError.value = err.response?.data?.message || t('PROFILE_UPDATE_ERROR')
     }
   } finally {
-    isUpdating.value = false;
+    isUpdating.value = false
   }
 }
 </script>

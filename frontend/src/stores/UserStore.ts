@@ -227,7 +227,7 @@ export const useUserStore = defineStore("user", () => {
       };
 
       // Check if password is provided, if not, handle error or send a dummy (as per backend requirement)
-      if (!payload.password) {
+      if (!payload.currentPassword) {
         // Option A: Throw an error asking user for password
         throw new Error("Password is required to update profile.");
         // Option B: Send a dummy password (ONLY if backend validation is the ONLY reason)
