@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.category.CategoryRequestDto;
 import stud.ntnu.backend.data.user.AdminUserUpdateDto;
-import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.service.CategoryService;
