@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleHandlerMethodValidationException(
       HandlerMethodValidationException ex) {
     log.warn(ex.getMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
 
   /**
@@ -210,13 +210,13 @@ public class GlobalExceptionHandler {
    * <p>Handles generic {@link RuntimeException} that are not specifically caught elsewhere.</p>
    *
    * @param ex the caught {@code RuntimeException}
-   * @return {@code ResponseEntity} with 500 Internal Server Error status and the exception message
-   * as the body.
+   * @return {@code ResponseEntity} with 500 Internal Server Error status with a generic response.
    */
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
     log.warn(ex.getMessage());
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body("An unexpected error occurred");
   }
 
   /**

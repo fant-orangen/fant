@@ -121,7 +121,7 @@ public class BidControllerTest {
     updateDto.setAmount(BigDecimal.valueOf(200));
     updateDto.setComment("Updated offer");
 
-    mockMvc.perform(put("/api/orders/{itemId}", item.getId())
+    mockMvc.perform(put("/api/orders/update/{itemId}", item.getId())
             .with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updateDto)))
