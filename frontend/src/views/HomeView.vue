@@ -355,12 +355,15 @@ watch(
   align-items: center;
   gap: 1rem;
   width: 100%;
+  overflow-y: visible;
 }
 
 .category-scroll-container {
   width: 100%;
   overflow-x: auto;
+  overflow-y: visible;
 }
+
 
 .category-content-wrapper {
   display: flex;
@@ -368,6 +371,7 @@ watch(
   width: 100%;
   overflow-x: auto; /* <-- ADD THIS */
   white-space: nowrap; /* <-- Helps preserve row layout */
+  overflow-y: visible;
 }
 
 .category-content-row {
