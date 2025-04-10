@@ -208,7 +208,6 @@ onMounted(async () => {
 });
 </script>
 
-
 <style scoped>
 /* --- Styles from previous version --- */
 /* --- Main Layout --- */

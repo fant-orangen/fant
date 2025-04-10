@@ -139,6 +139,8 @@
     "SCROLL_SETTING_SCROLL": "Scroll",
     "SCROLL_SETTING_PAGE": "Page",
 
+    "GO_TO_LOCATION": "Find Location",
+
     "MAP": "Map",
     "COORDINATES": "Coordinates",
     "LATITUDE": "Latitude",
