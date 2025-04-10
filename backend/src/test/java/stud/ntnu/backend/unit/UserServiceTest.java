@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.data.user.UserResponseDto;
+import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.UserRepository;
 
@@ -52,8 +53,8 @@ class UserServiceTest {
     Long userId = 1L;
 
     // Prepare the input data for the update
-    UserCreateDto userCreateDto = new UserCreateDto();
-    userCreateDto.setPassword("newPassword");
+    UserUpdateDto userUpdateDto = new UserUpdateDto();
+    userUpdateDto.setPassword("newPassword");
 
     // Create an existing user to be updated
     User existingUser = new User();
@@ -70,11 +71,12 @@ class UserServiceTest {
     when(userRepository.save(existingUser)).thenReturn(existingUser);
 
     // Perform the update
-    User updatedUser = userService.updateUser(userCreateDto, userId);
+    User updatedUser = userService.updateUser(userUpdateDto, userId);
 
     // Assertions
     assertNotNull(updatedUser);  // Ensure the updated user is not null
-    assertEquals("encodedNewPassword", updatedUser.getPasswordHash());  // Ensure password was updated
+    assertEquals("encodedNewPassword",
+        updatedUser.getPasswordHash());  // Ensure password was updated
     verify(userRepository).findById(userId);  // Ensure findById was called
     verify(userRepository).save(existingUser);  // Ensure save was called
   }
@@ -83,10 +85,11 @@ class UserServiceTest {
   @Test
   void updateUser_shouldThrowEntityNotFoundException_whenUserNotFound() {
     Long userId = 1L;
-    UserCreateDto userCreateDto = new UserCreateDto();
+    UserUpdateDto userUpdateDto = new UserUpdateDto();
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-    assertThrows(EntityNotFoundException.class, () -> userService.updateUser(userCreateDto, userId));
+    assertThrows(EntityNotFoundException.class,
+        () -> userService.updateUser(userUpdateDto, userId));
   }
 
   @Test

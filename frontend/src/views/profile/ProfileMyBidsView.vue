@@ -88,7 +88,7 @@
     </div>
 
     <div v-else class="no-items-message">
-      <p>{{ $t('NO_BIDS_YET') }}}</p>
+      <p>{{ $t('NO_BIDS_YET') }}</p>
     </div>
 
     <div v-if="actionError" class="error-message action-error">

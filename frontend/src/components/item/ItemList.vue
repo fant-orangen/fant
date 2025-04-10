@@ -1,6 +1,6 @@
 <template>
   <div class="item-list-container">
-    <div v-if="isLoading" class="loading-indicator">
+    <div v-if="isLoading && currentPage === 1" class="loading-indicator">
       <p>Loading items...</p>
     </div>
 
@@ -15,6 +15,13 @@
       <div v-else class="no-items-message">
         <p>{{ effectiveEmptyMessage }}</p>
       </div>
+
+      <!-- Infinite scroll loading indicator -->
+      <div v-if="!paginationEnabled && isLoading && currentPage > 1" class="loading-indicator">
+        <p>Loading more items...</p>
+      </div>
+
+      <!-- Pagination controls -->
       <div v-if="paginationEnabled && totalPages > 1" class="pagination-controls">
         <button
           :disabled="currentPage <= 1"
@@ -37,27 +44,28 @@
 </template>
 
 <script setup lang="ts">
-import { withDefaults, defineProps, computed } from 'vue';
+import {
+  withDefaults,
+  defineProps,
+  computed,
+  defineEmits,
+  onMounted,
+  onUnmounted
+} from 'vue';
 import ItemPreview from '@/components/item/ItemPreview.vue';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
 
-// --- Define Props Interface including optional properties ---
 interface Props {
-  // Data properties – made optional with defaults
   items?: ItemPreviewType[] | null;
   isLoading?: boolean;
   error?: string | null;
   currentPage?: number;
   totalPages?: number;
-
-  // UI and configuration props
   emptyMessage?: string;
   paginationEnabled?: boolean;
-  // Optionally, a function to fetch items
   fetchFunction?: (page: number, size: number, sort?: string) => Promise<PaginatedItemPreviewResponse>;
 }
 
-// --- Provide default values via withDefaults() ---
 const props = withDefaults(defineProps<Props>(), {
   items: null,
   isLoading: false,
@@ -69,20 +77,45 @@ const props = withDefaults(defineProps<Props>(), {
   fetchFunction: undefined
 });
 
-// --- Emit event for page changes ---
 const emit = defineEmits<{
   (e: 'change-page', page: number): void
 }>();
 
-// --- Computed property for effective empty message ---
 const effectiveEmptyMessage = computed(() => props.emptyMessage || 'No items found.');
 
-// --- Method for handling page changes ---
 function changePage(page: number) {
   if (page >= 1 && page <= props.totalPages!) {
     emit('change-page', page);
   }
 }
+
+function onScroll() {
+  if (props.paginationEnabled) return;
+
+  const scrollThreshold = 300;
+  const scrollPosition = window.innerHeight + window.scrollY;
+  const bottom = document.documentElement.offsetHeight;
+
+  const nearBottom = scrollPosition >= bottom - scrollThreshold;
+
+  if (
+    nearBottom &&
+    !props.isLoading &&
+    props.currentPage! < props.totalPages!
+  ) {
+    emit('change-page', props.currentPage! + 1);
+  }
+}
+
+onMounted(() => {
+  if (!props.paginationEnabled) {
+    window.addEventListener('scroll', onScroll);
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll);
+});
 </script>
 
 <style scoped>

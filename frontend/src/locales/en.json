@@ -9,7 +9,7 @@
     "REGISTRATION_HEADER": "Register User",
     "REGISTRATION_BUTTON": "Register",
     "REGISTRATION_NAVBAR": "Register",
-    "REGISTRATION_ACCOUNT_QUESTION": "Do you have an account?",
+    "GO_TO_LOGIN_BUTTON": "Already have an account? Log In",
     "ADMIN": "Admin",
     "LOADING": "Laster...",
 
@@ -22,6 +22,7 @@
     "FIRSTNAME": "First Name",
     "EMAIL": "E-Mail",
     "PHONENUMBER": "Phone Number",
+    "PHONE_NUMBER_FORMAT_INVALID": "Phone number must be in international format (e.g., +47 12345678).",
     "PROFILE_RATINGS_LABEL": "Ratings",
     "PROFILE_VERIFY_VIPPS_BUTTON": "Verify Vipps",
     "PROFILE_VIPPS_PROMPT_TITLE": "Quick Purchases with Vipps",
@@ -162,5 +163,50 @@
     "MAX_DISTANCE_LABEL": "Max Distance: {distance} km",
     "DISTANCE_SLIDER_TITLE": "Adjust search distance",
     "DISTANCE_SLIDER_DISABLED": "Click 'Use My Location' first",
-    "USE_MY_LOCATION": "Use My Location"
+    "USE_MY_LOCATION": "Use My Location",
+
+    "PASSWORD_REQUIRED": "Password is required.",
+    "PASSWORD_COMPLEXITY": "Password must be 8+ characters long, with uppercase, lowercase, and number.",
+    "PASSWORD_SHOW": "Show password",
+    "PASSWORD_HIDE": "Hide password",
+    "PASSWORD_TOGGLE_SHOW": "Show",
+    "PASSWORD_TOGGLE_HIDE": "Hide",
+
+    "ADMIN_PANEL_TITLE": "Admin Panel",
+    "ADMIN_NAV_CATEGORIES": "Manage Categories",
+    "ADMIN_NAV_USERS": "Manage Users",
+
+    "ADMIN_USER_MGMT_TITLE": "User Management",
+    "LOADING_USERS": "Loading users...",
+    "ERROR_LOADING_USERS": "Error loading users",
+    "RETRY": "Retry",
+    "ADMIN_TABLE_ID": "ID",
+    "ADMIN_TABLE_DISPLAY_NAME": "Display Name",
+    "ADMIN_TABLE_ROLE": "Role",
+    "ADMIN_TABLE_ACTIONS": "Actions",
+
+    "PAGINATION_PREVIOUS": "Previous",
+    "PAGINATION_NEXT": "Next",
+    "PAGINATION_INFO": "Page {current} of {total}",
+    "ADMIN_NO_USERS_FOUND": "No users found.",
+    "ADMIN_USER_DELETE_CONFIRM": "Are you sure you want to permanently delete user \"{name}\" (ID: {id})?",
+    "ADMIN_USER_DELETE_SUCCESS": "User \"{name}\" deleted successfully.",
+    "ADMIN_USER_DELETE_FAILURE": "Failed to delete user: {error}",
+    "ERROR_UNKNOWN": "An unknown error occurred",
+
+    "ADMIN_EDIT_USER_TITLE": "Edit User (ID: {id})",
+    "LOADING_USER_DATA": "Loading user data...",
+    "ERROR_LOADING_USER_TITLE": "Error Loading User",
+    "ERROR_FETCH_USER_DETAILS": "Could not load user details.",
+
+    "ADMIN_PHONE_PLACEHOLDER": "+4712345678",
+    "ADMIN_NEW_PASSWORD_LABEL": "Set New Password (Optional)",
+    "ADMIN_PASSWORD_PLACEHOLDER": "Leave blank to keep current",
+    "ADMIN_PASSWORD_INFO": "Note: If you leave this blank, the user's current password remains unchanged. If the backend requires a password field for validation during updates (even if not changing), this might cause issues.",
+    "UPDATING": "Updating...",
+    "UPDATE_USER_BUTTON": "Update User",
+    "ADMIN_USER_UPDATE_SUCCESS": "User updated successfully!",
+    "ADMIN_USER_UPDATE_FAILURE": "Update failed: {error}",
+    "ADMIN_USER_DATA_UNAVAILABLE": "User data could not be loaded."
+
 }

@@ -72,7 +72,7 @@ public class FavoriteControllerTest {
   public void testAddFavorite() throws Exception {
     mockMvc.perform(post("/api/favorite/{itemId}", item.getId())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -81,7 +81,7 @@ public class FavoriteControllerTest {
     // First attempt
     mockMvc.perform(post("/api/favorite/{itemId}", item.getId())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     // Second attempt - expect 400 (AlreadyFavoritedException)
     mockMvc.perform(post("/api/favorite/{itemId}", item.getId())
@@ -95,12 +95,12 @@ public class FavoriteControllerTest {
     // Add favorite first
     mockMvc.perform(post("/api/favorite/{itemId}", item.getId())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     // Now delete it
     mockMvc.perform(delete("/api/favorite/{itemId}", item.getId())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
   }
 
   @Test

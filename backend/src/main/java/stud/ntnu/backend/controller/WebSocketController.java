@@ -1,5 +1,10 @@
 package stud.ntnu.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +22,7 @@ import stud.ntnu.backend.service.UserService;
  */
 @Controller
 @RequiredArgsConstructor
+@Tag(name = "WebSocket", description = "Operations for real-time WebSocket messaging.")
 public class WebSocketController {
 
   /**
@@ -39,15 +45,19 @@ public class WebSocketController {
    * <h3>Send WebSocket Message</h3>
    * <p>Processes and delivers real-time messages via WebSocket.</p>
    *
-   * @param messageDto the message content and metadata
+   * @param messageDto     the message content and metadata
    * @param headerAccessor the WebSocket session header accessor
    */
   @MessageMapping("/chat.send")
+  @Operation(summary = "Send WebSocket Message", description = "Processes and delivers real-time messages via WebSocket.")
+  @ApiResponse(responseCode = "200", description = "Message sent successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid message format", content = @Content(mediaType = "text/plain"))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
   public void sendMessage(
-      @Payload @Valid WebSocketMessageDto messageDto,
-      SimpMessageHeaderAccessor headerAccessor) {
+      @Parameter(description = "Message content and metadata", required = true) @Payload @Valid
+      WebSocketMessageDto messageDto,
+      @Parameter(hidden = true) SimpMessageHeaderAccessor headerAccessor) {
     messageService.sendWebSocketMessage(
-        userService.getCurrentUser(Objects.requireNonNull(headerAccessor.getUser())),
-        messageDto);
+        userService.getCurrentUser(Objects.requireNonNull(headerAccessor.getUser())), messageDto);
   }
 }

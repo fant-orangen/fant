@@ -1,6 +1,6 @@
 <template>
   <div class="profile-layout">
-    <aside class="profile-sidebar">
+    <aside class="profile-nav-container">
       <nav>
         <RouterLink
           v-for="tile in profileTiles"
@@ -8,132 +8,192 @@
           :to="tile.route"
           class="tile-link"
           exact-active-class="router-link-active"
+          :title="$t(tile.label)"
         >
-          <component :is="tile.icon" class="tile-icon" /> <span>{{ $t(tile.label) }}</span>
-          <p>{{ $t(tile.description) }}</p>
+          <component :is="tile.icon" class="tile-icon" aria-hidden="true" />
+          <span class="tile-label">{{ $t(tile.label) }}</span>
         </RouterLink>
       </nav>
     </aside>
+
     <main class="profile-content">
-      <RouterView /> </main>
+      <RouterView />
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from 'vue'; // <-- Import markRaw
+import { ref, markRaw } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
-// Import your icon components
-import IconProfile from '@/components/icons/IconProfile.vue'; // Adjust path
-import IconListings from '@/components/icons/IconListings.vue'; // Adjust path
-import IconHeart from '@/components/icons/IconHeart.vue'; // Adjust path
-// Import other components if needed
+// Import your existing icon components
+import IconProfile from '@/components/icons/IconProfile.vue';
+import IconListings from '@/components/icons/IconListings.vue';
+import IconBid from '@/components/icons/IconBid.vue';
+import IconHeart from '@/components/icons/IconHeart.vue';
 
-// Define the reactive structure holding tile data
+
+const { t } = useI18n();
+
+// Define the reactive structure holding tile data - removed description, fixed icon
 const profileTiles = ref([
   {
     name: 'profile-overview',
     route: { name: 'profile-overview' },
-    icon: markRaw(IconProfile), // <-- Wrap icon component with markRaw
+    icon: markRaw(IconProfile),
     label: 'PROFILE_TILE_MY_ACCOUNT_TITLE',
-    description: 'PROFILE_TILE_MY_ACCOUNT_DESC'
   },
   {
     name: 'profile-listings',
     route: { name: 'profile-listings' },
-    icon: markRaw(IconListings), // <-- Wrap icon component with markRaw
+    icon: markRaw(IconListings),
     label: 'MY_LISTINGS',
-    description: 'PROFILE_TILE_MY_LISTINGS_DESC'
   },
-  { // <-- Add this new object for "My Bids" -->
+  {
     name: 'profile-my-bids',
-    route: { name: 'profile-my-bids' }, // Use the route name defined in router/index.ts
-    icon: markRaw(IconListings),          // Use the imported (and markRaw-wrapped) icon
-    label: 'MY_BIDS_TITLE',             // Use the new i18n key
-    description: 'PROFILE_TILE_MY_BIDS_DESC' // Use the new i18n key
+    route: { name: 'profile-my-bids' },
+    icon: markRaw(IconBid),
+    label: 'MY_BIDS_TITLE',
   },
   {
     name: 'profile-favorites',
     route: { name: 'profile-favorites' },
-    icon: markRaw(IconHeart), // <-- Wrap icon component with markRaw
+    icon: markRaw(IconHeart),
     label: 'MY_FAVORITES',
-    description: 'PROFILE_TILE_FAVORITES_DESC'
   }
-  // Add other tiles if you have them
 ]);
-
-// Other script setup logic if any...
 </script>
 
 <style scoped>
-/* Add styles for your layout, sidebar, tiles etc. */
 .profile-layout {
   display: flex;
-  gap: 1rem; /* Adjust gap as needed */
+  gap: 1.5rem;
   padding: 1rem;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.profile-sidebar {
-  flex: 0 0 250px; /* Fixed width sidebar, adjust as needed */
-  /* Add styles for sidebar appearance */
+/* Sidebar styles for desktop */
+.profile-nav-container {
+  flex: 0 0 220px; /* Fixed width */
+  border-right: 1px solid var(--color-border);
+  padding-right: 1.5rem;
 }
 
-.profile-sidebar nav {
+.profile-nav-container nav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: sticky;
+  top: 1rem;
 }
 
 .tile-link {
   display: flex;
   align-items: center;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--color-border);
+  padding: 0.75rem 1rem;
   border-radius: 6px;
   text-decoration: none;
   color: var(--color-text);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  gap: 0.8rem; /* Space between icon and text */
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  gap: 0.8rem;
+  border: 1px solid transparent;
 }
 
 .tile-link:hover {
   background-color: var(--color-background-mute);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.tile-link.router-link-active { /* Style for the active link */
-  background-color: hsla(160, 100%, 37%, 0.1);
-  border-left: 4px solid hsla(160, 100%, 37%, 1);
-  font-weight: bold;
-  padding-left: calc(1rem - 4px); /* Adjust padding to account for border */
+.tile-link.router-link-active {
+  background-color: hsla(160, 100%, 37%, 0.08);
+  color: hsla(160, 100%, 37%, 1);
+  font-weight: 600;
+  border-color: hsla(160, 100%, 37%, 0.2);
 }
 
 .tile-icon {
-  width: 24px; /* Adjust icon size */
-  height: 24px;
-  flex-shrink: 0; /* Prevent icon from shrinking */
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  opacity: 0.8;
 }
 
-.tile-link div { /* Assuming text is wrapped in a div or similar */
-  display: flex;
-  flex-direction: column;
+.tile-link.router-link-active .tile-icon {
+  opacity: 1;
 }
 
-.tile-link span { /* Label style */
-  font-weight: 500;
-}
-.tile-link p { /* Description style */
-  font-size: 0.85em;
-  color: var(--vt-c-text-light-2);
-  margin: 0.2rem 0 0 0;
+.tile-label {
+  font-size: 0.95em;
   line-height: 1.3;
+  white-space: nowrap; /* Prevent wrapping in sidebar */
 }
-
 
 .profile-content {
-  flex-grow: 1; /* Main content takes remaining space */
-  /* Add styles for content area */
+  flex-grow: 1;
+  min-width: 0;
 }
+
+/* --- Responsive Styles for Mobile (Top Navigation Bar) --- */
+@media (max-width: 768px) {
+  .profile-layout {
+    flex-direction: column; /* Stack nav and content */
+    padding: 0.5rem; /* Reduce padding on mobile */
+    gap: 1rem;
+  }
+
+  .profile-nav-container {
+    flex-basis: auto; /* Allow height to be determined by content */
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0; /* Remove padding */
+    overflow-x: auto; /* Enable horizontal scrolling if items overflow */
+    background-color: var(--color-background-soft); /* Optional: Slight background */
+  }
+
+  .profile-nav-container nav {
+    flex-direction: row; /* Horizontal layout */
+    justify-content: space-around; /* Distribute items evenly */
+    align-items: center; /* Center items vertically */
+    gap: 0; /* Remove gap, use padding on links instead */
+    position: static; /* Not sticky on mobile */
+    padding: 0.25rem 0; /* Add a little vertical padding */
+    width: 100%; /* Ensure nav takes full width */
+  }
+
+  .tile-link {
+    flex-direction: column; /* Stack icon and label */
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem; /* Padding inside each link */
+    gap: 0.2rem;
+    border: none;
+    border-radius: 4px;
+    flex-grow: 1; /* Allow links to grow */
+    flex-basis: 0; /* Allow links to shrink */
+    min-width: 75px; /* Ensure tap target size */
+    text-align: center;
+  }
+
+  .tile-link.router-link-active {
+    background-color: hsla(160, 100%, 37%, 0.1);
+    border-color: transparent; /* Ensure no border on active */
+    color: hsla(160, 100%, 37%, 1); /* Keep active color */
+  }
+
+  .tile-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 0.1rem;
+  }
+
+  .tile-label {
+    font-size: 0.7rem; /* Even smaller label on mobile */
+    line-height: 1.1;
+    white-space: normal; /* Allow wrapping if needed */
+    max-width: 100%;
+  }
+}
+
 </style>

@@ -6,7 +6,6 @@ import stud.ntnu.backend.data.category.CategoryRecommendationDto;
 import stud.ntnu.backend.model.ItemView;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.repository.ItemViewRepository;
-import stud.ntnu.backend.repository.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +23,6 @@ public class RecommendationService {
    * <p>Data access component for item view tracking.</p>
    */
   private final ItemViewRepository itemViewRepository;
-
-  /**
-   * <h3>User Repository</h3>
-   * <p>Data access component for user accounts.</p>
-   */
-  private final UserRepository userRepository;
 
   /**
    * <h3>Generate Category Recommendations</h3>

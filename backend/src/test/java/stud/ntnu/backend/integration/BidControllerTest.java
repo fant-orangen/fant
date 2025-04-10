@@ -99,7 +99,7 @@ public class BidControllerTest {
             .with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(dto)))
-        .andExpect(status().isOk())
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.amount", is(150)))
         .andExpect(jsonPath("$.comment", is("This is my bid")))
         .andExpect(jsonPath("$.itemId", is(item.getId().intValue())));
@@ -144,7 +144,7 @@ public class BidControllerTest {
 
     mockMvc.perform(delete("/api/orders/delete/{itemId}", item.getId())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     assertTrue(bidRepository.findByItemIdAndBidderId(item.getId(), bidder.getId()).isEmpty());
   }
@@ -184,7 +184,7 @@ public class BidControllerTest {
             .param("itemId", item.getId().toString())
             .param("bidderId", bidder.getId().toString())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     Bid accepted = bidRepository.findById(bid.getId()).orElseThrow();
     assertEquals("ACCEPTED", accepted.getStatus().name());
@@ -206,7 +206,7 @@ public class BidControllerTest {
             .param("itemId", item.getId().toString())
             .param("bidderId", bidder.getId().toString())
             .with(csrf()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     Bid rejected = bidRepository.findById(bid.getId()).orElseThrow();
     assertEquals("REJECTED", rejected.getStatus().name());

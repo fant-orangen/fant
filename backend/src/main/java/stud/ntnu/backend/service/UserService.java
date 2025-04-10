@@ -3,7 +3,6 @@ package stud.ntnu.backend.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.security.Principal;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.data.user.UserResponseDto;
+import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.model.enums.Role;
 import stud.ntnu.backend.repository.UserRepository;
@@ -48,9 +48,9 @@ public class UserService {
   @Transactional
   public User createUser(UserCreateDto registrationDto) {
     User user = User.builder().email(registrationDto.getEmail())
-        .passwordHash(passwordEncoder.encode(registrationDto.getPassword())).firstName(
-            registrationDto.getFirstName()).lastName(registrationDto.getLastName()).phone(
-            registrationDto.getPhone()).displayName(registrationDto.getDisplayName())
+        .passwordHash(passwordEncoder.encode(registrationDto.getPassword()))
+        .firstName(registrationDto.getFirstName()).lastName(registrationDto.getLastName())
+        .phone(registrationDto.getPhone()).displayName(registrationDto.getDisplayName())
         .role(Role.USER).build();
     return userRepository.save(user);
   }
@@ -64,15 +64,27 @@ public class UserService {
    * @return the updated {@link User}
    */
   @Transactional
-  public User updateUser(UserCreateDto userCreateDto, Long id) {
+  public User updateUser(UserUpdateDto userUpdateDto, Long id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
-    user.setEmail(userCreateDto.getEmail());
-    user.setPasswordHash(passwordEncoder.encode(userCreateDto.getPassword()));
-    user.setDisplayName(userCreateDto.getDisplayName());
-    user.setFirstName(userCreateDto.getFirstName());
-    user.setLastName(userCreateDto.getLastName());
-    user.setPhone(userCreateDto.getPhone());
+    if (userUpdateDto.getEmail() != null) {
+      user.setEmail(userUpdateDto.getEmail());
+    }
+    if (userUpdateDto.getPassword() != null) {
+      user.setPasswordHash(passwordEncoder.encode(userUpdateDto.getPassword()));
+    }
+    if (userUpdateDto.getDisplayName() != null) {
+      user.setDisplayName(userUpdateDto.getDisplayName());
+    }
+    if (userUpdateDto.getFirstName() != null) {
+      user.setFirstName(userUpdateDto.getFirstName());
+    }
+    if (userUpdateDto.getLastName() != null) {
+      user.setLastName(userUpdateDto.getLastName());
+    }
+    if (userUpdateDto.getPhone() != null) {
+      user.setPhone(userUpdateDto.getPhone());
+    }
     return userRepository.save(user);
   }
 

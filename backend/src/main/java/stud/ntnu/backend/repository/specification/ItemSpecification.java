@@ -10,8 +10,28 @@ import stud.ntnu.backend.model.Category;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <h2>ItemSpecification</h2>
+ * <p>Provides specifications for querying {@link Item} entities based on various search criteria.</p>
+ * <p>This class utilizes Spring Data JPA's {@link Specification} to build dynamic queries based on the
+ * fields present in the {@link ItemSearchDto}.</p>
+ */
 public class ItemSpecification {
 
+  /**
+   * <h3>searchByCriteria</h3>
+   * <p>Constructs a {@link Specification} to filter {@link Item} entities based on the provided
+   * {@link ItemSearchDto}.</p>
+   * <p>The specification includes predicates for searching by term in descriptions, price range,
+   * item status, and category name. Only the criteria provided in the {@code searchDto} will be
+   * applied to the query.</p>
+   *
+   * @param searchDto the {@link ItemSearchDto} containing the search criteria. Fields that are null
+   *                  or empty will be ignored.
+   * @return a {@link Specification} that can be used in a JPA query to filter {@link Item} entities
+   * based on the criteria in the {@code searchDto}. Returns a specification that always returns
+   * true if the {@code searchDto} is null or contains no criteria.
+   */
   public static Specification<Item> searchByCriteria(ItemSearchDto searchDto) {
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
@@ -20,18 +40,21 @@ public class ItemSpecification {
       if (StringUtils.hasText(searchDto.getSearchTerm())) {
         String searchPattern = "%" + searchDto.getSearchTerm().toLowerCase() + "%";
         predicates.add(criteriaBuilder.or(
-            criteriaBuilder.like(criteriaBuilder.lower(root.get("briefDescription")), searchPattern),
-            criteriaBuilder.like(criteriaBuilder.lower(root.get("fullDescription")), searchPattern)
-        ));
+            criteriaBuilder.like(criteriaBuilder.lower(root.get("briefDescription")),
+                searchPattern),
+            criteriaBuilder.like(criteriaBuilder.lower(root.get("fullDescription")),
+                searchPattern)));
       }
 
       // Price range
       if (searchDto.getMinPrice() != null) {
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), searchDto.getMinPrice()));
+        predicates.add(
+            criteriaBuilder.greaterThanOrEqualTo(root.get("price"), searchDto.getMinPrice()));
       }
 
       if (searchDto.getMaxPrice() != null) {
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), searchDto.getMaxPrice()));
+        predicates.add(
+            criteriaBuilder.lessThanOrEqualTo(root.get("price"), searchDto.getMaxPrice()));
       }
 
       // Item status
@@ -41,21 +64,11 @@ public class ItemSpecification {
 
       // Category name
       if (StringUtils.hasText(searchDto.getCategoryName())) {
-        Join<Item, Category> categoryJoin = root.join("category", JoinType.LEFT); // Use LEFT JOIN if category might be optional or to avoid errors if join fails unexpectedly
+        Join<Item, Category> categoryJoin = root.join("category",
+            JoinType.LEFT); // Use LEFT JOIN if category might be optional or to avoid errors if join fails unexpectedly
         predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(categoryJoin.get("name")),
             searchDto.getCategoryName().toLowerCase()));
       }
-
-      // --- REMOVED Location-based search using ST_Distance_Sphere ---
-      // The distance filtering will now be handled in the service layer.
-      // Optionally, add a basic bounding box filter here if performance becomes an issue:
-      // if (searchDto.getUserLatitude() != null && searchDto.getUserLongitude() != null && searchDto.getMaxDistance() != null) {
-      //    // Basic Bounding Box Predicates (less precise, but faster DB query)
-      //    // Calculate min/max lat/lon based on maxDistance and add predicates here
-      // }
-
-
-      // Ensure the query does not generate duplicates if multiple joins are used
       query.distinct(true);
 
 
