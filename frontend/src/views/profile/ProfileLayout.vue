@@ -23,6 +23,28 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Profile Layout component.
+ *
+ * This component provides the navigation framework for the user profile section.
+ * It displays a sidebar (desktop) or top navigation bar (mobile) with profile-related navigation options
+ * and renders the corresponding route views.
+ *
+ * Features:
+ * - Responsive layout that changes from sidebar (desktop) to top navigation (mobile)
+ * - Navigation tiles with icons and translated labels
+ * - Active route highlighting
+ * - Sticky sidebar on desktop for improved usability
+ * - Horizontally scrollable navigation on mobile devices
+ * - Consistent styling with the application theme
+ *
+ * @component ProfileLayout
+ * @requires vue
+ * @requires vue-router
+ * @requires vue-i18n
+ * @requires @/components/icons
+ * @displayName ProfileLayout
+ */
 import { ref, markRaw } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -36,7 +58,18 @@ import IconHeart from '@/components/icons/IconHeart.vue';
 
 const { t } = useI18n();
 
-// Define the reactive structure holding tile data - removed description, fixed icon
+/**
+ * Navigation tile configuration for profile section.
+ * Each tile represents a navigation option in the profile layout.
+ *
+ * The structure includes:
+ * - name: Unique identifier for the tile
+ * - route: Vue Router route object for navigation
+ * - icon: Raw Vue component for the tile's icon
+ * - label: i18n translation key for the tile's text
+ *
+ * @type {Ref<Array<{name: string, route: RouteLocationRaw, icon: Component, label: string}>>}
+ */
 const profileTiles = ref([
   {
     name: 'profile-overview',

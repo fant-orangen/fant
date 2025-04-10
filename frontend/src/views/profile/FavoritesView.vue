@@ -16,6 +16,28 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Favorites View component.
+ *
+ * This component displays a paginated list of items that the user has marked as favorites.
+ * It handles fetching favorite items with pagination, error handling, and displaying the results
+ * through the ItemList component.
+ *
+ * Features:
+ * - Paginated display of user's favorite items
+ * - Sorting of favorites by creation date (newest first)
+ * - Error handling for API failures
+ * - Empty state messaging when no favorites exist
+ * - Integration with the shared ItemList component
+ *
+ * @component FavoritesView
+ * @requires vue
+ * @requires vue-i18n
+ * @requires @/services/ItemService
+ * @requires @/models/Item
+ * @requires @/components/item/ItemList.vue
+ * @displayName FavoritesView
+ */
 import { ref, onMounted } from 'vue'; // Import ref and onMounted
 import { fetchPagedFavoriteItems } from '@/services/ItemService';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
@@ -29,7 +51,13 @@ const currentPage = ref(1); // Use 1-based indexing for UI display if needed, bu
 const totalPages = ref(1);
 const pageSize = 5; // Define page size
 
-// --- Data Fetching Function ---
+/**
+ * Fetches a specific page of favorite items from the API.
+ * Updates component state with the results or error information.
+ *
+ * @param {number} page - The page number to load (1-based for UI)
+ * @returns {Promise<void>}
+ */
 async function loadFavorites(page: number) {
   isLoading.value = true;
   error.value = null;
@@ -51,7 +79,13 @@ async function loadFavorites(page: number) {
   }
 }
 
-// --- Event Handler for Pagination ---
+/**
+ * Event handler for pagination events from the ItemList component.
+ * Triggers loading of a new page when the user navigates to a different page.
+ *
+ * @param {number} newPage - The page number to navigate to
+ * @returns {void}
+ */
 function handlePageChange(newPage: number) {
   if (newPage !== currentPage.value) {
     loadFavorites(newPage);

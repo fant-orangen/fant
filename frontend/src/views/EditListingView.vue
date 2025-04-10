@@ -14,6 +14,28 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Edit Listing View component.
+ *
+ * This component handles the editing of existing item listings.
+ * It fetches the item data and renders a form for users to update their listings.
+ *
+ * Features:
+ * - Fetches and populates existing item data
+ * - Converts item details format for form compatibility
+ * - Handles form submission and updates via API
+ * - Shows loading and error states
+ * - Navigates user back to listings after successful update
+ *
+ * @component EditListingView
+ * @requires vue
+ * @requires vue-router
+ * @requires @/components/item/EditAddItem.vue
+ * @requires @/services/ItemService
+ * @requires @/services/CategoryService
+ * @requires @/models/Item
+ * @displayName EditListingView
+ */
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EditAddItem from "@/components/item/EditAddItem.vue";
@@ -51,7 +73,13 @@ onMounted(async () => {
   }
 });
 
-// This function converts ItemDetailsType to CreateItemType as needed
+/**
+ * Submits the updated item data to the API.
+ *
+ * @param {CreateItemType} updatedItem - The updated item data from the form
+ * @returns {Promise<number>} The ID of the updated item
+ * @throws {Error} If update fails or item ID is missing
+ */
 async function handleSubmit(updatedItem: CreateItemType): Promise<number> {
   if (!itemId.value) {
     throw new Error('Item ID is missing');
@@ -65,6 +93,14 @@ async function handleSubmit(updatedItem: CreateItemType): Promise<number> {
     throw error;
   }
 }
+
+/**
+ * Converts the ItemDetailsType received from API to CreateItemType needed for the form.
+ * Matches the category name to its corresponding ID.
+ *
+ * @param {ItemDetailsType} item - The item details from the API
+ * @returns {Promise<CreateItemType>} The converted item data compatible with the form
+ */
 async function convertItemDetailsToCreateItem(item: ItemDetailsType): Promise<CreateItemType> {
   const categories = await fetchCategories();
   const matchedCategoryIndex = categories.findIndex((c) => c.name === item.category);
@@ -79,6 +115,11 @@ async function convertItemDetailsToCreateItem(item: ItemDetailsType): Promise<Cr
   };
 }
 
+/**
+ * Handles successful item update by redirecting to the user's listings page.
+ *
+ * @returns {void}
+ */
 function onSuccess() {
   router.push(`/profile/listings`);
 }

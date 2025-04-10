@@ -1,3 +1,57 @@
+<template>
+  <div class="inbox-view">
+    <!-- Page title - uses i18n translation -->
+    <h1>{{ $t('INBOX_NAME') }}</h1>
+
+    <!-- Loading state -->
+    <div v-if="loading" class="loading">{{ $t('LOADING_MESSAGES') }}</div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="error">{{ error }}</div>
+
+    <!-- Empty state -->
+    <div v-else-if="conversations.length === 0" class="empty-inbox">
+      {{ $t('NO_CONVERSATIONS_YET') }}
+    </div>
+
+    <!-- Conversation list -->
+    <ul v-else class="conversation-list">
+      <li
+        v-for="convo in conversations"
+        :key="convo.id"
+        @click="goToConversation(convo.id)"
+        class="conversation-item"
+        :class="{ 'has-unread': convo.unreadMessagesCount > 0 }"
+      >
+        <!-- Item image or placeholder -->
+        <div class="item-image-container">
+          <img
+            v-if="convo.item && convo.item.imageUrl"
+            :src="convo.item.imageUrl"
+            alt="Item image"
+            class="item-preview-image"
+          >
+          <div v-else class="item-image-placeholder">?</div>
+        </div>
+
+        <!-- Conversation details -->
+        <div class="convo-details">
+          <span class="other-user">{{ convo.otherUser.displayName }}</span>
+          <span v-if="convo.item" class="related-item">{{ $t('ITEM') }} {{ convo.item.title || 'N/A' }}</span>
+          <p class="last-message-snippet">
+            {{ convo.lastMessage ? truncate(convo.lastMessage.content || convo.lastMessage.messageContent) : 'No messages yet' }}
+          </p>
+        </div>
+
+        <!-- Unread message counter badge -->
+        <div v-if="convo.unreadMessagesCount > 0" class="unread-badge">
+          {{ convo.unreadMessagesCount }}
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
 <script setup lang="ts">
 /**
  * @fileoverview Inbox View Component
@@ -116,60 +170,6 @@ onUnmounted(() => {
   removeMessageHandler(handleNewMessage)
 })
 </script>
-
-<template>
-  <div class="inbox-view">
-    <!-- Page title - uses i18n translation -->
-    <h1>{{ $t('INBOX_NAME') }}</h1>
-
-    <!-- Loading state -->
-    <div v-if="loading" class="loading">{{ $t('LOADING_MESSAGES') }}</div>
-
-    <!-- Error state -->
-    <div v-else-if="error" class="error">{{ error }}</div>
-
-    <!-- Empty state -->
-    <div v-else-if="conversations.length === 0" class="empty-inbox">
-      {{ $t('NO_CONVERSATIONS_YET') }}
-    </div>
-
-    <!-- Conversation list -->
-    <ul v-else class="conversation-list">
-      <li
-        v-for="convo in conversations"
-        :key="convo.id"
-        @click="goToConversation(convo.id)"
-        class="conversation-item"
-        :class="{ 'has-unread': convo.unreadMessagesCount > 0 }"
-      >
-        <!-- Item image or placeholder -->
-        <div class="item-image-container">
-          <img
-            v-if="convo.item && convo.item.imageUrl"
-            :src="convo.item.imageUrl"
-            alt="Item image"
-            class="item-preview-image"
-          >
-          <div v-else class="item-image-placeholder">?</div>
-        </div>
-
-        <!-- Conversation details -->
-        <div class="convo-details">
-          <span class="other-user">{{ convo.otherUser.displayName }}</span>
-          <span v-if="convo.item" class="related-item">{{ $t('ITEM') }} {{ convo.item.title || 'N/A' }}</span>
-          <p class="last-message-snippet">
-            {{ convo.lastMessage ? truncate(convo.lastMessage.content || convo.lastMessage.messageContent) : 'No messages yet' }}
-          </p>
-        </div>
-
-        <!-- Unread message counter badge -->
-        <div v-if="convo.unreadMessagesCount > 0" class="unread-badge">
-          {{ convo.unreadMessagesCount }}
-        </div>
-      </li>
-    </ul>
-  </div>
-</template>
 
 <style scoped>
 /**

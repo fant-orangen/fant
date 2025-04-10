@@ -59,6 +59,31 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Admin User Management View component.
+ *
+ * Provides an interface for administrators to view, edit, and delete users in the system.
+ * This component displays a paginated table of all users with key information and action buttons.
+ *
+ * Features:
+ * - Paginated display of user accounts
+ * - Sortable columns for easy data navigation
+ * - Quick access to edit individual user details
+ * - User deletion with confirmation
+ * - Error handling for API operations
+ * - Loading states for asynchronous operations
+ * - Responsive design for various screen sizes
+ * - Full i18n support for all text content
+ *
+ * The component communicates with UserService to fetch user data and perform deletion operations,
+ * and uses the router to navigate to the edit view for specific users.
+ *
+ * @component AdminUserManagementView
+ * @requires vue
+ * @requires vue-router
+ * @requires vue-i18n
+ * @requires @/services/UserService
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -66,15 +91,45 @@ import { fetchAdminUsers, deleteAdminUser } from '@/services/UserService';
 
 const { t } = useI18n();
 
+/**
+ * Represents a user entity as received from the backend.
+ *
+ * @interface BackendUser
+ * @property {number|string} id - Unique identifier for the user
+ * @property {string} email - User's email address
+ * @property {string} displayName - User's display name
+ * @property {'USER'|'ADMIN'} role - User's role in the system
+ * @property {string|null} firstName - User's first name, if provided
+ * @property {string|null} lastName - User's last name, if provided
+ * @property {string|null} phone - User's phone number, if provided
+ * @property {string} createdAt - ISO timestamp of when the user was created
+ * @property {string} updatedAt - ISO timestamp of when the user was last updated
+ */
 interface BackendUser {
   id: number | string; email: string; displayName: string; role: 'USER' | 'ADMIN';
   firstName: string | null; lastName: string | null; phone: string | null;
   createdAt: string; updatedAt: string;
 }
+
+/**
+ * Represents a paginated response from Spring Boot backend.
+ *
+ * @interface SpringPage
+ * @template T - The type of items contained in the page
+ * @property {T[]} content - Array of items in the current page
+ * @property {number} totalPages - Total number of pages available
+ * @property {number} totalElements - Total number of items across all pages
+ * @property {number} size - Maximum number of items per page
+ * @property {number} number - Current page number (zero-based)
+ * @property {boolean} first - Whether this is the first page
+ * @property {boolean} last - Whether this is the last page
+ * @property {boolean} empty - Whether this page contains no items
+ */
 interface SpringPage<T> {
   content: T[]; totalPages: number; totalElements: number; size: number;
   number: number; first: boolean; last: boolean; empty: boolean;
 }
+
 type PaginatedUserResponse = SpringPage<BackendUser>;
 
 const router = useRouter();
@@ -88,17 +143,24 @@ const totalPages = computed(() => users.value?.totalPages ?? 0);
 const canGoPrevious = computed(() => currentPage.value > 0);
 const canGoNext = computed(() => currentPage.value < totalPages.value - 1);
 
+/**
+ * Fetches paginated user data from the backend API.
+ * Updates the local state with the retrieved user data and pagination information.
+ * Sets error state if the API request fails.
+ *
+ * @async
+ * @function fetchUsers
+ * @param {number} page - The page number to fetch (zero-based)
+ * @returns {Promise<void>}
+ */
 async function fetchUsers(page: number = 0) {
   isLoading.value = true;
   error.value = null;
-  console.log(`Workspaceing users for page: ${page}`);
   try {
     const response = await fetchAdminUsers(page, itemsPerPage.value);
     users.value = response;
     currentPage.value = response.number;
-    console.log('Users fetched:', response);
   } catch (err) {
-    console.error("Failed to fetch users:", err);
     error.value = err instanceof Error ? err.message : t('ERROR_UNKNOWN');
     users.value = null;
   } finally {
@@ -106,19 +168,45 @@ async function fetchUsers(page: number = 0) {
   }
 }
 
+/**
+ * Navigates to a specific page of the user list.
+ * Only navigates if the requested page number is valid.
+ *
+ * @function goToPage
+ * @param {number} pageNumber - The page number to navigate to (zero-based)
+ * @returns {void}
+ */
 function goToPage(pageNumber: number) {
   if (pageNumber >= 0 && pageNumber < totalPages.value) {
     fetchUsers(pageNumber);
   }
 }
 
+/**
+ * Navigates to the user edit view for a specific user.
+ * Uses vue-router to push to the admin-user-edit route.
+ *
+ * @function handleEditUser
+ * @param {number|string} userId - ID of the user to edit
+ * @returns {void}
+ */
 function handleEditUser(userId: number | string) {
-  console.log(`Edit user clicked: ${userId}`);
   router.push({ name: 'admin-user-edit', params: { id: userId.toString() } });
 }
 
+/**
+ * Displays a confirmation dialog for user deletion.
+ * If confirmed, sends delete request to the backend API.
+ * Refreshes the user list after successful deletion.
+ * Displays error message if the API request fails.
+ *
+ * @async
+ * @function confirmDeleteUser
+ * @param {number|string} userId - ID of the user to delete
+ * @param {string} displayName - Display name of the user (for confirmation message)
+ * @returns {Promise<void>}
+ */
 async function confirmDeleteUser(userId: number | string, displayName: string) {
-  console.log(`Attempting to delete user: ${userId} (${displayName})`);
   const confirmDelete = confirm(
     t('ADMIN_USER_DELETE_CONFIRM', { name: displayName, id: userId })
   );
@@ -129,7 +217,6 @@ async function confirmDeleteUser(userId: number | string, displayName: string) {
       alert(t('ADMIN_USER_DELETE_SUCCESS', { name: displayName }));
       fetchUsers(currentPage.value);
     } catch (err) {
-      console.error(`Failed to delete user ${userId}:`, err);
       const errorMsg = err instanceof Error ? err.message : t('ERROR_UNKNOWN');
       alert(t('ADMIN_USER_DELETE_FAILURE', { error: errorMsg }));
     }

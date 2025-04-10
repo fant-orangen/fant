@@ -65,6 +65,22 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Map View component.
+ *
+ * This component provides an interactive map interface for finding items based on location,
+ * with filtering capabilities by category, price range, and search terms.
+ *
+ * Features:
+ * - Interactive map with item markers
+ * - Location-based search with custom radius drawing
+ * - Category filtering via sidebar (desktop) or bottom bar (mobile)
+ * - Search controls for text search, price range, and distance filtering
+ * - Responsive layout that adapts to desktop and mobile viewports
+ * - Item highlighting capability for selected items
+ *
+ * @component
+ */
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n';
@@ -77,6 +93,10 @@ import type { Category } from '@/models/Category';
 const { t } = useI18n();
 const route = useRoute();
 
+/**
+ * Props for highlighting specific items on the map.
+ * @param {string | null} highlightItemId - ID of the item to highlight on the map
+ */
 defineProps<{ highlightItemId: string | null }>();
 
 const selectedCategoryId = ref<string | null>(null)
@@ -123,34 +143,84 @@ const searchRadiusKm = computed(() => {
   }
 });
 
+/**
+ * Handles category selection/deselection.
+ *
+ * @param {string} categoryId - The ID of the clicked category
+ * @returns {void}
+ */
 function onCategoryClick(categoryId: string) {
   selectedCategoryId.value = categoryId === selectedCategoryId.value ? null : categoryId;
 }
 
+/**
+ * Clears the currently selected category.
+ *
+ * @returns {void}
+ */
 function clearCategorySelection() {
   selectedCategoryId.value = null;
 }
 
+/**
+ * Updates the search term from the search bar input.
+ *
+ * @param {string} newSearchTerm - The updated search term
+ * @returns {void}
+ */
 function onSearchTermUpdate(newSearchTerm: string) {
   searchTerm.value = newSearchTerm;
 }
 
+/**
+ * Updates the maximum distance filter value.
+ *
+ * @param {number | null} newMaxDistance - The updated maximum distance in km
+ * @returns {void}
+ */
 function onMaxDistanceUpdate(newMaxDistance: number | null) {
   maxDistance.value = newMaxDistance;
 }
 
+/**
+ * Updates the sort option for search results.
+ *
+ * @param {string} newSortOption - The selected sort option
+ * @returns {void}
+ */
 function onSortOptionUpdate(newSortOption: string) {
   sortOption.value = newSortOption;
 }
 
+/**
+ * Updates the minimum price filter value.
+ *
+ * @param {number | null} newMinPrice - The updated minimum price
+ * @returns {void}
+ */
 function onMinPriceUpdate(newMinPrice: number | null) {
   minPrice.value = newMinPrice;
 }
 
+/**
+ * Updates the maximum price filter value.
+ *
+ * @param {number | null} newMaxPrice - The updated maximum price
+ * @returns {void}
+ */
 function onMaxPriceUpdate(newMaxPrice: number | null) {
   maxPrice.value = newMaxPrice;
 }
 
+/**
+ * Updates the custom search area drawn on the map.
+ *
+ * @param {Object} payload - The search area parameters
+ * @param {number} payload.latitude - Latitude of the circle center
+ * @param {number} payload.longitude - Longitude of the circle center
+ * @param {number} payload.radiusKm - Radius of the search area in kilometers
+ * @returns {void}
+ */
 function onUpdateSearchArea(payload: { latitude: number; longitude: number; radiusKm: number }) {
   drawnLatitude.value = payload.latitude;
   drawnLongitude.value = payload.longitude;
@@ -158,6 +228,11 @@ function onUpdateSearchArea(payload: { latitude: number; longitude: number; radi
   locationError.value = null;
 }
 
+/**
+ * Clears the custom search area drawn on the map.
+ *
+ * @returns {void}
+ */
 function clearDrawnSearchArea() {
   drawnLatitude.value = null;
   drawnLongitude.value = null;
@@ -165,6 +240,12 @@ function clearDrawnSearchArea() {
   clearDrawnAreaTrigger.value++;
 }
 
+/**
+ * Requests and stores the user's current geolocation.
+ * Handles error states and clears any drawn search area.
+ *
+ * @returns {void}
+ */
 function fetchCurrentUserLocation() {
   clearDrawnSearchArea();
   if (!navigator.geolocation) {
@@ -195,6 +276,10 @@ function fetchCurrentUserLocation() {
   );
 }
 
+/**
+ * Lifecycle hook that fetches categories on component mount.
+ * Also checks for highlighted item ID from route parameters.
+ */
 onMounted(async () => {
   try {
     categories.value = await fetchCategories();
