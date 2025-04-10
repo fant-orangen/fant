@@ -93,7 +93,7 @@ function navigateToLogin() {
   padding: 1.5rem;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  background-color: var(--color-background-soft);
+  background-color: var(--vt-c-white-mute);
 }
 
 .form {
