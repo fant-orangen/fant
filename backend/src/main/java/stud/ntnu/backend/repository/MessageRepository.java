@@ -81,7 +81,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
    *                   as read.
    * @param userId     the unique identifier of the recipient {@link stud.ntnu.backend.model.User}.
    */
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Transactional
   @Query("UPDATE Message m SET m.read = true WHERE m.id IN :messageIds AND m.receiver.id = :userId AND m.read = false")
   void markMessagesAsRead(@Param("messageIds") List<Long> messageIds, @Param("userId") Long userId);
