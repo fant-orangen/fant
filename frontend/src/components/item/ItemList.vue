@@ -156,7 +156,7 @@ watch(() => props.paginationEnabled, (newVal) => {
   transition: all 0.3s ease;
 }
 .items-container.small-thumbnails {
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.75rem;
 }
 
