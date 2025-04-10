@@ -1,6 +1,7 @@
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional; // Import Optional
 
@@ -264,8 +265,9 @@ public class BidService {
    * @param itemId       the unique identifier of the {@link Item} for which the bid is being updated.
    * @param bidder       the {@link User} who placed the bid and is now updating it.
    * @return a {@link BidResponseDto} representing the updated {@link Bid} entity.
-   * @throws EntityNotFoundException if the item with the given ID does not exist or if no bid is
-   *                                 found for the given item ID and bidder.
+   * @throws EntityNotFoundException  if the item with the given ID does not exist or if no bid is
+   *                                  found for the given item ID and bidder.
+   * @throws IllegalArgumentException if the bid amount is lower than the current bid.
    */
   @Transactional
   public BidResponseDto updateBid(BidUpdateDto bidUpdateDto, Long itemId, User bidder) {
@@ -276,7 +278,10 @@ public class BidService {
     Bid bid = bidRepository.findByItemIdAndBidderId(itemId, bidder.getId()).orElseThrow(
         () -> new EntityNotFoundException(
             "Bid not found with item ID: " + itemId + " and bidder ID: " + bidder.getId()));
-
+    if (bidUpdateDto.getAmount().compareTo(bid.getAmount()) < 1) {
+      throw new IllegalArgumentException(
+          "You can't lower the bid amount! (Old: " + bid.getAmount());
+    }
     bid.setAmount(bidUpdateDto.getAmount());
     bid.setComment(bidUpdateDto.getComment());
 
