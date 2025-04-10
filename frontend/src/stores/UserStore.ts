@@ -199,8 +199,8 @@ export const useUserStore = defineStore("user", () => {
    */
     // The payload for update must match UserCreateDto, so it needs password and displayName
   interface UpdatePayload extends UserProfile {
-    password?: string; // Password might be optional if backend handles it, but DTO requires it
-    currentPassword: string;
+    password?: string;
+    currentPassword?: string; // Password might be optional if backend handles it, but DTO requires it
   }
 
   /**
@@ -214,30 +214,36 @@ export const useUserStore = defineStore("user", () => {
    */
   async function updateProfile(updatedProfile: UpdatePayload) { // Use the extended payload type
     try {
-      // Require currentPassword to proceed
-      if (!updatedProfile.currentPassword) {
-        throw new Error("Current password is required to update profile.");
-      }
-      // Construct payload matching backend expectations (UserUpdateDto)
+      // Construct the payload matching UserCreateDto
+      // Crucially includes displayName and password
       const payload = {
         email: updatedProfile.email,
+        password: updatedProfile.password,
         firstName: updatedProfile.firstName,
         lastName: updatedProfile.lastName,
         phone: updatedProfile.phone,
-        displayName: updatedProfile.displayName,
-        password: updatedProfile.password,               // Optional: New password (if user changes it)
-        currentPassword: updatedProfile.currentPassword  // Required: to authorize the change
+        displayName: updatedProfile.displayName, // <-- Include displayName
+        currentPassword: updatedProfile.currentPassword       // <-- Include password
       };
+
+      // Check if password is provided, if not, handle error or send a dummy (as per backend requirement)
+      if (!payload.password) {
+        // Option A: Throw an error asking user for password
+        throw new Error("Password is required to update profile.");
+        // Option B: Send a dummy password (ONLY if backend validation is the ONLY reason)
+        // payload.password = "DUMMY_PASSWORD_FOR_VALIDATION"; // Use with caution!
+      }
+
 
       const response = await api.put('/users/profile', payload);
 
-      // Update local state on success
+      // Update local profile state with the response from the backend
       profile.value = {
         email: response.data.email || '',
         firstName: response.data.firstName || '',
         lastName: response.data.lastName || '',
         phone: response.data.phone || '',
-        displayName: response.data.displayName || ''
+        displayName: response.data.displayName || '' // <-- Update displayName
       };
     } catch (error) {
       console.error("Failed to update profile:", error);
