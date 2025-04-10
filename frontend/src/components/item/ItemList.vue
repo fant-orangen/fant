@@ -50,8 +50,8 @@ import {
   computed,
   defineEmits,
   onMounted,
-  onUnmounted
-} from 'vue';
+  onUnmounted, watch
+} from 'vue'
 import ItemPreview from '@/components/item/ItemPreview.vue';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
 
@@ -115,6 +115,16 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
+});
+
+watch(() => props.paginationEnabled, (newVal) => {
+  if (!newVal) {
+    // Switching TO infinite scroll → add listener
+    window.addEventListener('scroll', onScroll);
+  } else {
+    // Switching TO paginated mode → remove listener
+    window.removeEventListener('scroll', onScroll);
+  }
 });
 </script>
 

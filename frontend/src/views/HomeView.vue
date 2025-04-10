@@ -26,10 +26,10 @@
 
         <div class="extra-button-wrapper">
           <CategoryButton
-            label="More"
-            icon="/icons/more.svg"
-            @click="handleExtraCategoryButtonClick"
-            class="extra-category-button"
+            label="Toggle Scroll"
+            :icon='scrollicon'
+            @click="onScrollButtonClick"
+            class="toggle-scroll-button"
           />
         </div>
       </div>
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import CategoryButton from '@/components/category/CategoryButton.vue'
 import ItemList from '@/components/item/ItemList.vue'
@@ -77,6 +77,9 @@ import {
   fetchUserViewCount
 } from '@/services/RecommendationService.ts'
 import { useUserStore } from '@/stores/UserStore.ts'
+
+// --- Icon ---
+import scrollicon from '@/assets/icons/scrollicon.svg'
 
 // --- Filter States ---
 const selectedCategoryId = ref<string | null>(null)
@@ -101,7 +104,13 @@ const locationError = ref<string | null>(null)
 const pageSize = ref(12)
 
 const numOfViewsLimit = 3
-const paginationEnabled = ref(true)
+const paginationEnabled = ref(
+  localStorage.getItem('paginationEnabled') !== 'false' // default to true if not set
+);
+
+watch(paginationEnabled, (newVal) => {
+  localStorage.setItem('paginationEnabled', String(newVal));
+});
 
 // --- Computed Properties ---
 const isLocationAvailable = computed(() => {
@@ -127,8 +136,17 @@ const backendSortParam = computed(() => {
   }
 })
 
-function handleExtraCategoryButtonClick() {
-  console.log('Extra category button clicked')
+function onScrollButtonClick() {
+  paginationEnabled.value = !paginationEnabled.value;
+
+  // Reset pagination and items
+  currentPage.value = 1;
+  items.value = [];
+
+  // Allow Vue to apply changes and re-render before fetching
+  nextTick(() => {
+    fetchItems();
+  });
 }
 
 // --- Methods ---
@@ -361,10 +379,11 @@ onMounted(loadInitialData)
   justify-content: center;
 }
 
-.extra-category-button {
+.toggle-scroll-button {
   width: 80px;
   height: 80px;
   padding: 0;
+  border: 1px solid rgb(128, 200, 190);
 }
 
 .items-section {}
