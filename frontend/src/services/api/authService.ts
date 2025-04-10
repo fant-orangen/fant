@@ -6,7 +6,7 @@
  *
  * @module authService
  */
-import axiosInstance from '@/axiosConfig';
+import axiosInstance from '@/axiosConfig.ts';
 
 /**
  * Authenticates a user and retrieves an access token.
@@ -33,3 +33,20 @@ export async function fetchToken({ username, password }: { username: string, pas
     }
   );
 }
+
+class RegistrationData {}
+
+/**
+ * Registers a new user with the system.
+ *
+ * Makes a POST request to the registration endpoint with the user's registration data
+ * and returns the server response.
+ *
+ * @param {RegistrationData} userData - The user's registration information
+ * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the server response
+ * @throws {Error} When registration fails or network issues occur
+ */
+export async function register(userData: RegistrationData) {
+  return await axiosInstance.post('/auth/register', userData)
+}
+

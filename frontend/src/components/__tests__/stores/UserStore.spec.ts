@@ -2,39 +2,30 @@ import { setActivePinia, createPinia } from "pinia";
 import { useUserStore } from '@/stores/UserStore.ts';
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock('@/services/api/authService');
-vi.mock('@/services/api/userService');
+vi.mock('@/services/api/authService.ts');
 vi.mock('@/services/api/axiosInstance', () => {
   return {
-
     default: {
       get: vi.fn(),
       put: vi.fn(),
-
     }
   };
 });
 
 describe('UserStore', () => {
   let authService;
-  let userService;
   let api;
-
 
   beforeEach(async () => {
     setActivePinia(createPinia());
-
     vi.resetAllMocks();
 
-
-    authService = await import('@/services/api/authService');
-    userService = await import('@/services/api/userService');
-    api = (await import('@/services/api/axiosInstance')).default; // Get the mocked default export
+    authService = await import('@/services/api/authService.ts');
+    api = (await import('@/services/api/axiosInstance')).default;
 
     const store = useUserStore();
     store.logout();
   });
-
 
   it('initialize with default values', () => {
     const store = useUserStore();
@@ -58,7 +49,7 @@ describe('UserStore', () => {
 
   it('login action throws error on non-200 status', () => {
     const store = useUserStore();
-    expect(() => store.login(401,'','')).toThrowError("Login Info Error");
+    expect(() => store.login(401, '', '')).toThrowError("Login Info Error");
   });
 
   it('logout clears user state', () => {
@@ -66,7 +57,12 @@ describe('UserStore', () => {
 
     store.token = 'fake_jwt_token';
     store.username = 'testuser';
-    store.profile = { email: 'test@example.com', firstName: 'TestFirstName', lastName: 'TestSurname', phone: '12345678'};
+    store.profile = {
+      email: 'test@example.com',
+      firstName: 'TestFirstName',
+      lastName: 'TestSurname',
+      phone: '12345678'
+    };
 
     store.logout();
 
@@ -76,7 +72,7 @@ describe('UserStore', () => {
     expect(store.loggedIn).toBe(false);
   });
 
-  it('verifyLogin successfully updates state on valid credentials', async ()=> {
+  it('verifyLogin successfully updates state on valid credentials', async () => {
     const store = useUserStore();
     const mockToken = 'mock_jwt_token';
 
@@ -87,7 +83,10 @@ describe('UserStore', () => {
 
     await store.verifyLogin('testuser@example.com', 'password123');
 
-    expect(authService.fetchToken).toHaveBeenCalledWith({ username: 'testuser@example.com', password: 'password123'});
+    expect(authService.fetchToken).toHaveBeenCalledWith({
+      username: 'testuser@example.com',
+      password: 'password123'
+    });
     expect(store.token).toBe(mockToken);
     expect(store.username).toBe('testuser@example.com');
     expect(store.loggedIn).toBe(true);
@@ -98,7 +97,7 @@ describe('UserStore', () => {
 
     authService.fetchToken = vi.fn().mockRejectedValue(new Error("Invalid credentials"));
 
-    await expect(store.verifyLogin('wronguser@example.com','incorrectpassword')).rejects.toThrow("Invalid credentials");
+    await expect(store.verifyLogin('wronguser@example.com', 'incorrectpassword')).rejects.toThrow("Invalid credentials");
 
     expect(store.token).toBeNull();
     expect(store.username).toBeNull();
@@ -117,8 +116,7 @@ describe('UserStore', () => {
     it('registers and logs in user successfully', async () => {
       const store = useUserStore();
 
-      userService.register = vi.fn().mockResolvedValue({ status: 200, data: {} });
-
+      authService.register = vi.fn().mockResolvedValue({ status: 200, data: {} });
       authService.fetchToken = vi.fn().mockResolvedValue({
         status: 200,
         data: { token: mockToken }
@@ -126,8 +124,11 @@ describe('UserStore', () => {
 
       await store.registerUser(userData);
 
-      expect(userService.register).toHaveBeenCalledWith(userData);
-      expect(authService.fetchToken).toHaveBeenCalledWith({ username: userData.username, password: userData.password });
+      expect(authService.register).toHaveBeenCalledWith(userData);
+      expect(authService.fetchToken).toHaveBeenCalledWith({
+        username: userData.username,
+        password: userData.password
+      });
       expect(store.token).toBe(mockToken);
       expect(store.username).toBe(userData.username);
       expect(store.loggedIn).toBe(true);
@@ -136,30 +137,34 @@ describe('UserStore', () => {
     it('handles registration failure', async () => {
       const store = useUserStore();
       const registrationError = new Error("Registration Failed - Email Already Exists");
-      userService.register = vi.fn().mockRejectedValue(registrationError);
+
+      authService.register = vi.fn().mockRejectedValue(registrationError);
       authService.fetchToken = vi.fn();
 
       await expect(store.registerUser(userData)).rejects.toThrow("Registration Failed - Email Already Exists");
 
-      expect(userService.register).toHaveBeenCalledWith(userData);
+      expect(authService.register).toHaveBeenCalledWith(userData);
       expect(authService.fetchToken).not.toHaveBeenCalled();
       expect(store.token).toBeNull();
       expect(store.username).toBeNull();
     });
 
+    it('handles login failure after after successful registration', async () => {
+      const store = useUserStore();
+      const loginError = new Error("Login Failure After Registration");
 
-  it('handles login failure after after successful registration', async () => {
-    const store = useUserStore();
-    const loginError = new Error("Login Failure After Registration");
-    userService.register = vi.fn().mockResolvedValue({ status: 200, data: {} });
-    authService.fetchToken = vi.fn().mockRejectedValue(loginError);
+      authService.register = vi.fn().mockResolvedValue({ status: 200, data: {} });
+      authService.fetchToken = vi.fn().mockRejectedValue(loginError);
 
-    await expect(store.registerUser(userData)).rejects.toThrow("Login Failure After Registration");
+      await expect(store.registerUser(userData)).rejects.toThrow("Login Failure After Registration");
 
-    expect(userService.register).toHaveBeenCalledWith(userData);
-    expect(authService.fetchToken).toHaveBeenCalledWith({ username: userData.username, password: userData.password });
-    expect(store.username).toBeNull();
-  });
+      expect(authService.register).toHaveBeenCalledWith(userData);
+      expect(authService.fetchToken).toHaveBeenCalledWith({
+        username: userData.username,
+        password: userData.password
+      });
+      expect(store.username).toBeNull();
+    });
   });
 
   describe('fetchProfile function', () => {
@@ -202,10 +207,10 @@ describe('UserStore', () => {
       lastName: 'Test',
       phone: '+4712345678',
       displayName: 'AliceTest',
-      currentPassword: 'testPassword123'
+      password: 'testPassword123',
+      currentPassword: 'Password123'
     };
 
-    // Optional: Update response data mock if needed (though not causing the current failure)
     const responseProfileData = {
       email: 'updateduser@example.com',
       firstName: 'Alice',
@@ -248,7 +253,6 @@ describe('UserStore', () => {
 
       expect(api.put).toHaveBeenCalledWith('/users/profile', updatedProfileData);
       expect(store.profile).toEqual(initalProfile);
-
     });
 
     describe('Getters', () => {
@@ -267,6 +271,5 @@ describe('UserStore', () => {
         expect(store.getToken).toBeNull();
       });
     });
-
   });
 });

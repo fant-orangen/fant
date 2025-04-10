@@ -472,7 +472,6 @@ watch(
   overflow-y: visible;
 }
 
-
 .category-content-wrapper {
   display: flex;
   justify-content: center;
@@ -487,12 +486,15 @@ watch(
   align-items: center;
   gap: 1rem;
   min-width: max-content; /* <-- Makes sure it expands beyond wrapper if needed */
+  overflow: visible;
 }
 
 .button-stack {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  overflow: visible;
+  margin-top: 6px;
 }
 
 .toggle-scroll-button {
