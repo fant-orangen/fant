@@ -155,7 +155,7 @@ onUnmounted(() => {
 
         <!-- Conversation details -->
         <div class="convo-details">
-          <span class="other-user">{{ convo.otherUser.username }}</span>
+          <span class="other-user">{{ convo.otherUser.displayName }}</span>
           <span v-if="convo.item" class="related-item">{{ $t('ITEM') }} {{ convo.item.title || 'N/A' }}</span>
           <p class="last-message-snippet">
             {{ convo.lastMessage ? truncate(convo.lastMessage.content || convo.lastMessage.messageContent) : 'No messages yet' }}
