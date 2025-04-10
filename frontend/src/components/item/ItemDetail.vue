@@ -47,6 +47,15 @@
         </div>
 
         <div class="action-buttons">
+          <!-- ✅ Find Location Button added --><router-link
+          :to="{ name: 'map', query: { highlightItem: item.id } }"
+          custom
+          v-slot="{ navigate }"
+        >
+          <button @click="navigate" class="contact-button">
+            Find Location
+          </button>
+        </router-link>
           <button
             @click="startConversation"
             class="edit-button"
