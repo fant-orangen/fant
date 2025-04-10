@@ -352,9 +352,7 @@ const isAdmin = computed(() => {
   return userStore.getUserRole === 'ADMIN';
 });
 
--
 
-// Load item data when the component is mounted
 onMounted(() => {
   loadItemData();
 });
