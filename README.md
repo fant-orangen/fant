@@ -25,6 +25,9 @@ The project is divided into two parts; a frontend application using Vue, and a b
 ### Prerequisites
 - Docker
 
+If you do not have/want Docker, you can follow the instructions in the backend and frontend sub-repositories for instructions on how to run them individually.
+
+### Steps
 Clone the project
 
 ```bash
