@@ -28,30 +28,103 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview PhoneNumberInput component with validation and format guidance.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Phone number input with real-time validation</li>
+ *   <li>Sanitization of input to allow only valid phone number characters</li>
+ *   <li>Visual feedback on validation state</li>
+ *   <li>Internationalized error messages and hint text</li>
+ *   <li>Accessibility support with ARIA attributes</li>
+ * </ul>
+ */
 import { ref, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { validatePhoneNumber } from '@/utils/validation';
 
+/**
+ * i18n instance for translations
+ */
 const { t } = useI18n();
 
+/**
+ * Component props definition
+ */
 const props = defineProps<{
+  /**
+   * HTML ID for the input element
+   * @type {string}
+   */
   id: string;
+
+  /**
+   * Label text for the phone input
+   * @type {string}
+   */
   label: string;
+
+  /**
+   * Current phone number value (v-model)
+   * @type {string}
+   */
   modelValue: string;
+
+  /**
+   * Placeholder text for the input
+   * @type {string}
+   */
   placeholder?: string;
+
+  /**
+   * Whether the field is required
+   * @type {boolean}
+   * @default false
+   */
   required?: boolean;
 }>();
 
-const emit = defineEmits(['update:modelValue', 'update:isValid']);
+/**
+ * Event emitters definition
+ */
+const emit = defineEmits([
+  /**
+   * Update model value
+   * @param {string} value - New sanitized phone number value
+   */
+  'update:modelValue',
 
+  /**
+   * Update validity state
+   * @param {boolean} isValid - Whether phone number meets requirements
+   */
+  'update:isValid']);
+
+/**
+ * Translation key for current error message
+ * @type {Ref<string|null>}
+ */
 const errorMessageKey = ref<string | null>(null);
+
+/**
+ * Whether the phone number meets all validation requirements
+ * @type {Ref<boolean>}
+ */
 const isValid = ref(true);
 
+/**
+ * Translated error message based on the current error key
+ * @type {ComputedRef<string>}
+ */
 const translatedErrorMessage = computed(() => {
   return errorMessageKey.value ? t(errorMessageKey.value) : '';
 });
 
-// --- Updated handleInput function ---
+/**
+ * Handles input changes and validates phone number
+ * <p>Sanitizes input to allow only valid phone characters (+, digits, spaces)</p>
+ * @param {Event} event - Input change event
+ */
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement;
   const currentValue = target.value;
@@ -79,7 +152,9 @@ function handleInput(event: Event) {
 }
 // --- ---
 
-// Watcher remains the same, it will validate the sanitized value passed via v-model
+/**
+ * Watches for external model value changes and validates phone number
+ */
 watch(() => props.modelValue, (newValue) => {
   // newValue is already sanitized because it comes from the emitted update:modelValue
   const validationResult = validatePhoneNumber(newValue);

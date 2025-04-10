@@ -1,30 +1,113 @@
+<template>
+  <div
+    ref="mapContainer"
+    class="location-select-map"
+    :style="{ height: height || '300px', width: width || '100%' }"
+  ></div>
+</template>
+
 <script setup lang="ts">
+/**
+ * @fileoverview ClickSelectMap component for location selection on interactive maps.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Interactive map display with click-based location selection</li>
+ *   <li>Visual marker placement at selected coordinates</li>
+ *   <li>External coordinate control and synchronization</li>
+ *   <li>Responsive sizing with automatic resize handling</li>
+ * </ul>
+ * @author nicktuf
+ * @version 1.0
+ */
 import { ref, onMounted, watch } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 
-// Define props and emits
+/**
+ * Component props definition
+ */
 const props = defineProps<{
+
+  /**
+   * Height of the map container
+   * @type {string}
+   * @default "300px"
+   */
   height?: string;
+
+  /**
+   * Width of the map container
+   * @type {string}
+   * @default "100%"
+   */
   width?: string;
+
+  /**
+   * Initial map center latitude
+   * @type {number}
+   * @default 60.39 (Bergen, Norway)
+   */
   initialLatitude?: number;
+
+  /**
+   * Initial map center longitude
+   * @type {number}
+   * @default 5.32 (Bergen, Norway)
+   */
   initialLongitude?: number;
+
+  /**
+   * Initial map zoom level
+   * @type {number}
+   * @default 12
+   */
   initialZoom?: number;
+
+  /**
+   * Pre-selected location latitude
+   * @type {number|null}
+   */
   selectedLatitude?: number | null;
+
+  /**
+   * Pre-selected location longitude
+   * @type {number|null}
+   */
   selectedLongitude?: number | null;
 }>();
 
+/**
+ * Event emitters definition
+ */
 const emit = defineEmits<{
+  /**
+   * Emitted when a user selects a location on the map
+   * @param {{ lat: number, lng: number }} Location coordinates
+   */
   'location-selected': [{ lat: number, lng: number }]
 }>();
 
-// Component references
+/**
+ * Reference to the map container HTML element
+ * @type {Ref<HTMLElement|null>}
+ */
 const mapContainer = ref<HTMLElement | null>(null);
+
+/**
+ * Reference to the Leaflet map instance
+ * @type {Ref<L.Map|null>}
+ */
 const map = ref<L.Map | null>(null);
+
+/**
+ * Reference to the location selection marker
+ * @type {Ref<L.Marker|null>}
+ */
 const selectionMarker = ref<L.Marker | null>(null);
 
 /**
  * Initializes the map for location selection
+ * <p>Sets up the map instance, tile layer, and click handler</p>
  */
 function initializeMap() {
   if (!mapContainer.value) return;
@@ -53,6 +136,8 @@ function initializeMap() {
 
 /**
  * Handle map click events
+ * <p>Places marker at click location and emits coordinates</p>
+ * @param {L.LeafletMouseEvent} e - Click event from Leaflet
  */
 function handleMapClick(e: L.LeafletMouseEvent) {
   const { lat, lng } = e.latlng;
@@ -62,6 +147,9 @@ function handleMapClick(e: L.LeafletMouseEvent) {
 
 /**
  * Place or update the selection marker
+ * <p>Removes existing marker if present and creates a new one</p>
+ * @param {number} lat - Latitude for marker placement
+ * @param {number} lng - Longitude for marker placement
  */
 function placeMarker(lat: number, lng: number) {
   if (!map.value) return;
@@ -98,6 +186,10 @@ watch(
   }
 );
 
+/**
+ * Initialize component on mount
+ * <p>Sets up map and resize handlers</p>
+ */
 onMounted(() => {
   // Initialize map
   initializeMap();
@@ -116,14 +208,6 @@ onMounted(() => {
   };
 });
 </script>
-
-<template>
-  <div
-    ref="mapContainer"
-    class="location-select-map"
-    :style="{ height: height || '300px', width: width || '100%' }"
-  ></div>
-</template>
 
 <style scoped>
 .location-select-map {

@@ -1,42 +1,3 @@
-<script setup lang="ts">
-/**
- * CategoryButton.vue
- *
- * A versatile button component for displaying category options with icon and label.
- * Supports both compact (horizontal) and standard (vertical) layouts, as well as
- * visual indication of active/selected state.
- */
-
-// Define component props with TypeScript interface
-defineProps<{
-  /**
-   * Text label to display for the category
-   */
-  label: string;
-
-  /**
-   * URL or path to the category icon image
-   */
-  icon: string;
-
-  /**
-   * When true, displays in horizontal layout mode (icon left of text)
-   * When false/undefined, displays in vertical layout mode (icon above text)
-   * @default false
-   */
-  compact?: boolean;
-
-  /**
-   * When true, visually indicates this category is selected/active
-   * @default false
-   */
-  active?: boolean;
-}>();
-
-// Note: This component emits standard DOM events like 'click'
-// which should be handled by the parent component
-</script>
-
 <template>
   <!--
     Main button element with dynamic classes based on props:
@@ -52,6 +13,49 @@ defineProps<{
     <span class="category-label">{{ label }}</span>
   </button>
 </template>
+
+<script setup lang="ts">
+/**
+ * @fileoverview CategoryButton component for displaying category options.
+ * <p>A versatile button component for displaying category options with icon and label.</p>
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Displaying categories with an icon and label</li>
+ *   <li>Supporting both compact (horizontal) and standard (vertical) layouts</li>
+ *   <li>Providing visual indication of active/selected state</li>
+ *   <li>Handling click events for category selection</li>
+ * </ul>
+ */
+defineProps<{
+  /**
+   * Text label to display for the category
+   * @type {string}
+   */
+  label: string;
+
+  /**
+   * URL or path to the category icon image
+   * @type {string}
+   */
+  icon: string;
+
+  /**
+   * When true, displays in horizontal layout mode (icon left of text)
+   * When false/undefined, displays in vertical layout mode (icon above text)
+   * @type {boolean}
+   * @default false
+   */
+  compact?: boolean;
+
+  /**
+   * When true, visually indicates this category is selected/active
+   * @type {boolean}
+   * @default false
+   */
+  active?: boolean;
+}>();
+
+</script>
 
 <style scoped>
 /**

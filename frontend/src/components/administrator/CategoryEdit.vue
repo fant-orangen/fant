@@ -63,6 +63,19 @@
 </template>
 
 <script setup lang="ts">
+
+/**
+ * @fileoverview CategoryEdit component for managing categories in the administrator panel.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Viewing all existing categories</li>
+ *   <li>Creating new categories</li>
+ *   <li>Editing existing categories</li>
+ *   <li>Deleting categories</li>
+ *   <li>Assigning predefined or custom icons to categories</li>
+ * </ul>
+ */
+
 import '@/assets/styles/buttons/buttons.css';
 
 import { ref, onMounted, computed } from 'vue';
@@ -83,22 +96,42 @@ import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
 import phoneIcon from '@/assets/icons/phoneIcon.svg';
 import artIcon from '@/assets/icons/artIcon.svg';
 
+/**
+ * List of categories retrieved from the backend
+ * @type {Ref<Category[]>}
+ */
 const categories = ref<Category[]>([]);
 const form = ref<Category>({
   id: null,
   name: '',
-  imageUrl: '', // This will hold the selected icon name as a string
+  imageUrl: '',
   parent: null
 });
+
+/**
+ * Custom icon URL input value
+ * @type {Ref<string>}
+ */
 const customIconUrl = ref('');
+
+/**
+ * Flag indicating whether we're in edit mode or create mode
+ * @type {Ref<boolean>}
+ */
 const isEditing = ref(false);
 
-// Available icon names, no paths or imports
+/**
+ * List of available predefined icons
+ * @type {Ref<string[]>}
+ */
 const availableIcons = ref<string[]>([
   'travel', 'appliance', 'boat', 'book', 'camera', 'car', 'clothes', 'computer', 'furniture', 'motorcycle', 'phone', 'art'
 ]);
 
-// Icon map
+/**
+ * Mapping between icon names and their imported SVG assets
+ * @type {Record<string, string>}
+ */
 const iconMap: Record<string, string> = {
   travel: travelIcon,
   appliance: applianceIcon,
@@ -114,7 +147,10 @@ const iconMap: Record<string, string> = {
   art: artIcon,
 };
 
-// Computed property to resolve the current icon
+/**
+ * Resolves the current icon selection to its display URL
+ * @returns {string|null} The URL to display for the selected icon
+ */
 const resolvedIcon = computed(() => {
   if (!form.value.imageUrl) return null;
 
@@ -125,7 +161,11 @@ const resolvedIcon = computed(() => {
   return iconMap[form.value.imageUrl.toLowerCase()] || null;
 });
 
-// Function to get icon for a category
+/**
+ * Gets the icon URL for a specific category
+ * @param {Category} category - The category to get an icon for
+ * @returns {string} URL of the icon to display
+ */
 function getIconForCategory(category: Category): string {
   console.log("kategori: ", category);
   if (category.imageUrl.startsWith('http')) {
@@ -135,10 +175,20 @@ function getIconForCategory(category: Category): string {
   return iconMap[category.imageUrl.toLowerCase()] || '/fallback-icon.png';
 }
 
+/**
+ * Loads all categories from the backend service
+ * @async
+ * @returns {Promise<void>}
+ */
 async function loadCategories() {
   categories.value = await fetchCategories();
 }
 
+/**
+ * Handles form submission for both create and update operations
+ * @async
+ * @returns {Promise<void>}
+ */
 async function handleSubmit() {
   console.log(form.value)
   if (isEditing.value) {
@@ -150,6 +200,10 @@ async function handleSubmit() {
   await loadCategories();
 }
 
+/**
+ * Sets the form state to edit an existing category
+ * @param {Category} category - The category to edit
+ */
 function editCategory(category: Category) {
   form.value = { ...category };
 
@@ -161,6 +215,12 @@ function editCategory(category: Category) {
   isEditing.value = true;
 }
 
+/**
+ * Removes a category by its ID
+ * @async
+ * @param {string|number|null} id - ID of the category to remove
+ * @returns {Promise<void>}
+ */
 async function removeCategory(id: string | number | null) {
   if (id !== null) {
     await deleteCategory(Number(id));
@@ -168,12 +228,18 @@ async function removeCategory(id: string | number | null) {
   }
 }
 
+/**
+ * Resets the form to its initial state
+ */
 function resetForm() {
   form.value = { id: null, name: '', imageUrl: '' };
   customIconUrl.value = '';
   isEditing.value = false;
 }
 
+/**
+ * Updates the form's imageUrl when a custom URL is entered
+ */
 function updateIconUrl() {
   if (customIconUrl.value) {
     form.value.imageUrl = customIconUrl.value;
@@ -182,6 +248,9 @@ function updateIconUrl() {
   }
 }
 
+/**
+ * Load categories when component is mounted
+ */
 onMounted(loadCategories);
 </script>
 

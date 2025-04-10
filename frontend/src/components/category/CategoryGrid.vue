@@ -1,122 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { Category } from '@/models/Category';
-import CategoryButton from "./CategoryButton.vue";
-import { fetchCategories } from '@/services/CategoryService.ts';
-
-const { t } = useI18n();
-
-import travelIcon from '@/assets/icons/travelIcon.svg';
-import applianceIcon from '@/assets/icons/applianceIcon.svg';
-import boatIcon from '@/assets/icons/boatIcon.svg';
-import bookIcon from '@/assets/icons/bookIcon.svg';
-import cameraIcon from '@/assets/icons/cameraIcon.svg';
-import carIcon from '@/assets/icons/carIcon.svg';
-import clothesIcon from '@/assets/icons/clothesIcon.svg';
-import computerIcon from '@/assets/icons/computerIcon.svg';
-import furnitureIcon from '@/assets/icons/furnitureIcon.svg';
-import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
-import phoneIcon from '@/assets/icons/phoneIcon.svg';
-import artIcon from '@/assets/icons/artIcon.svg';
-import recommendedIcon from '@/assets/icons/recommended.svg';
-import { useUserStore } from '@/stores/UserStore.ts'
-
-const props = defineProps<{
-  layout?: 'vertical' | 'grid' | 'horizontal',
-  selectedCategoryId?: string | null,
-  noRecommendations?: boolean
-}>();
-
-const isVertical = computed(() => props.layout === 'vertical');
-const isHorizontal = computed(() => props.layout === 'horizontal' || !props.layout);
-
-const categories = ref<Category[]>([]);
-const emit = defineEmits<{
-  select: [categoryId: string],
-}>();
-
-const iconMap: Record<string, string> = {
-  Travel: travelIcon,
-  Appliance: applianceIcon,
-  Boat: boatIcon,
-  Book: bookIcon,
-  Camera: cameraIcon,
-  Car: carIcon,
-  Clothes: clothesIcon,
-  Computer: computerIcon,
-  Furniture: furnitureIcon,
-  Motorcycle: motorcycleIcon,
-  Phone: phoneIcon,
-  Art: artIcon,
-};
-
-const translationKeyMap: Record<string, string> = {
-  'Travel': 'category.travel',
-  'Appliance': 'category.appliance',
-  'Boat': 'category.boat',
-  'Book': 'category.book',
-  'Camera': 'category.cameras',
-  'Car': 'category.cars',
-  'Clothes': 'category.clothes',
-  'Computer': 'category.computers',
-  'Furniture': 'category.furniture',
-  'Motorcycle': 'category.motorcycle',
-  'Phone': 'category.phone',
-  'Art': 'category.art'
-};
-
-const getAllCategoryIcon = () => {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="3" width="7" height="7" rx="1" />
-    <rect x="14" y="3" width="7" height="7" rx="1" />
-    <rect x="3" y="14" width="7" height="7" rx="1" />
-    <rect x="14" y="14" width="7" height="7" rx="1" />
-  </svg>`;
-};
-
-async function loadCategories() {
-  try {
-    categories.value = await fetchCategories();
-
-    categories.value.forEach(category => {
-      let resolvedIcon;
-
-      if (category.imageUrl && category.imageUrl.startsWith('http')) {
-        resolvedIcon = category.imageUrl;
-      } else {
-        const matchedIconKey = Object.keys(iconMap).find(key =>
-          key.toLowerCase() === (category.imageUrl || '').toLowerCase()
-        );
-        resolvedIcon = matchedIconKey ? iconMap[matchedIconKey] : '/fallback-icon.png';
-      }
-      category.imageUrl = resolvedIcon;
-
-      if (category.name && translationKeyMap[category.name]) {
-        category.translationKey = translationKeyMap[category.name];
-      }
-    });
-  } catch (error) {
-    console.error("Error loading categories:", error);
-  }
-}
-
-function handleCategoryClick(id: string) {
-  emit('select', id);
-}
-
-function showRecommendedItems() {
-  emit('select', '-1');
-}
-
-
-function showAllItems() {
-  emit('select', '');
-}
-
-onMounted(loadCategories);
-</script>
-
 <template>
   <div :class="[
     isVertical ? 'category-list' :
@@ -175,6 +56,205 @@ onMounted(loadCategories);
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+/**
+ * @fileoverview CategoryGrid component for displaying filterable category buttons.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Displaying categories in different layouts (vertical, horizontal, grid)</li>
+ *   <li>Supporting category selection with visual feedback</li>
+ *   <li>Displaying "All Items" and optional "Recommended" filters</li>
+ *   <li>Dynamic icon loading and internationalization</li>
+ * </ul>
+ */
+import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { Category } from '@/models/Category';
+import CategoryButton from "./CategoryButton.vue";
+import { fetchCategories } from '@/services/CategoryService.ts';
+
+const { t } = useI18n();
+
+import travelIcon from '@/assets/icons/travelIcon.svg';
+import applianceIcon from '@/assets/icons/applianceIcon.svg';
+import boatIcon from '@/assets/icons/boatIcon.svg';
+import bookIcon from '@/assets/icons/bookIcon.svg';
+import cameraIcon from '@/assets/icons/cameraIcon.svg';
+import carIcon from '@/assets/icons/carIcon.svg';
+import clothesIcon from '@/assets/icons/clothesIcon.svg';
+import computerIcon from '@/assets/icons/computerIcon.svg';
+import furnitureIcon from '@/assets/icons/furnitureIcon.svg';
+import motorcycleIcon from '@/assets/icons/motorcycleIcon.svg';
+import phoneIcon from '@/assets/icons/phoneIcon.svg';
+import artIcon from '@/assets/icons/artIcon.svg';
+import recommendedIcon from '@/assets/icons/recommended.svg';
+import { useUserStore } from '@/stores/UserStore.ts'
+
+/**
+ * Component props definition
+ * @type {Props}
+ */
+const props = defineProps<{
+  /**
+   * Display layout for the categories
+   * @type {'vertical' | 'grid' | 'horizontal'}
+   * @default 'horizontal'
+   */
+  layout?: 'vertical' | 'grid' | 'horizontal',
+
+  /**
+   * Currently selected category ID
+   * @type {string | null}
+   * @default null
+   */
+  selectedCategoryId?: string | null,
+
+  /**
+   * When true, hides the recommended items button
+   * @type {boolean}
+   * @default false
+   */
+  noRecommendations?: boolean
+}>();
+
+/**
+ * Computed property to determine if vertical layout is active
+ * @type {ComputedRef<boolean>}
+ */
+const isVertical = computed(() => props.layout === 'vertical');
+
+/**
+ * Computed property to determine if horizontal layout is active
+ * @type {ComputedRef<boolean>}
+ */
+const isHorizontal = computed(() => props.layout === 'horizontal' || !props.layout);
+
+/**
+ * List of categories fetched from the backend
+ * @type {Ref<Category[]>}
+ */
+const categories = ref<Category[]>([]);
+
+/**
+ * Emits event when a category is selected
+ * @type {EmitFn}
+ */
+const emit = defineEmits<{
+  select: [categoryId: string],
+}>();
+
+/**
+ * Mapping between category names and their corresponding icon assets
+ * @type {Record<string, string>}
+ */
+const iconMap: Record<string, string> = {
+  Travel: travelIcon,
+  Appliance: applianceIcon,
+  Boat: boatIcon,
+  Book: bookIcon,
+  Camera: cameraIcon,
+  Car: carIcon,
+  Clothes: clothesIcon,
+  Computer: computerIcon,
+  Furniture: furnitureIcon,
+  Motorcycle: motorcycleIcon,
+  Phone: phoneIcon,
+  Art: artIcon,
+};
+
+/**
+ * Mapping between category names and their translation keys
+ * @type {Record<string, string>}
+ */
+const translationKeyMap: Record<string, string> = {
+  'Travel': 'category.travel',
+  'Appliance': 'category.appliance',
+  'Boat': 'category.boat',
+  'Book': 'category.book',
+  'Camera': 'category.cameras',
+  'Car': 'category.cars',
+  'Clothes': 'category.clothes',
+  'Computer': 'category.computers',
+  'Furniture': 'category.furniture',
+  'Motorcycle': 'category.motorcycle',
+  'Phone': 'category.phone',
+  'Art': 'category.art'
+};
+
+/**
+ * Generates SVG markup for the "All Categories" icon
+ * @returns {string} SVG markup as an HTML string
+ */
+const getAllCategoryIcon = () => {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" />
+  </svg>`;
+};
+
+/**
+ * Loads categories from the backend and resolves their icons
+ * @async
+ * @returns {Promise<void>}
+ */
+async function loadCategories() {
+  try {
+    categories.value = await fetchCategories();
+
+    categories.value.forEach(category => {
+      let resolvedIcon;
+
+      if (category.imageUrl && category.imageUrl.startsWith('http')) {
+        resolvedIcon = category.imageUrl;
+      } else {
+        const matchedIconKey = Object.keys(iconMap).find(key =>
+          key.toLowerCase() === (category.imageUrl || '').toLowerCase()
+        );
+        resolvedIcon = matchedIconKey ? iconMap[matchedIconKey] : '/fallback-icon.png';
+      }
+      category.imageUrl = resolvedIcon;
+
+      if (category.name && translationKeyMap[category.name]) {
+        category.translationKey = translationKeyMap[category.name];
+      }
+    });
+  } catch (error) {
+    console.error("Error loading categories:", error);
+  }
+}
+
+/**
+ * Handles category selection and emits the select event
+ * @param {string} id - ID of the selected category
+ */
+function handleCategoryClick(id: string) {
+  emit('select', id);
+}
+
+/**
+ * Selects the "Recommended Items" filter
+ * <p>Emits '-1' as the category ID to indicate recommended items</p>
+ */
+function showRecommendedItems() {
+  emit('select', '-1');
+}
+
+/**
+ * Selects the "All Items" filter
+ * <p>Emits an empty string as the category ID to indicate all items</p>
+ */
+function showAllItems() {
+  emit('select', '');
+}
+
+/**
+ * Load categories when component is mounted
+ */
+onMounted(loadCategories);
+</script>
 
 <style scoped>
 .category-grid {

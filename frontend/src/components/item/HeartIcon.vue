@@ -5,6 +5,17 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview HeartIcon component for item favorite toggling.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Visual indication of favorite status</li>
+ *   <li>Adding/removing items from user favorites</li>
+ *   <li>Authentication check before favorite actions</li>
+ *   <li>State synchronization with backend</li>
+ *   <li>Error handling for favorite operations</li>
+ * </ul>
+ */
 import { ref, onMounted } from 'vue';
 import heartIcon from '@/assets/icons/heart.svg';
 import heartRedIcon from '@/assets/icons/heart-red.svg';
@@ -12,12 +23,27 @@ import { addFavorite, removeFavorite, checkIsFavorite } from '@/services/Favorit
 import { useUserStore } from '@/stores/UserStore.ts';
 import router from '@/router';
 
+/**
+ * Component props definition
+ */
 const props = defineProps<{
+  /**
+   * ID of the item to favorite/unfavorite
+   * @type {string}
+   */
   itemId: string;
 }>();
 
+/**
+ * Current favorite status of the item
+ * @type {Ref<boolean>}
+ */
 const isFavorite = ref(false);
 
+/**
+ * Check initial favorite status on component mount
+ * <p>Fetches the current favorite status from the server</p>
+ */
 onMounted(async () => {
   if (!props.itemId) {
     console.error('ItemId is undefined or empty');
@@ -31,18 +57,22 @@ onMounted(async () => {
   }
 });
 
+/**
+ * Toggles the favorite status of an item
+ * <p>Handles login state verification and API communication</p>
+ * @param {Event} event - Click event
+ */
 async function toggleFavorite(event: Event) {
-  event.stopPropagation(); // Prevent click from bubbling to parent elements
+  event.stopPropagation();
 
   if (!props.itemId) {
     console.error('Cannot toggle favorite: itemId is missing');
     return;
   }
 
-  // --- Get User Store and Check Login ---
   const userStore = useUserStore();
   if (!userStore.getUserId || userStore.getUserId === '0') {
-    await router.push('/login'); // Redirect to login if user is not logged in
+    await router.push('/login');
     return;
   }
 
@@ -85,7 +115,6 @@ async function toggleFavorite(event: Event) {
 .heart-icon {
   cursor: pointer;
 }
-
 .heart-icon img {
   width: 30px;
   height: 30px;

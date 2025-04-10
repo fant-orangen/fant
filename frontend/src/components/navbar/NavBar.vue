@@ -15,7 +15,16 @@
 </template>
 
 <script setup lang="ts">
-// Import the language selector
+/**
+ * @fileoverview NavBar component for application-wide navigation header.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Application header with logo and branding</li>
+ *   <li>Responsive layout with different navigation modes</li>
+ *   <li>Language selection integration</li>
+ *   <li>Adaptive presentation for mobile and desktop viewports</li>
+ * </ul>
+ */
 import NavbarLanguageSelector from './LanguageSelector.vue';
 import WideScreenNavBar from './WideScreenNavBar.vue';
 import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';

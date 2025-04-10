@@ -14,15 +14,37 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview ItemPreview component for displaying item card in grid layouts.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Displaying item preview cards with image thumbnails</li>
+ *   <li>Interactive price overlay and favorite toggle</li>
+ *   <li>Navigation to item detail page on click</li>
+ *   <li>Responsive layout with hover effects</li>
+ * </ul>
+ */
 import type { ItemPreviewType } from '@/models/Item';
 import HeartIcon from '@/components/item/HeartIcon.vue';
 import router from "@/router"; //
 
-const props = defineProps<{ item: ItemPreviewType }>();
+/**
+ * Component props definition
+ */
+const props = defineProps<{
+  /**
+   * Item data to display in the preview card
+   * @type {ItemPreviewType}
+   */
+  item: ItemPreviewType
+}>();
 
+/**
+ * Handles click on item preview card
+ * <p>Navigates to the detailed view of the item</p>
+ */
 function handleClick() {
   try {
-    console.log(`Navigating to item-detail with ID: ${props.item.id}`);
     router.push({ name: 'item-detail', params: { id: props.item.id } });
   } catch (error) {
     console.error('Error during router push:', error);

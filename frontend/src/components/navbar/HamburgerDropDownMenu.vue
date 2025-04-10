@@ -62,6 +62,17 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview HamburgerDropDownMenu component for mobile navigation.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Mobile-friendly navigation drawer</li>
+ *   <li>Animated hamburger menu icon</li>
+ *   <li>Conditional rendering based on authentication state</li>
+ *   <li>Role-based navigation elements</li>
+ *   <li>Body scroll lock when menu is open</li>
+ * </ul>
+ */
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
@@ -77,12 +88,40 @@ import notificationIcon from '@/assets/icons/notification.svg';
 import mapIcon from '@/assets/icons/map.svg';
 import hamburgerIcon from '@/assets/icons/hamburger.svg';
 
+/**
+ * Router instance for navigation
+ * @type {Router}
+ */
 const router = useRouter();
+
+/**
+ * User store for authentication state and operations
+ * @type {UserStore}
+ */
 const userStore = useUserStore();
+
+/**
+ * Reactive reference to user authentication state
+ * @type {Ref<boolean>}
+ */
 const { loggedIn } = storeToRefs(userStore);
+
+/**
+ * Flag indicating whether user has unread messages
+ * @type {Ref<boolean>}
+ */
 const hasNewMessages = ref(false);
+
+/**
+ * Tracks if the dropdown menu is currently open
+ * @type {Ref<boolean>}
+ */
 const isOpen = ref(false);
 
+/**
+ * Toggles the dropdown menu open/closed state
+ * <p>Manages body scroll locking when menu is open</p>
+ */
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;
   if (isOpen.value) {
@@ -92,11 +131,19 @@ const toggleMenu = () => {
   }
 };
 
+/**
+ * Closes the dropdown menu
+ * <p>Restores body scrolling</p>
+ */
 const closeMenu = () => {
   isOpen.value = false;
   document.body.style.overflow = '';
 };
 
+/**
+ * Handles user logout action
+ * <p>Closes menu, logs out user, and redirects to login page</p>
+ */
 const handleLogout = () => {
   closeMenu();
   userStore.logout();

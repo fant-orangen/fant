@@ -35,7 +35,16 @@
 </template>
 
 <script setup lang="ts">
-// No need to import NavbarLanguageSelector here anymore if only used above
+/**
+ * @fileoverview NavBar component for application-wide navigation header.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Application header with logo and branding</li>
+ *   <li>Responsive layout with different navigation modes</li>
+ *   <li>Language selection integration</li>
+ *   <li>Adaptive presentation for mobile and desktop viewports</li>
+ * </ul>
+ */
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -49,11 +58,34 @@ import notificationNewIcon from '@/assets/icons/notificationNew.svg';
 import notificationIcon from '@/assets/icons/notification.svg';
 import mapIcon from '@/assets/icons/map.svg';
 
+/**
+ * Router instance for navigation
+ * @type {Router}
+ */
 const router = useRouter();
-const userStore = useUserStore();
-const { loggedIn } = storeToRefs(userStore);
-const hasNewMessages = ref(false); // Keep existing logic
 
+/**
+ * User store for authentication state and operations
+ * @type {UserStore}
+ */
+const userStore = useUserStore();
+
+/**
+ * Reactive reference to user authentication state
+ * @type {Ref<boolean>}
+ */
+const { loggedIn } = storeToRefs(userStore);
+
+/**
+ * Flag indicating whether user has unread messages
+ * @type {Ref<boolean>}
+ */
+const hasNewMessages = ref(false);
+
+/**
+ * Handles user logout action
+ * <p>Logs out user and redirects to login page</p>
+ */
 const handleLogout = () => {
   userStore.logout();
   router.push('/login');

@@ -96,18 +96,16 @@
 
 <script setup lang="ts">
 /**
- * ItemDetails.vue
- *
- * A component that displays detailed information about a specific item.
- * Features include:
- * - Image gallery for item photos
- * - Detailed item information (title, price, description)
- * - Seller contact details (and ID for messaging logic)
- * - Ability to favorite/save the item
- * - Contact seller functionality (navigates to or starts conversation)
- * - Bid placement functionality
- *
- * Handles loading, error, and not found states.
+ * @fileoverview ItemDetail component for displaying detailed information about an item.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Detailed item display with images and information</li>
+ *   <li>Favoriting/unfavoriting items</li>
+ *   <li>Initiating conversations with sellers</li>
+ *   <li>Placing bids through a modal interface</li>
+ *   <li>Administrative actions for item deletion</li>
+ *   <li>View tracking for analytics</li>
+ * </ul>
  */
 
 import { ref, onMounted, computed } from 'vue';
@@ -128,38 +126,73 @@ const props = defineProps<{
   itemId: string | number
 }>();
 
-// --- Component State ---
+/**
+ * Current item data including all details
+ * @type {Ref<ItemDetailsType|null>}
+ */
 const item = ref<ItemDetailsType | null>(null);
-const loading = ref(true);
-const error = ref(false);
-const errorMessage = ref("Failed to load item details. Please try again later.");
-const showBidModal = ref(false);
-const startingConversation = ref(false); // State for disabling button during API call
-
-// --- Hooks and Stores ---
-const userStore = useUserStore();
-const router = useRouter(); // <-- Get router instance
-
-// --- Computed Properties ---
 
 /**
- * Determines if the user can contact the seller.
- * Requires user to be logged in, not be the seller, and item data must have sellerId.
+ * Flag indicating whether item data is being fetched
+ * @type {Ref<boolean>}
+ */
+const loading = ref(true);
+
+/**
+ * Flag indicating whether an error occurred during data fetching
+ * @type {Ref<boolean>}
+ */
+const error = ref(false);
+
+/**
+ * Error message to display when fetch fails
+ * @type {Ref<string>}
+ */
+const errorMessage = ref("Failed to load item details. Please try again later.");
+
+/**
+ * Flag controlling visibility of the bidding modal
+ * @type {Ref<boolean>}
+ */
+const showBidModal = ref(false);
+
+/**
+ * Flag to track conversation initiation state
+ * @type {Ref<boolean>}
+ */
+const startingConversation = ref(false); // State for disabling button during API call
+
+/**
+ * User store for authentication and user data
+ */
+const userStore = useUserStore();
+
+/**
+ * Application router instance for navigation
+ */
+const router = useRouter(); // <-- Get router instance
+
+/**
+ * Determines if the current user can contact the seller
+ * <p>User must be logged in, must not be the seller, and item must have sellerId</p>
+ * @returns {boolean} Whether the user can contact the seller
  */
 const canContactSeller = computed(() => {
   return isUserLoggedIn.value && !isUserSeller.value && !!item.value?.sellerId;
 });
 
 /**
- * Checks if a user is logged in.
+ * Checks if a user is currently logged in
+ * @returns {boolean} User authentication status
  */
 const isUserLoggedIn = computed(() => {
   return userStore.loggedIn;
 });
 
 /**
- * Checks if the current logged-in user is the seller of the item.
- * Primarily uses sellerId for comparison.
+ * Checks if the current user is the seller of the displayed item
+ * <p>Uses sellerId for comparison, with fallback to contact name</p>
+ * @returns {boolean} Whether the current user is the item seller
  */
 const isUserSeller = computed(() => {
   if (!item.value || !userStore.userId) return false;
@@ -186,7 +219,8 @@ function formatPrice(price: number | null): string {
 }
 
 /**
- * Opens the bidding modal if conditions are met.
+ * Opens the bidding modal if user is eligible to place bids
+ * <p>Requires user to be logged in and not the seller</p>
  */
 function openBidModal() {
   if (!isUserLoggedIn.value || isUserSeller.value) return;
@@ -194,26 +228,25 @@ function openBidModal() {
 }
 
 /**
- * Closes the bidding modal.
+ * Closes the bidding modal
  */
 function closeBidModal() {
   showBidModal.value = false;
 }
 
 /**
- * Handles the event after a bid has been successfully placed.
- * Logs success and closes the modal after a short delay.
+ * Handles bid placement success events
+ * <p>Closes modal with delay</p>
  */
 function handleBidPlaced() {
-  console.log("Bid placed successfully event received");
   setTimeout(() => {
     closeBidModal();
   }, 1500); // Close modal after 1.5 seconds
 }
 
 /**
- * Loads the item data from the API and records a view.
- * Fetches item details using props.itemId.
+ * Loads item data and records a view
+ * <p>Fetches item details and concurrently records view analytics</p>
  */
 async function loadItemData() {
   loading.value = true;
@@ -228,34 +261,19 @@ async function loadItemData() {
   }
 
   try {
-    // Fetch item details and record the view concurrently
-    const [fetchedItem, viewResponse] = await Promise.all([
+    const [fetchedItem] = await Promise.all([
       fetchItem(props.itemId),
       recordItemView(props.itemId) // Record view might fail silently if needed
     ]);
 
-    // Handle potential array response (though single item expected)
     const itemData = Array.isArray(fetchedItem) ? fetchedItem[0] : fetchedItem;
 
     if (!itemData) {
       throw new Error("Item not found");
     }
-
-    item.value = itemData; // Assign fetched data to component state
-
-    // Log crucial details for debugging conversation logic
-    console.log("Item details loaded:", item.value);
-
-    if (viewResponse) {
-      console.log(`View recorded status: ${viewResponse.status}`);
-    } else {
-      console.warn("View recording did not return a response.");
-    }
-
+    item.value = itemData;
   } catch (err) {
-    console.error('Error fetching item details:', err);
     error.value = true;
-    // Provide more specific error message if possible
     if (err instanceof Error && err.message.includes("404")) { // Example check
       errorMessage.value = "The requested item could not be found.";
     } else {
@@ -276,46 +294,31 @@ function retryLoading() {
   loadItemData();
 }
 
-
 /**
- * Initiates or navigates to a conversation with the seller.
- * Calls the backend endpoint to get an existing or new conversation identifier.
+ * Initiates or navigates to a conversation with the seller
+ * <p>Uses backend endpoint to create or find existing conversation</p>
  */
 async function startConversation() {
   // Initial checks: item loaded, user can contact, not already processing
   if (!item.value || !canContactSeller.value || startingConversation.value) {
-    console.warn("Conditions not met for starting conversation:", {
-      itemExists: !!item.value,
-      canContact: canContactSeller.value,
-      alreadyStarting: startingConversation.value
-    });
-    // Optionally provide user feedback here if needed
     return;
   }
   // Explicit check for sellerId before proceeding
   if (!item.value.sellerId) {
-    console.error("Cannot start conversation: Seller ID is missing from item data.");
     alert("Cannot contact seller: Seller information is unavailable.");
     return;
   }
 
   startingConversation.value = true; // Indicate processing started
-  console.log(`Initiating conversation for item: ${props.itemId}`);
 
   try {
-    // Call the service function that hits the backend /initiate endpoint
     const conversationId = await initiateConversation(props.itemId);
 
-    // Navigate to the conversation view using the identifier returned by the backend
-    console.log(`Received conversation identifier: ${conversationId}. Navigating...`);
     router.push({
       name: 'messages-conversation', // Ensure this route name matches router/index.ts
       params: { conversationId: conversationId.toString() }
     });
-
   } catch (err) {
-    console.error('Failed to start or find conversation:', err);
-    // Provide user-friendly error feedback
     const message = err instanceof Error ? err.message : 'An unknown error occurred.';
     alert(`Could not start conversation: ${message}. Please try again later.`);
   } finally {
@@ -324,7 +327,8 @@ async function startConversation() {
 }
 
 /**
- * Checks if you want to delete
+ * Confirms and processes administrative item deletion
+ * <p>Available only to users with admin privileges</p>
  */
 async function confirmAdminDeleteItem() {
   if (!item.value) return;
@@ -339,7 +343,6 @@ async function confirmAdminDeleteItem() {
       alert('Item deleted successfully by admin.');
       router.push({ name: 'home' });
     } catch (err) {
-      console.error("Admin item deletion failed:", err);
       alert(`Failed to delete item: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   }
@@ -352,7 +355,9 @@ const isAdmin = computed(() => {
   return userStore.getUserRole === 'ADMIN';
 });
 
-
+/**
+ * Initialize component on mount
+ */
 onMounted(() => {
   loadItemData();
 });

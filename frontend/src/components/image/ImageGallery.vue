@@ -10,24 +10,80 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview ImageGallery component for displaying paginated images.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Displaying a gallery of images with pagination controls</li>
+ *   <li>Navigation between images with previous/next buttons</li>
+ *   <li>Configurable number of images per page</li>
+ *   <li>Responsive display with automatic sizing</li>
+ *   <li>Page counter showing current position in gallery</li>
+ * </ul>
+ */
+
 import { ref, computed } from 'vue';
 
-const props = defineProps<{ imageUrls: string[], imagesPerPage?: number }>();
+/**
+ * Component props definition
+ */
+const props = defineProps<{
+  /**
+   * Array of image URLs to display in the gallery
+   * @type {string[]}
+   */
+  imageUrls: string[],
+
+  /**
+   * Number of images to show per page (defaults to 1)
+   * @type {number}
+   * @default 1
+   */
+  imagesPerPage?: number
+}>();
+
+/**
+ * Current active page in the gallery
+ * @type {Ref<number>}
+ */
 const currentPage = ref(0);
+
+/**
+ * Computed property for images per page value
+ * <p>Returns the provided prop value or defaults to 1</p>
+ * @type {ComputedRef<number>}
+ */
 const imagesPerPage = computed(() => props.imagesPerPage || 1);
 
+/**
+ * Calculated total number of pages in the gallery
+ * @type {ComputedRef<number>}
+ */
 const totalPages = computed(() => Math.ceil(props.imageUrls.length / imagesPerPage.value));
+
+/**
+ * Current subset of images to display on the active page
+ * @type {ComputedRef<string[]>}
+ */
 const paginatedImages = computed(() => {
   const start = currentPage.value * imagesPerPage.value;
   return props.imageUrls.slice(start, start + imagesPerPage.value);
 });
 
+/**
+ * Navigates to the previous page of images
+ * <p>Will not navigate before the first page</p>
+ */
 function prevPage() {
   if (currentPage.value > 0) {
     currentPage.value--;
   }
 }
 
+/**
+ * Navigates to the next page of images
+ * <p>Will not navigate past the last page</p>
+ */
 function nextPage() {
   if (currentPage.value < totalPages.value - 1) {
     currentPage.value++;

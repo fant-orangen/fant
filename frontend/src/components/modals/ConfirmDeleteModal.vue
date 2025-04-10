@@ -17,62 +17,127 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview ConfirmDeleteModal component for displaying confirmation dialogs before destructive actions.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Customizable confirmation dialogs</li>
+ *   <li>Keyboard accessibility with Escape key support</li>
+ *   <li>Customizable text for buttons and messages</li>
+ *   <li>Backdrop click to cancel</li>
+ * </ul>
+ */
 import { onMounted, onUnmounted } from 'vue';
 
+/**
+ * Component props definition
+ */
 const props = defineProps({
+
+  /**
+   * Controls modal visibility
+   * @type {Boolean}
+   */
   isOpen: {
     type: Boolean,
     required: true,
   },
+
+  /**
+   * Modal title text
+   * @type {String}
+   */
   title: {
     type: String,
     default: 'Confirm Action',
   },
+
+  /**
+   * Modal body message
+   * @type {String}
+   */
   message: {
     type: String,
     required: true,
   },
+
+  /**
+   * Text for the confirmation button
+   * @type {String}
+   */
   confirmText: {
     type: String,
     default: 'Confirm',
   },
+
+  /**
+   * Text for the cancel button
+   * @type {String}
+   */
   cancelText: {
     type: String,
     default: 'Cancel',
   },
 });
 
+/**
+ * Event emitters definition
+ */
 const emit = defineEmits<{
+  /**
+   * Emitted when the user confirms the action
+   */
   (e: 'confirm'): void;
+
+  /**
+   * Emitted when the user cancels the action
+   */
   (e: 'cancel'): void;
 }>();
 
+/**
+ * Emits the confirm event to the parent component
+ */
 function emitConfirm() {
   emit('confirm');
 }
 
+/**
+ * Emits the cancel event to the parent component
+ */
 function emitCancel() {
   emit('cancel');
 }
 
-// Optional: Close modal with Escape key
+/**
+ * Handler for Escape key to cancel modal
+ * @param {KeyboardEvent} event - Keyboard event
+ */
 const handleEscKey = (event: KeyboardEvent) => {
   if (event.key === 'Escape' && props.isOpen) {
     emitCancel();
   }
 };
 
+/**
+ * Sets up event listeners when component is mounted
+ */
 onMounted(() => {
   if (props.isOpen) {
     document.addEventListener('keydown', handleEscKey);
   }
 });
 
+/**
+ * Cleans up event listeners when component is unmounted
+ */
 onUnmounted(() => {
   document.removeEventListener('keydown', handleEscKey);
 });
 
-// Watch for isOpen changes to add/remove listener
+/**
+ * Watches for changes in modal visibility to manage event listeners
+ */
 import { watch } from 'vue';
 watch(() => props.isOpen, (newIsOpen) => {
   if (newIsOpen) {
@@ -81,7 +146,6 @@ watch(() => props.isOpen, (newIsOpen) => {
     document.removeEventListener('keydown', handleEscKey);
   }
 });
-
 </script>
 
 <style scoped>
