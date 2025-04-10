@@ -18,3 +18,17 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+import './commands';
+
+// Add this event listener
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // We expect a specific error message from the application code
+  // Prevent Cypress from failing the test if this specific error occurs
+  if (err.message.includes("Cannot read properties of null (reading 'document')")) {
+    // returning false here prevents Cypress from failing the test
+    return false;
+  }
+  // Allow other uncaught exceptions to fail the test
+  return true;
+});

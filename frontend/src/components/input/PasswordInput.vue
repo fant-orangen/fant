@@ -92,7 +92,6 @@ watch(() => props.modelValue, (newValue) => {
 </script>
 
 <style scoped>
-/* Styles remain the same as the previous version */
 .form-group {
   margin-bottom: 1rem;
   position: relative;
