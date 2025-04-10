@@ -117,6 +117,34 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Profile My Bids View component.
+ *
+ * This component displays a list of bids placed by the current user.
+ * It provides functionality to view, update, and delete pending bids,
+ * as well as see the status of all bids.
+ *
+ * Features:
+ * - Paginated list of user's bids with status indicators
+ * - Visual differentiation between pending, accepted, and rejected bids
+ * - Ability to update pending bids through a modal interface
+ * - Ability to delete pending bids with confirmation dialog
+ * - Links to the related item details
+ * - Formatted price and timestamp display
+ * - Loading states and error handling
+ *
+ * @component ProfileMyBidsView
+ * @requires vue
+ * @requires vue-router
+ * @requires vue-i18n
+ * @requires @/services/BidService
+ * @requires @/services/ItemService
+ * @requires @/components/modals/BidModal.vue
+ * @requires @/components/modals/ConfirmDeleteModal.vue
+ * @requires @/models/Bid
+ * @displayName ProfileMyBidsView
+ */
+
 import { ref, onMounted } from 'vue'
 import { fetchPagedUserBids, deleteMyBid } from '@/services/BidService'
 import { fetchItem } from '@/services/ItemService'
@@ -142,6 +170,13 @@ const bidToDelete = ref<BidResponseType | null>(null)
 const deleteConfirmationMessage = ref('')
 const isBidModalOpen = ref(false)
 
+/**
+ * Fetches and loads the user's bids from the API.
+ * Updates component state with paginated results or error information.
+ * Also fetches item titles for each bid.
+ *
+ * @returns {Promise<void>}
+ */
 async function loadMyBids() {
   isLoading.value = true
   error.value = null
@@ -163,6 +198,12 @@ async function loadMyBids() {
   }
 }
 
+/**
+ * Changes the current page of bids and reloads data.
+ *
+ * @param {number} page - The page number to navigate to
+ * @returns {void}
+ */
 function changePage(page: number) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
@@ -170,6 +211,13 @@ function changePage(page: number) {
   }
 }
 
+/**
+ * Fetches item titles for a collection of bids and caches the results.
+ * Only fetches titles for items not already in the cache.
+ *
+ * @param {BidResponseType[]} bidsToFetch - The bids to fetch item titles for
+ * @returns {Promise<void>}
+ */
 async function fetchItemTitlesForBids(bidsToFetch: BidResponseType[]) {
   const itemIdsToFetch = bidsToFetch
     .map((b) => b.itemId)
@@ -187,31 +235,67 @@ async function fetchItemTitlesForBids(bidsToFetch: BidResponseType[]) {
   results.forEach((res) => (itemDetailsCache.value[res.id] = res.title))
 }
 
+/**
+ * Retrieves the cached title for an item.
+ *
+ * @param {string|number|null} itemId - The ID of the item
+ * @returns {string} The item title or a fallback string
+ */
 function getItemTitle(itemId: string | number | null): string {
   return itemId != null ? itemDetailsCache.value[itemId] || `Item #${itemId}` : 'Unknown Item'
 }
 
+/**
+ * Opens the bid update modal with pre-populated data.
+ *
+ * @param {BidResponseType} bid - The bid to be edited
+ * @returns {void}
+ */
 function openUpdateBidModal(bid: BidResponseType) {
   bidToEdit.value = bid
   isBidModalOpen.value = true
 }
 
+/**
+ * Closes the bid update modal and resets the edit state.
+ *
+ * @returns {void}
+ */
 function closeBidModal() {
   isBidModalOpen.value = false
   bidToEdit.value = null
 }
 
+/**
+ * Handles the result of a successful bid update or placement.
+ * Closes the modal and refreshes the bids list.
+ *
+ * @returns {void}
+ */
 function handleBidResult() {
   closeBidModal()
   loadMyBids()
 }
 
+/**
+ * Opens the delete confirmation modal for a specific bid.
+ * Sets up the confirmation message with bid details.
+ *
+ * @param {BidResponseType} bid - The bid to be deleted
+ * @returns {void}
+ */
 function promptDeleteBid(bid: BidResponseType) {
   bidToDelete.value = bid
   deleteConfirmationMessage.value = `Are you sure you want to delete your bid of ${formatPrice(bid.amount)} on \"${getItemTitle(bid.itemId)}\"? This action cannot be undone.`
   showDeleteConfirmModal.value = true
 }
 
+/**
+ * Handles the confirmation action for bid deletion.
+ * Sends the delete request to the API and refreshes the bids list.
+ *
+ * @returns {Promise<void>}
+ */
 async function confirmDeleteBid() {
   if (!bidToDelete.value) return
   actionLoading.value = bidToDelete.value.id
@@ -227,11 +311,22 @@ async function confirmDeleteBid() {
   }
 }
 
+/**
+ * Cancels the bid deletion process and closes the confirmation modal.
+ *
+ * @returns {void}
+ */
 function cancelDeleteBid() {
   showDeleteConfirmModal.value = false
   bidToDelete.value = null
 }
 
+/**
+ * Formats a price value according to Norwegian currency format.
+ *
+ * @param {number|null|undefined} price - The price to format
+ * @returns {string} The formatted price string
+ */
 function formatPrice(price: number | null | undefined): string {
   return price != null
     ? price.toLocaleString('no-NO', {
@@ -241,6 +336,12 @@ function formatPrice(price: number | null | undefined): string {
     : 'N/A'
 }
 
+/**
+ * Formats a date string according to Norwegian locale.
+ *
+ * @param {string|undefined} dateStr - The date string to format
+ * @returns {string} The formatted date and time string
+ */
 function formatDateTime(dateStr: string | undefined): string {
   return dateStr
     ? new Date(dateStr).toLocaleString('no-NO', {
