@@ -1,61 +1,46 @@
 # frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+This guide will help you start developing on the backend of this project.
+The frontend is built with Vue 3 in Vite.
 
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Type Support for `.vue` Imports in TS
+## Prerequisites
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- Node.js v18+
 
-## Customize configuration
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+## Installation
+After cloning into the repository
+```bash
+  git clone https://github.com/fant-orangen/fant.git
+```
+Navigate to the frontend folder
+```bash
+  cd fant/frontend
 ```
 
-### Compile and Hot-Reload for Development
+Then install the required node modules
 
-```sh
-npm run dev
+```bash
+  npm install
 ```
 
-### Type-Check, Compile and Minify for Production
+You can then run your own development-server (default is http://localhost:5173)
+```bash
+  npm run dev
+```
+## Running Tests
 
-```sh
-npm run build
+To run the unit tests using Vitest, run the following command
+
+```bash
+  npm test:unit
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run test:e2e:dev
-```
-
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
-
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
-
-```sh
-npm run build
-npm run test:e2e
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+For the end-to-end tests using cypress, run the following command. Note that you need to have the backend of this project running on http://localhost:8080 for the tests to work.
+```bash
+  npm test:e2e
 ```
