@@ -33,6 +33,10 @@
   --vt-c-red-light: #ffb3b3; /* Soft red for light alerts and delete button hover */
   --vt-c-red-soft: #ff6666;  /* Medium red for main delete button */
   --vt-c-red-dark: #cc4d4d;
+
+  --vt-c-green-light: #a5d8a5; /* Soft green for background elements */
+  --vt-c-green-soft: #76b776;  /* Medium soft green for buttons or highlights */
+  --vt-c-green-dark: #609560;
 }
 
 

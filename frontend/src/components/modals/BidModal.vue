@@ -240,23 +240,23 @@ async function submitBid() {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Darker backdrop */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1050; /* Ensure it's above other content */
-  backdrop-filter: blur(3px); /* Optional blur */
+  z-index: 1050;
+  backdrop-filter: blur(3px);
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--color-background);
   border-radius: 8px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-  display: flex; /* Use flex for better structure */
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
   flex-direction: column;
 }
 
@@ -265,36 +265,36 @@ async function submitBid() {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #dee2e6; /* Slightly darker border */
-  background-color: #f8f9fa; /* Light header background */
-  border-top-left-radius: 8px; /* Match content radius */
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-background-soft);
+  border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
 
 .modal-header h3 {
   margin: 0;
-  font-size: 1.25rem; /* Slightly larger */
-  color: #495057; /* Darker text */
+  font-size: 1.25rem;
+  color: var(--color-heading);
   font-weight: 600;
 }
 
 .close-button {
   background: none;
   border: none;
-  font-size: 1.75rem; /* Larger close button */
+  font-size: 1.75rem;
   cursor: pointer;
-  color: #6c757d; /* Muted color */
+  color: var(--vt-c-text-light-2);
   line-height: 1;
   padding: 0;
 }
 
 .close-button:hover {
-  color: #343a40; /* Darken on hover */
+  color: var(--vt-c-text-dark-1);
 }
 
 .modal-body {
   padding: 1.5rem;
-  flex-grow: 1; /* Allow body to take available space */
+  flex-grow: 1;
 }
 
 .bid-form {
@@ -306,19 +306,19 @@ async function submitBid() {
 .item-summary {
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .item-summary h4 {
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;
-  color: #333;
+  color: var(--color-heading);
   font-weight: 600;
 }
 
 .current-price {
   font-weight: 600;
-  color: #007bff;
+  color: var(--vt-c-teal-dark);
   margin: 0;
   font-size: 0.95rem;
 }
@@ -331,40 +331,41 @@ async function submitBid() {
 
 .form-group label {
   font-weight: 500;
-  color: #555;
+  color: var(--vt-c-text-dark-2);
   font-size: 0.9rem;
 }
 
 .bid-input,
 .comment-input {
-  padding: 0.75rem; /* Adjusted padding */
-  border: 1px solid #ced4da; /* Standard BS border */
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 1rem;
   line-height: 1.5;
+  background-color: var(--color-background);
+  color: var(--color-text);
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .bid-input:focus,
 .comment-input:focus {
-  border-color: #80bdff; /* BS focus color */
+  border-color: var(--vt-c-teal-soft);
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* BS focus shadow */
+  box-shadow: 0 0 0 0.1rem var(--vt-c-teal-dark);
 }
 
-/* Style for invalid input */
 .bid-input:invalid, .bid-input.is-invalid {
-  border-color: #dc3545;
+  border-color: var(--vt-c-red-soft);
 }
+
 .bid-input:invalid:focus, .bid-input.is-invalid:focus {
-  border-color: #dc3545;
+  border-color: var(--vt-c-red-soft);
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
-
 .error-text {
-  color: #dc3545;
-  font-size: 0.8rem; /* Smaller error text */
+  color: var(--vt-c-red-dark);
+  font-size: 0.8rem;
   margin-top: 0.25rem;
 }
 
@@ -372,9 +373,9 @@ async function submitBid() {
   display: flex;
   justify-content: flex-end;
   gap: 0.8rem;
-  margin-top: 1.5rem; /* More space before actions */
+  margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee; /* Separator */
+  border-top: 1px solid var(--color-border);
 }
 
 .cancel-button,
@@ -383,35 +384,34 @@ async function submitBid() {
 .try-again-button {
   padding: 0.6rem 1.2rem;
   border-radius: 4px;
-  font-size: 0.95rem; /* Slightly adjusted font size */
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
 }
 
 .cancel-button {
-  background-color: #6c757d; /* BS secondary */
-  border: 1px solid #6c757d;
-  color: white;
+  background-color: var(--color-background-mute);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
 }
 
 .cancel-button:hover {
-  background-color: #5a6268;
-  border-color: #545b62;
+  background-color: var(--color-background-soft);
 }
 
 .submit-button {
-  background-color: #007bff; /* BS primary */
+  background-color: var(--vt-c-teal-soft);
   border: none;
-  color: white;
+  color: var(--vt-c-white);
 }
 
 .submit-button:hover:not(:disabled) {
-  background-color: #0069d9;
+  background-color: var(--vt-c-teal-dark);
 }
 
 .submit-button:disabled {
-  background-color: #6cacee; /* Lighter blue when disabled */
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -423,8 +423,8 @@ async function submitBid() {
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s linear infinite;
-  vertical-align: middle; /* Align spinner better */
-  margin-right: 0.3rem; /* Space between spinner and text */
+  vertical-align: middle;
+  margin-right: 0.3rem;
 }
 
 .bid-success,
@@ -432,10 +432,12 @@ async function submitBid() {
   text-align: center;
   padding: 1.5rem 1rem;
 }
-.bid-success p, .bid-error p{
+
+.bid-success p,
+.bid-error p {
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--color-text);
 }
 
 .success-icon,
@@ -443,46 +445,47 @@ async function submitBid() {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px; /* Slightly smaller icon */
+  width: 50px;
   height: 50px;
   border-radius: 50%;
   margin: 0 auto 1rem;
-  font-size: 1.6rem; /* Slightly smaller font */
+  font-size: 1.6rem;
   font-weight: bold;
 }
 
 .success-icon {
-  background-color: #d4edda; /* Lighter green background */
-  color: #155724; /* Darker green checkmark */
-  border: 1px solid #c3e6cb;
+  background-color: var(--vt-c-teal-light);
+  color: var(--vt-c-teal-dark);
+  border: 1px solid var(--vt-c-teal-soft);
 }
 
 .error-icon {
-  background-color: #f8d7da; /* Lighter red background */
-  color: #721c24; /* Darker red exclamation */
-  border: 1px solid #f5c6cb;
+  background-color: var(--vt-c-red-light);
+  color: var(--vt-c-red-dark);
+  border: 1px solid var(--vt-c-red-soft);
 }
 
 .close-success-button {
-  background-color: #28a745; /* BS success */
+  background-color: var(--vt-c-teal-soft);
   border: none;
-  color: white;
+  color: var(--vt-c-white);
   margin-top: 1rem;
 }
 
 .close-success-button:hover {
-  background-color: #218838;
+  background-color: var(--vt-c-teal-dark);
 }
 
 .try-again-button {
-  background-color: #ffc107; /* BS warning */
-  border: none;
-  color: #212529; /* Dark text on yellow */
+  background-color: var(--vt-c-teal-light);
+  border: 1px solid var(--vt-c-teal-soft);
+  color: var(--vt-c-teal-dark);
   margin-top: 1rem;
 }
 
 .try-again-button:hover {
-  background-color: #e0a800;
+  background-color: var(--vt-c-teal-soft);
+  color: var(--vt-c-white);
 }
 
 @keyframes spin {
@@ -493,7 +496,7 @@ async function submitBid() {
 @media (max-width: 480px) {
   .form-actions {
     flex-direction: column;
-    gap: 0.5rem; /* Reduce gap for stacked buttons */
+    gap: 0.5rem;
   }
 
   .cancel-button,

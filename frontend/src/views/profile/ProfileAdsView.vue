@@ -106,6 +106,13 @@ onMounted(() => {
   margin: 0 auto;
 }
 
+h2 {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+  color: var(--vt-c-text-dark-1);
+}
+
 .loading-indicator,
 .error-message,
 .no-items-message {
@@ -115,7 +122,7 @@ onMounted(() => {
 }
 
 .error-message p {
-  color: red;
+  color: var(--vt-c-red-dark);
   font-weight: bold;
 }
 
@@ -138,7 +145,7 @@ onMounted(() => {
 }
 
 .item-preview-card:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 16px var(--vt-c-teal-soft);
   transform: translateY(-3px);
 }
 
@@ -147,7 +154,7 @@ onMounted(() => {
   height: 180px;
   object-fit: cover;
   display: block;
-  background-color: #f0f0f0;
+  background-color: var(--color-background-mute);
 }
 
 .item-details {
@@ -169,7 +176,7 @@ onMounted(() => {
 
 .item-price {
   font-weight: 600;
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--vt-c-teal-dark);
   margin-top: 0.5rem;
   margin-bottom: 0;
   font-size: 1rem;
@@ -179,14 +186,14 @@ onMounted(() => {
   display: inline-block;
   margin-top: 1rem;
   padding: 0.6rem 1.2rem;
-  background-color: hsla(160, 100%, 37%, 1);
-  color: white;
+  background-color: var(--vt-c-teal-soft);
+  color: var(--vt-c-white);
   text-decoration: none;
   border-radius: 4px;
   transition: background-color 0.3s ease;
 }
 
 .no-items-message .create-listing-link:hover {
-  background-color: hsla(160, 100%, 30%, 1);
+  background-color: var(--vt-c-teal-dark);
 }
 </style>

@@ -310,8 +310,8 @@ onMounted(() => loadMyBids())
 }
 
 .bid-status-accepted {
-  border-left: 4px solid var(--vt-c-teal-dark);
-  background-color: var(--vt-c-teal-light);
+  border-left: 4px solid var(--vt-c-green-dark);
+  background-color: var(--vt-c-green-light);
 }
 
 .bid-status-rejected {
@@ -383,8 +383,8 @@ onMounted(() => loadMyBids())
 }
 
 .status-indicator.accepted {
-  color: var(--vt-c-teal-dark);
-  background-color: var(--vt-c-teal-light);
+  color: var(--vt-c-white);
+  background-color: var(--vt-c-teal-dark);
   border: 1px solid var(--vt-c-teal-soft);
 }
 
