@@ -86,10 +86,14 @@ import {
   fetchUserViewCount,
 } from '@/services/RecommendationService.ts'
 import { useUserStore } from '@/stores/UserStore.ts'
+import { useI18n } from 'vue-i18n'
 
 // --- Icons ---
 import scrollicon from '@/assets/icons/scrollicon.svg'
 import thumbnailicon from '@/assets/icons/thumbnailicon.svg'
+
+// --- i18n ---
+const { t } = useI18n()
 
 // --- Filters & State ---
 const selectedCategoryId = ref<string | null>(null)
@@ -120,10 +124,10 @@ watch(paginationEnabled, newVal => {
 
 const displaySmallThumbnails = ref(false)
 const scrollToggleLabel = computed(() =>
-  paginationEnabled.value ? 'Scroll' : 'Page'
+  paginationEnabled.value ? t('SCROLL_SETTING_SCROLL') : t('SCROLL_SETTING_PAGE')
 )
 const thumbnailToggleLabel = computed(() =>
-  displaySmallThumbnails.value ? 'Large' : 'Small'
+  displaySmallThumbnails.value ? t('THUMBNAIL_SETTING_LARGE') : t('THUMBNAIL_SETTING_SMALL')
 )
 
 // --- Button Actions ---

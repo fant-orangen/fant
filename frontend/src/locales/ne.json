@@ -90,6 +90,12 @@
     "recommended": "सिफारिस गरिएको"
   },
 
+  "THUMBNAIL_SETTING_SMALL": "सानो",
+  "THUMBNAIL_SETTING_LARGE": "ठूलो",
+
+  "SCROLL_SETTING_SCROLL": "स्क्रोल",
+  "SCROLL_SETTING_PAGE": "पेज",
+
   "MAP": "नक्सा",
   "COORDINATES": "निर्देशांक",
   "LATITUDE": "अक्षांश",
