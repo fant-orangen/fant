@@ -27,7 +27,7 @@ Then install the required Maven dependencies
   ./mvnw clean
 ```
 
-You can then run your own test-server (default is http://localhost:8080)
+You can then run your own development-server (default is http://localhost:8080)
 ```bash
   ./mvnw spring-boot:run
 ```
