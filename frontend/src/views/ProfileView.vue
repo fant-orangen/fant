@@ -1,4 +1,13 @@
 <script setup lang="ts">
+/**
+ * Profile View component.
+ *
+ * This component displays the user's profile information and provides
+ * a form interface for viewing and editing profile details. It handles
+ * loading the profile data from the backend via the UserStore.
+ *
+ * @component
+ */
 import { onMounted, ref } from "vue";
 import { useUserStore } from '@/stores/UserStore'
 import ProfileFormView from '@/views/profile/ProfileFormView.vue'
@@ -10,7 +19,10 @@ const loading = ref(false);
 const error = ref('');
 
 /**
- * Loads the user's profile from backend by calling fetchProfile from UserStore
+ * Loads the user's profile from backend by calling fetchProfile from UserStore.
+ * Handles loading states and error conditions.
+ *
+ * @returns {Promise<void>}
  */
 async function loadProfile(){
   try {
@@ -22,12 +34,11 @@ async function loadProfile(){
     }
   } finally {
     loading.value = false;
-
+  }
 }
-
-
-
-}
+/**
+ * Lifecycle hook that triggers profile data loading when the component mounts.
+ */
 onMounted(() => {
   loadProfile();
 });

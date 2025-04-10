@@ -1,225 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
-import type { Message, MessageUser } from '@/models/Message'
-import type { PaginatedMessageResponse } from '@/models/Message'
-import type { ItemPreviewType } from '@/models/Item'
-import {
-  fetchPagedMessages,
-  sendMessage,
-  initializeMessaging,
-  onNewMessage,
-  removeMessageHandler,
-  fetchConversations,
-  readMessages,
-} from '@/services/MessageService'
-import { fetchCurrentUserId } from '@/services/UserService'
-import '@/assets/styles/buttons/buttons.css'
-const route = useRoute()
-
-const messages = ref<Message[]>([])
-const newMessageContent = ref('')
-const otherUser = ref<MessageUser | null>(null)
-const loading = ref(false)
-const error = ref<string | null>(null)
-const sending = ref(false)
-const messagesContainerRef = ref<HTMLElement | null>(null)
-const currentUserId = ref<string | number | null>(null)
-const item = ref<ItemPreviewType | null>(null)
-
-const pageSize = 12
-const currentPage = ref(0)
-const totalPages = ref(1)
-const fetchingOlder = ref(false)
-
-const conversationId = computed(() => route.params.conversationId as string)
-
-const handleNewMessage = (message: Message) => {
-  const isRelevantMessage =
-    (message.sender.id === otherUser.value?.id || message.receiver.id === otherUser.value?.id) &&
-    message.item?.id === item.value?.id
-
-  const isNewMessage = !messages.value.some((m) => m.id === message.id)
-
-  if (isRelevantMessage && isNewMessage) {
-    messages.value.push(message)
-    scrollToBottom()
-  }
-}
-
-async function getConversationDetails(): Promise<boolean> {
-  try {
-    const conversations = await fetchConversations()
-    const currentConversation = conversations.find((c) => c.id.toString() === conversationId.value)
-
-    if (!currentConversation) {
-      error.value = 'Conversation not found.'
-      item.value = null
-      return false
-    }
-
-    if (currentConversation.item) {
-      item.value = currentConversation.item
-    } else {
-      error.value = 'No item associated with this conversation.'
-      item.value = null
-      return false
-    }
-
-    otherUser.value = currentConversation.otherUser
-    return true
-  } catch (err) {
-    console.error('Failed to fetch conversation details:', err)
-    error.value = 'Could not load conversation details.'
-    item.value = null
-    return false
-  }
-}
-
-async function loadMessagesPage(page: number) {
-  if (!item.value?.id) return
-
-  fetchingOlder.value = true
-  try {
-    const response: PaginatedMessageResponse = await fetchPagedMessages(
-      item.value.id,
-      page,
-      pageSize,
-      'sentAt,desc',
-    )
-    const newMessages = response.content.map((m) => ({ ...m, sentDate: new Date(m.sentDate) }))
-    messages.value = [...newMessages.reverse(), ...messages.value] // prepend older messages
-    totalPages.value = response.totalPages
-    await readMessages(newMessages)
-  } catch (err) {
-    console.error('Failed to load messages:', err)
-    error.value = 'Could not load messages.'
-  } finally {
-    fetchingOlder.value = false
-  }
-}
-
-async function handleSendMessage() {
-  if (!newMessageContent.value.trim() || sending.value || !otherUser.value?.id || !item.value?.id)
-    return
-
-  sending.value = true
-  error.value = null
-
-  try {
-    const recipientId = otherUser.value.id
-    const tempMessage = await sendMessage(recipientId, newMessageContent.value, item.value.id)
-
-    messages.value.push(tempMessage)
-    newMessageContent.value = ''
-    scrollToBottom()
-  } catch (err) {
-    console.error('Failed to send message:', err)
-    error.value = 'Failed to send message.'
-  } finally {
-    sending.value = false
-  }
-}
-
-async function initializeConversation() {
-  loading.value = true
-  error.value = null
-  messages.value = []
-  item.value = null
-  otherUser.value = null
-  currentPage.value = 0
-
-  try {
-    currentUserId.value = await fetchCurrentUserId()
-    const success = await getConversationDetails()
-    if (!success) {
-      loading.value = false
-      return
-    }
-    await loadMessagesPage(currentPage.value)
-    await nextTick()
-    scrollToBottom()
-    maybeLoadMoreIfNotScrollable() // 👈 Add this
-  } catch (err) {
-    console.error('Failed to initialize conversation:', err)
-    error.value = 'Error loading conversation. Please try again.'
-  } finally {
-    loading.value = false
-  }
-}
-
-function maybeLoadMoreIfNotScrollable() {
-  const container = messagesContainerRef.value
-  if (
-    container &&
-    container.scrollHeight <= container.clientHeight &&
-    currentPage.value < totalPages.value - 1
-  ) {
-    currentPage.value++
-    loadMessagesPage(currentPage.value)
-  }
-}
-
-function scrollToBottom() {
-  nextTick(() => {
-    const container = messagesContainerRef.value
-    if (container) {
-      container.scrollTop = container.scrollHeight
-    }
-  })
-}
-
-function isMyMessage(message: Message): boolean {
-  return message.sender.id.toString() === currentUserId.value?.toString()
-}
-
-function formatTimestamp(date: string | Date): string {
-  if (!date) return ''
-  const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-function handleScroll() {
-  const container = messagesContainerRef.value
-  if (
-    container &&
-    container.scrollTop < 50 &&
-    !fetchingOlder.value &&
-    currentPage.value < totalPages.value - 1
-  ) {
-    currentPage.value++
-    loadMessagesPage(currentPage.value)
-  }
-}
-
-onMounted(async () => {
-  try {
-    await initializeMessaging()
-    onNewMessage(handleNewMessage)
-    await initializeConversation()
-    if (messagesContainerRef.value) {
-      messagesContainerRef.value.addEventListener('scroll', handleScroll)
-    }
-  } catch (err) {
-    console.error('Failed to initialize messaging:', err)
-    error.value = 'Connection error. Please refresh.'
-  }
-})
-
-onUnmounted(() => {
-  removeMessageHandler(handleNewMessage)
-  if (messagesContainerRef.value) {
-    messagesContainerRef.value.removeEventListener('scroll', handleScroll)
-  }
-})
-
-watch(conversationId, async (newId, oldId) => {
-  if (newId !== oldId) {
-    await initializeConversation()
-  }
-})
-</script>
-
 <template>
   <div class="conversation-view">
     <!-- Header section with navigation, user, and item info -->
@@ -291,14 +69,331 @@ watch(conversationId, async (newId, oldId) => {
         :disabled="sending || loading || !!error"
       ></textarea>
       <button class="edit-button"
-        @click="handleSendMessage"
-        :disabled="!newMessageContent.trim() || sending || loading || !!error"
+              @click="handleSendMessage"
+              :disabled="!newMessageContent.trim() || sending || loading || !!error"
       >
         {{ $t('SEND') }}
       </button>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+/**
+ * Conversation View component.
+ *
+ * A comprehensive real-time messaging interface that allows users to view and send messages
+ * related to a specific marketplace item. This component handles loading conversation history,
+ * sending new messages, and receiving real-time updates through WebSockets.
+ *
+ * Features:
+ * - Paginated loading of message history with infinite scroll
+ * - Real-time message receiving using WebSocket communication
+ * - Display of conversation context including item details and chat partner
+ * - Message status indicators (sent/received)
+ * - Responsive design with mobile-friendly UI
+ * - Automatic scrolling to latest messages
+ * - Message timestamp display
+ * - Error handling for network issues
+ * - Automatic marking of messages as read
+ *
+ * The component uses the MessageService for communication with the backend API and
+ * manages conversation state including loading older messages when scrolling up.
+ *
+ * @component ConversationView
+ * @requires vue
+ * @requires vue-router
+ * @requires vue-i18n
+ * @requires @/services/MessageService
+ * @requires @/services/UserService
+ * @requires @/models/Message
+ * @requires @/models/Item
+ */
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
+import type { Message, MessageUser } from '@/models/Message'
+import type { PaginatedMessageResponse } from '@/models/Message'
+import type { ItemPreviewType } from '@/models/Item'
+import {
+  fetchPagedMessages,
+  sendMessage,
+  initializeMessaging,
+  onNewMessage,
+  removeMessageHandler,
+  fetchConversations,
+  readMessages,
+} from '@/services/MessageService'
+import { fetchCurrentUserId } from '@/services/UserService'
+import '@/assets/styles/buttons/buttons.css'
+const route = useRoute()
+
+const messages = ref<Message[]>([])
+const newMessageContent = ref('')
+const otherUser = ref<MessageUser | null>(null)
+const loading = ref(false)
+const error = ref<string | null>(null)
+const sending = ref(false)
+const messagesContainerRef = ref<HTMLElement | null>(null)
+const currentUserId = ref<string | number | null>(null)
+const item = ref<ItemPreviewType | null>(null)
+
+const pageSize = 12
+const currentPage = ref(0)
+const totalPages = ref(1)
+const fetchingOlder = ref(false)
+
+const conversationId = computed(() => route.params.conversationId as string)
+
+
+/**
+ * Handles incoming messages from WebSocket connection.
+ * Adds new messages to the conversation if they're relevant to the current chat
+ * and not already in the message list.
+ *
+ * @param {Message} message - The new message received from WebSocket
+ * @returns {void}
+ */
+const handleNewMessage = (message: Message) => {
+  const isRelevantMessage =
+    (message.sender.id === otherUser.value?.id || message.receiver.id === otherUser.value?.id) &&
+    message.item?.id === item.value?.id
+
+  const isNewMessage = !messages.value.some((m) => m.id === message.id)
+
+  if (isRelevantMessage && isNewMessage) {
+    messages.value.push(message)
+    scrollToBottom()
+  }
+}
+
+/**
+ * Fetches conversation details including other user info and item details.
+ * Sets error state if conversation cannot be found or has no associated item.
+ *
+ * @returns {Promise<boolean>} - Returns true if conversation details were loaded successfully
+ */
+async function getConversationDetails(): Promise<boolean> {
+  try {
+    const conversations = await fetchConversations()
+    const currentConversation = conversations.find((c) => c.id.toString() === conversationId.value)
+
+    if (!currentConversation) {
+      error.value = 'Conversation not found.'
+      item.value = null
+      return false
+    }
+
+    if (currentConversation.item) {
+      item.value = currentConversation.item
+    } else {
+      error.value = 'No item associated with this conversation.'
+      item.value = null
+      return false
+    }
+
+    otherUser.value = currentConversation.otherUser
+    return true
+  } catch (err) {
+    console.error('Failed to fetch conversation details:', err)
+    error.value = 'Could not load conversation details.'
+    item.value = null
+    return false
+  }
+}
+
+/**
+ * Loads a specific page of messages for the current conversation.
+ * Prepends older messages to the message list and updates pagination state.
+ *
+ * @param {number} page - The page number to load (zero-based)
+ * @returns {Promise<void>}
+ */
+async function loadMessagesPage(page: number) {
+  if (!item.value?.id) return
+
+  fetchingOlder.value = true
+  try {
+    const response: PaginatedMessageResponse = await fetchPagedMessages(
+      item.value.id,
+      page,
+      pageSize,
+      'sentAt,desc',
+    )
+    const newMessages = response.content.map((m) => ({ ...m, sentDate: new Date(m.sentDate) }))
+    messages.value = [...newMessages.reverse(), ...messages.value] // prepend older messages
+    totalPages.value = response.totalPages
+    await readMessages(newMessages)
+  } catch (err) {
+    console.error('Failed to load messages:', err)
+    error.value = 'Could not load messages.'
+  } finally {
+    fetchingOlder.value = false
+  }
+}
+
+/**
+ * Sends a new message to the conversation partner.
+ * Adds the sent message to the local message list and clears the input field.
+ *
+ * @returns {Promise<void>}
+ */
+async function handleSendMessage() {
+  if (!newMessageContent.value.trim() || sending.value || !otherUser.value?.id || !item.value?.id)
+    return
+
+  sending.value = true
+  error.value = null
+
+  try {
+    const recipientId = otherUser.value.id
+    const tempMessage = await sendMessage(recipientId, newMessageContent.value, item.value.id)
+
+    messages.value.push(tempMessage)
+    newMessageContent.value = ''
+    scrollToBottom()
+  } catch (err) {
+    console.error('Failed to send message:', err)
+    error.value = 'Failed to send message.'
+  } finally {
+    sending.value = false
+  }
+}
+
+/**
+ * Initializes the conversation by loading details and first page of messages.
+ * Resets conversation state and handles error conditions.
+ *
+ * @returns {Promise<void>}
+ */
+async function initializeConversation() {
+  loading.value = true
+  error.value = null
+  messages.value = []
+  item.value = null
+  otherUser.value = null
+  currentPage.value = 0
+
+  try {
+    currentUserId.value = await fetchCurrentUserId()
+    const success = await getConversationDetails()
+    if (!success) {
+      loading.value = false
+      return
+    }
+    await loadMessagesPage(currentPage.value)
+    await nextTick()
+    scrollToBottom()
+    maybeLoadMoreIfNotScrollable() // 👈 Add this
+  } catch (err) {
+    console.error('Failed to initialize conversation:', err)
+    error.value = 'Error loading conversation. Please try again.'
+  } finally {
+    loading.value = false
+  }
+}
+
+/**
+ * Loads more messages if the initial content doesn't fill the scroll container.
+ * Prevents empty space when conversation doesn't have enough messages to scroll.
+ *
+ * @returns {void}
+ */
+function maybeLoadMoreIfNotScrollable() {
+  const container = messagesContainerRef.value
+  if (
+    container &&
+    container.scrollHeight <= container.clientHeight &&
+    currentPage.value < totalPages.value - 1
+  ) {
+    currentPage.value++
+    loadMessagesPage(currentPage.value)
+  }
+}
+
+/**
+ * Scrolls the message container to the bottom to show the latest messages.
+ * Uses nextTick to ensure DOM updates have completed before scrolling.
+ *
+ * @returns {void}
+ */
+function scrollToBottom() {
+  nextTick(() => {
+    const container = messagesContainerRef.value
+    if (container) {
+      container.scrollTop = container.scrollHeight
+    }
+  })
+}
+
+/**
+ * Determines if a message was sent by the current user.
+ * Used to style messages differently based on sender.
+ *
+ * @param {Message} message - The message to check
+ * @returns {boolean} - True if the message was sent by the current user
+ */
+function isMyMessage(message: Message): boolean {
+  return message.sender.id.toString() === currentUserId.value?.toString()
+}
+
+/**
+ * Formats a timestamp into a readable time format (hours:minutes).
+ *
+ * @param {string|Date} date - The timestamp to format
+ * @returns {string} - Formatted time string
+ */
+function formatTimestamp(date: string | Date): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+/**
+ * Handles scroll events in the message container.
+ * Loads older messages when user scrolls to the top of the container.
+ *
+ * @returns {void}
+ */
+function handleScroll() {
+  const container = messagesContainerRef.value
+  if (
+    container &&
+    container.scrollTop < 50 &&
+    !fetchingOlder.value &&
+    currentPage.value < totalPages.value - 1
+  ) {
+    currentPage.value++
+    loadMessagesPage(currentPage.value)
+  }
+}
+
+onMounted(async () => {
+  try {
+    await initializeMessaging()
+    onNewMessage(handleNewMessage)
+    await initializeConversation()
+    if (messagesContainerRef.value) {
+      messagesContainerRef.value.addEventListener('scroll', handleScroll)
+    }
+  } catch (err) {
+    console.error('Failed to initialize messaging:', err)
+    error.value = 'Connection error. Please refresh.'
+  }
+})
+
+onUnmounted(() => {
+  removeMessageHandler(handleNewMessage)
+  if (messagesContainerRef.value) {
+    messagesContainerRef.value.removeEventListener('scroll', handleScroll)
+  }
+})
+
+watch(conversationId, async (newId, oldId) => {
+  if (newId !== oldId) {
+    await initializeConversation()
+  }
+})
+</script>
 
 <style scoped>
   /**

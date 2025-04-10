@@ -18,6 +18,23 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Admin layout component.
+ *
+ * This component provides the layout structure for the admin section of the application,
+ * including the navigation menu and content area for admin views.
+ *
+ * Features:
+ * - Responsive admin panel layout
+ * - Navigation links to different admin sections (categories, users)
+ * - Content area that renders nested admin views via router-view
+ * - i18n support for all text content
+ *
+ * @component AdminLayout
+ * @displayName AdminLayout
+ * @example
+ * <AdminLayout />
+ */
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

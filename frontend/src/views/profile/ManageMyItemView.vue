@@ -88,6 +88,33 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Manage My Item View component.
+ *
+ * This component allows users to manage their marketplace items, including viewing item details,
+ * handling received bids, editing item information, and deleting the item.
+ *
+ * Features:
+ * - Display detailed item information with images
+ * - View and manage received bids (accept/reject)
+ * - Navigate to item edit form
+ * - Delete item with confirmation
+ * - Sort bids by status and amount
+ * - Display bid statuses with visual indicators
+ * - Error handling for API failures
+ * - Responsive layout for different screen sizes
+ *
+ * @component ManageMyItemView
+ * @requires vue
+ * @requires vue-router
+ * @requires vue-i18n
+ * @requires @/services/ItemService
+ * @requires @/services/BidService
+ * @requires @/models/Item
+ * @requires @/models/Bid
+ * @requires @/components/modals/ConfirmDeleteModal
+ * @displayName ManageMyItemView
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchItem, deleteItem } from '@/services/ItemService';
@@ -114,14 +141,19 @@ const bidsError = ref<string | null>(null);
 const actionError = ref<string | null>(null); // For accept/reject errors
 
 
-// Fetch Item Details
+/**
+ * Fetches and loads the item details from the API.
+ * Updates component state with the results or error information.
+ *
+ * @param {string|number} id - The ID of the item to load
+ * @returns {Promise<void>}
+ */
 async function loadItemDetails(id: string | number) {
   itemLoading.value = true;
   itemError.value = null;
   try {
     item.value = await fetchItem(id);
   } catch (error: any) {
-    console.error("Error loading item details:", error);
     itemError.value = error.message || "Could not load item details.";
     item.value = null; // Clear item on error
   } finally {
@@ -129,7 +161,13 @@ async function loadItemDetails(id: string | number) {
   }
 }
 
-// Fetch Bids for the Item
+/**
+ * Fetches bids for the current item from the API.
+ * Updates component state with the results or error information.
+ *
+ * @param {string|number} id - The ID of the item to load bids for
+ * @returns {Promise<void>}
+ */
 async function loadBids(id: string | number) {
   bidsLoading.value = true;
   bidsError.value = null;
@@ -137,7 +175,6 @@ async function loadBids(id: string | number) {
   try {
     bids.value = await fetchBidsForItem(id);
   } catch (error: any) {
-    console.error("Error loading bids:", error);
     bidsError.value = error.message || "Could not load bids for this item.";
     bids.value = []; // Clear bids on error
   } finally {
@@ -145,7 +182,13 @@ async function loadBids(id: string | number) {
   }
 }
 
-// Handle Accept Bid Action
+/**
+ * Handles the accept bid action for a specific bid.
+ * Sends acceptance to API and updates local state.
+ *
+ * @param {BidResponseType} bidToAccept - The bid object to accept
+ * @returns {Promise<void>}
+ */
 async function handleAcceptBid(bidToAccept: BidResponseType) {
   if (!itemId.value || actionLoading.value) return;
   actionLoading.value = bidToAccept.id; // Set loading for this specific bid
@@ -156,14 +199,19 @@ async function handleAcceptBid(bidToAccept: BidResponseType) {
     // Reloading is simpler for now
     await loadBids(itemId.value);
   } catch (error: any) {
-    console.error("Error accepting bid:", error);
     actionError.value = error.message || "Failed to accept bid.";
   } finally {
     actionLoading.value = null; // Clear loading state
   }
 }
 
-// Handle Reject Bid Action
+/**
+ * Handles the reject bid action for a specific bid.
+ * Sends rejection to API and updates local state.
+ *
+ * @param {BidResponseType} bidToReject - The bid object to reject
+ * @returns {Promise<void>}
+ */
 async function handleRejectBid(bidToReject: BidResponseType) {
   if (!itemId.value || actionLoading.value) return;
   actionLoading.value = bidToReject.id; // Set loading
@@ -173,15 +221,12 @@ async function handleRejectBid(bidToReject: BidResponseType) {
     // Update bid status locally or reload bids
     await loadBids(itemId.value);
   } catch (error: any) {
-    console.error("Error rejecting bid:", error);
     actionError.value = error.message || "Failed to reject bid.";
   } finally {
     actionLoading.value = null; // Clear loading state
   }
 }
 
-
-// Computed property to sort bids (e.g., by amount descending)
 const sortedBids = computed(() => {
   return [...bids.value].sort((a, b) => {
     // Prioritize PENDING bids, then sort by amount descending
@@ -191,27 +236,48 @@ const sortedBids = computed(() => {
   });
 });
 
-// Function to navigate to edit page (implement later)
+/**
+ * Navigates to the edit item page for the current item.
+ *
+ * @returns {void}
+ */
 function goToEditItem() {
   if(itemId.value) {
     router.push({ name: 'edit-listing', params: { itemId: itemId.value }});
   }
 }
+
+/**
+ * Opens the delete confirmation modal.
+ *
+ * @returns {void}
+ */
 function openDeleteModal() {
   isDeleteModalOpen.value = true;
 }
+
+/**
+ * Handles the confirmation of item deletion.
+ * Deletes the item and navigates back to listings.
+ *
+ * @returns {Promise<void>}
+ */
 async function handleDeleteConfirm() {
   isDeleteModalOpen.value = false;
-  console.log("handleDeleteConfirm method");
   if (itemId.value !== null) {
     await deleteItem(Number(itemId.value));
   }
-  console.log('Item deleted');
   router.push('/profile/listings');
 }
+
+/**
+ * Handles the cancellation of item deletion.
+ * Closes the confirmation modal.
+ *
+ * @returns {void}
+ */
 function handleDeleteCancel() {
   isDeleteModalOpen.value = false;
-  console.log('Delete action canceled');
 }
 
 
@@ -224,16 +290,26 @@ onMounted(() => {
     loadBids(itemId.value);
   } else {
     itemError.value = "Item ID not found in route.";
-    console.error("Item ID missing from route parameters.");
   }
 });
 
-// --- Formatting Helpers ---
+/**
+ * Formats a price value to the Norwegian currency format.
+ *
+ * @param {number|null|undefined} price - The price to format
+ * @returns {string} The formatted price string
+ */
 function formatPrice(price: number | null | undefined): string {
   if (price === null || price === undefined) return 'N/A';
   return price.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' });
 }
 
+/**
+ * Formats a date-time string to a localized short format.
+ *
+ * @param {string|undefined} dateTimeString - The date-time string to format
+ * @returns {string} The formatted date-time string
+ */
 function formatDateTime(dateTimeString: string | undefined): string {
   if (!dateTimeString) return 'N/A';
   try {
@@ -244,6 +320,12 @@ function formatDateTime(dateTimeString: string | undefined): string {
   }
 }
 
+/**
+ * Handles image loading errors by replacing with placeholder.
+ *
+ * @param {Event} event - The error event from the image element
+ * @returns {void}
+ */
 function handleImageError(event: Event) {
   const imgElement = event.target as HTMLImageElement;
   imgElement.src = 'placeholderImage';

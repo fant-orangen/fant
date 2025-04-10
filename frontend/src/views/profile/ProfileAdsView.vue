@@ -41,6 +41,29 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Profile Ads View component.
+ *
+ * This component displays a grid of items listed by the current user.
+ * It provides a way for users to view and manage their marketplace listings.
+ *
+ * Features:
+ * - Grid display of user's listed items with images
+ * - Navigation to detailed management view for each item
+ * - Empty state with prompt to create a new listing
+ * - Sorted by newest listings first
+ * - Error handling for API failures
+ * - Loading state indicators
+ * - Responsive grid layout
+ *
+ * @component ProfileAdsView
+ * @requires vue
+ * @requires vue-router
+ * @requires vue-i18n
+ * @requires @/services/ItemService
+ * @requires @/models/Item
+ * @displayName ProfileAdsView
+ */
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchMyPagedItems } from '@/services/ItemService'
@@ -56,20 +79,23 @@ const page = ref(0)
 const size = 20 // Adjust as needed
 const sort = 'publishedAt,desc'
 
+/**
+ * Handles image loading errors by replacing with placeholder.
+ *
+ * @param {Event} event - The error event from the image element
+ * @returns {void}
+ */
 async function loadUserItems() {
   isLoading.value = true
   error.value = null
   try {
-    console.log('Fetching paginated items for user...')
     const response: PaginatedItemPreviewResponse = await fetchMyPagedItems(
       page.value,
       size,
       sort
     )
     userItems.value = response.content
-    console.log('User items fetched:', userItems.value.length)
   } catch (err: any) {
-    console.error('Failed to load user items:', err)
     if (err.response?.status === 401 || err.response?.status === 403) {
       error.value = 'Authentication error. Please log in again.'
     } else {
@@ -81,16 +107,34 @@ async function loadUserItems() {
   }
 }
 
+/**
+ * Handles image loading errors by replacing with placeholder.
+ *
+ * @param {Event} event - The error event from the image element
+ * @returns {void}
+ */
 function handleImageError(event: Event) {
   const imgElement = event.target as HTMLImageElement
   imgElement.src = placeholderImage
 }
 
+/**
+ * Formats a price value to the Norwegian currency format.
+ *
+ * @param {number|null|undefined} price - The price to format
+ * @returns {string} The formatted price string
+ */
 function formatPrice(price: number | null | undefined): string {
   if (price === null || price === undefined) return 'N/A'
   return price.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })
 }
 
+/**
+ * Navigates to the management view for a specific item.
+ *
+ * @param {string|number} itemId - The ID of the item to manage
+ * @returns {void}
+ */
 function navigateToManageItem(itemId: string | number) {
   router.push({ name: 'manage-my-item', params: { id: itemId } })
 }
