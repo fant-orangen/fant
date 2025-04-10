@@ -47,7 +47,7 @@
         <div v-else-if="bidsError" class="error-message">
           <p>{{ $t('ERROR_LOADING_BIDS') }}: {{ bidsError }}</p>
         </div>
-        <div v-else-if="bids.length > 0" class="bids-list">
+        <div v-else-if="sortedBids.length > 0" class="bids-list">
           <div
             v-for="bid in sortedBids"
             :key="bid.id"
@@ -173,7 +173,10 @@ async function loadBids(id: string | number) {
   bidsError.value = null;
   actionError.value = null; // Clear previous action errors
   try {
-    bids.value = await fetchBidsForItem(id);
+    bids.value = (await fetchBidsForItem(id)).content;
+    console.log('[Frontend check] Raw bids:', bids.value);
+    console.log('[Frontend check] Sorted bids:', sortedBids.value);
+    console.log('[Frontend check] sortedBids.length:', sortedBids.value.length);
   } catch (error: any) {
     bidsError.value = error.message || "Could not load bids for this item.";
     bids.value = []; // Clear bids on error
@@ -228,11 +231,11 @@ async function handleRejectBid(bidToReject: BidResponseType) {
 }
 
 const sortedBids = computed(() => {
-  return [...bids.value].sort((a, b) => {
-    // Prioritize PENDING bids, then sort by amount descending
+  const bidArray = Array.isArray(bids.value) ? bids.value : [];
+  return [...bidArray].sort((a, b) => {
     if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
     if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
-    return b.amount - a.amount; // Higher amount first
+    return b.amount - a.amount;
   });
 });
 
