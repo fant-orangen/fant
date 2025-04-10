@@ -87,7 +87,7 @@ async function toggleFavorite(event: Event) {
 }
 
 .heart-icon img {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
 }
 </style>
