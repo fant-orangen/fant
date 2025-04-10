@@ -189,4 +189,26 @@ public class BidController {
     return ResponseEntity.ok(
         bidService.updateBid(bidUpdateDto, itemId, userService.getCurrentUser(principal)));
   }
+
+  /**
+   * <h3>Get Bids by item</h3>
+   * <p>Gets a page of bids by item ID</p>
+   *
+   * @param itemId the ID of the item associated with the bids
+   * @return {@link ResponseEntity} containing a page of {@link BidResponseDto}
+   */
+  @GetMapping("/{itemId}")
+  @Operation(summary = "Update Bid", description = "Updates an existing bid for a specific item by the authenticated user.")
+  @ApiResponse(responseCode = "200", description = "Bid updated successfully", content = @Content(schema = @Schema(implementation = BidResponseDto.class)))
+  @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  public ResponseEntity<Page<BidResponseDto>> getBid(
+      @Parameter(description = "ID of the item associated with the bid to update", required = true)
+      @Positive @PathVariable Long itemId,
+      @Parameter(hidden = true) Principal principal,
+      @Parameter(description = "Pagination information (page number, size, sort)")
+      Pageable pageable) {
+    return ResponseEntity.ok(
+        bidService.getBidsForItem(itemId, userService.getCurrentUser(principal), pageable));
+  }
 }
