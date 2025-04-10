@@ -355,7 +355,7 @@ onMounted(() => {
   width: 80px;
   height: 60px;
   padding: 0;
-  border: 1px solid rgb(128, 200, 190);
+  border: 1px solid var(--vt-c-teal-text-light);
 }
 
 .location-error,
