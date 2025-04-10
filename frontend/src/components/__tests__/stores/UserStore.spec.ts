@@ -202,7 +202,7 @@ describe('UserStore', () => {
       lastName: 'Test',
       phone: '+4712345678',
       displayName: 'AliceTest',
-      password: 'testPassword123'
+      currentPassword: 'testPassword123'
     };
 
     // Optional: Update response data mock if needed (though not causing the current failure)
