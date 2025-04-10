@@ -61,8 +61,8 @@ function navigateToRegister() {
         :label="$t('PASSWORD')"
         :placeholder="$t('PASSWORD')"
       />
-      <button type="submit" :disabled="isLoading">{{ $t('LOGIN') }}</button>
-      <button type="button" @click="navigateToRegister">{{ $t('REGISTRATION_BUTTON') }}</button>
+      <button class = "submit-button" type="submit" :disabled="isLoading">{{ $t('LOGIN') }}</button>
+      <button class = "submit-button" type="button" @click="navigateToRegister">{{ $t('REGISTRATION_BUTTON') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
     <router-link to="/register">{{ $t('NEW_USER_QUESTION') }}</router-link>

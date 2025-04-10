@@ -114,7 +114,7 @@
       />
 
       <!-- Submit -->
-      <button type="submit" class="submit-button">
+      <button type="submit" class="submit-button thumbnail--half-width-centered">
         {{ isEditMode ? $t('APP_LISTING_EDIT_SUBMIT') : $t('APP_LISTING_CREATE_NEW_SUBMIT_BUTTON') }}
       </button>
     </form>
@@ -122,6 +122,9 @@
 </template>
 
 <script lang="ts" setup>
+import '@/assets/styles/buttons/buttons.css';
+import '@/assets/styles/input/input.css'
+import '@/assets/styles/responsiveStyles.css';
 import { ref, watch, onMounted } from 'vue';
 import TextInput from '@/components/input/TextInput.vue';
 import SelectInput from '@/components/input/SelectInput.vue';
@@ -318,14 +321,6 @@ async function handleSubmit() {
   min-width: 0;
 }
 
-.input-label {
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: block;
-  color: var(--color-heading, #2c3e50);
-  font-size: 14px;
-}
-
 .location-toggle {
   display: flex;
   margin-bottom: 15px;
@@ -350,7 +345,7 @@ async function handleSubmit() {
 }
 
 .toggle-btn.active {
-  background: #3498db;;
+  background: var(--vt-c-teal-dark);
   color: white;
 }
 
@@ -373,48 +368,6 @@ async function handleSubmit() {
   align-items: center;
   margin-top: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.location-icon {
-  margin-right: 6px;
-  font-size: 16px;
-}
-
-.submit-button {
-  background-color: #3498db;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: auto;
-  min-width: 200px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
-  align-self: center;
-}
-
-.submit-button:hover {
-  background-color: #3498db;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.submit-button:active {
-  transform: translateY(0px);
-}
-
-.add-to-list-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--color-text, #555);
-  margin-top: 12px;
-  justify-content: center;
 }
 
 .add-to-list-option input[type="checkbox"] {

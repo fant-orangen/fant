@@ -1,0 +1,106 @@
+
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--vt-c-black-soft);
+  font-size: 0.9rem;
+}
+
+.text-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--vt-c-white);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--vt-c-text-dark-2);
+  background-color: var(--vt-c-white-soft);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  overflow: auto;
+  resize: vertical;
+  min-height: 42px; /* Match the select height */
+  height: 42px; /* Fixed height for inputs */
+}
+
+input.text-input {
+  height: 42px; /* Fixed height specifically for input elements */
+}
+
+.text-input:hover {
+  border-color: var(--vt-c-teal-light);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--vt-c-teal-soft);
+  box-shadow: 0 0 4px var(--vt-c-teal-light);
+}
+
+.text-input::placeholder {
+  color: var(--vt-c-text-light-2);
+  opacity: 0.7;
+}
+
+textarea.text-input {
+  min-height: 80px;
+  line-height: 1.5;
+  height: auto; /* Allow textareas to grow */
+}
+
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--vt-c-white);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--vt-c-text-dark-2);
+  background-color: var(--vt-c-white-soft);
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  height: 42px; /* Fixed height to match TextInput */
+  box-sizing: border-box;
+}
+
+select:hover {
+  border-color: var(--vt-c-teal-soft);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--vt-c-teal-soft);
+  box-shadow: 0 0 4px var(--vt-c-teal-light);
+}
+
+select:disabled {
+  background-color: var(--vt-c-white-mute);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+select option {
+  padding: 8px;
+}
+
+/* Style for placeholder option */
+select option[value=""][disabled] {
+  color: #999;
+}
+
+/* Add soft teal highlight on hover for options */
+select option:hover {
+  background-color: var(--vt-c-teal-light);
+}

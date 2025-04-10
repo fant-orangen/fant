@@ -17,6 +17,14 @@
   max-width: 400px; /* Maximum width */
 }
 
+.thumbnail--half-width-centered {
+  width: 50%;
+  max-width: 400px; /* Maximum width */
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
 .thumbnail--quarter-width {
   width: 25%;
   max-width: 200px; /* Maximum width */

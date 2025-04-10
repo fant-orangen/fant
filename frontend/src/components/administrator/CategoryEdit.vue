@@ -34,10 +34,10 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn primary">
+          <button type="submit" class="edit-button">
             {{ isEditing ? $t('UPDATE') : $t('ADD_CATEGORY') }}
           </button>
-          <button v-if="isEditing" type="button" class="btn secondary" @click="resetForm">
+          <button v-if="isEditing" type="button" class="cancel-button" @click="resetForm">
             {{ $t('CANCEL') }}
           </button>
         </div>
@@ -53,8 +53,8 @@
             <span class="category-name">{{ category.name }}</span>
           </div>
           <div class="category-actions">
-            <button class="btn edit" @click="editCategory(category)">{{ $t('EDIT') }}</button>
-            <button class="btn delete" @click="removeCategory(category.id ?? '')">{{ $t('DELETE') }}</button>
+            <button class="edit-button" @click="editCategory(category)">{{ $t('EDIT') }}</button>
+            <button class="delete-button" @click="removeCategory(category.id ?? '')">{{ $t('DELETE') }}</button>
           </div>
         </li>
       </ul>
@@ -63,6 +63,8 @@
 </template>
 
 <script setup lang="ts">
+import '@/assets/styles/buttons/buttons.css';
+
 import { ref, onMounted, computed } from 'vue';
 import type { Category } from '@/models/Category';
 import { fetchCategories, addCategory, updateCategory, deleteCategory } from '@/services/CategoryService.ts';
@@ -260,48 +262,6 @@ input:focus, select:focus {
   gap: 10px;
   margin-top: 20px;
 }
-
-.btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.btn.primary {
-  background-color: #4a90e2;
-  color: white;
-}
-
-.btn.primary:hover {
-  background-color: #3a80d2;
-}
-
-.btn.secondary {
-  background-color: #f5f5f5;
-  color: #333;
-}
-
-.btn.secondary:hover {
-  background-color: #e5e5e5;
-}
-
-.btn.edit {
-  background-color: #4a90e2;
-  color: white;
-  padding: 6px 12px;
-  font-size: 12px;
-}
-
-.btn.delete {
-  background-color: #e74c3c;
-  color: white;
-  padding: 6px 12px;
-  font-size: 12px;
-}
-
 .categories-list {
   margin-top: 30px;
 }
