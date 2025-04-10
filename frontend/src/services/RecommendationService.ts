@@ -1,12 +1,24 @@
+/**
+ * Recommendation service module.
+ *
+ * This service provides methods for retrieving personalized recommendations
+ * and related statistics for the current user, leveraging the backend's
+ * recommendation engine.
+ *
+ * @module RecommendationService
+ */
 import api from '@/services/api/axiosInstance'
 import type { CategoryRecommendation } from '@/models/Recommendation'
 
 /**
  * Fetches personalized category recommendations for the current user.
- * The API call relies on the authorization token being included automatically
- * by the axios interceptor in axiosInstance.
  *
- * @returns A Promise resolving to category recommendations with probability distribution
+ * Makes a GET request to retrieve category recommendations with probability
+ * distribution based on the user's browsing behavior. Requires user authentication
+ * via the JWT token that's automatically included by axios interceptor.
+ *
+ * @returns {Promise<CategoryRecommendation>} Promise resolving to category recommendations with probability distribution
+ * @throws {Error} When the request fails due to authentication issues or network errors
  */
 export async function fetchCategoryRecommendations(): Promise<CategoryRecommendation> {
   try {
@@ -21,7 +33,12 @@ export async function fetchCategoryRecommendations(): Promise<CategoryRecommenda
 /**
  * Fetches the total number of item views for the currently authenticated user.
  *
- * @returns A promise that resolves to the user's total view count
+ * Makes a GET request to retrieve the aggregate count of item views recorded
+ * for the user. This data helps understand the user's engagement level
+ * with the marketplace.
+ *
+ * @returns {Promise<number>} Promise resolving to the user's total item view count
+ * @throws {Error} When the request fails due to authentication issues or network errors
  */
 export async function fetchUserViewCount(): Promise<number> {
   try {

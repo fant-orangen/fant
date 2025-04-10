@@ -1,9 +1,24 @@
+/**
+ * User store module for global user state management.
+ *
+ * This Pinia store manages the application's user authentication state,
+ * including login, registration, profile management, and authentication tokens.
+ *
+ * @module UserStore
+ */
 import { defineStore } from 'pinia';
 import { fetchToken } from '@/services/api/authService';
 import { register } from '@/services/api/userService';
 import { computed, ref } from 'vue';
 import api from '@/services/api/axiosInstance';
 
+/**
+ * Interface representing the data required for user registration.
+ *
+ * Maps to the backend UserCreateDto structure expected by the registration endpoint.
+ *
+ * @interface RegistrationData
+ */
 interface RegistrationData {
   email: string;
   password: string;
@@ -13,7 +28,14 @@ interface RegistrationData {
   phone: string;
 }
 
-// Interface for the profile state managed by the store
+
+/**
+ * Interface representing the user's profile information.
+ *
+ * Contains personal information fields that can be displayed and edited.
+ *
+ * @interface UserProfile
+ */
 interface UserProfile {
   email: string;
   firstName: string;
@@ -22,7 +44,12 @@ interface UserProfile {
   displayName: string; // <-- Add displayName here
 }
 
-
+/**
+ * Defines and exports the user store for global user state management.
+ *
+ * Provides reactive state for user authentication, profile data, and
+ * methods for login, registration, and profile management.
+ */
 export const useUserStore = defineStore("user", () => {
   const token = ref<string | null>(localStorage.getItem('token'));
   const username = ref<string | null>(localStorage.getItem('username'));
@@ -38,7 +65,19 @@ export const useUserStore = defineStore("user", () => {
     displayName: '' // <-- Initialize displayName
   });
 
-  // --- (login, verifyLogin, registerUser functions remain the same) ---
+
+  /**
+   * Processes a successful login response.
+   *
+   * Updates store state with authentication information and persists
+   * the data to localStorage.
+   *
+   * @param {number} status - HTTP status code from login response
+   * @param {string} tokenStr - JWT token string from authentication
+   * @param {string} userEmail - User's email address
+   * @returns {void}
+   * @private
+   */
   function login(status: number, tokenStr: string, userEmail: string) { // Changed 'user' to 'userEmail' for clarity
     if (status === 200) {
       token.value = tokenStr;
@@ -69,6 +108,16 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  /**
+   * Authenticates a user with email and password.
+   *
+   * Calls the authentication API and processes the response.
+   *
+   * @param {string} userEmail - User's email address
+   * @param {string} password - User's password
+   * @returns {Promise<void>} Promise that resolves upon successful login
+   * @throws {Error} If authentication fails due to invalid credentials or network errors
+   */
   async function verifyLogin(userEmail: string, password: string) { // Renamed 'user' to 'userEmail'
     try {
       console.log(`Starting login for user: ${userEmail}`);
@@ -91,6 +140,16 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  /**
+   * Registers a new user account and automatically logs in.
+   *
+   * Sends registration data to the backend API and then attempts to authenticate
+   * with the provided credentials.
+   *
+   * @param {RegistrationData} userData - User registration details
+   * @returns {Promise<void>} Promise that resolves upon successful registration and login
+   * @throws {Error} If registration or subsequent login fails
+   */
   async function registerUser(userData: RegistrationData) { // Use the defined interface
     try {
       // Call the register service with the correctly structured data
@@ -106,7 +165,11 @@ export const useUserStore = defineStore("user", () => {
 
   /**
    * Fetches the current user's profile from the backend.
-   * Assumes the backend /api/users/profile GET endpoint returns the User entity structure.
+   *
+   * Updates the store's profile state with the retrieved information.
+   *
+   * @returns {Promise<void>} Promise that resolves when profile is successfully fetched
+   * @throws {Error} If the API request fails
    */
   async function fetchProfile() {
     try {
@@ -139,6 +202,15 @@ export const useUserStore = defineStore("user", () => {
     password?: string; // Password might be optional if backend handles it, but DTO requires it
   }
 
+  /**
+   * Updates the user's profile information.
+   *
+   * Sends updated profile data to the backend API and updates the local state.
+   *
+   * @param {UpdatePayload} updatedProfile - Updated profile data including password for verification
+   * @returns {Promise<void>} Promise that resolves when profile is successfully updated
+   * @throws {Error} If the update fails or password is missing
+   */
   async function updateProfile(updatedProfile: UpdatePayload) { // Use the extended payload type
     try {
       // Construct the payload matching UserCreateDto
@@ -177,7 +249,13 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
-  // --- (logout and computed getters remain the same) ---
+  /**
+   * Logs out the current user.
+   *
+   * Clears all authentication state from memory and localStorage.
+   *
+   * @returns {void}
+   */
   function logout() {
     token.value = null;
     username.value = null;
@@ -190,17 +268,25 @@ export const useUserStore = defineStore("user", () => {
     localStorage.removeItem('userId'); // Remove userId from storage
   }
 
-  // Check whether user is logged in
+  /** Computed property indicating if a user is logged in with a valid ID */
   const isLoggedInUser = computed(() => {
     return userId.value !== null && userId.value !== '0';
-  })
+  });
 
-  // Computed getters for accessing state reactively.
+  /** Computed property indicating if user is authenticated with a token */
   const loggedIn = computed(() => token.value !== null);
-  const getUsername = computed(() => username.value); // This holds the email
+
+  /** Computed getter for the username */
+  const getUsername = computed(() => username.value);
+
+  /** Computed getter for the authentication token */
   const getToken = computed(() => token.value);
+
+  /** Computed getter for the user ID */
   const getUserId = computed(() => userId.value);
-  const getUserRole = computed(() => role.value); // Getter for role
+
+  /** Computed getter for the user role */
+  const getUserRole = computed(() => role.value);
 
   return {
     token,

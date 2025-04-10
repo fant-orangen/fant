@@ -1,6 +1,13 @@
+/**
+ * User management service module.
+ *
+ * This service provides methods for user-related operations including authentication,
+ * registration, profile management, and administrative user management functions.
+ *
+ * @module UserService
+ */
 import api from '@/services/api/axiosInstance'
 import axiosInstance from '@/axiosConfig'
-
 
 /**
  * Fetches the currently authenticated user's ID from the server.
@@ -14,12 +21,16 @@ export async function fetchCurrentUserId(): Promise<number> {
     const response = await api.get<number>('/users/id');
     return response.data;
   } catch (error) {
-    console.error('Error fetching user ID:', error);
     throw error;
   }
 }
 
-// Define the type matching UserCreateDto from backend
+/**
+ * Represents the payload structure required for user registration.
+ * Corresponds to UserCreateDto in the backend.
+ *
+ * @interface UserCreatePayload
+ */
 interface UserCreatePayload {
   email: string;
   password: string;
@@ -30,19 +41,28 @@ interface UserCreatePayload {
 }
 
 /**
- * Sends user registration data to the backend /auth/register endpoint.
- * @param userData - Object containing user registration details matching UserCreatePayload.
- * @returns Axios response promise.
+ * Registers a new user account in the system.
+ *
+ * Sends user registration data to the backend's registration endpoint.
+ * Does not automatically log the user in.
+ *
+ * @param {UserCreatePayload} userData - Object containing user registration details
+ * @returns {Promise<any>} Promise resolving to the response from the registration endpoint
+ * @throws {Error} If registration fails due to validation issues or network errors
  */
 export async function register(userData: UserCreatePayload) {
   return await axiosInstance.post('/auth/register', userData)
 }
 
-
-
 /**
- * Interface representing the structure of a User object
- * as returned by the backend API (matching backend User.java entity).
+ * Registers a new user account in the system.
+ *
+ * Sends user registration data to the backend's registration endpoint.
+ * Does not automatically log the user in.
+ *
+ * @param {UserCreatePayload} userData - Object containing user registration details
+ * @returns {Promise<any>} Promise resolving to the response from the registration endpoint
+ * @throws {Error} If registration fails due to validation issues or network errors
  */
 interface BackendUser {
   id: number | string;
@@ -57,8 +77,13 @@ interface BackendUser {
 }
 
 /**
- * Generic interface representing the structure of Spring Boot's Page object
- * when serialized to JSON.
+ * Generic interface for Spring Boot paginated responses.
+ *
+ * Represents the structure of a Spring Data Page object when serialized to JSON.
+ * Used for endpoints that return paginated data.
+ *
+ * @interface SpringPage
+ * @template T - The type of objects contained in the content array
  */
 interface SpringPage<T> {
   content: T[];
@@ -73,13 +98,18 @@ interface SpringPage<T> {
 }
 
 /**
- * Specific type alias for a paginated response containing BackendUser objects.
+ * Type alias for a paginated response containing user objects.
+ * Used for admin user listing endpoints.
+ *
+ * @typedef {SpringPage<BackendUser>} PaginatedUserResponse
  */
 type PaginatedUserResponse = SpringPage<BackendUser>;
 
 /**
- * Interface for the payload when updating a user via admin endpoints.
- * This should match the structure of the backend's UserCreateDto.java.
+ * Payload structure for updating user information via admin endpoints.
+ * Maps to UserCreateDto.java in the backend.
+ *
+ * @interface AdminUserUpdatePayload
  */
 interface AdminUserUpdatePayload {
   email: string;
@@ -91,11 +121,16 @@ interface AdminUserUpdatePayload {
 }
 
 /**
- * Fetches a paginated list of users for admin management.
- * @param page - Page index (0-based)
- * @param size - Number of users per page
- * @param params - Optional filter/search parameters (e.g., { email: 'search@example.com' })
- * @returns Promise resolving to a PaginatedUserResponse object.
+ * Fetches a paginated list of users for administrative purposes.
+ *
+ * Makes a GET request to retrieve users with pagination and optional filtering.
+ * Requires administrative privileges.
+ *
+ * @param {number} page - Page index (0-based)
+ * @param {number} size - Number of users per page
+ * @param {Record<string, any>} [params={}] - Optional filter/search parameters
+ * @returns {Promise<PaginatedUserResponse>} Promise resolving to paginated user data
+ * @throws {Error} If the request fails due to authorization issues or network errors
  */
 export async function fetchAdminUsers(page: number, size: number, params: Record<string, any> = {}): Promise<PaginatedUserResponse> {
   try {
@@ -105,50 +140,63 @@ export async function fetchAdminUsers(page: number, size: number, params: Record
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching admin users:', error);
     throw error;
   }
 }
 
 
 /**
- * Updates a user's details via the admin endpoint.
- * @param id - The ID of the user to update.
- * @param userData - The updated user data (matching AdminUserUpdatePayload).
- * @returns Promise resolving to the updated user data (as BackendUser).
+ * Updates a user's details via the administrative API.
+ *
+ * Makes a PUT request to modify user information. Requires administrative privileges.
+ *
+ * @param {number|string} id - The ID of the user to update
+ * @param {AdminUserUpdatePayload} userData - The updated user data
+ * @returns {Promise<BackendUser>} Promise resolving to the updated user data
+ * @throws {Error} If the update fails due to validation or authorization issues
  */
 export async function updateAdminUser(id: number | string, userData: AdminUserUpdatePayload): Promise<BackendUser> {
   try {
     if (!userData.password) {
-      console.warn("Attempting admin user update without password. Backend might require it.");
     }
     // Make the PUT request to the admin endpoint
     const response = await api.put<BackendUser>(`/admin/users/${id}`, userData);
     return response.data;
   } catch (error) {
-    console.error(`Error updating user ${id} via admin:`, error);
     throw error;
   }
 }
 
 /**
- * Deletes a user via the admin endpoint.
- * @param id - The ID of the user to delete.
- * @returns Promise resolving when deletion is successful.
+ * Deletes a user account via the administrative API.
+ *
+ * Makes a DELETE request to remove a user. Requires administrative privileges.
+ *
+ * @param {number|string} id - The ID of the user to delete
+ * @returns {Promise<void>} Promise that resolves when deletion is successful
+ * @throws {Error} If deletion fails due to authorization issues or network errors
  */
 export async function deleteAdminUser(id: number | string): Promise<void> {
   try {
     await api.delete(`/admin/users/${id}`);
   } catch (error) {
-    console.error(`Error deleting user ${id} via admin:`, error);
     throw error;
   }
 }
 
+/**
+ * Fetches detailed information for a specific user by ID.
+ *
+ * Makes a GET request to retrieve a user's profile information.
+ * Requires administrative privileges.
+ *
+ * @param {number|string} id - The ID of the user to fetch
+ * @returns {Promise<BackendUser>} Promise resolving to the user's profile data
+ * @throws {Error} If the fetch fails due to authorization issues or network errors
+ */
 export async function fetchAdminUserById(id: number | string): Promise<BackendUser> {
   try {
     const response = await api.get<BackendUser>(`/admin/users/${id}`);
-    console.warn("Using public /users/{id} endpoint. Data might be limited (UserResponseDto).");
 
     const user: BackendUser = {
       id: response.data.id ?? id,
@@ -164,7 +212,6 @@ export async function fetchAdminUserById(id: number | string): Promise<BackendUs
     return user;
 
   } catch (error) {
-    console.error(`Error fetching user ${id} via public endpoint:`, error);
     throw error;
   }
 }
