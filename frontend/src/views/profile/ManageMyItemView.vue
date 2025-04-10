@@ -1,14 +1,14 @@
 <template>
   <div class="manage-item-view">
     <div v-if="itemLoading" class="loading-indicator">
-      <p>Loading item details...</p>
+      <p>{{ $t('LOADING_ITEM_DETAILS') }}</p>
     </div>
     <div v-else-if="itemError" class="error-message">
-      <p>Error loading item: {{ itemError }}</p>
-      <router-link to="/profile/listings">Back to My Listings</router-link>
+      <p>{{ $t('ERROR_LOADING_ITEM') }}: {{ itemError }}</p>
+      <router-link to="/profile/listings">{{ $t('BACK_TO_MY_LISTINGS') }}</router-link>
     </div>
     <div v-else-if="item" class="item-section">
-      <h2>Manage Your Item: {{ item.title }}</h2>
+      <h2>{{ $t('MANAGE_YOUR_ITEM') }}: {{ item.title }}</h2>
 
       <div class="item-details-display">
         <img
@@ -18,34 +18,34 @@
           @error="handleImageError"
         />
         <div class="item-info">
-          <p><strong>Description:</strong> {{ item.description || 'No description provided.' }}</p>
-          <p><strong>Category:</strong> {{ item.category }}</p>
-          <p><strong>Price:</strong> {{ formatPrice(item.price) }}</p>
+          <p><strong>{{ $t('DESCRIPTION') }}:</strong> {{ item.description || $t('NO_DESCRIPTION_PROVIDED') }}</p>
+          <p><strong>{{ $t('CATEGORY') }}:</strong> {{ item.category }}</p>
+          <p><strong>{{ $t('PRICE') }}:</strong> {{ formatPrice(item.price) }}</p>
 
           <div class="item-actions">
-            <button class="edit-button" @click="goToEditItem">Edit Item</button>
-            <button class="delete-button" @click="openDeleteModal">Delete Item</button>
+            <button class="edit-button" @click="goToEditItem">{{ $t('EDIT') }} {{ $t('ITEM') }}</button>
+            <button class="delete-button" @click="openDeleteModal">{{ $t('DELETE') }} {{ $t('ITEM') }}</button>
             <ConfirmDeleteModal
               :isOpen="isDeleteModalOpen"
-              title="Delete Item"
-              message="Are you sure you want to delete this item? This action cannot be undone."
-              confirmText="Delete"
-              cancelText="Cancel"
+              :title="$t('DELETE_ITEM')"
+              :message="$t('CONFIRM_ITEM_DELETE_MESSAGE')"
+              :confirmText="$t('DELETE')"
+              :cancelText="$t('CANCEL')"
               @confirm="handleDeleteConfirm"
               @cancel="handleDeleteCancel"
             />
           </div>
-        </div> <!-- CLOSE item-info -->
-      </div> <!-- CLOSE item-details-display -->
+        </div>
+      </div>
 
       <!-- BIDS SECTION -->
       <div class="bids-section">
-        <h3>Received Bids</h3>
+        <h3>{{ $t('RECEIVED_BIDS') }}</h3>
         <div v-if="bidsLoading" class="loading-indicator">
-          <p>Loading bids...</p>
+          <p>{{ $t('LOADING_BIDS') }}</p>
         </div>
         <div v-else-if="bidsError" class="error-message">
-          <p>Error loading bids: {{ bidsError }}</p>
+          <p>{{ $t('ERROR_LOADING_BIDS') }}: {{ bidsError }}</p>
         </div>
         <div v-else-if="bids.length > 0" class="bids-list">
           <div
@@ -55,36 +55,35 @@
             :class="`bid-status-${bid.status.toLowerCase()}`"
           >
             <div class="bid-info">
-              <p><strong>Bidder:</strong> {{ bid.bidderUsername }}</p>
-              <p><strong>Amount:</strong> {{ formatPrice(bid.amount) }}</p>
-              <p v-if="bid.comment"><strong>Comment:</strong> {{ bid.comment }}</p>
-              <p><strong>Status:</strong> <span class="bid-status-badge">{{ bid.status }}</span></p>
-              <p class="bid-timestamp">Placed: {{ formatDateTime(bid.createdAt) }}</p>
-              <p v-if="bid.createdAt !== bid.updatedAt" class="bid-timestamp">Updated: {{ formatDateTime(bid.updatedAt) }}</p>
+              <p><strong>{{ $t('BIDDER') }}:</strong> {{ bid.bidderUsername }}</p>
+              <p><strong>{{ $t('AMOUNT') }}:</strong> {{ formatPrice(bid.amount) }}</p>
+              <p v-if="bid.comment"><strong>{{ $t('YOUR_COMMENT') }}:</strong> {{ bid.comment }}</p>
+              <p><strong>{{ $t('STATUS') }}:</strong> <span class="bid-status-badge">{{ bid.status }}</span></p>
+              <p class="bid-timestamp">{{ $t('PLACED') }}: {{ formatDateTime(bid.createdAt) }}</p>
+              <p v-if="bid.createdAt !== bid.updatedAt" class="bid-timestamp">{{ $t('UPDATED') }}: {{ formatDateTime(bid.updatedAt) }}</p>
             </div>
             <div v-if="bid.status === 'PENDING'" class="bid-actions">
               <button @click="handleAcceptBid(bid)" class="accept-button" :disabled="actionLoading === bid.id">
-                <span v-if="actionLoading === bid.id">...</span><span v-else>Accept</span>
+                <span v-if="actionLoading === bid.id">...</span><span v-else>{{ $t('ACCEPT') }}</span>
               </button>
               <button @click="handleRejectBid(bid)" class="reject-button" :disabled="actionLoading === bid.id">
-                <span v-if="actionLoading === bid.id">...</span><span v-else>Reject</span>
+                <span v-if="actionLoading === bid.id">...</span><span v-else>{{ $t('REJECT') }}</span>
               </button>
             </div>
             <div v-else-if="bid.status === 'ACCEPTED'" class="accepted-message">
-              Accepted
+              {{ $t('ACCEPTED') }}
             </div>
           </div>
         </div>
         <div v-else class="no-bids-message">
-          <p>No bids have been placed on this item yet.</p>
+          <p>{{ $t('NO_BIDS_ON_ITEM_YET') }}</p>
         </div>
-      </div> <!-- CLOSE bids-section -->
+      </div>
 
       <div v-if="actionError" class="error-message action-error">
         {{ actionError }}
       </div>
-    </div> <!-- CLOSE item-section -->
-
+    </div>
   </div>
 </template>
 
