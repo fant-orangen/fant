@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stud.ntnu.backend.data.category.CategoryRequestDto;
+import stud.ntnu.backend.data.user.AdminUserUpdateDto;
 import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.User;
@@ -78,11 +79,11 @@ public class AdminController {
   @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<User> updateUser(@Valid @RequestBody
-                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User details to update", required = true, content = @Content(schema = @Schema(implementation = UserUpdateDto.class)))
-                                           UserUpdateDto userUpdateDto,
+                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User details to update", required = true, content = @Content(schema = @Schema(implementation = AdminUserUpdateDto.class)))
+                                         AdminUserUpdateDto userUpdateDto,
                                          @Parameter(description = "ID of the user to update", required = true)
                                          @Positive @PathVariable Long id) {
-    return ResponseEntity.ok(userService.updateUser(userUpdateDto, id));
+    return ResponseEntity.ok(userService.adminUpdateUser(userUpdateDto, id));
   }
 
   /**
@@ -119,6 +120,25 @@ public class AdminController {
       @Parameter(description = "Pagination information (page number, size, sort)")
       Pageable pageable) {
     return ResponseEntity.ok(userService.getAll(pageable));
+  }
+
+  /**
+   * <h3>Get User By ID</h3>
+   * <p>Retrieves user details by user ID.</p>
+   *
+   * @param id the user ID
+   * @return {@link ResponseEntity} containing {@link User} with user details
+   */
+  @GetMapping("/users/{id}")
+  @Operation(summary = "Get User by ID", description = "Retrieves user details based on the provided user ID.")
+  @ApiResponse(responseCode = "200", description = "User details retrieved successfully", content = @Content(schema = @Schema(implementation = User.class)))
+  @ApiResponse(responseCode = "400", description = "Invalid user ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(implementation = String.class)))
+  @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
+  public ResponseEntity<User> getUser(
+      @Parameter(description = "ID of the user to retrieve", required = true) @Positive
+      @PathVariable Long id) {
+    return ResponseEntity.ok(userService.adminGetUserById(id));
   }
 
   /**

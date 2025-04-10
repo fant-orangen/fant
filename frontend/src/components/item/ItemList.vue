@@ -9,19 +9,26 @@
     </div>
 
     <div v-else>
-      <div v-if="items && items.length > 0" class="items-container">
-        <ItemPreview v-for="item in items" :key="item.id" :item="item" />
-      </div>
-      <div v-else class="no-items-message">
+      <transition-group
+        name="fade-resize"
+        tag="div"
+        :class="['items-container', { 'small-thumbnails': smallThumbnails }]"
+      >
+        <ItemPreview
+          v-for="item in items"
+          :key="item.id"
+          :item="item"
+        />
+      </transition-group>
+
+      <div v-if="items?.length === 0" class="no-items-message">
         <p>{{ effectiveEmptyMessage }}</p>
       </div>
 
-      <!-- Infinite scroll loading indicator -->
       <div v-if="!paginationEnabled && isLoading && currentPage > 1" class="loading-indicator">
         <p>Loading more items...</p>
       </div>
 
-      <!-- Pagination controls -->
       <div v-if="paginationEnabled && totalPages > 1" class="pagination-controls">
         <button
           :disabled="currentPage <= 1"
@@ -47,10 +54,11 @@
 import {
   withDefaults,
   defineProps,
-  computed,
   defineEmits,
+  computed,
   onMounted,
-  onUnmounted
+  onUnmounted,
+  watch,
 } from 'vue';
 import ItemPreview from '@/components/item/ItemPreview.vue';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
@@ -63,6 +71,7 @@ interface Props {
   totalPages?: number;
   emptyMessage?: string;
   paginationEnabled?: boolean;
+  smallThumbnails?: boolean;
   fetchFunction?: (page: number, size: number, sort?: string) => Promise<PaginatedItemPreviewResponse>;
 }
 
@@ -74,11 +83,12 @@ const props = withDefaults(defineProps<Props>(), {
   totalPages: 1,
   emptyMessage: 'No items found.',
   paginationEnabled: true,
+  smallThumbnails: false,
   fetchFunction: undefined
 });
 
 const emit = defineEmits<{
-  (e: 'change-page', page: number): void
+  (e: 'change-page', page: number): void;
 }>();
 
 const effectiveEmptyMessage = computed(() => props.emptyMessage || 'No items found.');
@@ -96,10 +106,8 @@ function onScroll() {
   const scrollPosition = window.innerHeight + window.scrollY;
   const bottom = document.documentElement.offsetHeight;
 
-  const nearBottom = scrollPosition >= bottom - scrollThreshold;
-
   if (
-    nearBottom &&
+    scrollPosition >= bottom - scrollThreshold &&
     !props.isLoading &&
     props.currentPage! < props.totalPages!
   ) {
@@ -116,12 +124,21 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
 });
+
+watch(() => props.paginationEnabled, (newVal) => {
+  if (!newVal) {
+    window.addEventListener('scroll', onScroll);
+  } else {
+    window.removeEventListener('scroll', onScroll);
+  }
+});
 </script>
 
 <style scoped>
 .item-list-container {
   width: 100%;
 }
+
 .loading-indicator,
 .error-message,
 .no-items-message {
@@ -129,22 +146,44 @@ onUnmounted(() => {
   margin: 2rem 0;
   color: var(--color-text);
 }
+
 .items-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin-top: 1.5rem;
   border-top: 2px solid lightgray;
+  transition: all 0.3s ease;
 }
+.items-container.small-thumbnails {
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.75rem;
+}
+
 @media (max-width: 1200px) {
   .items-container { grid-template-columns: repeat(3, 1fr); }
+  .items-container.small-thumbnails { grid-template-columns: repeat(6, 1fr); }
 }
 @media (max-width: 900px) {
   .items-container { grid-template-columns: repeat(2, 1fr); }
+  .items-container.small-thumbnails { grid-template-columns: repeat(4, 1fr); }
 }
 @media (max-width: 600px) {
   .items-container { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .items-container.small-thumbnails { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
 }
+
+/* Animation for smoother transitions */
+.fade-resize-enter-active,
+.fade-resize-leave-active {
+  transition: all 0.25s ease;
+}
+.fade-resize-enter-from,
+.fade-resize-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
 .pagination-controls {
   display: flex;
   justify-content: center;
@@ -153,6 +192,7 @@ onUnmounted(() => {
   padding-bottom: 1rem;
   gap: 1rem;
 }
+
 .pagination-button {
   padding: 0.5rem 1rem;
   background-color: var(--color-background-soft);

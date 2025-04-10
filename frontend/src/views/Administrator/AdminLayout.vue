@@ -29,36 +29,43 @@ const { t } = useI18n();
   max-width: 1200px;
   margin: 0 auto;
 }
+
 h1 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--vt-c-text-dark-1);
 }
+
 .admin-nav {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid var(--color-border);
   padding-bottom: 0.8rem;
 }
+
 .admin-nav a {
   padding: 0.8rem 1rem;
   text-decoration: none;
-  color: #495057;
+  color: var(--vt-c-text-dark-2);
   font-weight: 500;
   border-bottom: 3px solid transparent;
+  background: none;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
+
 .admin-nav a:hover {
-  color: #0056b3;
+  color: var(--vt-c-teal-soft);
 }
+
 .admin-nav a.active-link {
-  color: #007bff;
-  border-bottom-color: #007bff;
+  color: var(--vt-c-teal-dark);
+  border-bottom-color: var(--vt-c-teal-dark);
 }
+
 .admin-content {
   margin-top: 1rem;
-  background-color: #fff;
+  background-color: var(--color-background);
   padding: 1.5rem;
   border-radius: 5px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);

@@ -13,7 +13,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import stud.ntnu.backend.data.category.CategoryRequestDto;
+import stud.ntnu.backend.data.user.AdminUserUpdateDto;
 import stud.ntnu.backend.data.user.UserCreateDto;
+import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.Category;
 import stud.ntnu.backend.model.Item;
 import stud.ntnu.backend.model.User;
@@ -66,7 +68,8 @@ public class AdminControllerTest {
         .displayName("Test User")
         .firstName("Test")
         .lastName("User")
-        .passwordHash("$2a$10$dWj9sFMjHcN0M1QasCWBR.uSJDIbZJ3LVsLY4Dw7cXUl8Txa4JBYe") // hashed "password"
+        .passwordHash(
+            "$2a$10$dWj9sFMjHcN0M1QasCWBR.uSJDIbZJ3LVsLY4Dw7cXUl8Txa4JBYe") // hashed "password"
         .phone("+4712345678")
         .role(Role.USER)
         .build();
@@ -78,7 +81,8 @@ public class AdminControllerTest {
         .displayName("Admin User")
         .firstName("Admin")
         .lastName("User")
-        .passwordHash("$2a$10$dWj9sFMjHcN0M1QasCWBR.uSJDIbZJ3LVsLY4Dw7cXUl8Txa4JBYe") // hashed "password"
+        .passwordHash(
+            "$2a$10$dWj9sFMjHcN0M1QasCWBR.uSJDIbZJ3LVsLY4Dw7cXUl8Txa4JBYe") // hashed "password"
         .phone("+4711223344")
         .role(Role.ADMIN)
         .build();
@@ -99,13 +103,14 @@ public class AdminControllerTest {
   @WithMockUser(username = "admin@example.com", roles = {"ADMIN"})
   public void testUpdateUser() throws Exception {
     // Create update DTO
-    UserCreateDto userUpdateDto = new UserCreateDto();
+    AdminUserUpdateDto userUpdateDto = new AdminUserUpdateDto();
     userUpdateDto.setEmail("updated@example.com");
     userUpdateDto.setDisplayName("Updated User");
     userUpdateDto.setFirstName("Updated");
     userUpdateDto.setLastName("User");
-    userUpdateDto.setPhone("+4798765432");
-    userUpdateDto.setPassword("newpassword");
+    userUpdateDto.setPhone("+47987654321");
+    userUpdateDto.setPassword("Password123");
+    userUpdateDto.setRole(Role.ADMIN);
 
     // Perform update request
     mockMvc.perform(put("/api/admin/users/{id}", testUser.getId())
@@ -118,14 +123,14 @@ public class AdminControllerTest {
         .andExpect(jsonPath("$.displayName", is("Updated User")))
         .andExpect(jsonPath("$.firstName", is("Updated")))
         .andExpect(jsonPath("$.lastName", is("User")))
-        .andExpect(jsonPath("$.phone", is("+4798765432")))
-        .andExpect(jsonPath("$.role", is("USER")));
+        .andExpect(jsonPath("$.phone", is("+47987654321")))
+        .andExpect(jsonPath("$.role", is("ADMIN")));
 
     // Verify the database was updated
     User updatedUser = userRepository.findById(testUser.getId()).orElseThrow();
     assertEquals("updated@example.com", updatedUser.getEmail());
     assertEquals("Updated User", updatedUser.getDisplayName());
-    assertEquals(Role.USER, updatedUser.getRole());
+    assertEquals(Role.ADMIN, updatedUser.getRole());
   }
 
   @Test

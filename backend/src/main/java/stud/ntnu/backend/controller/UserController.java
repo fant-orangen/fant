@@ -43,13 +43,13 @@ public class UserController {
 
   /**
    * <h3>Get User By ID</h3>
-   * <p>Retrieves user details by user ID.</p>
+   * <p>Retrieves public user information by user ID.</p>
    *
    * @param id the user ID
-   * @return {@link ResponseEntity} containing {@link UserResponseDto} with user details
+   * @return {@link ResponseEntity} containing {@link UserResponseDto} with public user information
    */
   @GetMapping("/{id}")
-  @Operation(summary = "Get User by ID", description = "Retrieves user details based on the provided user ID.")
+  @Operation(summary = "Get User by ID", description = "Retrieves public user information based on the provided user ID.")
   @ApiResponse(responseCode = "200", description = "User details retrieved successfully", content = @Content(schema = @Schema(implementation = UserResponseDto.class)))
   @ApiResponse(responseCode = "400", description = "Invalid user ID", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(implementation = String.class)))
   @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
@@ -78,7 +78,7 @@ public class UserController {
                                          UserUpdateDto userUpdateDto,
                                          @Parameter(hidden = true) Principal principal) {
     return ResponseEntity.ok(
-        userService.updateUser(userUpdateDto, userService.getCurrentUserId(principal)));
+        userService.verifyAndUpdate(userUpdateDto, userService.getCurrentUserId(principal)));
   }
 
   /**

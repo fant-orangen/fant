@@ -1,6 +1,5 @@
 <template>
   <section class="homepage">
-
     <div class="search-section">
       <SearchBar
         @update:searchTerm="onSearchTermUpdate"
@@ -9,18 +8,45 @@
         @update:sortOption="onSortOptionUpdate"
         @update:maxPrice="onMaxPriceUpdate"
         @update:minPrice="onMinPriceUpdate"
-        :is-location-available="isLocationAvailable" />
+        :is-location-available="isLocationAvailable"
+      />
       <p v-if="locationError" class="location-error">{{ locationError }}</p>
       <p v-if="isFetchingLocation" class="location-info">Getting your location...</p>
     </div>
 
     <div class="category-section">
-      <CategoryGrid
-        layout="horizontal"
-        @select="onCategoryClick"
-        :selectedCategoryId="selectedCategoryId"
-      />
-      <button v-if="selectedCategoryId" @click="clearCategorySelection" class="clear-category-button">
+      <div class="category-container">
+        <div class="scroll-wrapper">
+          <CategoryGrid
+            layout="horizontal"
+            @select="onCategoryClick"
+            :selectedCategoryId="selectedCategoryId"
+          />
+        </div>
+
+        <div class="display-button-wrapper">
+          <div class="button-stack">
+            <CategoryButton
+              :label="thumbnailToggleLabel"
+              :icon="thumbnailicon"
+              @click="onToggleThumbnailSize"
+              class="toggle-scroll-button"
+            />
+            <CategoryButton
+              :label="scrollToggleLabel"
+              :icon="scrollicon"
+              @click="onScrollButtonClick"
+              class="toggle-scroll-button"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button
+        v-if="selectedCategoryId"
+        @click="clearCategorySelection"
+        class="clear-category-button"
+      >
         Clear Category Filter
       </button>
     </div>
@@ -33,81 +59,114 @@
         :current-page="currentPage"
         :total-pages="totalPages"
         @change-page="onPageChange"
+        :paginationEnabled="paginationEnabled"
+        :smallThumbnails="displaySmallThumbnails"
         emptyMessage="No items found matching your criteria. Try adjusting filters."
-        :paginationEnabled="paginationEnabled" />
+      />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import CategoryGrid from '@/components/category/CategoryGrid.vue'
+import CategoryButton from '@/components/category/CategoryButton.vue'
 import ItemList from '@/components/item/ItemList.vue'
 import SearchBar from '@/components/search/searchBar.vue'
 import {
   searchItems,
   type ItemSearchParams,
-  fetchItemsByDistribution
+  fetchItemsByDistribution,
 } from '@/services/ItemService'
 import type { ItemPreviewType } from '@/models/Item'
-import { fetchCategories } from '@/services/CategoryService';
-import type { Category } from '@/models/Category';
+import { fetchCategories } from '@/services/CategoryService'
+import type { Category } from '@/models/Category'
 import {
   fetchCategoryRecommendations,
-  fetchUserViewCount
+  fetchUserViewCount,
 } from '@/services/RecommendationService.ts'
 import { useUserStore } from '@/stores/UserStore.ts'
+import { useI18n } from 'vue-i18n'
 
+// --- Icons ---
+import scrollicon from '@/assets/icons/scrollicon.svg'
+import thumbnailicon from '@/assets/icons/thumbnailicon.svg'
 
-// --- Filter States ---
+// --- i18n ---
+const { t } = useI18n()
+
+// --- Filters & State ---
 const selectedCategoryId = ref<string | null>(null)
 const searchTerm = ref<string>('')
-const maxDistance = ref<number | null>(50) // Default distance
+const maxDistance = ref<number | null>(50)
 const currentLatitude = ref<number | null>(null)
 const currentLongitude = ref<number | null>(null)
 const sortOption = ref<string>('default')
 const minPrice = ref<number | null>(null)
 const maxPrice = ref<number | null>(null)
-const categories = ref<Category[]>([]);
+const categories = ref<Category[]>([])
 
-// --- Data & UI States ---
-const items = ref<ItemPreviewType[]>([]);
-const currentPage = ref(1);
-const totalPages = ref(1);
-const isLoading = ref(false);
-const error = ref<string | null>(null);
-const isFetchingLocation = ref(false);
-const insufficientItemViews = ref(false);
-const locationError = ref<string | null>(null);
-const pageSize = ref(12);
+// --- Items & UI ---
+const items = ref<ItemPreviewType[]>([])
+const currentPage = ref(1)
+const totalPages = ref(1)
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+const isFetchingLocation = ref(false)
+const insufficientItemViews = ref(false)
+const locationError = ref<string | null>(null)
+const pageSize = ref(12)
 
-const numOfViewsLimit = 3
-const paginationEnabled = ref(true); // Or false to test infinite scroll
+const paginationEnabled = ref(localStorage.getItem('paginationEnabled') !== 'false')
+watch(paginationEnabled, newVal => {
+  localStorage.setItem('paginationEnabled', String(newVal))
+})
 
-// --- Computed Properties ---
-const isLocationAvailable = computed(() => {
-  return currentLatitude.value !== null && currentLongitude.value !== null;
-});
+const displaySmallThumbnails = ref(false)
+const scrollToggleLabel = computed(() =>
+  paginationEnabled.value ? t('SCROLL_SETTING_SCROLL') : t('SCROLL_SETTING_PAGE')
+)
+const thumbnailToggleLabel = computed(() =>
+  displaySmallThumbnails.value ? t('THUMBNAIL_SETTING_LARGE') : t('THUMBNAIL_SETTING_SMALL')
+)
+
+// --- Button Actions ---
+function onScrollButtonClick() {
+  paginationEnabled.value = !paginationEnabled.value
+  currentPage.value = 1
+  items.value = []
+  nextTick(() => fetchItems())
+}
+
+function onToggleThumbnailSize() {
+  displaySmallThumbnails.value = !displaySmallThumbnails.value
+}
+
+// --- Computed ---
+const isLocationAvailable = computed(() =>
+  currentLatitude.value !== null && currentLongitude.value !== null
+)
 
 const selectedCategoryName = computed(() => {
-  if (!selectedCategoryId.value) return null;
-  const foundCategory = categories.value.find(cat => cat.id?.toString() === selectedCategoryId.value);
-  return foundCategory ? foundCategory.name : null;
-});
+  if (!selectedCategoryId.value) return null
+  const foundCategory = categories.value.find(
+    cat => cat.id?.toString() === selectedCategoryId.value
+  )
+  return foundCategory ? foundCategory.name : null
+})
 
 const backendSortParam = computed(() => {
   switch (sortOption.value) {
-    case 'price_asc': return 'price,asc';
-    case 'price_desc': return 'price,desc';
-    default: return null;
+    case 'price_asc': return 'price,asc'
+    case 'price_desc': return 'price,desc'
+    default: return null
   }
-});
+})
 
-// --- Methods ---
+// --- Fetch Items ---
 async function fetchItems() {
-  isLoading.value = true;
-  error.value = null;
-  console.log(`Workspacing items for page: ${currentPage.value}`);
+  isLoading.value = true
+  error.value = null
 
   const params: ItemSearchParams = {
     searchTerm: searchTerm.value || null,
@@ -120,196 +179,136 @@ async function fetchItems() {
     maxDistance: isLocationAvailable.value ? maxDistance.value : null,
     page: currentPage.value - 1,
     size: pageSize.value,
-    sort: backendSortParam.value ?? undefined
-  };
+    sort: backendSortParam.value ?? undefined,
+  }
 
   try {
-    const isRecommendationSelected = selectedCategoryId.value === '-1';
+    const isRecommendationSelected = selectedCategoryId.value === '-1'
 
     if (useUserStore().isLoggedInUser && isRecommendationSelected) {
-      const numOfViews = await fetchUserViewCount();
-      if (numOfViews > numOfViewsLimit) {
-        const recommendations = await fetchCategoryRecommendations();
-        const response = await fetchItemsByDistribution(recommendations);
-        items.value = response.content ?? [];
-        totalPages.value = response.totalPages ?? 1;
+      const views = await fetchUserViewCount()
+      if (views > 3) {
+        const recs = await fetchCategoryRecommendations()
+        const response = await fetchItemsByDistribution(recs)
+        items.value = response.content ?? []
+        totalPages.value = response.totalPages ?? 1
       } else {
-        items.value = [];
-        totalPages.value = 1;
-        error.value = "You have insufficient item views to fetch recommendations.";
-        insufficientItemViews.value = true;
+        items.value = []
+        totalPages.value = 1
+        error.value = 'You have insufficient item views to fetch recommendations.'
+        insufficientItemViews.value = true
       }
     } else if (!useUserStore().isLoggedInUser && isRecommendationSelected) {
-      items.value = [];
-      totalPages.value = 1;
-      error.value = "You must be logged in to view recommended items.";
+      items.value = []
+      totalPages.value = 1
+      error.value = 'You must be logged in to view recommended items.'
     } else {
-      const response = await searchItems(params);
-
-      // 🔁 Append mode only when infinite scroll
+      const response = await searchItems(params)
       if (paginationEnabled.value && currentPage.value === 1) {
-        items.value = response.content ?? [];
+        items.value = response.content ?? []
       } else if (!paginationEnabled.value && currentPage.value > 1) {
-        items.value.push(...(response.content ?? []));
+        items.value.push(...(response.content ?? []))
       } else {
-        items.value = response.content ?? [];
+        items.value = response.content ?? []
       }
-
-      totalPages.value = response.totalPages ?? 1;
+      totalPages.value = response.totalPages ?? 1
     }
   } catch (err) {
-    console.error("Error fetching items:", err);
-    error.value = 'Failed to load items. Please try again later.';
-    items.value = [];
-    totalPages.value = 1;
+    console.error('Error fetching items:', err)
+    error.value = 'Failed to load items. Please try again later.'
+    items.value = []
+    totalPages.value = 1
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
 // --- Event Handlers ---
 function onCategoryClick(categoryId: string) {
-  selectedCategoryId.value = selectedCategoryId.value === categoryId ? null : categoryId;
-  // Don't reset page here, watcher will handle it
+  selectedCategoryId.value = selectedCategoryId.value === categoryId ? null : categoryId
 }
-
 function clearCategorySelection() {
-  selectedCategoryId.value = null;
-  // Don't reset page here, watcher will handle it
+  selectedCategoryId.value = null
 }
-
-function onSearchTermUpdate(newSearchTerm: string) {
-  searchTerm.value = newSearchTerm;
-  // Don't reset page here, watcher will handle it
+function onSearchTermUpdate(val: string) {
+  searchTerm.value = val
 }
-
-function onMaxDistanceUpdate(newMaxDistance: number | null) {
-  maxDistance.value = newMaxDistance;
-  // Don't reset page here, watcher will handle it if location is available
+function onMaxDistanceUpdate(val: number | null) {
+  maxDistance.value = val
 }
-
-function onSortOptionUpdate(newSortOption: string) {
-  sortOption.value = newSortOption;
-  // Don't reset page here, watcher will handle it
+function onSortOptionUpdate(val: string) {
+  sortOption.value = val
 }
-
-function onMinPriceUpdate(newMinPrice: number | null) {
-  minPrice.value = newMinPrice;
-  // Don't reset page here, watcher will handle it
+function onMinPriceUpdate(val: number | null) {
+  minPrice.value = val
 }
-
-function onMaxPriceUpdate(newMaxPrice: number | null) {
-  maxPrice.value = newMaxPrice;
-  // Don't reset page here, watcher will handle it
+function onMaxPriceUpdate(val: number | null) {
+  maxPrice.value = val
 }
-
-function onPageChange(newPage: number) {
-  if (newPage >= 1 && newPage <= totalPages.value) {
-    currentPage.value = newPage;
-    // fetchItems(); // Watcher handles this
+function onPageChange(page: number) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
   }
 }
-
 function fetchCurrentUserLocation() {
   if (!navigator.geolocation) {
-    locationError.value = "Geolocation is not supported by your browser.";
-    isFetchingLocation.value = false;
-    return;
+    locationError.value = 'Geolocation is not supported by your browser.'
+    return
   }
-  isFetchingLocation.value = true;
-  locationError.value = null;
+
+  isFetchingLocation.value = true
   navigator.geolocation.getCurrentPosition(
-    (position) => {
-      currentLatitude.value = position.coords.latitude;
-      currentLongitude.value = position.coords.longitude;
-      console.log(`Location obtained: Lat ${currentLatitude.value}, Lon ${currentLongitude.value}`);
-      locationError.value = null;
-      isFetchingLocation.value = false;
-      // Don't need to reset page or call fetchItems here, watcher will detect coordinate changes
+    pos => {
+      currentLatitude.value = pos.coords.latitude
+      currentLongitude.value = pos.coords.longitude
+      isFetchingLocation.value = false
+      locationError.value = null
     },
-    (error) => {
-      console.error("Error getting location: ", error);
-      currentLatitude.value = null; // Reset location on error
-      currentLongitude.value = null;
-      switch(error.code) {
-        case error.PERMISSION_DENIED: locationError.value = "Permission denied."; break;
-        case error.POSITION_UNAVAILABLE: locationError.value = "Location unavailable."; break;
-        case error.TIMEOUT: locationError.value = "Location request timed out."; break;
-        default: locationError.value = "Error fetching location."; break;
-      }
-      isFetchingLocation.value = false;
-      // Trigger fetch to update list without location filter if needed
-      // fetchItems(); // Or rely on watcher detecting null coordinates
+    err => {
+      console.error('Geolocation error:', err)
+      currentLatitude.value = null
+      currentLongitude.value = null
+      isFetchingLocation.value = false
+      locationError.value = 'Failed to get your location.'
     }
-  );
+  )
 }
 
-// --- Watchers to trigger fetchItems ---
+// --- Watch to trigger item fetch ---
 watch(
   [
     searchTerm,
     minPrice,
     maxPrice,
-    selectedCategoryId, // Watch computed name derWived from ID
+    selectedCategoryId,
     sortOption,
-    // Watch location refs directly
     currentLatitude,
     currentLongitude,
     maxDistance,
-    // Keep watching currentPage last
     currentPage,
   ],
-  (newValues, oldValues) => {
-    // Identify if the change was ONLY the currentPage
-    const pageIndex = newValues.length - 1; // Index of currentPage
-    let pageChangedOnly = true;
-    for (let i = 0; i < pageIndex; i++) {
-      if (newValues[i] !== oldValues[i]) {
-        pageChangedOnly = false;
-        break;
-      }
-    }
+  (newVals, oldVals) => {
+    const pageIndex = newVals.length - 1
+    const onlyPageChanged = newVals.every((val, i) => i === pageIndex || val === oldVals[i])
 
-    // If a filter (not page) changed, reset to page 1
-    if (!pageChangedOnly && currentPage.value !== 1) {
-      console.log("Filters changed, resetting page to 1.");
-      // This will trigger the watcher again, but only fetchItems once when page becomes 1
-      currentPage.value = 1;
+    if (!onlyPageChanged && currentPage.value !== 1) {
+      currentPage.value = 1
     } else {
-      // If only page changed, or if filters changed and page is already 1
-      console.log("Watcher triggered, fetching items.");
-      fetchItems();
+      fetchItems()
     }
   },
-  { deep: true } // deep might be needed if watching nested objects, but check performance
-);
+  { deep: true }
+)
 
-
-// --- Initial Data Load ---
-async function loadInitialData() {
-  isLoading.value = true;
-
-  try {
-    categories.value = await fetchCategories(); // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
-    await fetchItems();
-  } catch (err) {
-    console.error("Error loading initial data:", err);
-    error.value = "Failed to load initial page data.";
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-onMounted(loadInitialData);
-
+onMounted(() => {
+  fetchCategories().then(res => categories.value = res)
+  fetchItems()
+})
 </script>
 
 <style scoped>
-@import '@/assets/styles/responsiveStyles.css'; /* [cite: uploaded:frontend 6/frontend/src/assets/styles/responsiveStyles.css] */
-/* Styles remain the same as previous version */
-.homepage {
-  /* Add any specific homepage layout styles if needed */
-}
+@import '@/assets/styles/responsiveStyles.css';
+
 .search-section {
   padding: 1rem 0;
   margin-bottom: 1rem;
@@ -318,31 +317,63 @@ onMounted(loadInitialData);
   align-items: center;
   gap: 0.5rem;
 }
+
 .category-section {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  width: 100%;
 }
-.items-section {
-  /* Styles for the item listing area */
+
+.category-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  overflow: hidden;
+  gap: 1rem;
 }
-.location-error {
-  color: red;
+
+.scroll-wrapper {
+  flex-grow: 1;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.display-button-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toggle-scroll-button {
+  width: 80px;
+  height: 60px;
+  padding: 0;
+  border: 1px solid var(--vt-c-teal-text-light);
+}
+
+.location-error,
+.location-info {
   font-size: 0.9em;
   text-align: center;
   max-width: 80%;
 }
+
+.location-error {
+  color: red;
+}
 .location-info {
   color: #555;
-  font-size: 0.9em;
-  text-align: center;
-}
-.recommendation-info {
-  color: #555;
-  font-size: 0.9em;
-  text-align: center;
 }
 
 .clear-category-button {
@@ -355,6 +386,7 @@ onMounted(loadInitialData);
   font-size: 0.9rem;
   transition: background-color 0.2s ease;
 }
+
 .clear-category-button:hover {
   background-color: var(--color-border);
 }

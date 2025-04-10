@@ -23,16 +23,17 @@ const { t } = useI18n();
 
 <style scoped>
 .profile-overview {
-  /* Add specific styles if needed, or rely on layout */
   padding: 1rem;
-  background-color: #f9f9f9;
+  background-color: var(--color-background-soft);
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--color-border);
 }
+
 h1 {
   margin-top: 0;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.5rem;
+  color: var(--vt-c-text-dark-1);
 }
 </style>

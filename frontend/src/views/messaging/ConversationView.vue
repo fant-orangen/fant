@@ -14,7 +14,7 @@ import {
   readMessages,
 } from '@/services/MessageService'
 import { fetchCurrentUserId } from '@/services/UserService'
-
+import '@/assets/styles/buttons/buttons.css'
 const route = useRoute()
 
 const messages = ref<Message[]>([])
@@ -276,7 +276,7 @@ watch(conversationId, async (newId, oldId) => {
         @keyup.enter.prevent="handleSendMessage"
         :disabled="sending || loading || !!error"
       ></textarea>
-      <button
+      <button class="edit-button"
         @click="handleSendMessage"
         :disabled="!newMessageContent.trim() || sending || loading || !!error"
       >
@@ -287,10 +287,10 @@ watch(conversationId, async (newId, oldId) => {
 </template>
 
 <style scoped>
-/**
- * Main container styles
- * Full-height flex container with fixed width and border
- */
+  /**
+   * Main container styles
+   * Full-height flex container with fixed width and border
+   */
 .conversation-view {
   display: flex;
   flex-direction: column;
@@ -300,6 +300,7 @@ watch(conversationId, async (newId, oldId) => {
   border-radius: 8px;
   overflow: hidden;
   max-width: 800px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
   background-color: #fff;
 }
 
@@ -329,14 +330,14 @@ watch(conversationId, async (newId, oldId) => {
  */
 .back-link {
   font-size: 0.9em;
-  color: #007bff;
+  color: var(--vt-c-teal-soft); /* Primary color for links */
   text-decoration: none;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .back-link:hover {
-  text-decoration: underline;
+  color: var(--vt-c-teal-dark);
 }
 
 /**
@@ -420,10 +421,11 @@ watch(conversationId, async (newId, oldId) => {
 .item-title-link {
   text-decoration: none;
   color: #333;
+  background: none;
 }
 
 .item-title-link:hover h3 {
-  color: #007bff;
+  color: var(--vt-c-teal-dark); /* Teal accent */
   text-decoration: underline;
 }
 
@@ -507,20 +509,21 @@ watch(conversationId, async (newId, oldId) => {
 /**
  * Sent message styling (green gradient)
  */
-.message-bubble-wrapper.sent .message-bubble {
-  background: linear-gradient(to bottom, #20a830, #187f27);
-  color: white;
-  border-bottom-right-radius: 5px;
-}
+  .message-bubble-wrapper.sent .message-bubble {
+    background: linear-gradient(to bottom, var(--vt-c-teal-soft), var(--vt-c-teal-dark));
+    color: var(--vt-c-white);
+    border-bottom-right-radius: 5px;
+  }
 
 /**
  * Received message styling (blue gradient)
  */
-.message-bubble-wrapper.received .message-bubble {
-  background: linear-gradient(to bottom, #72b1d6, #5d9bb6);
-  color: black;
-  border-bottom-left-radius: 5px;
-}
+  .message-bubble-wrapper.received .message-bubble {
+    background: linear-gradient(to bottom, var(--vt-c-white-soft), var(--vt-c-white-mute));
+    color: var(--vt-c-indigo);
+    border: 1px solid var(--vt-c-teal-light);
+    border-bottom-left-radius: 5px;
+  }
 
 /**
  * Message text content styling
@@ -547,16 +550,16 @@ watch(conversationId, async (newId, oldId) => {
 /**
  * Color adjustment for timestamp on sent messages
  */
-.message-bubble-wrapper.sent .message-timestamp {
-  color: #e0e0e0;
-}
+  .message-bubble-wrapper.sent .message-timestamp {
+    color: var(--vt-c-white-soft);
+  }
 
 /**
  * Color adjustment for timestamp on received messages
  */
-.message-bubble-wrapper.received .message-timestamp {
-  color: #555;
-}
+  .message-bubble-wrapper.received .message-timestamp {
+    color: var(--vt-c-text-light-2);
+  }
 
 /**
  * Message input area styling
@@ -574,39 +577,45 @@ watch(conversationId, async (newId, oldId) => {
  * Text input field styling
  * Flexible width with rounded corners
  */
-.message-input-area textarea {
-  flex-grow: 1;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  resize: none;
-  margin-right: 0.75rem;
-  min-height: 40px;
-  max-height: 100px;
-  line-height: 1.4;
-  font-size: 0.95em;
-}
+  .message-input-area textarea {
+    flex-grow: 1;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    resize: none;
+    margin-right: 0.75rem;
+    min-height: 40px;
+    max-height: 100px;
+    line-height: 1.4;
+    font-size: 0.95em;
+    outline: none; /* Remove default focus outline */
+  }
 
-/**
- * Send button styling
- */
-.message-input-area button {
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
+  /**
+   * Focus state for textarea
+   */
+  .message-input-area textarea:focus {
+    border-color: var(--vt-c-teal-soft);
+    box-shadow: 0 0 0 2px var(--vt-c-teal-divider-light);
+    outline: none;
+  }
 /**
  * Send button hover state
  */
 .message-input-area button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--vt-c-teal-light); /* Darker teal for hover */
 }
+
+  .message-input-area button {
+    background-color: var(--vt-c-teal-soft);
+    color: var(--vt-c-white);
+    border: none;
+    border-radius: 20px;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
 
 /**
  * Send button disabled state
