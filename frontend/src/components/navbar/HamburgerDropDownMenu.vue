@@ -83,8 +83,8 @@ import IconWithText from '@/components/icons/IconWithText.vue';
 // Import icons
 import userIcon from '@/assets/icons/user.svg';
 import addIcon from '@/assets/icons/add.svg';
-import notificationNewIcon from '@/assets/icons/notificationNew.svg';
-import notificationIcon from '@/assets/icons/notification.svg';
+import notificationNewIcon from '@/assets/icons/messageNew.svg';
+import notificationIcon from '@/assets/icons/message.svg';
 import mapIcon from '@/assets/icons/map.svg';
 import hamburgerIcon from '@/assets/icons/hamburger.svg';
 
