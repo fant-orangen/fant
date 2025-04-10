@@ -393,7 +393,7 @@ public class ItemService {
         .description(item.getFullDescription())
         .category(item.getCategory() != null ? item.getCategory().getName() : "")
         .price(item.getPrice())
-        .contact(item.getSeller() != null ? item.getSeller().getDisplayName() : "")
+        .contact(item.getSeller() != null ? item.getSeller().getEmail() : "")
         .sellerId(item.getSeller() != null ? item.getSeller().getId() : null).imageUrls(imageUrls)
         .latitude(item.getLatitude()).longitude(item.getLongitude()).build();
   }
