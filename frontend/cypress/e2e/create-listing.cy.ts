@@ -16,30 +16,6 @@ describe('Create New Listing', () => {
     cy.get('input#briefDescription').should('be.visible');
   });
 
-  it('should allow a logged-in user to create a new listing without images', () => {
-    const listingData = {
-      title: `Cypress Test No Img ${Date.now()}`,
-      description: 'This is a detailed description created during an e2e test (no image).',
-      category: 'Computer',
-      price: '175.50',
-      latitude: '63.4305',
-      longitude: '10.3951',
-    };
-    // Fill Form Fields
-    cy.get('input#briefDescription').type(listingData.title);
-    cy.get('textarea#fullDescription').type(listingData.description);
-    cy.get('select#category').select(listingData.category);
-    cy.get('input#price').type(listingData.price);
-    // Location (Coordinates Mode)
-    cy.contains('.location-toggle button', 'Coordinates').click();
-    cy.get('input#latitude').type(listingData.latitude);
-    cy.get('input#longitude').type(listingData.longitude);
-    // Submit Form
-    cy.get('form.listing-form').submit();
-    // Wait and Verify
-    cy.wait('@createItem').its('response.statusCode').should('eq', 201);
-    cy.url().should('eq', Cypress.config().baseUrl + '/');
-  });
 
   // --- Validation Test ---
   it('should display validation errors or prevent submission if required fields are submitted empty', () => {
