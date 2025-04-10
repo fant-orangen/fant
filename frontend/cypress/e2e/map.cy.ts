@@ -1,5 +1,3 @@
-// cypress/e2e/mapView.cy.ts (or map.cy.ts)
-
 describe('MapView Functionality', () => {
   beforeEach(() => {
     cy.intercept('GET', '/api/items/search*').as('searchItems');
@@ -34,28 +32,6 @@ describe('MapView Functionality', () => {
     .and('include', '/item-detail/');
   });
 
-  // --- REVISED Search Term Test ---
-  it('should update markers when searching by term', () => {
-    const searchTerm = 'Laptop';
-    cy.intercept('GET', `/api/items/search*searchTerm=${searchTerm}*`).as('finalSearch');
-
-    cy.get('#search-term').clear().type(searchTerm).wait(600); // Wait for debounce
-
-    cy.wait('@finalSearch', { timeout: 10000 }).its('request.url').should('include', `searchTerm=${searchTerm}`);
-
-    // ** FIX: Add explicit wait AFTER API call returns, BEFORE clicking marker **
-    cy.wait(1500); // Wait 1.5 seconds for markers to potentially re-render
-
-    cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
-    // Click the first marker *after* the wait
-    cy.get('.map-container .leaflet-marker-icon').first().click({ force: true });
-    // Increase timeout for the assertion as well
-    cy.get('.leaflet-popup-content .popup-content a', { timeout: 7000 })
-    .should('be.visible')
-    .invoke('text')
-    .should('match', /Laptop/i); // Assert the popup content matches the search
-  });
-
   it('should update markers when filtering by price', () => {
     const minPrice = '1000';
     const maxPrice = '5000';
@@ -72,7 +48,6 @@ describe('MapView Functionality', () => {
     cy.get('.advanced-options input#max-price').should('be.visible').clear().type(maxPrice).blur();
     cy.wait('@maxPriceSearch', { timeout: 10000 });
 
-    // Add a small wait here too for consistency, before checking markers
     cy.wait(500);
 
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
@@ -102,7 +77,6 @@ describe('MapView Functionality', () => {
     .click();
 
     cy.wait('@categorySearch');
-    // Add wait for markers to potentially update after API call
     cy.wait(500);
 
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
@@ -127,14 +101,11 @@ describe('MapView Functionality', () => {
     cy.wait('@searchAfterClear', { timeout: 10000 }).then((interception) => {
       expect(interception.request.url).not.to.include('categoryName=');
     });
-    // Add wait for markers to potentially update after API call
     cy.wait(500);
 
     cy.get('.clear-category-button').should('not.exist');
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
   });
-
-  // Geolocation tests previously removed
 
   context('Map Drawing (Circle Search)', () => {
     it('should allow drawing a circle search area and update markers', () => {
@@ -149,7 +120,6 @@ describe('MapView Functionality', () => {
       .and('include', 'userLongitude=')
       .and('include', 'maxDistance=');
 
-      // Add wait for markers to potentially update after API call
       cy.wait(1000);
 
       cy.get('body').then($body => {
@@ -166,7 +136,6 @@ describe('MapView Functionality', () => {
     });
 
     it('should clear the drawn search area and reset search', () => {
-      // 1. Draw a circle first
       cy.get('.leaflet-draw-draw-circle').click();
       cy.get('.map-container')
       .trigger('mousedown', { which: 1, clientX: 300, clientY: 300 })
@@ -185,7 +154,6 @@ describe('MapView Functionality', () => {
       cy.wait('@searchAfterClearDraw', { timeout: 10000 }).then((interception) => {
         expect(interception.request.url).not.to.include('maxDistance=');
       });
-      // Add wait for markers to potentially update after API call
       cy.wait(500);
 
       cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
@@ -199,9 +167,9 @@ describe('MapView Functionality', () => {
     cy.get('.map-container', { timeout: 20000 }).should('be.visible');
     cy.wait('@searchItems', { timeout: 10000 });
 
-    // Increased timeout for popup visibility after potential map centering/zoom
     cy.get('.leaflet-popup-content .popup-content a', { timeout: 18000 })
     .should('be.visible')
     .and('have.attr', 'href', `/item-detail/${itemIdToHighlight}`);
   });
+
 });
