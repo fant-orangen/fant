@@ -34,7 +34,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven
+      - name: Build and test with Maven
         run: mvn -B test --file pom.xml
 
       - name: Upload JaCoCo exec file
