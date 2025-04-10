@@ -241,8 +241,8 @@ onMounted(loadCategories);
 }
 
 .all-categories-button.active {
-  background-color: #e0f2fe;
-  border-color: #93c5fd;
+  background-color: var(--vt-c-teal-divider-light);
+  border-color: var(--vt-c-teal-dark);
 }
 
 .all-icon {
@@ -323,13 +323,12 @@ onMounted(loadCategories);
 }
 
 .recommended-button {
-  border-width: 2px;
-  border-color: #22c55e; /* Tailwind's emerald-500: a nice green */
+  border-width: 2px; /* Tailwind's emerald-500: a nice green */
 }
 
 .recommended-button.active {
-  border-color: #22c55e;
-  background-color: #f0fdf4;
+  border-color: var(--vt-c-teal-dark);
+  background-color: var(--vt-c-teal-divider-light);
 }
 
 

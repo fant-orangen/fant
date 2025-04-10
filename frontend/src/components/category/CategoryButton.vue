@@ -88,8 +88,8 @@ defineProps<{
  * Active (selected) state styling
  */
 .category-button.active {
-  background-color: #e0f2fe; /* Light blue background */
-  border-color: #93c5fd; /* Blue border for emphasis */
+  background-color: var(--vt-c-teal-divider-light); /* Light blue background */
+  border-color: var(--vt-c-teal-dark); /* Blue border for emphasis */
 }
 
 /**

@@ -45,7 +45,7 @@ function handleClick() {
 
 .item-preview:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(118, 183, 178, 0.7);
 }
 
 .image-container {

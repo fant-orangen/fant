@@ -95,7 +95,7 @@ async function registerUser() {
         :label="$t('PHONENUMBER')"
         :placeholder="$t('PHONENUMBER')"
       />
-      <button type="submit" :disabled="isLoading">{{ $t('REGISTRATION_BUTTON') }}</button>
+      <button class="submit-button" type="submit" :disabled="isLoading">{{ $t('REGISTRATION_BUTTON') }}</button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
     <router-link to="/login">{{ $t('REGISTRATION_ACCOUNT_QUESTION') }}</router-link>

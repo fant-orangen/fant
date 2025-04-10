@@ -166,12 +166,12 @@ function toggleAdvancedSearch() {
 </template>
 
 <style scoped>
-/* --- Main Container --- */
+
 .search-controls-container {
   padding: 1rem 1.5rem;
-  background-color: #f8f8f8;
+  background-color: var(--vt-c-white-soft); /* #f8f8f8 */
   border-radius: 6px;
-  border: 1px solid #eee;
+  border: 1px solid var(--vt-c-divider-light-2); /* Subtle light border */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -200,18 +200,19 @@ function toggleAdvancedSearch() {
 /* --- Toggle Button --- */
 .advanced-toggle-button {
   padding: 0.6rem 0.8rem;
-  background-color: #e0e0e0;
-  border: 1px solid #ccc;
+  background-color: var(--vt-c-white-soft); /* Using light background */
+  border: 1px solid var(--vt-c-divider-light-1);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.85rem;
-  color: #333;
+  color: var(--vt-c-text-dark-2);
   white-space: nowrap;
   transition: background-color 0.2s;
   flex-shrink: 0;
 }
+
 .advanced-toggle-button:hover {
-  background-color: #d0d0d0;
+  background-color: var(--vt-c-white-mute); /* Slightly darker muted white */
 }
 
 /* --- Advanced Options Container --- */
@@ -220,7 +221,7 @@ function toggleAdvancedSearch() {
   flex-wrap: wrap;
   gap: 1rem;
   width: 100%;
-  border-top: 1px dashed #ddd;
+  border-top: 1px dashed var(--vt-c-divider-light-2);
   padding-top: 1rem;
   align-items: flex-start;
   justify-content: flex-start;
@@ -239,11 +240,13 @@ function toggleAdvancedSearch() {
 .number-input,
 .select-input {
   padding: 0.6rem 0.8rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--vt-c-divider-light-1);
   border-radius: 4px;
   font-size: 0.95rem;
   box-sizing: border-box;
   width: 100%;
+  background-color: var(--vt-c-white);
+  color: var(--vt-c-text-dark-2);
 }
 
 .number-input {
@@ -278,8 +281,8 @@ function toggleAdvancedSearch() {
 
 .location-button {
   padding: 0.6rem 1rem;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--vt-c-teal-soft); /* Using medium soft teal */
+  color: var(--vt-c-white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -288,9 +291,11 @@ function toggleAdvancedSearch() {
   width: 100%; /* full width in a column layout */
   text-align: center;
 }
+
 .location-button:hover {
-  background-color: #0056b3;
+  background-color: var(--vt-c-teal-dark); /* Darker teal for hover */
 }
+
 
 /* --- Responsive Adjustments (Optional) ---
    If you don't want any layout changes for the location group at larger screens,

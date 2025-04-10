@@ -38,17 +38,18 @@ function nextPage() {
 <style scoped>
 .gallery-container {
   width: 100%;
-  aspect-ratio: 1 / 1;
   position: relative;
+  /* Remove the fixed aspect-ratio */
+  max-width: 100%; /* Half width */
+  margin: 0 auto; /* Center horizontally */
 }
 
 .gallery {
   display: flex;
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative; /* Change from absolute */
   width: 100%;
-  height: 100%;
+  min-height: 300px; /* Minimum height */
+  max-height: 60vh; /* Maximum height relative to viewport */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -56,6 +57,8 @@ function nextPage() {
   object-fit: contain;
   width: 100%;
   height: 100%;
+  max-height: 60vh; /* Ensure image doesn't exceed viewport */
+  margin: auto; /* Center the image */
 }
 
 .nav-button {
