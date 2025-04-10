@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import stud.ntnu.backend.data.user.UserCreateDto;
+import stud.ntnu.backend.data.user.UserUpdateDto;
 import stud.ntnu.backend.model.User;
 import stud.ntnu.backend.model.enums.Role;
 import stud.ntnu.backend.repository.UserRepository;
@@ -35,6 +37,8 @@ public class UserControllerTest {
   private UserRepository userRepository;
 
   private User testUser;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @BeforeEach
   void setup() {
@@ -43,7 +47,7 @@ public class UserControllerTest {
         .displayName("DisplayName")
         .firstName("First")
         .lastName("Last")
-        .passwordHash("secure")
+        .passwordHash(passwordEncoder.encode("Password123"))
         .phone("+4798765432")
         .role(Role.USER)
         .build());
@@ -80,8 +84,9 @@ public class UserControllerTest {
   @Test
   @WithMockUser(username = "testuser@example.com")
   void updateUser_shouldUpdateAndReturnUser() throws Exception {
-    UserCreateDto dto =
-        new UserCreateDto("mail@mail.com", "password", "NewDisplay", "test", "testy",
+    UserUpdateDto dto =
+        new UserUpdateDto("Password123", "mail@mail.com", "Password1234", "NewDisplay", "test",
+            "testy",
             "+4712345678");
 
     mockMvc.perform(put("/api/users/profile")

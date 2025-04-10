@@ -62,7 +62,7 @@ public class AuthControllerTest {
   public void testRegister_ShouldReturnJwtToken() throws Exception {
     UserCreateDto registerDto = new UserCreateDto();
     registerDto.setEmail("newuser@example.com");
-    registerDto.setPassword("newPassword");
+    registerDto.setPassword("Password123");
     registerDto.setDisplayName("New User");
     registerDto.setFirstName("New");
     registerDto.setLastName("User");

@@ -27,10 +27,10 @@ public class UserCreateDto {
 
   /**
    * <h3>Password</h3>
-   * <p>Account password (required, min 8 characters).</p>
+   * <p>Account password (required, min 8 characters, and at least one capital letter and number).</p>
    */
   @NotBlank(message = "Password is required")
-  @Size(min = 8, message = "Password must be at least 8 characters")
+  @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one digit")
   private String password;
 
   /**

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import stud.ntnu.backend.data.user.AdminUserUpdateDto;
 import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.data.user.UserResponseDto;
 import stud.ntnu.backend.data.user.UserUpdateDto;
@@ -53,7 +54,7 @@ class UserServiceTest {
     Long userId = 1L;
 
     // Prepare the input data for the update
-    UserUpdateDto userUpdateDto = new UserUpdateDto();
+    AdminUserUpdateDto userUpdateDto = new AdminUserUpdateDto();
     userUpdateDto.setPassword("newPassword");
 
     // Create an existing user to be updated
@@ -71,7 +72,7 @@ class UserServiceTest {
     when(userRepository.save(existingUser)).thenReturn(existingUser);
 
     // Perform the update
-    User updatedUser = userService.updateUser(userUpdateDto, userId);
+    User updatedUser = userService.adminUpdateUser(userUpdateDto, userId);
 
     // Assertions
     assertNotNull(updatedUser);  // Ensure the updated user is not null
@@ -85,11 +86,11 @@ class UserServiceTest {
   @Test
   void updateUser_shouldThrowEntityNotFoundException_whenUserNotFound() {
     Long userId = 1L;
-    UserUpdateDto userUpdateDto = new UserUpdateDto();
+    AdminUserUpdateDto userUpdateDto = new AdminUserUpdateDto();
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
     assertThrows(EntityNotFoundException.class,
-        () -> userService.updateUser(userUpdateDto, userId));
+        () -> userService.adminUpdateUser(userUpdateDto, userId));
   }
 
   @Test
