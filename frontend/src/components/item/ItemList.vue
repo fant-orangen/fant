@@ -103,16 +103,17 @@ function changePage(page: number) {
 function onScroll() {
   if (props.paginationEnabled) return;
 
-  const scrollThreshold = 300;
+  const scrollThreshold = 200;
   const scrollPosition = window.innerHeight + window.scrollY;
-  const bottom = document.documentElement.offsetHeight;
+  // Use scrollHeight to ensure we capture the full content height
+  const scrollHeight = document.documentElement.scrollHeight;
 
   if (
-    scrollPosition >= bottom - scrollThreshold &&
+    scrollPosition >= scrollHeight - scrollThreshold &&
     !props.isLoading &&
-    props.currentPage! < props.totalPages!
+    props.currentPage < props.totalPages
   ) {
-    emit('change-page', props.currentPage! + 1);
+    emit('change-page', props.currentPage + 1);
   }
 }
 
@@ -154,9 +155,11 @@ watch(() => props.paginationEnabled, (newVal) => {
 watch(
   () => props.items,
   async () => {
-    await nextTick()
     if (!props.paginationEnabled) {
-      maybeLoadMoreItemsIfNotScrollable()
+      await nextTick()
+      setTimeout(() => {
+        maybeLoadMoreItemsIfNotScrollable()
+      }, 100) // let layout settle
     }
   },
   { deep: true }
