@@ -118,7 +118,11 @@ watch(paginationEnabled, newVal => {
   localStorage.setItem('paginationEnabled', String(newVal))
 })
 
-const displaySmallThumbnails = ref(false)
+const displaySmallThumbnails = ref(localStorage.getItem('displaySmallThumbnails') === 'true')
+watch(displaySmallThumbnails, newVal => {
+  localStorage.setItem('displaySmallThumbnails', String(newVal))
+})
+
 const scrollToggleLabel = computed(() =>
   paginationEnabled.value ? t('SCROLL_SETTING_SCROLL') : t('SCROLL_SETTING_PAGE')
 )
