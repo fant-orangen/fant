@@ -175,6 +175,8 @@ onMounted(async () => {
       const matched = cats.find(c => c.id === props.existingItem!.categoryId);
       if (matched) selectedCategoryName.value = matched.name;
     }
+    // Add this line to initialize the existing images
+    keptExistingUrls.value = props.existingItem?.images ?? [];
   } catch (err) {
     console.error('Error loading categories', err);
   }
