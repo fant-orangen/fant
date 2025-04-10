@@ -1,9 +1,9 @@
-import { fileURLToPath, URL } from 'node:url'
+// vite.config.ts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import { fileURLToPath, URL } from 'node:url'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), vueJsx()],
   resolve: {
@@ -11,7 +11,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  // Add this configuration to fix SockJS error
   define: {
     global: 'window',
   },
@@ -20,9 +19,15 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        // If your backend doesn't expect the /api prefix:
-        // rewrite: (path) => path.replace(/^\/api/, '')
       },
+    },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.ts'], // 👈 ensure it picks up your test files
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)), // 👈 duplicate here for test context
     },
   },
 })
