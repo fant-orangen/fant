@@ -91,18 +91,90 @@ watch(() => props.modelValue, (newValue) => {
 </script>
 
 <style scoped>
-.form-group { margin-bottom: 1rem; position: relative; width: 100%; }
-label { display: block; font-weight: 500; margin-bottom: 6px; color: #2c3e50; font-size: 0.9rem; }
-.input-wrapper { position: relative; display: flex; align-items: center; }
-.text-input { flex-grow: 1; width: auto; padding: 10px 12px; padding-right: 35px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; color: #333; background-color: #fff; transition: all 0.2s ease; font-family: inherit; height: 42px; box-sizing: border-box; }
-.text-input:hover { border-color: #3498db; }
-.text-input:focus { outline: none; border-color: #3498db; box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); }
-.text-input::placeholder { color: #999; opacity: 0.7; }
-.text-input.input-error { border-color: red; box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2); }
-.validity-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 1.2em; pointer-events: none; }
-.icon-valid { color: green; }
-.icon-invalid { color: red; }
-.error-message, .hint-message { font-size: 0.8em; margin-top: 4px; display: block; }
-.error-message { color: red; }
-.hint-message { color: #666; }
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--vt-c-black-soft);
+  font-size: 0.9rem;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.text-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  padding-right: 35px;
+  border: 1px solid var(--vt-c-white);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--vt-c-text-dark-2);
+  background-color: var(--vt-c-white-soft);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  height: 42px;
+}
+
+.text-input:hover {
+  border-color: var(--vt-c-teal-light);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--vt-c-teal-soft);
+  box-shadow: 0 0 4px var(--vt-c-teal-light);
+}
+
+.text-input::placeholder {
+  color: var(--vt-c-text-light-2);
+  opacity: 0.7;
+}
+
+.text-input.input-error {
+  border-color: var(--vt-c-red-soft);
+  box-shadow: 0 0 4px var(--vt-c-red-light);
+}
+
+.validity-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2em;
+  pointer-events: none;
+}
+
+.icon-valid {
+  color: var(--vt-c-teal-dark);
+}
+
+.icon-invalid {
+  color: var(--vt-c-red-dark);
+}
+
+.error-message, .hint-message {
+  font-size: 0.8em;
+  margin-top: 4px;
+  display: block;
+}
+
+.error-message {
+  color: var(--vt-c-red-dark);
+}
+
+.hint-message {
+  color: var(--vt-c-text-light-2);
+}
 </style>

@@ -2,13 +2,13 @@
   <div class="item-details-page">
     <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
-      <p>Loading item details...</p>
+      <p>{{ $t('APP_LISTING_LOADING_ITEM_DETAILS') }}</p>
     </div>
 
     <div v-else-if="error" class="error-state">
-      <h2>Unable to load item</h2>
+      <h2>{{ $t('APP_LISTING_UNABLE_TO_LOAD_ITEM_DETAILS') }}</h2>
       <p>{{ errorMessage }}</p>
-      <button @click="retryLoading" class="retry-button">Try Again</button>
+      <button @click="retryLoading" class="retry-button">{{ $t('RETRY') }}</button>
     </div>
 
     <div v-else-if="item" class="item-detail-container">
@@ -20,7 +20,7 @@
         />
         <div v-else class="no-image-placeholder">
           <span class="placeholder-icon">📷</span>
-          <p>No Images Available</p>
+          <p>{{ $t('APP_LISTING_NO_IMAGES_AVAILABLE') }}</p>
         </div>
       </div>
 
@@ -36,53 +36,59 @@
         <p class="item-price">{{ formatPrice(item.price) }}</p>
 
         <div class="item-description">
-          <h3>Description</h3>
+          <h3>{{ $t('APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL' )}}</h3>
           <p>{{ item.description || 'No description provided.' }}</p>
         </div>
 
         <div class="seller-info">
-          <h3>Contact Information</h3>
+          <h3>{{ $t('APP_CONTACT_INFORMATION' )}}</h3>
           <p v-if="item.contact"><strong>Seller:</strong> {{ item.contact }}</p>
           <p v-else class="no-info">Contact information unavailable</p>
         </div>
 
         <div class="action-buttons">
+          <!-- ✅ Find Location Button added --><router-link
+          :to="{ name: 'map', query: { highlightItem: item.id } }"
+          custom
+          v-slot="{ navigate }"
+        >
+          <button @click="navigate" class="edit-button">
+          {{$t('GO_TO_LOCATION')}}
+          </button>
+        </router-link>
           <button
             @click="startConversation"
-            class="contact-button"
+            class="edit-button"
             :disabled="!canContactSeller || startingConversation"
           >
-            {{ startingConversation ? 'Starting...' : 'Contact Seller' }}
+            {{ startingConversation ? $t('APP_CONVERSATION_STARTING') : $t('APP_ITEM_CONTACT_SELLER') }}
           </button>
 
           <button
             @click="openBidModal"
-            class="bid-button"
+            class="edit-button"
             :disabled="!isUserLoggedIn || isUserSeller"
           >
-            Place Bid
+            {{ $t('APP_LISTING_PLACE_BID') }}
           </button>
-          <div class="details-column">
-            <div v-if="isAdmin" class="admin-actions">  <button @click="confirmAdminDeleteItem" class="admin-delete-button">
-              Admin Delete Item
-            </button>
-            </div>
-
+          <div v-if="isAdmin" class="admin-actions">  <button @click="confirmAdminDeleteItem" class="delete-button">
+            {{ $t('APP_ADMIN_DELETE_ITEM') }}
+          </button>
           </div>
         </div>
 
         <div v-if="isUserSeller" class="seller-notice">
-          You cannot bid on or contact the seller for your own item.
+          {{ $t('ERROR_BID_OWN_ITEM') }}
         </div>
         <div v-else-if="!isUserLoggedIn" class="login-notice">
-          Please log in to place a bid or contact the seller.
+          {{ $t('ERROR_LOG_IN_TO_BID') }}
         </div>
       </div>
     </div>
 
     <div v-else class="not-found-state">
-      <h2>Item Not Found</h2>
-      <p>The requested item could not be found or may have been removed.</p>
+      <h2>{{ $t('NOT_FOUND') }}</h2>
+      <p>{{ $t('NOT_FOUND_ITEM_EXTENSION')}}</p>
       <router-link to="/" class="home-link">Browse Other Items</router-link>
     </div>
 
@@ -355,9 +361,7 @@ const isAdmin = computed(() => {
   return userStore.getUserRole === 'ADMIN';
 });
 
--
 
-// Load item data when the component is mounted
 onMounted(() => {
   loadItemData();
 });
@@ -378,7 +382,7 @@ onMounted(() => {
  */
 .item-detail-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Default to two columns */
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
 }
@@ -389,18 +393,18 @@ onMounted(() => {
 .loading-state {
   text-align: center;
   padding: 4rem;
-  color: #666;
+  color: var(--vt-c-text-light-1);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px; /* Ensure it takes some space */
+  min-height: 300px;
 }
 
 .loading-spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  border-top: 4px solid #007bff; /* Blue spinner */
+  border-top: 4px solid #007bff;
   width: 40px;
   height: 40px;
   margin: 0 auto 1rem;
@@ -418,18 +422,18 @@ onMounted(() => {
 .error-state, .not-found-state {
   text-align: center;
   padding: 3rem 1rem;
-  background-color: #f8f9fa; /* Light grey background */
-  border: 1px solid #e9ecef; /* Subtle border */
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   margin-bottom: 2rem;
-  color: #dc3545; /* Reddish color for errors */
+  color: var(--vt-c-red-dark);
 }
 .not-found-state {
-  color: #6c757d; /* Grey color for not found */
+  color: var(--vt-c-text-light-2);
 }
 .error-state h2, .not-found-state h2 {
   margin-bottom: 0.5rem;
-  color: #343a40; /* Darker heading */
+  color: var(--color-heading);
 }
 
 .retry-button, .home-link {
@@ -447,7 +451,7 @@ onMounted(() => {
 }
 
 .retry-button:hover, .home-link:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3;
 }
 
 /**
@@ -456,47 +460,40 @@ onMounted(() => {
 .gallery-column {
   border-radius: 8px;
   overflow: hidden;
-  background-color: #f8f9fa; /* Light background for gallery area */
+  background-color: var(--vt-c-white);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  max-height: 500px; /* Adjust as needed */
-  display: flex; /* Center placeholder content */
+  max-height: 500px;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
-
-/* Target images within the gallery component if needed */
 .gallery-column :deep(img) {
   max-width: 100%;
   height: auto;
-  max-height: 500px; /* Match container */
-  object-fit: contain; /* Ensure image fits without distortion */
+  max-height: 500px;
+  object-fit: contain;
   display: block;
 }
-
-/* Ensure ImageGallery component itself doesn't cause overflow */
 .gallery-column :deep(.image-gallery) {
   width: 100%;
-  height: 100%; /* Make gallery fill the column */
+  height: 100%;
   max-height: 500px;
   overflow: hidden;
-  display: flex; /* Needed for vertical centering of single image */
+  display: flex;
   align-items: center;
 }
-
-/* Placeholder for when no images are available */
 .no-image-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%; /* Fill gallery column */
-  min-height: 300px; /* Ensure decent size */
+  height: 100%;
+  min-height: 300px;
   width: 100%;
   color: #888;
   font-size: 1.1em;
-  background-color: #e9ecef; /* Slightly darker placeholder background */
+  background-color: #e9ecef;
 }
-
 .placeholder-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
@@ -509,164 +506,149 @@ onMounted(() => {
 .details-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Spacing between sections */
+  gap: 1.5rem;
   padding: 1.5rem;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  background-color: var(--vt-c-white);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 /**
- * Header section (Title + Heart Icon)
+ * Header
  */
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Align items to top */
+  align-items: flex-start;
   gap: 1rem;
   border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
-  margin-bottom: 0.5rem; /* Add slight space below header */
+  margin-bottom: 0.5rem;
 }
-
 .item-title {
   font-size: 1.8em;
   font-weight: 600;
   margin: 0;
   color: #333;
   line-height: 1.3;
-  flex-grow: 1; /* Allow title to take available space */
+  flex-grow: 1;
 }
-
 .heart-icon-details {
   font-size: 1.5rem;
-  color: #adb5bd; /* Default grey color */
+  color: #adb5bd;
   cursor: pointer;
-  margin-top: 0.2rem; /* Align slightly better with title */
+  margin-top: 0.2rem;
   transition: color 0.2s ease;
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
 }
-/* Add active state style if HeartIcon component doesn't handle it internally */
-/* .heart-icon-details.active { color: #dc3545; } */
 
 /**
- * Price display styling
+ * Price
  */
 .item-price {
   font-size: 1.6em;
   font-weight: bold;
-  color: #007bff; /* Blue price */
+  color: var(--vt-c-teal-dark);
   margin: 0;
 }
 
 /**
- * Section styling (Description, Seller Info)
+ * Sections
  */
 .item-description,
 .seller-info {
-  padding-top: 0.5rem; /* Add space above section content */
+  padding-top: 0.5rem;
 }
-
 .item-description h3,
 .seller-info h3 {
   font-size: 1.1em;
   font-weight: 600;
   margin-bottom: 0.6rem;
-  color: #495057; /* Darker grey heading */
+  color: #495057;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 0.5rem;
 }
-
 .item-description p,
 .seller-info p {
   margin: 0;
   color: #444;
   line-height: 1.6;
 }
-
 .no-info {
   color: #999;
   font-style: italic;
 }
 
 /**
- * Action buttons styling
+ * Action Buttons
  */
 .action-buttons {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem; /* More space above buttons */
-  flex-wrap: wrap; /* Allow wrapping on small screens */
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
-
-.contact-button, .bid-button {
-  flex: 1 1 150px; /* Allow shrinking but prefer equal width, base width 150px */
-  padding: 0.8rem 1rem;
+.action-buttons button {
+  flex: 1 1 150px;
+  min-width: 150px;
+  height: 48px;
+  font-size: 1.1rem;
+  padding: 12px 18px;
+  border: none;
   border-radius: 5px;
-  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-  border: none;
-  min-width: 150px; /* Prevent buttons becoming too narrow */
+  transition: background-color 0.2s ease;
+  color: white;
 }
-
 .contact-button {
-  background-color: #007bff; /* Blue */
-  color: white;
+  background-color: #007bff;
 }
-
-.bid-button {
-  background-color: #28a745; /* Green */
-  color: white;
+.edit-button {
+  background-color: var(--vt-c-teal-dark);
 }
-
-.contact-button:hover:not(:disabled), .bid-button:hover:not(:disabled) {
+.delete-button {
+  background-color: var(--vt-c-red-dark);
+}
+.action-buttons button:hover:not(:disabled) {
   opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
-.contact-button:disabled, .bid-button:disabled {
+.action-buttons button:disabled {
   background-color: #cccccc;
   color: #666666;
   cursor: not-allowed;
-  box-shadow: none;
   opacity: 0.7;
 }
 
 /**
- * Login and seller notices styling
+ * Notices
  */
 .login-notice, .seller-notice {
   font-size: 0.9rem;
-  color: #6c757d; /* Grey notice text */
+  color: #6c757d;
   text-align: center;
-  margin-top: 0.5rem; /* Space above notice */
+  margin-top: 0.5rem;
   padding: 0.5rem;
-  background-color: #f8f9fa; /* Light background for notice */
+  background-color: #f8f9fa;
   border-radius: 4px;
 }
 
 /**
- * Responsive adjustments
+ * Responsive
  */
-@media (max-width: 992px) { /* Adjust breakpoint if needed */
+@media (max-width: 992px) {
   .item-detail-container {
-    grid-template-columns: 1fr; /* Stack columns */
+    grid-template-columns: 1fr;
   }
-
   .gallery-column {
-    max-height: 450px; /* Adjust gallery height */
+    max-height: 450px;
   }
   .gallery-column :deep(img),
   .gallery-column :deep(.image-gallery) {
     max-height: 450px;
   }
 }
-
 @media (max-width: 768px) {
   .item-title {
     font-size: 1.6em;
@@ -675,7 +657,7 @@ onMounted(() => {
     font-size: 1.5em;
   }
   .details-column {
-    padding: 1rem; /* Reduce padding */
+    padding: 1rem;
     gap: 1.2rem;
   }
   .gallery-column {
@@ -686,23 +668,17 @@ onMounted(() => {
     max-height: 400px;
   }
   .action-buttons {
-    /* Buttons already wrap, ensure they stack nicely */
     flex-direction: column;
     gap: 0.8rem;
   }
-  .contact-button, .bid-button {
-    flex-basis: auto; /* Reset flex basis for stacking */
-  }
 }
-
-/* Extra small devices */
 @media (max-width: 480px) {
   .item-details-page {
-    margin: 1rem auto; /* Reduce page margin */
+    margin: 1rem auto;
   }
   .gallery-column {
-    max-height: 300px; /* Further reduce gallery height */
-    border-radius: 4px; /* Slightly smaller radius */
+    max-height: 300px;
+    border-radius: 4px;
   }
   .gallery-column :deep(img),
   .gallery-column :deep(.image-gallery) {

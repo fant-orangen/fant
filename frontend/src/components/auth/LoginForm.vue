@@ -86,57 +86,86 @@ function navigateToRegister() {
   max-width: 500px;
   margin: 2rem auto;
   padding: 1.5rem;
-  border: 1px solid #eee;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--vt-c-white-mute);
 }
 
 .form {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
+  width: 100%;
+}
+
+
+.form > * {
+  width: 100%;
+  max-width: 400px;
 }
 
 .error {
-  color: red;
+  color: var(--vt-c-red-dark);
   margin-top: 1rem;
   text-align: center;
   font-size: 0.9em;
 }
 
 button {
-  padding: 0.8rem 1.5rem;
-  background-color: #007bff;
-  color: white;
+  padding: 10px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.2s ease;
-  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 500;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Style for the registration button (type="button") */
-button[type="button"] {
-  background-color: #6c757d; /* Example: grey color */
-}
-button[type="button"]:hover:not(:disabled){
-  background-color: #5a6268; /* Darker grey on hover */
+button[type="submit"] {
+  background-color: var(--vt-c-teal-dark);
+  color: var(--vt-c-white);
 }
 
+button[type="submit"]:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
 
-button:disabled {
-  background-color: #ccc;
+button[type="submit"]:disabled {
+  background-color: var(--vt-c-text-light-2);
   cursor: not-allowed;
+  color: var(--vt-c-white-soft);
 }
 
-button:hover:not(:disabled) {
-  background-color: #0056b3;
+button[type="button"] {
+  background-color: var(--color-background-mute);
+  color: var(--vt-c-teal-dark);
+  border: 1px solid var(--color-border);
+  margin-top: 0.8rem;
+}
+
+button[type="button"]:hover:not(:disabled) {
+  background-color: var(--color-background);
+  border-color: var(--vt-c-teal-light);
+}
+
+button[type="button"]:disabled {
+  background-color: var(--color-background-mute);
+  color: var(--vt-c-text-light-2);
+  border-color: var(--color-border);
+  cursor: not-allowed;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--color-heading);
 }
 </style>

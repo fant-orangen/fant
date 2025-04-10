@@ -44,6 +44,7 @@
           :maxDistance="searchRadiusKm"
           :sortOption="sortOption"
           :clearDrawnAreaTrigger="clearDrawnAreaTrigger"
+          :highlightedItemId="highlightItemId"
           @update-search-area="onUpdateSearchArea"
           height="100%"
         />
@@ -65,49 +66,47 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 import MapComponent from '@/components/map/MapComponent.vue'
 import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import SearchBar from '@/components/search/searchBar.vue'
-import { fetchCategories } from '@/services/CategoryService'; // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
-import type { Category } from '@/models/Category'; // [cite: uploaded:frontend 6/frontend/src/models/Category.ts]
+import { fetchCategories } from '@/services/CategoryService';
+import type { Category } from '@/models/Category';
 
 const { t } = useI18n();
+const route = useRoute();
 
-// --- Filter States ---
+defineProps<{ highlightItemId: string | null }>();
+
 const selectedCategoryId = ref<string | null>(null)
 const searchTerm = ref<string>('')
 const sortOption = ref<string>('default')
 const minPrice = ref<number | null>(null)
 const maxPrice = ref<number | null>(null)
-const categories = ref<Category[]>([]);
+const categories = ref<Category[]>([])
 
-// --- Location State (Geolocation / Slider) ---
-const maxDistance = ref<number | null>(50) // Default distance from slider
-const currentLatitude = ref<number | null>(null) // User's geolocation lat
-const currentLongitude = ref<number | null>(null) // User's geolocation lng
+const maxDistance = ref<number | null>(50)
+const currentLatitude = ref<number | null>(null)
+const currentLongitude = ref<number | null>(null)
 const isFetchingLocation = ref(false);
 const locationError = ref<string | null>(null);
 
-// --- Drawn Circle State ---
 const drawnLatitude = ref<number | null>(null);
 const drawnLongitude = ref<number | null>(null);
 const drawnRadiusKm = ref<number | null>(null);
-const clearDrawnAreaTrigger = ref(0); // Increment to trigger clear in MapComponent
+const clearDrawnAreaTrigger = ref(0);
 
-// --- Computed properties ---
+const highlightedItemId = ref<string | null>(null);
 
-// Is Geolocation available?
 const isLocationAvailable = computed(() => {
   return currentLatitude.value !== null && currentLongitude.value !== null;
 });
 
-// Is a drawn circle currently active?
 const isCircleSearchActive = computed(() => {
   return drawnLatitude.value !== null && drawnLongitude.value !== null && drawnRadiusKm.value !== null;
 });
 
-// Determine the final search coordinates/radius to pass to MapComponent
 const searchLatitude = computed(() => {
   return isCircleSearchActive.value ? drawnLatitude.value : currentLatitude.value;
 });
@@ -115,18 +114,15 @@ const searchLongitude = computed(() => {
   return isCircleSearchActive.value ? drawnLongitude.value : currentLongitude.value;
 });
 const searchRadiusKm = computed(() => {
-  // Use drawn radius if circle is active, otherwise use slider distance ONLY if geolocation is also active
   if (isCircleSearchActive.value) {
     return drawnRadiusKm.value;
   } else if (isLocationAvailable.value) {
     return maxDistance.value;
   } else {
-    return null; // No distance search if neither is active
+    return null;
   }
 });
 
-
-// --- Event Handlers ---
 function onCategoryClick(categoryId: string) {
   selectedCategoryId.value = categoryId === selectedCategoryId.value ? null : categoryId;
 }
@@ -140,14 +136,8 @@ function onSearchTermUpdate(newSearchTerm: string) {
 }
 
 function onMaxDistanceUpdate(newMaxDistance: number | null) {
-  // Update the slider distance state. The computed searchRadiusKm will handle
-  // whether this value or the drawn radius is used.
   maxDistance.value = newMaxDistance;
-  // If a circle is drawn, changing the slider shouldn't clear it.
-  // If no circle is drawn, changing the slider WILL trigger a map update via the watcher in MapComponent
-  // because the `searchRadiusKm` computed property will change.
 }
-
 
 function onSortOptionUpdate(newSortOption: string) {
   sortOption.value = newSortOption;
@@ -161,33 +151,22 @@ function onMaxPriceUpdate(newMaxPrice: number | null) {
   maxPrice.value = newMaxPrice;
 }
 
-// Handler for when a circle is drawn/edited in MapComponent
 function onUpdateSearchArea(payload: { latitude: number; longitude: number; radiusKm: number }) {
-  console.log("MapView: Received update-search-area", payload);
   drawnLatitude.value = payload.latitude;
   drawnLongitude.value = payload.longitude;
   drawnRadiusKm.value = payload.radiusKm;
-  // Optionally clear geolocation to avoid confusion, though computed props handle precedence
-  // currentLatitude.value = null;
-  // currentLongitude.value = null;
-  locationError.value = null; // Clear any location fetching errors
+  locationError.value = null;
 }
 
-// Method to clear the drawn search area
 function clearDrawnSearchArea() {
-  console.log("MapView: Clearing drawn search area.");
   drawnLatitude.value = null;
   drawnLongitude.value = null;
   drawnRadiusKm.value = null;
-  clearDrawnAreaTrigger.value++; // Increment trigger to signal MapComponent
-  // The computed properties will automatically revert to using geolocation/slider values
+  clearDrawnAreaTrigger.value++;
 }
 
-// --- Location Fetching ---
 function fetchCurrentUserLocation() {
-  // Clear drawn area if user explicitly asks for their location
   clearDrawnSearchArea();
-
   if (!navigator.geolocation) {
     locationError.value = "Geolocation is not supported by your browser.";
     isFetchingLocation.value = false;
@@ -195,18 +174,14 @@ function fetchCurrentUserLocation() {
   }
   isFetchingLocation.value = true;
   locationError.value = null;
-
   navigator.geolocation.getCurrentPosition(
     (position) => {
       currentLatitude.value = position.coords.latitude;
       currentLongitude.value = position.coords.longitude;
-      console.log(`Location obtained for map: Lat ${currentLatitude.value}, Lon ${currentLongitude.value}`);
       locationError.value = null;
       isFetchingLocation.value = false;
-      // Computed properties will update, triggering MapComponent watcher
     },
     (error) => {
-      console.error("Error getting location for map: ", error);
       currentLatitude.value = null;
       currentLongitude.value = null;
       switch(error.code) {
@@ -216,20 +191,21 @@ function fetchCurrentUserLocation() {
         default: locationError.value = "Error fetching location."; break;
       }
       isFetchingLocation.value = false;
-      // Computed properties will update, triggering MapComponent watcher
     }
   );
 }
 
-// --- Lifecycle ---
 onMounted(async () => {
   try {
-    categories.value = await fetchCategories(); // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
+    categories.value = await fetchCategories();
+    const routeItemId = route.query.highlightItem;
+    if (typeof routeItemId === 'string') {
+      highlightedItemId.value = routeItemId;
+    }
   } catch (err) {
     console.error("Failed to fetch categories for MapView:", err);
   }
 });
-
 </script>
 
 <style scoped>

@@ -79,7 +79,7 @@ function removeImage(index: number) {
     <div class="upload-area">
       <label :for="id" class="upload-button">
         <span class="button-icon">+</span>
-        {{ multiple ? 'Add images' : 'Add image' }}
+        {{ multiple ? $t('APP_LISTING_CREATE_NEW_IMAGE_PLACEHOLDER') : $t('APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL') }}
         <input
           type="file"
           :id="id"

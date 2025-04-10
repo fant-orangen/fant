@@ -15,9 +15,8 @@ label {
 
 .text-input {
   width: 100%;
-  max-width: 100%;
   box-sizing: border-box;
-  padding: 10px 12px;
+  padding: 8px 12px; /* Match select padding */
   border: 1px solid var(--vt-c-white);
   border-radius: 6px;
   font-size: 1rem;
@@ -27,12 +26,19 @@ label {
   font-family: inherit;
   overflow: auto;
   resize: vertical;
-  min-height: 42px; /* Match the select height */
-  height: 42px; /* Fixed height for inputs */
+  min-height: 42px;
+  line-height: 1.4; /* Match select line-height */
+  text-overflow: ellipsis; /* Add text overflow handling like select */
 }
 
 input.text-input {
-  height: 42px; /* Fixed height specifically for input elements */
+  height: 50px; /* Match select height */
+  padding: 8px 12px; /* Keep same padding as select */
+  line-height: normal; /* Reset line-height */
+  white-space: nowrap; /* Prevent line breaks */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .text-input:hover {
@@ -58,23 +64,43 @@ textarea.text-input {
 
 select {
   width: 100%;
-  padding: 8px 8px;
+  box-sizing: border-box;
+  padding: 8px 12px;
   border: 1px solid var(--vt-c-white);
   border-radius: 6px;
   font-size: 1rem;
   color: var(--vt-c-text-dark-2);
   background-color: var(--vt-c-white-soft);
   transition: all 0.2s ease;
-  appearance: none;
+
+  /* Fix text overflow */
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  /* Make it look good with custom arrow */
+  padding-right: 40px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 16px;
-  padding-right: 40px;
-  height: 42px; /* Fixed height to match TextInput */
-  box-sizing: border-box;
+
+  /* Consistent height but allow for text wrap if needed */
+  min-height: 42px;
+  height: auto;
+  line-height: 1.4;
+
+  /* Fix for all browsers */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
+select option {
+  padding: 10px;
+  line-height: 1.4;
+}
+
+/* Remove duplicate styles and keep these */
 select:hover {
   border-color: var(--vt-c-teal-soft);
 }

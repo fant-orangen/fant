@@ -96,14 +96,15 @@ watch(() => props.isOpen, (newIsOpen) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1050; /* Ensure it's above other content */
+  z-index: 1050;
+  backdrop-filter: blur(3px);
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--color-background);
   border-radius: 8px;
   width: 90%;
-  max-width: 450px; /* Suitable for confirmation */
+  max-width: 450px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
@@ -113,17 +114,17 @@ watch(() => props.isOpen, (newIsOpen) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1.2rem; /* Slightly smaller padding */
-  border-bottom: 1px solid #eee;
-  background-color: #f8f9fa;
+  padding: 0.8rem 1.2rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-background-soft);
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
 
 .modal-header h3 {
   margin: 0;
-  font-size: 1.15rem; /* Adjusted size */
-  color: #333;
+  font-size: 1.15rem;
+  color: var(--color-heading);
   font-weight: 600;
 }
 
@@ -132,20 +133,22 @@ watch(() => props.isOpen, (newIsOpen) => {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #888;
+  color: var(--vt-c-text-light-2);
   padding: 0;
   line-height: 1;
 }
+
 .close-button:hover {
-  color: #333;
+  color: var(--vt-c-text-dark-1);
 }
 
 .modal-body {
   padding: 1.5rem 1.2rem;
   line-height: 1.6;
-  color: #444;
+  color: var(--color-text);
   font-size: 1rem;
 }
+
 .modal-body p {
   margin: 0;
 }
@@ -155,8 +158,8 @@ watch(() => props.isOpen, (newIsOpen) => {
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 0.8rem 1.2rem;
-  border-top: 1px solid #eee;
-  background-color: #f8f9fa;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-background-soft);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
@@ -173,22 +176,25 @@ watch(() => props.isOpen, (newIsOpen) => {
 }
 
 .cancel-btn {
-  background-color: #6c757d; /* Secondary */
-  color: white;
-  border-color: #6c757d;
+  background-color: var(--color-background-mute);
+  color: var(--color-text);
+  border-color: var(--color-border);
 }
+
 .cancel-btn:hover {
-  background-color: #5a6268;
-  border-color: #545b62;
+  background-color: var(--color-background);
+  border-color: var(--color-border);
 }
 
 .confirm-btn {
-  background-color: #dc3545; /* Danger */
-  color: white;
-  border-color: #dc3545;
+  background-color: var(--vt-c-red-dark);
+  color: var(--vt-c-white);
+  border-color: var(--vt-c-red-dark);
 }
+
 .confirm-btn:hover {
-  background-color: #c82333;
-  border-color: #bd2130;
+  background-color: var(--vt-c-red-dark);
+  filter: brightness(0.9);
+  border-color: var(--vt-c-red-dark);
 }
 </style>
