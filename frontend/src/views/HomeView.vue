@@ -15,29 +15,28 @@
     </div>
 
     <div class="category-section">
-      <div class="category-container">
-        <div class="scroll-wrapper">
-          <CategoryGrid
-            layout="horizontal"
-            @select="onCategoryClick"
-            :selectedCategoryId="selectedCategoryId"
-          />
-        </div>
-
-        <div class="display-button-wrapper">
-          <div class="button-stack">
-            <CategoryButton
-              :label="thumbnailToggleLabel"
-              :icon="thumbnailicon"
-              @click="onToggleThumbnailSize"
-              class="toggle-scroll-button"
+      <div class="category-scroll-container">
+        <div class="category-content-wrapper">
+          <div class="category-content-row">
+            <CategoryGrid
+              layout="horizontal"
+              @select="onCategoryClick"
+              :selectedCategoryId="selectedCategoryId"
             />
-            <CategoryButton
-              :label="scrollToggleLabel"
-              :icon="scrollicon"
-              @click="onScrollButtonClick"
-              class="toggle-scroll-button"
-            />
+            <div class="button-stack">
+              <CategoryButton
+                :label="thumbnailToggleLabel"
+                :icon="thumbnailicon"
+                @click="onToggleThumbnailSize"
+                class="toggle-scroll-button"
+              />
+              <CategoryButton
+                :label="scrollToggleLabel"
+                :icon="scrollicon"
+                @click="onScrollButtonClick"
+                class="toggle-scroll-button"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -88,14 +87,11 @@ import {
 import { useUserStore } from '@/stores/UserStore.ts'
 import { useI18n } from 'vue-i18n'
 
-// --- Icons ---
 import scrollicon from '@/assets/icons/scrollicon.svg'
 import thumbnailicon from '@/assets/icons/thumbnailicon.svg'
 
-// --- i18n ---
 const { t } = useI18n()
 
-// --- Filters & State ---
 const selectedCategoryId = ref<string | null>(null)
 const searchTerm = ref<string>('')
 const maxDistance = ref<number | null>(50)
@@ -106,7 +102,6 @@ const minPrice = ref<number | null>(null)
 const maxPrice = ref<number | null>(null)
 const categories = ref<Category[]>([])
 
-// --- Items & UI ---
 const items = ref<ItemPreviewType[]>([])
 const currentPage = ref(1)
 const totalPages = ref(1)
@@ -130,7 +125,6 @@ const thumbnailToggleLabel = computed(() =>
   displaySmallThumbnails.value ? t('THUMBNAIL_SETTING_LARGE') : t('THUMBNAIL_SETTING_SMALL')
 )
 
-// --- Button Actions ---
 function onScrollButtonClick() {
   paginationEnabled.value = !paginationEnabled.value
   currentPage.value = 1
@@ -142,17 +136,14 @@ function onToggleThumbnailSize() {
   displaySmallThumbnails.value = !displaySmallThumbnails.value
 }
 
-// --- Computed ---
 const isLocationAvailable = computed(() =>
   currentLatitude.value !== null && currentLongitude.value !== null
 )
 
 const selectedCategoryName = computed(() => {
   if (!selectedCategoryId.value) return null
-  const foundCategory = categories.value.find(
-    cat => cat.id?.toString() === selectedCategoryId.value
-  )
-  return foundCategory ? foundCategory.name : null
+  const found = categories.value.find(cat => cat.id?.toString() === selectedCategoryId.value)
+  return found ? found.name : null
 })
 
 const backendSortParam = computed(() => {
@@ -163,7 +154,6 @@ const backendSortParam = computed(() => {
   }
 })
 
-// --- Fetch Items ---
 async function fetchItems() {
   isLoading.value = true
   error.value = null
@@ -223,7 +213,6 @@ async function fetchItems() {
   }
 }
 
-// --- Event Handlers ---
 function onCategoryClick(categoryId: string) {
   selectedCategoryId.value = selectedCategoryId.value === categoryId ? null : categoryId
 }
@@ -274,7 +263,6 @@ function fetchCurrentUserLocation() {
   )
 }
 
-// --- Watch to trigger item fetch ---
 watch(
   [
     searchTerm,
@@ -327,26 +315,21 @@ onMounted(() => {
   width: 100%;
 }
 
-.category-container {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
+.category-scroll-container {
   width: 100%;
-  overflow: hidden;
-  gap: 1rem;
-}
-
-.scroll-wrapper {
-  flex-grow: 1;
   overflow-x: auto;
-  padding-bottom: 0.5rem;
 }
 
-.display-button-wrapper {
-  flex-shrink: 0;
+.category-content-wrapper {
   display: flex;
-  align-items: center;
   justify-content: center;
+  width: 100%;
+}
+
+.category-content-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .button-stack {
@@ -362,6 +345,20 @@ onMounted(() => {
   border: 1px solid var(--vt-c-teal-text-light);
 }
 
+.clear-category-button {
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  background-color: var(--color-background-mute);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+.clear-category-button:hover {
+  background-color: var(--color-border);
+}
+
 .location-error,
 .location-info {
   font-size: 0.9em;
@@ -374,20 +371,5 @@ onMounted(() => {
 }
 .location-info {
   color: #555;
-}
-
-.clear-category-button {
-  padding: 0.5rem 1rem;
-  margin-top: 0.5rem;
-  background-color: var(--color-background-mute);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease;
-}
-
-.clear-category-button:hover {
-  background-color: var(--color-border);
 }
 </style>
