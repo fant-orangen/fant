@@ -27,9 +27,9 @@
         <div class="display-button-wrapper">
           <div class="button-stack">
             <CategoryButton
-              label="Small"
+              :label="thumbnailToggleLabel"
               :icon="thumbnailicon"
-              @click="onExtraButtonClick"
+              @click="onToggleThumbnailSize"
               class="toggle-scroll-button"
             />
             <CategoryButton
@@ -38,7 +38,6 @@
               @click="onScrollButtonClick"
               class="toggle-scroll-button"
             />
-
           </div>
         </div>
       </div>
@@ -60,8 +59,9 @@
         :current-page="currentPage"
         :total-pages="totalPages"
         @change-page="onPageChange"
-        emptyMessage="No items found matching your criteria. Try adjusting filters."
         :paginationEnabled="paginationEnabled"
+        :smallThumbnails="displaySmallThumbnails"
+        emptyMessage="No items found matching your criteria. Try adjusting filters."
       />
     </div>
   </section>
@@ -87,11 +87,11 @@ import {
 } from '@/services/RecommendationService.ts'
 import { useUserStore } from '@/stores/UserStore.ts'
 
-// --- Icon ---
+// --- Icons ---
 import scrollicon from '@/assets/icons/scrollicon.svg'
 import thumbnailicon from '@/assets/icons/thumbnailicon.svg'
 
-// --- Filter States ---
+// --- Filters & State ---
 const selectedCategoryId = ref<string | null>(null)
 const searchTerm = ref<string>('')
 const maxDistance = ref<number | null>(50)
@@ -102,7 +102,7 @@ const minPrice = ref<number | null>(null)
 const maxPrice = ref<number | null>(null)
 const categories = ref<Category[]>([])
 
-// --- Data & UI States ---
+// --- Items & UI ---
 const items = ref<ItemPreviewType[]>([])
 const currentPage = ref(1)
 const totalPages = ref(1)
@@ -113,57 +113,53 @@ const insufficientItemViews = ref(false)
 const locationError = ref<string | null>(null)
 const pageSize = ref(12)
 
-const numOfViewsLimit = 3
 const paginationEnabled = ref(localStorage.getItem('paginationEnabled') !== 'false')
-
-watch(paginationEnabled, (newVal) => {
+watch(paginationEnabled, newVal => {
   localStorage.setItem('paginationEnabled', String(newVal))
 })
 
+const displaySmallThumbnails = ref(false)
 const scrollToggleLabel = computed(() =>
-  paginationEnabled.value ? 'Scroll' : 'Page',
+  paginationEnabled.value ? 'Scroll' : 'Page'
 )
-
-// --- Computed Properties ---
-const isLocationAvailable = computed(() => {
-  return currentLatitude.value !== null && currentLongitude.value !== null
-})
-
-const selectedCategoryName = computed(() => {
-  if (!selectedCategoryId.value) return null
-  const foundCategory = categories.value.find(
-    (cat) => cat.id?.toString() === selectedCategoryId.value,
-  )
-  return foundCategory ? foundCategory.name : null
-})
-
-const backendSortParam = computed(() => {
-  switch (sortOption.value) {
-    case 'price_asc':
-      return 'price,asc'
-    case 'price_desc':
-      return 'price,desc'
-    default:
-      return null
-  }
-})
+const thumbnailToggleLabel = computed(() =>
+  displaySmallThumbnails.value ? 'Large' : 'Small'
+)
 
 // --- Button Actions ---
 function onScrollButtonClick() {
   paginationEnabled.value = !paginationEnabled.value
   currentPage.value = 1
   items.value = []
-
-  nextTick(() => {
-    fetchItems()
-  })
+  nextTick(() => fetchItems())
 }
 
-function onExtraButtonClick() {
-  console.log('Extra button clicked!')
+function onToggleThumbnailSize() {
+  displaySmallThumbnails.value = !displaySmallThumbnails.value
 }
 
-// --- Methods ---
+// --- Computed ---
+const isLocationAvailable = computed(() =>
+  currentLatitude.value !== null && currentLongitude.value !== null
+)
+
+const selectedCategoryName = computed(() => {
+  if (!selectedCategoryId.value) return null
+  const foundCategory = categories.value.find(
+    cat => cat.id?.toString() === selectedCategoryId.value
+  )
+  return foundCategory ? foundCategory.name : null
+})
+
+const backendSortParam = computed(() => {
+  switch (sortOption.value) {
+    case 'price_asc': return 'price,asc'
+    case 'price_desc': return 'price,desc'
+    default: return null
+  }
+})
+
+// --- Fetch Items ---
 async function fetchItems() {
   isLoading.value = true
   error.value = null
@@ -186,10 +182,10 @@ async function fetchItems() {
     const isRecommendationSelected = selectedCategoryId.value === '-1'
 
     if (useUserStore().isLoggedInUser && isRecommendationSelected) {
-      const numOfViews = await fetchUserViewCount()
-      if (numOfViews > numOfViewsLimit) {
-        const recommendations = await fetchCategoryRecommendations()
-        const response = await fetchItemsByDistribution(recommendations)
+      const views = await fetchUserViewCount()
+      if (views > 3) {
+        const recs = await fetchCategoryRecommendations()
+        const response = await fetchItemsByDistribution(recs)
         items.value = response.content ?? []
         totalPages.value = response.totalPages ?? 1
       } else {
@@ -204,7 +200,6 @@ async function fetchItems() {
       error.value = 'You must be logged in to view recommended items.'
     } else {
       const response = await searchItems(params)
-
       if (paginationEnabled.value && currentPage.value === 1) {
         items.value = response.content ?? []
       } else if (!paginationEnabled.value && currentPage.value > 1) {
@@ -212,7 +207,6 @@ async function fetchItems() {
       } else {
         items.value = response.content ?? []
       }
-
       totalPages.value = response.totalPages ?? 1
     }
   } catch (err) {
@@ -229,76 +223,54 @@ async function fetchItems() {
 function onCategoryClick(categoryId: string) {
   selectedCategoryId.value = selectedCategoryId.value === categoryId ? null : categoryId
 }
-
 function clearCategorySelection() {
   selectedCategoryId.value = null
 }
-
-function onSearchTermUpdate(newSearchTerm: string) {
-  searchTerm.value = newSearchTerm
+function onSearchTermUpdate(val: string) {
+  searchTerm.value = val
 }
-
-function onMaxDistanceUpdate(newMaxDistance: number | null) {
-  maxDistance.value = newMaxDistance
+function onMaxDistanceUpdate(val: number | null) {
+  maxDistance.value = val
 }
-
-function onSortOptionUpdate(newSortOption: string) {
-  sortOption.value = newSortOption
+function onSortOptionUpdate(val: string) {
+  sortOption.value = val
 }
-
-function onMinPriceUpdate(newMinPrice: number | null) {
-  minPrice.value = newMinPrice
+function onMinPriceUpdate(val: number | null) {
+  minPrice.value = val
 }
-
-function onMaxPriceUpdate(newMaxPrice: number | null) {
-  maxPrice.value = newMaxPrice
+function onMaxPriceUpdate(val: number | null) {
+  maxPrice.value = val
 }
-
-function onPageChange(newPage: number) {
-  if (newPage >= 1 && newPage <= totalPages.value) {
-    currentPage.value = newPage
+function onPageChange(page: number) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
   }
 }
-
 function fetchCurrentUserLocation() {
   if (!navigator.geolocation) {
     locationError.value = 'Geolocation is not supported by your browser.'
-    isFetchingLocation.value = false
     return
   }
+
   isFetchingLocation.value = true
-  locationError.value = null
   navigator.geolocation.getCurrentPosition(
-    (position) => {
-      currentLatitude.value = position.coords.latitude
-      currentLongitude.value = position.coords.longitude
-      locationError.value = null
+    pos => {
+      currentLatitude.value = pos.coords.latitude
+      currentLongitude.value = pos.coords.longitude
       isFetchingLocation.value = false
+      locationError.value = null
     },
-    (error) => {
-      console.error('Error getting location: ', error)
+    err => {
+      console.error('Geolocation error:', err)
       currentLatitude.value = null
       currentLongitude.value = null
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          locationError.value = 'Permission denied.'
-          break
-        case error.POSITION_UNAVAILABLE:
-          locationError.value = 'Location unavailable.'
-          break
-        case error.TIMEOUT:
-          locationError.value = 'Location request timed out.'
-          break
-        default:
-          locationError.value = 'Error fetching location.'
-          break
-      }
       isFetchingLocation.value = false
-    },
+      locationError.value = 'Failed to get your location.'
+    }
   )
 }
 
-// --- Watchers to trigger fetchItems ---
+// --- Watch to trigger item fetch ---
 watch(
   [
     searchTerm,
@@ -311,46 +283,27 @@ watch(
     maxDistance,
     currentPage,
   ],
-  (newValues, oldValues) => {
-    const pageIndex = newValues.length - 1
-    let pageChangedOnly = true
-    for (let i = 0; i < pageIndex; i++) {
-      if (newValues[i] !== oldValues[i]) {
-        pageChangedOnly = false
-        break
-      }
-    }
+  (newVals, oldVals) => {
+    const pageIndex = newVals.length - 1
+    const onlyPageChanged = newVals.every((val, i) => i === pageIndex || val === oldVals[i])
 
-    if (!pageChangedOnly && currentPage.value !== 1) {
+    if (!onlyPageChanged && currentPage.value !== 1) {
       currentPage.value = 1
     } else {
       fetchItems()
     }
   },
-  { deep: true },
+  { deep: true }
 )
 
-onMounted(loadInitialData)
-
-async function loadInitialData() {
-  isLoading.value = true
-  try {
-    categories.value = await fetchCategories()
-    await fetchItems()
-  } catch (err) {
-    console.error('Error loading initial data:', err)
-    error.value = 'Failed to load initial page data.'
-  } finally {
-    isLoading.value = false
-  }
-}
+onMounted(() => {
+  fetchCategories().then(res => categories.value = res)
+  fetchItems()
+})
 </script>
 
 <style scoped>
 @import '@/assets/styles/responsiveStyles.css';
-
-.homepage {
-}
 
 .search-section {
   padding: 1rem 0;
@@ -375,7 +328,6 @@ async function loadInitialData() {
   flex-direction: row;
   align-items: stretch;
   width: 100%;
-  max-width: 100%;
   overflow: hidden;
   gap: 1rem;
 }
@@ -406,20 +358,18 @@ async function loadInitialData() {
   border: 1px solid rgb(128, 200, 190);
 }
 
-.items-section {
-}
-
-.location-error {
-  color: red;
+.location-error,
+.location-info {
   font-size: 0.9em;
   text-align: center;
   max-width: 80%;
 }
 
+.location-error {
+  color: red;
+}
 .location-info {
   color: #555;
-  font-size: 0.9em;
-  text-align: center;
 }
 
 .clear-category-button {
