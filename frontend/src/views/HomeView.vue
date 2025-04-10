@@ -26,7 +26,7 @@
 
         <div class="extra-button-wrapper">
           <CategoryButton
-            label="Toggle Scroll"
+            :label="scrollToggleLabel"
             :icon='scrollicon'
             @click="onScrollButtonClick"
             class="toggle-scroll-button"
@@ -111,6 +111,10 @@ const paginationEnabled = ref(
 watch(paginationEnabled, (newVal) => {
   localStorage.setItem('paginationEnabled', String(newVal));
 });
+
+const scrollToggleLabel = computed(() =>
+  paginationEnabled.value ? 'Toggle scroll' : 'Toggle pagination'
+);
 
 // --- Computed Properties ---
 const isLocationAvailable = computed(() => {
