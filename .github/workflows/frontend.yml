@@ -35,7 +35,6 @@ jobs:
   
         - run: mvn -B dependency:resolve --file pom.xml
         - run: |
-                cd backend
                 mvn spring-boot:run &
                 echo "Backend server started"
                 # Give the server some time to start
