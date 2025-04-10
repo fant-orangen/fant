@@ -26,6 +26,7 @@ const props = defineProps<MapComponentProps & {
   maxPrice?: number | null;
   sortOption?: string;
   clearDrawnAreaTrigger?: number; // Increment this number in parent to clear
+  highlightedItemId?: string | null;
 }>();
 
 // --- Refs ---
@@ -164,11 +165,10 @@ async function loadItemsAndAddMarkers() {
   error.value = null;
   console.log("MapComponent: Loading items with props:", props);
 
-  // Remove existing markers (but not the drawn circle).
+  // Clear existing markers
   markers.value.forEach(marker => marker.remove());
   markers.value = [];
 
-  // Convert null values from props into undefined as needed.
   const params: ItemSearchParams = {
     searchTerm: props.searchTerm ?? undefined,
     minPrice: props.minPrice ?? undefined,
@@ -177,7 +177,9 @@ async function loadItemsAndAddMarkers() {
     categoryName: categoryName.value ?? undefined,
     userLatitude: props.latitude ?? undefined,
     userLongitude: props.longitude ?? undefined,
-    maxDistance: (props.latitude !== null && props.longitude !== null) ? (props.maxDistance ?? undefined) : undefined,
+    maxDistance: (props.latitude !== null && props.longitude !== null)
+      ? (props.maxDistance ?? undefined)
+      : undefined,
     page: 0,
     size: 200,
     sort: backendSortParam.value ?? undefined
@@ -187,6 +189,8 @@ async function loadItemsAndAddMarkers() {
     const response = await searchItems(params);
     const items = response.content ?? [];
     console.log(`MapComponent: Received ${items.length} items from search.`);
+
+    let targetLatLng: L.LatLng | null = null;
 
     items.forEach(item => {
       if (item && item.latitude != null && item.longitude != null && map.value) {
@@ -204,16 +208,34 @@ async function loadItemsAndAddMarkers() {
               <a href="${itemDetailPath}" target="_blank" rel="noopener noreferrer" style="display: block; margin-top: 8px; text-decoration: none; color: #007bff; font-weight: bold;">
               ${linkText}</a>
           </div>
-          `;
+        `;
 
         const marker = L.marker([item.latitude, item.longitude])
         .addTo(map.value as L.Map)
         .bindPopup(popupContent);
 
         markers.value.push(marker);
+
+        // Save targetLatLng for highlighting after loop
+        if (item.id?.toString() === props.highlightedItemId) {
+          targetLatLng = marker.getLatLng();
+        }
       }
     });
+
     console.log(`MapComponent: Added ${markers.value.length} markers.`);
+
+    // If we found a match, center and open popup
+    if (targetLatLng && map.value) {
+      const targetMarker = markers.value.find(
+        (m): m is L.Marker => m.getLatLng().equals(targetLatLng!)
+      );
+      if (targetMarker) {
+        map.value.setView(targetLatLng, 14);
+        targetMarker.openPopup();
+      }
+    }
+
   } catch (err) {
     console.error('MapComponent: Failed to load items:', err);
     error.value = 'Failed to load items for the map.';

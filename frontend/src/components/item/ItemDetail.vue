@@ -47,6 +47,15 @@
         </div>
 
         <div class="action-buttons">
+          <!-- ✅ Find Location Button added --><router-link
+          :to="{ name: 'map', query: { highlightItem: item.id } }"
+          custom
+          v-slot="{ navigate }"
+        >
+          <button @click="navigate" class="edit-button">
+          {{$t('GO_TO_LOCATION')}}
+          </button>
+        </router-link>
           <button
             @click="startConversation"
             class="edit-button"
@@ -373,7 +382,7 @@ onMounted(() => {
  */
 .item-detail-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Default to two columns */
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
 }
@@ -395,7 +404,7 @@ onMounted(() => {
 .loading-spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  border-top: 4px solid #007bff; /* Blue spinner */
+  border-top: 4px solid #007bff;
   width: 40px;
   height: 40px;
   margin: 0 auto 1rem;
@@ -442,7 +451,7 @@ onMounted(() => {
 }
 
 .retry-button:hover, .home-link:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3;
 }
 
 /**
@@ -451,47 +460,40 @@ onMounted(() => {
 .gallery-column {
   border-radius: 8px;
   overflow: hidden;
-  background-color: var(--vt-c-white); /* Light background for gallery area */
+  background-color: var(--vt-c-white);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  max-height: 500px; /* Adjust as needed */
-  display: flex; /* Center placeholder content */
+  max-height: 500px;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
-
-/* Target images within the gallery component if needed */
 .gallery-column :deep(img) {
   max-width: 100%;
   height: auto;
-  max-height: 500px; /* Match container */
-  object-fit: contain; /* Ensure image fits without distortion */
+  max-height: 500px;
+  object-fit: contain;
   display: block;
 }
-
-/* Ensure ImageGallery component itself doesn't cause overflow */
 .gallery-column :deep(.image-gallery) {
   width: 100%;
-  height: 100%; /* Make gallery fill the column */
+  height: 100%;
   max-height: 500px;
   overflow: hidden;
-  display: flex; /* Needed for vertical centering of single image */
+  display: flex;
   align-items: center;
 }
-
-/* Placeholder for when no images are available */
 .no-image-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%; /* Fill gallery column */
-  min-height: 300px; /* Ensure decent size */
+  height: 100%;
+  min-height: 300px;
   width: 100%;
   color: #888;
   font-size: 1.1em;
-  background-color: #e9ecef; /* Slightly darker placeholder background */
+  background-color: #e9ecef;
 }
-
 .placeholder-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
@@ -504,7 +506,7 @@ onMounted(() => {
 .details-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Spacing between sections */
+  gap: 1.5rem;
   padding: 1.5rem;
   background-color: var(--vt-c-white);
   border: 1px solid var(--color-border);
@@ -513,40 +515,36 @@ onMounted(() => {
 }
 
 /**
- * Header section (Title + Heart Icon)
+ * Header
  */
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Align items to top */
+  align-items: flex-start;
   gap: 1rem;
   border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
-  margin-bottom: 0.5rem; /* Add slight space below header */
+  margin-bottom: 0.5rem;
 }
-
 .item-title {
   font-size: 1.8em;
   font-weight: 600;
   margin: 0;
   color: #333;
   line-height: 1.3;
-  flex-grow: 1; /* Allow title to take available space */
+  flex-grow: 1;
 }
-
 .heart-icon-details {
   font-size: 1.5rem;
-  color: #adb5bd; /* Default grey color */
+  color: #adb5bd;
   cursor: pointer;
-  margin-top: 0.2rem; /* Align slightly better with title */
+  margin-top: 0.2rem;
   transition: color 0.2s ease;
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
 }
-/* Add active state style if HeartIcon component doesn't handle it internally */
-/* .heart-icon-details.active { color: #dc3545; } */
 
 /**
- * Price display styling
+ * Price
  */
 .item-price {
   font-size: 1.6em;
@@ -555,89 +553,102 @@ onMounted(() => {
   margin: 0;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.action-buttons button {
-  flex: 1 1 150px;
-  min-width: 150px;
-  height: 48px;
-  font-size: 1.1rem;
-  padding: 12px 18px;
-}
-
 /**
- * Section styling (Description, Seller Info)
+ * Sections
  */
 .item-description,
 .seller-info {
-  padding-top: 0.5rem; /* Add space above section content */
+  padding-top: 0.5rem;
 }
-
 .item-description h3,
 .seller-info h3 {
   font-size: 1.1em;
   font-weight: 600;
   margin-bottom: 0.6rem;
-  color: #495057; /* Darker grey heading */
+  color: #495057;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 0.5rem;
 }
-
 .item-description p,
 .seller-info p {
   margin: 0;
   color: #444;
   line-height: 1.6;
 }
-
 .no-info {
   color: #999;
   font-style: italic;
 }
+
 /**
- * Action buttons styling
+ * Action Buttons
  */
 .action-buttons {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem; /* More space above buttons */
-  flex-wrap: wrap; /* Allow wrapping on small screens */
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
+.action-buttons button {
+  flex: 1 1 150px;
+  min-width: 150px;
+  height: 48px;
+  font-size: 1.1rem;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: white;
+}
+.contact-button {
+  background-color: #007bff;
+}
+.edit-button {
+  background-color: var(--vt-c-teal-dark);
+}
+.delete-button {
+  background-color: var(--vt-c-red-dark);
+}
+.action-buttons button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+.action-buttons button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 /**
- * Login and seller notices styling
+ * Notices
  */
 .login-notice, .seller-notice {
   font-size: 0.9rem;
-  color: #6c757d; /* Grey notice text */
+  color: #6c757d;
   text-align: center;
-  margin-top: 0.5rem; /* Space above notice */
+  margin-top: 0.5rem;
   padding: 0.5rem;
-  background-color: #f8f9fa; /* Light background for notice */
+  background-color: #f8f9fa;
   border-radius: 4px;
 }
 
 /**
- * Responsive adjustments
+ * Responsive
  */
-@media (max-width: 992px) { /* Adjust breakpoint if needed */
+@media (max-width: 992px) {
   .item-detail-container {
-    grid-template-columns: 1fr; /* Stack columns */
+    grid-template-columns: 1fr;
   }
-
   .gallery-column {
-    max-height: 450px; /* Adjust gallery height */
+    max-height: 450px;
   }
   .gallery-column :deep(img),
   .gallery-column :deep(.image-gallery) {
     max-height: 450px;
   }
 }
-
 @media (max-width: 768px) {
   .item-title {
     font-size: 1.6em;
@@ -646,7 +657,7 @@ onMounted(() => {
     font-size: 1.5em;
   }
   .details-column {
-    padding: 1rem; /* Reduce padding */
+    padding: 1rem;
     gap: 1.2rem;
   }
   .gallery-column {
@@ -657,23 +668,17 @@ onMounted(() => {
     max-height: 400px;
   }
   .action-buttons {
-    /* Buttons already wrap, ensure they stack nicely */
     flex-direction: column;
     gap: 0.8rem;
   }
-  .contact-button, .bid-button {
-    flex-basis: auto; /* Reset flex basis for stacking */
-  }
 }
-
-/* Extra small devices */
 @media (max-width: 480px) {
   .item-details-page {
-    margin: 1rem auto; /* Reduce page margin */
+    margin: 1rem auto;
   }
   .gallery-column {
-    max-height: 300px; /* Further reduce gallery height */
-    border-radius: 4px; /* Slightly smaller radius */
+    max-height: 300px;
+    border-radius: 4px;
   }
   .gallery-column :deep(img),
   .gallery-column :deep(.image-gallery) {

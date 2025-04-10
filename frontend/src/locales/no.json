@@ -137,6 +137,9 @@
     "SCROLL_SETTING_SCROLL": "Rull",
     "SCROLL_SETTING_PAGE": "Side",
 
+
+    "GO_TO_LOCATION": "Finn lokasjon",
+
     "MAP": "Kart",
     "COORDINATES": "Koordinater",
     "LATITUDE": "Breddegrad",
