@@ -20,8 +20,8 @@ The application name is a play on words from the popular norwegian marketplace "
 
 The project is divided into two parts; a frontend application using Vue and a backend application using Spring Boot. For more information about these two parts, like how to run their tests, visit their respective sub-repositories.
 
-- [Frontend](https://github.com/fant-orangen/fant/tree/dev/frontend)
-- [Backend](https://github.com/fant-orangen/fant/tree/dev/backend)
+- [Frontend](frontend)
+- [Backend](backend)
 ## Run Locally
 ### Prerequisites
 - Docker
@@ -29,7 +29,7 @@ The project is divided into two parts; a frontend application using Vue and a ba
 Clone the project
 
 ```bash
-  git clone https://github.com/fant-orangen/fant
+  git clone https://github.com/fant-orangen/fant.git
 ```
 
 Go to the project directory
