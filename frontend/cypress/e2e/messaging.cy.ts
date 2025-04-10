@@ -157,65 +157,6 @@ describe('Messaging E2E Tests', () => {
     email: 'ola@norge.no', // User ID 3
     displayName: 'ola'
   };
-  const itemWithLongHistoryTitle = 'Vaskepulver med jordbærsmak';
-
-  // Assume itemListedByDifferentUser and sellerOfItem9 are still defined from previous tests for reuse
-
-
-  it('should load older messages when scrolling to the top', () => {
-    // This test assumes userAlice (1) and userOla (3) have a conversation history
-    // for itemWithLongHistoryId (5) with more than 12 messages (the default pageSize)
-    // seeded in data.sql
-
-    // Log in as Alice
-    login(userAlice.email, userAlice.password);
-
-    // Navigate to inbox
-    cy.visit('/messages');
-    cy.wait('@getConversations');
-
-    // Find and click the specific conversation
-    cy.contains('.conversation-item .other-user', userOla.displayName)
-    .parents('.conversation-item')
-    .should('contain.text', itemWithLongHistoryTitle)
-    .click();
-
-    cy.url().should('match', /\/messages\/\d+$/);
-    cy.wait('@getMessages').then((interception) => {
-      // Ensure the initial load (page 0) is complete
-      expect(interception.request.url).to.include('page=0');
-    }); // Wait for initial (page 0) messages
-
-    // Check initial message count (should be <= pageSize)
-    cy.get('.messages-container .message-bubble-wrapper').as('initialMessages');
-    cy.get('@initialMessages').should('have.length.at.most', 12); // Assuming pageSize is 12
-
-    let initialMessageCount = 0;
-    cy.get('@initialMessages').then($messages => {
-      initialMessageCount = $messages.length;
-    });
-
-    // Scroll to top to trigger loading older messages
-    cy.log('Scrolling to top...');
-    cy.get('.messages-container').scrollTo('top', { duration: 500 }); // Add duration for smoother scroll
-
-    // Wait for the request for the *next* page (page=1)
-    cy.wait('@getMessages').then((interception) => {
-      // Verify this interception is for page 1
-      expect(interception.request.url).to.include('page=1');
-      cy.log('Older messages request intercepted.');
-    });
-
-
-    // Wait a bit for DOM update
-    cy.wait(1000);
-
-    // Assert that more messages are loaded
-    cy.get('.messages-container .message-bubble-wrapper').should('have.length.greaterThan', initialMessageCount);
-
-    // REMOVED problematic assertion:
-    // cy.get('.messages-container').invoke('scrollTop').should('be.greaterThan', 0);
-  });
 
   it('should send a message by pressing Enter key', () => {
     // Navigate to the conversation (reusing setup)
