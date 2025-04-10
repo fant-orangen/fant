@@ -38,7 +38,7 @@ jobs:
         run: mvn -B test --file pom.xml
 
       - name: Upload JaCoCo exec file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: jacoco-report
           path: |
