@@ -2,8 +2,7 @@
 # backend
 
 This guide will help you start developing on the backend of this project.
-
-
+The backend of this project is build using Spring Boot with Maven.
 
 
 ## Prerequisites
