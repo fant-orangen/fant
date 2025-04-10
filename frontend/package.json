@@ -43,7 +43,7 @@
     "@vue/runtime-core": "^3.5.13",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
-    "cypress": "^14.1.0",
+    "cypress": "^14.3.0",
     "eslint": "^9.21.0",
     "eslint-plugin-cypress": "^4.2.0",
     "eslint-plugin-vue": "~10.0.0",
