@@ -28,10 +28,12 @@
     "PROFILE_VIPPS_PROMPT_TITLE": "Hurtigkjøp med Vipps",
     "PROFILE_VIPPS_PROMPT_DESC": "Aktiver din Vipps-konto for rask og sikker betaling",
     "PROFILE_MY_FAVORITES_DESC": "Mine favoritter - Beskrivelse",
+    "NEW_PASSWORD": "Nytt Passord",
     "PASSWORD_NEEDED": "Passord kreves for å bekrefte endringer",
     "PASSWORD_CURRENT_REQUIRED": "Nåværende passord er påkrevd for å oppdatere",
     "INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT": "Vennligst bruk internasjonalt format, f.eks. +47 12345678",
     "FAVORITES_EMPTY_MESSAGE": "Du har ikke lagt til noen elementer i favorittene dine ennå.",
+    "USER_UPDATE_SUCCESS": "Velykket! Profil er oppdatert",
 
     "APP_LISTING_CREATE_NEW": "Ny Annonse",
     "APP_LISTING_CREATE_NEW_CATEGORY_LABEL": "Kategori",

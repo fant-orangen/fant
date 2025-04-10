@@ -136,7 +136,8 @@ export const useUserStore = defineStore("user", () => {
    */
     // The payload for update must match UserCreateDto, so it needs password and displayName
   interface UpdatePayload extends UserProfile {
-    password?: string; // Password might be optional if backend handles it, but DTO requires it
+    password?: string;
+    currentPassword?: string; // Password might be optional if backend handles it, but DTO requires it
   }
 
   async function updateProfile(updatedProfile: UpdatePayload) { // Use the extended payload type
@@ -145,11 +146,12 @@ export const useUserStore = defineStore("user", () => {
       // Crucially includes displayName and password
       const payload = {
         email: updatedProfile.email,
+        password: updatedProfile.password,
         firstName: updatedProfile.firstName,
         lastName: updatedProfile.lastName,
         phone: updatedProfile.phone,
         displayName: updatedProfile.displayName, // <-- Include displayName
-        password: updatedProfile.password        // <-- Include password
+        currentPassword: updatedProfile.currentPassword       // <-- Include password
       };
 
       // Check if password is provided, if not, handle error or send a dummy (as per backend requirement)

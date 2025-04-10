@@ -4,8 +4,9 @@
   </div>
   <form v-else class="profile-form" @submit.prevent="handleProfileUpdate">
     <TextInput id="email" v-model="email" :label="$t('EMAIL')" :placeholder="$t('EMAIL')" type="email" required :disabled="isUpdating" />
-    <TextInput id="firstName" v-model="firstName" :label="$t('FIRSTNAME')" :placeholder="$t('FIRSTNAME')" required :disabled="isUpdating" />
-    <TextInput id="lastName" v-model="lastName" :label="$t('LASTNAME')" :placeholder="$t('LASTNAME')" required :disabled="isUpdating" />
+    <PasswordInput id="new_password" v-model="newPassword" :label="$t('NEW_PASSWORD')" :placeholder="$t('NEW_PASSWORD')" required :disabled="isUpdating"/>
+    <TextInput id="firstName" v-model="firstName" :label="$t('FIRSTNAME')" :placeholder="$t('FIRSTNAME')" :disabled="isUpdating" />
+    <TextInput id="lastName" v-model="lastName" :label="$t('LASTNAME')" :placeholder="$t('LASTNAME')" :disabled="isUpdating" />
     <TextInput id="displayName" v-model="displayName" :label="$t('USERNAME')" :placeholder="$t('USERNAME')" required :disabled="isUpdating" />
 
     <PhoneNumberInput
@@ -15,7 +16,7 @@
         :placeholder="$t('INTERNATIONAL_FORMAT_PHONENUMBER_REQUIREMENT')"
         :disabled="isUpdating"
         @update:isValid="isValid => isPhoneNumberValid = isValid" />
-    <PasswordInput id="password" v-model="password" :label="$t('PASSWORD')" :placeholder="$t('PASSWORD_CURRENT_REQUIRED')" required :disabled="isUpdating" autocomplete="current-password" />
+    <PasswordInput id="password" v-model="password" :label="$t('PASSWORD')" :placeholder="$t('PASSWORD_CURRENT_REQUIRED')" required :disabled="isUpdating"/>
     <small>{{ t('PASSWORD_NEEDED') }}</small>
 
     <p v-if="updateSuccess" class="success-message">{{ $t('PROFILE_UPDATE_SUCCESS') }}</p>
@@ -40,6 +41,7 @@ const { t } = useI18n();
 
 // Local reactive copies
 const email = ref('');
+const newPassword = ref('')
 const firstName = ref('');
 const lastName = ref('');
 const phone = ref(''); // Initialize potentially from store later
@@ -96,12 +98,13 @@ async function handleProfileUpdate() {
 
   const updatedProfileData = {
     email: email.value,
+    password: newPassword.value,
     firstName: firstName.value,
     lastName: lastName.value,
     // Pass phone number regardless of frontend validation state, let backend handle if needed
     phone: phone.value,
     displayName: displayName.value,
-    password: password.value
+    currentPassword: password.value
   };
 
   try {
