@@ -103,7 +103,8 @@ const maxPrice = ref<number | null>(null)
 const categories = ref<Category[]>([])
 
 const items = ref<ItemPreviewType[]>([])
-const currentPage = ref(1)
+const savedPage = parseInt(localStorage.getItem('savedCurrentPage') || '1')
+const currentPage = ref(savedPage > 0 ? savedPage : 1)
 const totalPages = ref(1)
 const isLoading = ref(false)
 const error = ref<string | null>(null)
@@ -237,6 +238,9 @@ function onMaxPriceUpdate(val: number | null) {
 function onPageChange(page: number) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
+    if (paginationEnabled.value) {
+      localStorage.setItem('savedCurrentPage', String(page))
+    }
   }
 }
 function fetchCurrentUserLocation() {
@@ -290,6 +294,10 @@ watch(
 
 onMounted(() => {
   fetchCategories().then(res => categories.value = res)
+  if (paginationEnabled.value) {
+    const stored = parseInt(localStorage.getItem('savedCurrentPage') || '1')
+    if (!isNaN(stored) && stored > 0) currentPage.value = stored
+  }
   fetchItems()
 })
 </script>
