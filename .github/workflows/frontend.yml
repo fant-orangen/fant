@@ -33,7 +33,7 @@ jobs:
             distribution: 'temurin'
             cache: maven
   
-        - run: mvn -B dependency:resolve --file backend/pom.xml
+        - run: mvn -B dependency:resolve --file pom.xml
         - run: |
                 cd backend
                 mvn spring-boot:run &
