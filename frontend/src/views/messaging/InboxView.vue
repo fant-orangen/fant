@@ -195,13 +195,13 @@ onUnmounted(() => {
  * Uses gradient background with rounded corners
  */
 .conversation-item {
-  background: linear-gradient(to bottom, #ffffff, #dedede);
+  background: linear-gradient(to bottom, var(--vt-c-white), var(--vt-c-white-soft));
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-top: 1px solid snow;
-  border-bottom: 1px solid gray;
+  border-top: 1px solid var(--vt-c-white);
+  border-bottom: 1px solid var(--color-border);
   border-radius: 15px;
   cursor: pointer;
   transition: background-color 0.5s ease;
@@ -212,7 +212,8 @@ onUnmounted(() => {
  * Hover state for conversation items
  */
 .conversation-item:hover {
-  background: linear-gradient(to bottom, #ffffff, #b5b5b5);
+  background: linear-gradient(to bottom, var(--vt-c-white), var(--vt-c-white-mute));
+  border-left: 3px solid var(--vt-c-teal-soft);
 }
 
 /**
@@ -240,13 +241,13 @@ onUnmounted(() => {
 .item-image-placeholder {
   width: 50px;
   height: 50px;
-  background-color: #ccc;
+  background-color: var(--vt-c-teal-soft);
   border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.5em;
-  color: #fff;
+  color: var(--vt-c-white);
 }
 
 /**
@@ -271,7 +272,7 @@ onUnmounted(() => {
  */
 .related-item {
   font-size: 0.9em;
-  color: #555;
+  color: var(--vt-c-text-light-2);
   display: block;
   white-space: nowrap;
   overflow: hidden;
@@ -283,7 +284,7 @@ onUnmounted(() => {
  */
 .last-message-snippet {
   font-size: 0.9em;
-  color: #777;
+  color: var(--vt-c-text-light-1);
   margin: 0.25rem 0 0 0;
   white-space: nowrap;
   overflow: hidden;
@@ -294,8 +295,8 @@ onUnmounted(() => {
  * Badge for unread message count
  */
 .unread-badge {
-  background-color: red;
-  color: white;
+  background-color: var(--vt-c-teal-dark);
+  color: var(--vt-c-white);
   font-size: 0.8em;
   font-weight: bold;
   border-radius: 50%;
@@ -311,8 +312,12 @@ onUnmounted(() => {
 /**
  * Special styling for conversations with unread messages
  */
+.conversation-item.has-unread {
+  border-left: 3px solid var(--vt-c-teal-soft);
+}
 .conversation-item.has-unread .other-user {
   font-weight: bold;
+  color: var(--vt-c-teal-dark);
 }
 .conversation-item.has-unread .last-message-snippet {
   font-weight: normal;
@@ -326,13 +331,13 @@ onUnmounted(() => {
 .empty-inbox {
   text-align: center;
   padding: 2rem;
-  color: #777;
+  color: var(--vt-c-text-light-1);
 }
 
 /**
  * Error message specific styling
  */
 .error {
-  color: red;
+  color: var(--vt-c-red-dark);
 }
 </style>

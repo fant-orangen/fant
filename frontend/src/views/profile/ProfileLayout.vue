@@ -106,10 +106,10 @@ const profileTiles = ref([
 }
 
 .tile-link.router-link-active {
-  background-color: hsla(160, 100%, 37%, 0.08);
-  color: hsla(160, 100%, 37%, 1);
+  background-color: var(--vt-c-teal-light);
+  color: var(--vt-c-black-soft);
   font-weight: 600;
-  border-color: hsla(160, 100%, 37%, 0.2);
+  border-color: var(--vt-c-teal-soft);
 }
 
 .tile-icon {

@@ -29,10 +29,10 @@
           <td>{{ user.email }}</td>
           <td>{{ user.role }}</td>
           <td>
-            <button @click="handleEditUser(user.id)" class="btn-edit">
+            <button @click="handleEditUser(user.id)" class="edit-button">
               {{ t('EDIT') }}
             </button>
-            <button @click="confirmDeleteUser(user.id, user.displayName)" class="btn-delete">
+            <button @click="confirmDeleteUser(user.id, user.displayName)" class="delete-button">
               {{ t('DELETE') }}
             </button>
           </td>
@@ -143,26 +143,70 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Styles remain the same */
 .admin-user-management { padding: 2rem; max-width: 1000px; margin: 0 auto; }
-h2 { text-align: center; margin-bottom: 1.5rem; color: #333; }
-.loading-indicator, .error-message, .no-users-message { text-align: center; padding: 2rem; color: #666; font-size: 1.1em; }
-.error-message { color: #dc3545; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; }
-.error-message button { margin-top: 1rem; padding: 0.5rem 1rem; cursor: pointer; }
+
+h2 { text-align: center; margin-bottom: 1.5rem; color: var(--vt-c-text-dark-1); }
+
+.loading-indicator, .no-users-message { text-align: center; padding: 2rem; color: var(--vt-c-text-light-1); font-size: 1.1em; }
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1em;
+  color: var(--vt-c-red-dark);
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+}
+
+.error-message button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: var(--vt-c-teal-soft);
+  color: var(--vt-c-white);
+  border: none;
+  border-radius: 4px;
+}
+
+.error-message button:hover {
+  background-color: var(--vt-c-teal-dark);
+}
+
 .user-table { width: 100%; border-collapse: collapse; margin-top: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-.user-table th, .user-table td { border: 1px solid #ddd; padding: 10px 12px; text-align: left; }
-.user-table thead { background-color: #f8f9fa; }
-.user-table th { font-weight: 600; color: #495057; }
-.user-table tbody tr:nth-child(even) { background-color: #f2f2f2; }
-.user-table tbody tr:hover { background-color: #e9ecef; }
+.user-table th, .user-table td { border: 1px solid var(--color-border); padding: 10px 12px; text-align: left; }
+.user-table thead { background-color: var(--color-background-soft); }
+.user-table th { font-weight: 600; color: var(--vt-c-text-dark-2); }
+.user-table tbody tr:nth-child(even) { background-color: var(--color-background-mute); }
+.user-table tbody tr:hover { background-color: var(--vt-c-white-mute); }
 .user-table td:last-child { text-align: center; white-space: nowrap; }
-.btn-edit, .btn-delete { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin: 0 4px; transition: background-color 0.2s ease; }
-.btn-edit { background-color: #007bff; color: white; }
-.btn-edit:hover { background-color: #0056b3; }
-.btn-delete { background-color: #dc3545; color: white; }
-.btn-delete:hover { background-color: #c82333; }
+
 .pagination-controls { margin-top: 1.5rem; text-align: center; }
-.pagination-controls button { padding: 8px 16px; margin: 0 10px; cursor: pointer; border: 1px solid #ddd; background-color: #fff; border-radius: 4px; }
-.pagination-controls button:disabled { cursor: not-allowed; opacity: 0.6; background-color: #e9ecef; }
-.pagination-controls span { margin: 0 10px; font-weight: 500; color: #495057; }
+
+.pagination-controls button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  color: var(--vt-c-teal-soft);
+  border-radius: 4px;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: var(--vt-c-teal-soft);
+  color: var(--vt-c-white);
+}
+
+.pagination-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background-color: var(--color-background-mute);
+}
+
+.pagination-controls span {
+  margin: 0 10px;
+  font-weight: 500;
+  color: var(--vt-c-text-dark-2);
+}
 </style>
