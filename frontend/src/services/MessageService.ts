@@ -89,14 +89,23 @@ export async function readMessages(messages: Message[]): Promise<void> {
   try {
     // Get current user ID to know which messages are "to me"
     const currentUserId = useUserStore().getUserId
-    console.log('Current id: ' + currentUserId)
-
+    console.log("Current user id:" + currentUserId)
+    console.log("Reading messages for user:", currentUserId)
     // Filter for unread messages where the current user is the recipient
     // Use the isRead property from the Message interface
-    const unreadMessageIds = messages
-      .filter((message) => message.receiver.id === currentUserId && !message.isRead)
-      .map((message) => message.id)
+    //const unreadMessageIds = messages
+     // .filter((message) => message.receiver.id === currentUserId && !message.isRead)
+      //.map((message) => message.id)
 
+    const unreadMessageIds = messages.map((message) => message.id)
+    for (const message of unreadMessageIds) {
+      console.log(`Unread message ID: ${message}`)
+    }
+
+    for (const message of messages) {
+      console.log(`Message ID: ${message.id}, Sender: ${message.sender.id}, Receiver: ${message.receiver.id}, Is Read: ${message.isRead}`)
+    }
+    console.log("Unread message ids;" + unreadMessageIds.length);
     // Only make the API call if there are unread messages
     if (unreadMessageIds.length > 0) {
       // Send the array of IDs to be marked as read
