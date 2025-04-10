@@ -16,7 +16,7 @@
 
     <div class="category-section">
       <div class="category-scroll-container">
-        <div class="category-content-wrapper">
+        <div class="category-content-wrapper" ref="categoryScrollContainer">
           <div class="category-content-row">
             <CategoryGrid
               layout="horizontal"
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, onBeforeUnmount } from 'vue'
 import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import CategoryButton from '@/components/category/CategoryButton.vue'
 import ItemList from '@/components/item/ItemList.vue'
@@ -271,6 +271,45 @@ function fetchCurrentUserLocation() {
   )
 }
 
+// Horizontal scroll logic
+const categoryScrollContainer = ref<HTMLElement | null>(null)
+let cleanupScrollListener: (() => void) | null = null
+
+function enableHorizontalScrollOnWheel(wrapper: HTMLElement) {
+  const scrollTarget = wrapper.querySelector('.category-row') as HTMLElement | null
+
+  if (!scrollTarget) return () => {}
+
+  const handler = (e: WheelEvent) => {
+    if (e.deltaY !== 0 && scrollTarget.scrollWidth > scrollTarget.clientWidth) {
+      e.preventDefault()
+      scrollTarget.scrollLeft += e.deltaY
+    }
+  }
+
+  wrapper.addEventListener('wheel', handler, { passive: false })
+  return () => wrapper.removeEventListener('wheel', handler)
+}
+
+onMounted(() => {
+  fetchCategories().then(res => categories.value = res)
+
+  if (paginationEnabled.value) {
+    const stored = parseInt(localStorage.getItem('savedCurrentPage') || '1')
+    if (!isNaN(stored) && stored > 0) currentPage.value = stored
+  }
+
+  if (categoryScrollContainer.value) {
+    cleanupScrollListener = enableHorizontalScrollOnWheel(categoryScrollContainer.value)
+  }
+
+  fetchItems()
+})
+
+onBeforeUnmount(() => {
+  if (cleanupScrollListener) cleanupScrollListener()
+})
+
 watch(
   [
     searchTerm,
@@ -295,15 +334,6 @@ watch(
   },
   { deep: true }
 )
-
-onMounted(() => {
-  fetchCategories().then(res => categories.value = res)
-  if (paginationEnabled.value) {
-    const stored = parseInt(localStorage.getItem('savedCurrentPage') || '1')
-    if (!isNaN(stored) && stored > 0) currentPage.value = stored
-  }
-  fetchItems()
-})
 </script>
 
 <style scoped>
@@ -336,12 +366,15 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   width: 100%;
+  overflow-x: auto; /* <-- ADD THIS */
+  white-space: nowrap; /* <-- Helps preserve row layout */
 }
 
 .category-content-row {
   display: inline-flex;
   align-items: center;
   gap: 1rem;
+  min-width: max-content; /* <-- Makes sure it expands beyond wrapper if needed */
 }
 
 .button-stack {
