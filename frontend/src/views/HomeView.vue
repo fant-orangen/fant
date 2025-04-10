@@ -24,13 +24,22 @@
           />
         </div>
 
-        <div class="extra-button-wrapper">
-          <CategoryButton
-            :label="scrollToggleLabel"
-            :icon='scrollicon'
-            @click="onScrollButtonClick"
-            class="toggle-scroll-button"
-          />
+        <div class="display-button-wrapper">
+          <div class="button-stack">
+            <CategoryButton
+              label="Small"
+              :icon="thumbnailicon"
+              @click="onExtraButtonClick"
+              class="toggle-scroll-button"
+            />
+            <CategoryButton
+              :label="scrollToggleLabel"
+              :icon="scrollicon"
+              @click="onScrollButtonClick"
+              class="toggle-scroll-button"
+            />
+
+          </div>
         </div>
       </div>
 
@@ -67,19 +76,20 @@ import SearchBar from '@/components/search/searchBar.vue'
 import {
   searchItems,
   type ItemSearchParams,
-  fetchItemsByDistribution
+  fetchItemsByDistribution,
 } from '@/services/ItemService'
 import type { ItemPreviewType } from '@/models/Item'
 import { fetchCategories } from '@/services/CategoryService'
 import type { Category } from '@/models/Category'
 import {
   fetchCategoryRecommendations,
-  fetchUserViewCount
+  fetchUserViewCount,
 } from '@/services/RecommendationService.ts'
 import { useUserStore } from '@/stores/UserStore.ts'
 
 // --- Icon ---
 import scrollicon from '@/assets/icons/scrollicon.svg'
+import thumbnailicon from '@/assets/icons/thumbnailicon.svg'
 
 // --- Filter States ---
 const selectedCategoryId = ref<string | null>(null)
@@ -104,17 +114,15 @@ const locationError = ref<string | null>(null)
 const pageSize = ref(12)
 
 const numOfViewsLimit = 3
-const paginationEnabled = ref(
-  localStorage.getItem('paginationEnabled') !== 'false' // default to true if not set
-);
+const paginationEnabled = ref(localStorage.getItem('paginationEnabled') !== 'false')
 
 watch(paginationEnabled, (newVal) => {
-  localStorage.setItem('paginationEnabled', String(newVal));
-});
+  localStorage.setItem('paginationEnabled', String(newVal))
+})
 
 const scrollToggleLabel = computed(() =>
-  paginationEnabled.value ? 'Toggle scroll' : 'Toggle pagination'
-);
+  paginationEnabled.value ? 'Scroll' : 'Page',
+)
 
 // --- Computed Properties ---
 const isLocationAvailable = computed(() => {
@@ -124,7 +132,7 @@ const isLocationAvailable = computed(() => {
 const selectedCategoryName = computed(() => {
   if (!selectedCategoryId.value) return null
   const foundCategory = categories.value.find(
-    cat => cat.id?.toString() === selectedCategoryId.value
+    (cat) => cat.id?.toString() === selectedCategoryId.value,
   )
   return foundCategory ? foundCategory.name : null
 })
@@ -140,17 +148,19 @@ const backendSortParam = computed(() => {
   }
 })
 
+// --- Button Actions ---
 function onScrollButtonClick() {
-  paginationEnabled.value = !paginationEnabled.value;
+  paginationEnabled.value = !paginationEnabled.value
+  currentPage.value = 1
+  items.value = []
 
-  // Reset pagination and items
-  currentPage.value = 1;
-  items.value = [];
-
-  // Allow Vue to apply changes and re-render before fetching
   nextTick(() => {
-    fetchItems();
-  });
+    fetchItems()
+  })
+}
+
+function onExtraButtonClick() {
+  console.log('Extra button clicked!')
 }
 
 // --- Methods ---
@@ -169,7 +179,7 @@ async function fetchItems() {
     maxDistance: isLocationAvailable.value ? maxDistance.value : null,
     page: currentPage.value - 1,
     size: pageSize.value,
-    sort: backendSortParam.value ?? undefined
+    sort: backendSortParam.value ?? undefined,
   }
 
   try {
@@ -259,13 +269,13 @@ function fetchCurrentUserLocation() {
   isFetchingLocation.value = true
   locationError.value = null
   navigator.geolocation.getCurrentPosition(
-    position => {
+    (position) => {
       currentLatitude.value = position.coords.latitude
       currentLongitude.value = position.coords.longitude
       locationError.value = null
       isFetchingLocation.value = false
     },
-    error => {
+    (error) => {
       console.error('Error getting location: ', error)
       currentLatitude.value = null
       currentLongitude.value = null
@@ -284,7 +294,7 @@ function fetchCurrentUserLocation() {
           break
       }
       isFetchingLocation.value = false
-    }
+    },
   )
 }
 
@@ -299,7 +309,7 @@ watch(
     currentLatitude,
     currentLongitude,
     maxDistance,
-    currentPage
+    currentPage,
   ],
   (newValues, oldValues) => {
     const pageIndex = newValues.length - 1
@@ -317,10 +327,11 @@ watch(
       fetchItems()
     }
   },
-  { deep: true }
+  { deep: true },
 )
 
-// --- Initial Data Load ---
+onMounted(loadInitialData)
+
 async function loadInitialData() {
   isLoading.value = true
   try {
@@ -333,14 +344,13 @@ async function loadInitialData() {
     isLoading.value = false
   }
 }
-
-onMounted(loadInitialData)
 </script>
 
 <style scoped>
 @import '@/assets/styles/responsiveStyles.css';
 
-.homepage {}
+.homepage {
+}
 
 .search-section {
   padding: 1rem 0;
@@ -376,21 +386,28 @@ onMounted(loadInitialData)
   padding-bottom: 0.5rem;
 }
 
-.extra-button-wrapper {
+.display-button-wrapper {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.button-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .toggle-scroll-button {
   width: 80px;
-  height: 80px;
+  height: 60px;
   padding: 0;
   border: 1px solid rgb(128, 200, 190);
 }
 
-.items-section {}
+.items-section {
+}
 
 .location-error {
   color: red;
