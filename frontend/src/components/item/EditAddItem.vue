@@ -267,7 +267,6 @@ async function handleSubmit() {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background-color: var(--color-background-soft, #f8f9fa);
 }
 
 .listing-form {
@@ -275,7 +274,7 @@ async function handleSubmit() {
   max-width: 800px;
   background: var(--color-background, white);
   border-radius: 12px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.20);
   padding: 35px;
   display: flex;
   flex-direction: column;
