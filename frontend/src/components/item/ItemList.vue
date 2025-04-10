@@ -59,6 +59,7 @@ import {
   onMounted,
   onUnmounted,
   watch,
+  nextTick,
 } from 'vue';
 import ItemPreview from '@/components/item/ItemPreview.vue';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
@@ -115,23 +116,51 @@ function onScroll() {
   }
 }
 
+function maybeLoadMoreItemsIfNotScrollable() {
+  const scrollHeight = document.documentElement.scrollHeight
+  const clientHeight = window.innerHeight
+
+  if (
+    scrollHeight <= clientHeight &&
+    !props.isLoading &&
+    props.currentPage! < props.totalPages!
+  ) {
+    emit('change-page', props.currentPage! + 1)
+  }
+}
+
 onMounted(() => {
   if (!props.paginationEnabled) {
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll)
+    maybeLoadMoreItemsIfNotScrollable()
   }
-});
+})
 
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
 });
 
+// Watch for pagination toggle to attach/remove scroll listener
 watch(() => props.paginationEnabled, (newVal) => {
   if (!newVal) {
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll)
+    maybeLoadMoreItemsIfNotScrollable()
   } else {
-    window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('scroll', onScroll)
   }
-});
+})
+
+// Watch for item updates to trigger scroll check
+watch(
+  () => props.items,
+  async () => {
+    await nextTick()
+    if (!props.paginationEnabled) {
+      maybeLoadMoreItemsIfNotScrollable()
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
