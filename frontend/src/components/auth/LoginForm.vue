@@ -5,8 +5,8 @@
       <TextInput
         id="username"
         v-model="username"
-        :label="$t('USERNAME')"
-        :placeholder="$t('USERNAME')"
+        :label="$t('EMAIL')"
+        :placeholder="$t('EMAIL')"
         required
       />
 
