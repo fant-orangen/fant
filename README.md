@@ -1,9 +1,8 @@
 
 # fant.
-
-A marketplace for selling and buying second-hand items.
-
-
+This project was developed as a submisson for IDATT2105 at NTNU Trondheim during spring of 2025. The product is a ‘finn.no´ like e-commerce marketplace – a web application where sellers can list their
+items and potential buyers can browse or search the items using various filters, can add items into their
+favorite lists, can communicate with sellers, and can also and buy items!
 
 
 ## Authors
