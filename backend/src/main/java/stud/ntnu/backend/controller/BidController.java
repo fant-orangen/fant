@@ -197,7 +197,7 @@ public class BidController {
    * @param itemId the ID of the item associated with the bids
    * @return {@link ResponseEntity} containing a page of {@link BidResponseDto}
    */
-  @GetMapping("/{itemId}")
+  @GetMapping("/item/{itemId}")
   @Operation(summary = "Update Bid", description = "Updates an existing bid for a specific item by the authenticated user.")
   @ApiResponse(responseCode = "200", description = "Bid updated successfully", content = @Content(schema = @Schema(implementation = BidResponseDto.class)))
   @ApiResponse(responseCode = "404", description = "Item not found", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
