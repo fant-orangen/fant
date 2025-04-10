@@ -70,18 +70,25 @@
 /**
  * Home View component.
  *
- * This is the main landing page component that provides item search, filtering,
- * and browsing capabilities with various customization options.
+ * This is the main landing page component that serves as the application's entry point,
+ * providing comprehensive item discovery, filtering, and browsing capabilities.
  *
  * Features:
- * - Search bar with term-based search
- * - Category selection with horizontal scrolling
- * - Location-based search with distance filtering
- * - Price range filtering
- * - Item sorting options
- * - Configurable pagination or infinite scroll
- * - Adjustable thumbnail size
- * - Personalized recommendations for logged-in users
+ * - Search bar with text-based filtering
+ * - Category selection via horizontal scrolling grid
+ * - Geolocation-based search with configurable distance radius
+ * - Price range filtering with min/max values
+ * - Multiple item sorting options (default, price ascending/descending)
+ * - Configurable view modes: pagination or infinite scroll
+ * - Adjustable thumbnail size for different density displays
+ * - Personalized recommendations for authenticated users
+ * - Location services with permission handling
+ * - Persistent user preferences via localStorage
+ *
+ * State Management:
+ * - Tracks search parameters, filters, and pagination state
+ * - Preserves user preferences between sessions
+ * - Handles loading states and error conditions
  *
  * @component
  */
@@ -110,6 +117,9 @@ import thumbnailicon from '@/assets/icons/thumbnailicon.svg'
 
 const { t } = useI18n()
 
+/**
+ * Search and filtering state
+ */
 const selectedCategoryId = ref<string | null>(null)
 const searchTerm = ref<string>('')
 const maxDistance = ref<number | null>(50)
@@ -120,6 +130,9 @@ const minPrice = ref<number | null>(null)
 const maxPrice = ref<number | null>(null)
 const categories = ref<Category[]>([])
 
+/**
+ * Item list and pagination state
+ */
 const items = ref<ItemPreviewType[]>([])
 const savedPage = parseInt(localStorage.getItem('savedCurrentPage') || '1')
 const currentPage = ref(savedPage > 0 ? savedPage : 1)
@@ -131,6 +144,9 @@ const insufficientItemViews = ref(false)
 const locationError = ref<string | null>(null)
 const pageSize = ref(12)
 
+/**
+ * User interface preferences with localStorage persistence
+ */
 const paginationEnabled = ref(localStorage.getItem('paginationEnabled') !== 'false')
 watch(paginationEnabled, newVal => {
   localStorage.setItem('paginationEnabled', String(newVal))
@@ -141,6 +157,9 @@ watch(displaySmallThumbnails, newVal => {
   localStorage.setItem('displaySmallThumbnails', String(newVal))
 })
 
+/**
+ * Computed properties for dynamic UI elements and text
+ */
 const scrollToggleLabel = computed(() =>
   paginationEnabled.value ? t('SCROLL_SETTING_SCROLL') : t('SCROLL_SETTING_PAGE')
 )
@@ -148,6 +167,10 @@ const thumbnailToggleLabel = computed(() =>
   displaySmallThumbnails.value ? t('THUMBNAIL_SETTING_LARGE') : t('THUMBNAIL_SETTING_SMALL')
 )
 
+/**
+ * Toggles between pagination and infinite scroll modes
+ * Resets current page and item list when switching modes
+ */
 function onScrollButtonClick() {
   paginationEnabled.value = !paginationEnabled.value
   currentPage.value = 1
@@ -155,20 +178,32 @@ function onScrollButtonClick() {
   nextTick(() => fetchItems())
 }
 
+/**
+ * Toggles between small and large thumbnail display modes
+ */
 function onToggleThumbnailSize() {
   displaySmallThumbnails.value = !displaySmallThumbnails.value
 }
 
+/**
+ * Determines if location services are available based on current coordinates
+ */
 const isLocationAvailable = computed(() =>
   currentLatitude.value !== null && currentLongitude.value !== null
 )
 
+/**
+ * Returns the name of the currently selected category
+ */
 const selectedCategoryName = computed(() => {
   if (!selectedCategoryId.value) return null
   const found = categories.value.find(cat => cat.id?.toString() === selectedCategoryId.value)
   return found ? found.name : null
 })
 
+/**
+ * Converts UI sort option to backend sort parameter format
+ */
 const backendSortParam = computed(() => {
   switch (sortOption.value) {
     case 'price_asc': return 'price,asc'
@@ -180,6 +215,7 @@ const backendSortParam = computed(() => {
 /**
  * Fetches items based on current filters and search parameters.
  * Will use recommendations if the recommendation category is selected.
+ * Handles different data loading scenarios based on user authentication and view history.
  *
  * @returns {Promise<void>}
  */
@@ -242,7 +278,8 @@ async function fetchItems() {
 }
 
 /**
- * Handles category selection/deselection.
+ * Handles category selection and deselection.
+ * Toggles selected state if clicking the same category.
  *
  * @param {string} categoryId - The ID of the clicked category
  * @returns {void}
@@ -250,9 +287,17 @@ async function fetchItems() {
 function onCategoryClick(categoryId: string) {
   selectedCategoryId.value = selectedCategoryId.value === categoryId ? null : categoryId
 }
+
+/**
+ * Clears the currently selected category filter
+ */
 function clearCategorySelection() {
   selectedCategoryId.value = null
 }
+
+/**
+ * Search filter handlers - each updates a specific filter parameter
+ */
 function onSearchTermUpdate(val: string) {
   searchTerm.value = val
 }
@@ -268,6 +313,12 @@ function onMinPriceUpdate(val: number | null) {
 function onMaxPriceUpdate(val: number | null) {
   maxPrice.value = val
 }
+
+/**
+ * Handles pagination navigation and persists the current page to localStorage
+ *
+ * @param {number} page - The page number to navigate to
+ */
 function onPageChange(page: number) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
@@ -279,6 +330,7 @@ function onPageChange(page: number) {
 
 /**
  * Requests and stores the user's current geolocation.
+ * Updates location state and handles errors from the Geolocation API.
  *
  * @returns {void}
  */
@@ -305,9 +357,20 @@ function fetchCurrentUserLocation() {
   )
 }
 
+/**
+ * References and lifecycle handlers for horizontal wheel scrolling
+ */
 const categoryScrollContainer = ref<HTMLElement | null>(null)
 let cleanupScrollListener: (() => void) | null = null
 
+
+/**
+ * Sets up horizontal wheel scrolling for category grid
+ * Returns cleanup function to remove event listener
+ *
+ * @param {HTMLElement} wrapper - The container element to attach wheel event
+ * @returns {Function} Cleanup function to remove event listener
+ */
 function enableHorizontalScrollOnWheel(wrapper: HTMLElement) {
   const scrollTarget = wrapper.querySelector('.category-row') as HTMLElement | null
 
@@ -324,6 +387,10 @@ function enableHorizontalScrollOnWheel(wrapper: HTMLElement) {
   return () => wrapper.removeEventListener('wheel', handler)
 }
 
+/**
+ * Component lifecycle hook - setup on component mount
+ * Fetches initial data and sets up event listeners
+ */
 onMounted(() => {
   fetchCategories().then(res => categories.value = res)
 
@@ -339,10 +406,18 @@ onMounted(() => {
   fetchItems()
 })
 
+/**
+ * Component lifecycle hook - cleanup before component unmounts
+ * Removes event listeners to prevent memory leaks
+ */
 onBeforeUnmount(() => {
   if (cleanupScrollListener) cleanupScrollListener()
 })
 
+/**
+ * Watches for changes to search parameters and filters
+ * Resets to page 1 when filters change, otherwise fetches items with current settings
+ */
 watch(
   [
     searchTerm,
