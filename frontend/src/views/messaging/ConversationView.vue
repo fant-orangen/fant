@@ -137,12 +137,26 @@ async function initializeConversation() {
       return
     }
     await loadMessagesPage(currentPage.value)
+    await nextTick()
     scrollToBottom()
+    maybeLoadMoreIfNotScrollable() // 👈 Add this
   } catch (err) {
     console.error('Failed to initialize conversation:', err)
     error.value = 'Error loading conversation. Please try again.'
   } finally {
     loading.value = false
+  }
+}
+
+function maybeLoadMoreIfNotScrollable() {
+  const container = messagesContainerRef.value
+  if (
+    container &&
+    container.scrollHeight <= container.clientHeight &&
+    currentPage.value < totalPages.value - 1
+  ) {
+    currentPage.value++
+    loadMessagesPage(currentPage.value)
   }
 }
 

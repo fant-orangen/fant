@@ -1,7 +1,12 @@
 <template>
   <div class="item-preview" @click="handleClick">
     <div class="image-container">
-      <img :src="item.imageUrl" :alt="item.title" class="item-image" />
+      <img
+        :src="item.imageUrl || '/assets/images/placeholderItem.jpg'"
+        :alt="item.title"
+        class="item-image"
+        @error="handleImageError"
+      />
       <HeartIcon class="heart-icon" :itemId="props.item.id.toString()" />
       <div class="price-overlay">
         <span class="item-price">{{ item.price + " kr" }}</span>
@@ -16,6 +21,7 @@
 <script setup lang="ts">
 import type { ItemPreviewType } from '@/models/Item';
 import HeartIcon from '@/components/item/HeartIcon.vue';
+import placeholderImage from '@/assets/images/placeholderItem.jpg';
 import router from "@/router"; //
 
 const props = defineProps<{ item: ItemPreviewType }>();
@@ -27,6 +33,11 @@ function handleClick() {
   } catch (error) {
     console.error('Error during router push:', error);
   }
+}
+
+function handleImageError(event: Event) {
+  const imgElement = event.target as HTMLImageElement;
+  imgElement.src = placeholderImage;
 }
 </script>
 

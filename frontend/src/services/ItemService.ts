@@ -21,7 +21,6 @@ type PageableParams = {
   sort?: string;
 };
 
-
 export async function createItem(item: CreateItemType): Promise<number> {
   console.log('before post', item)
   const response = await api.post<number>('/items', item)

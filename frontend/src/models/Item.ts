@@ -1,7 +1,7 @@
 export interface ItemPreviewType {
   id: string | number;
   title: string;
-  imageUrl: string;
+  imageUrl?: string;
   price: number;
   categoryId: string;
   latitude?: number;
@@ -18,7 +18,6 @@ export interface PaginatedItemPreviewResponse {
   last: boolean;
   empty: boolean;
 }
-
 
 export interface ItemDetailsType {
   id: string | number;

@@ -12,7 +12,7 @@
 
       <div class="item-details-display">
         <img
-          :src="item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : '/placeholder-image.png'"
+          :src="item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : placeholderImage"
           :alt="item.title"
           class="item-main-image"
           @error="handleImageError"
@@ -95,6 +95,7 @@ import { fetchBidsForItem, acceptBid, rejectBid } from '@/services/BidService'; 
 import type { ItemDetailsType } from '@/models/Item';
 import type { BidResponseType } from '@/models/Bid';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue';
+import placeholderImage from '@/assets/images/placeholderItem.jpg';
 
 const route = useRoute();
 const router = useRouter();
@@ -245,7 +246,7 @@ function formatDateTime(dateTimeString: string | undefined): string {
 
 function handleImageError(event: Event) {
   const imgElement = event.target as HTMLImageElement;
-  imgElement.src = '/placeholder-image.png';
+  imgElement.src = 'placeholderImage';
 }
 </script>
 
