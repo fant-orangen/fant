@@ -61,6 +61,37 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Admin User Edit View component.
+ *
+ * Provides an interface for administrators to edit existing user accounts in the system.
+ * This component handles fetching user data, displaying a form with the current values,
+ * validating input, and submitting changes to the backend.
+ *
+ * Features:
+ * - Asynchronous loading of user data by ID
+ * - Form for editing user profile information:
+ *   - Email address
+ *   - Display name
+ *   - Personal information (first/last name)
+ *   - Phone number with international format validation
+ *   - User role (USER/ADMIN) selection
+ *   - Optional password reset functionality
+ * - Validation for all input fields
+ * - Error handling for API operations
+ * - Responsive design
+ * - Cancel option to return to user list
+ * - Full i18n support for all text content
+ *
+ * The component communicates with the UserService to fetch and update user data,
+ * and uses the router to navigate back to the user list on completion or cancellation.
+ *
+ * @component AdminUserEditView
+ * @requires vue
+ * @requires vue-router
+ * @requires vue-i18n
+ * @requires @/services/UserService
+ */
 import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -68,11 +99,22 @@ import { updateAdminUser, fetchAdminUserById } from '@/services/UserService';
 
 const { t } = useI18n();
 
+/**
+ * Represents a user entity as received from the backend.
+ *
+ * @interface BackendUser
+ */
 interface BackendUser {
   id: number | string; email: string; displayName: string; role: 'USER' | 'ADMIN';
   firstName: string | null; lastName: string | null; phone: string | null;
   createdAt?: string; updatedAt?: string;
 }
+
+/**
+ * Represents the data payload sent to the backend when updating a user.
+ *
+ * @interface AdminUserUpdatePayload
+ */
 interface AdminUserUpdatePayload {
   email: string; password?: string; displayName: string;
   firstName: string | null; lastName: string | null; phone: string | null;
@@ -91,11 +133,19 @@ const formData = reactive<AdminUserUpdatePayload>({
   email: '', displayName: '', firstName: '', lastName: '', phone: '', role: 'USER', password: ''
 });
 
+/**
+ * Fetches user data from the backend API based on the provided ID.
+ * Populates the form fields with the retrieved user data.
+ * Sets error state if the API request fails.
+ *
+ * @async
+ * @function fetchUserData
+ * @returns {Promise<void>}
+ */
 async function fetchUserData() {
   isLoading.value = true;
   error.value = null;
   userData.value = null;
-  console.log(`Workspaceing data for user ID: ${props.id}`);
   try {
     const user = await fetchAdminUserById(props.id);
     userData.value = user;
@@ -106,15 +156,23 @@ async function fetchUserData() {
     formData.phone = user.phone || '';
     formData.role = user.role || 'USER';
     formData.password = '';
-    console.log('User data loaded:', user);
   } catch (err) {
-    console.error("Failed to fetch user data:", err);
     error.value = err instanceof Error ? err.message : t('ERROR_FETCH_USER_DETAILS');
   } finally {
     isLoading.value = false;
   }
 }
 
+/**
+ * Handles the form submission event.
+ * Validates the input data and submits it to the backend API.
+ * Redirects to the user list view on successful update.
+ * Sets error state if the API request fails.
+ *
+ * @async
+ * @function handleSubmit
+ * @returns {Promise<void>}
+ */
 async function handleSubmit() {
   isSubmitting.value = true;
   submitError.value = null;
@@ -145,6 +203,13 @@ async function handleSubmit() {
   }
 }
 
+/**
+ * Cancels the edit operation and redirects back to the admin users list.
+ * No data is submitted when this function is called.
+ *
+ * @function cancelEdit
+ * @returns {void}
+ */
 function cancelEdit() {
   router.push({ name: 'admin-users' });
 }

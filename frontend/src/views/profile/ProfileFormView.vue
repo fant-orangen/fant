@@ -29,6 +29,30 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Profile Form View component.
+ *
+ * This component provides a form interface for users to view and update their profile information.
+ * It handles fetching current profile data, form validation, and submission of updates.
+ *
+ * Features:
+ * - Display and edit profile information (email, name, display name, phone)
+ * - Password change functionality
+ * - Real-time validation for phone number input
+ * - Current password verification for security
+ * - Loading states during API operations
+ * - Success and error notifications
+ * - Reactive form updates based on store changes
+ *
+ * @component ProfileFormView
+ * @requires vue
+ * @requires vue-i18n
+ * @requires @/stores/UserStore
+ * @requires @/components/input/TextInput.vue
+ * @requires @/components/input/PasswordInput.vue
+ * @requires @/components/input/PhoneNumberInput.vue
+ * @displayName ProfileFormView
+ */
 import { ref, onMounted, watch } from 'vue';
 import { useUserStore } from '@/stores/UserStore.ts';
 import TextInput from '@/components/input/TextInput.vue';
@@ -55,7 +79,20 @@ const updateSuccess = ref(false);
 const isLoading = ref(false);
 const isPhoneNumberValid = ref(true); // Tracks phone validity
 
-// Fetch profile data when the component is mounted
+/**
+ * Lifecycle hook that runs when the component is mounted.
+ * Fetches the user's profile data from the store and populates the form fields.
+ * Sets loading states and handles potential errors during data fetching.
+ *
+ * The function:
+ * 1. Sets the loading state to true
+ * 2. Attempts to fetch profile data from the user store
+ * 3. Updates local reactive references with fetched data
+ * 4. Handles errors if the profile fetch fails
+ * 5. Resets loading state when complete
+ *
+ * @returns {Promise<void>}
+ */
 onMounted(async () => {
   isLoading.value = true;
   try {
@@ -67,7 +104,6 @@ onMounted(async () => {
     phone.value = userStore.profile.phone; // Update phone ref
     displayName.value = userStore.profile.displayName;
   } catch (err) {
-    console.error('Failed to fetch profile on mount:', err);
     updateError.value = t('PROFILE_INFO_UNAVAILABLE');
   } finally {
     isLoading.value = false;
@@ -84,6 +120,12 @@ watch(() => userStore.profile, (newProfile) => {
 }, { deep: true });
 
 
+/**
+ * Handles the profile update form submission.
+ * Validates inputs, submits data to API, and manages feedback states.
+ *
+ * @returns {Promise<void>}
+ */
 async function handleProfileUpdate() {
   updateError.value = '';
   updateSuccess.value = false;
@@ -113,7 +155,6 @@ async function handleProfileUpdate() {
     password.value = '';
     setTimeout(() => updateSuccess.value = false, 3000);
   } catch (err: any) {
-    console.error('Failed to update profile:', err);
     if (err.message?.includes('Password is required')) {
       updateError.value = t('PASSWORD_NEEDED');
     } else {

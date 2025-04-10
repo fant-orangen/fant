@@ -67,6 +67,24 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Home View component.
+ *
+ * This is the main landing page component that provides item search, filtering,
+ * and browsing capabilities with various customization options.
+ *
+ * Features:
+ * - Search bar with term-based search
+ * - Category selection with horizontal scrolling
+ * - Location-based search with distance filtering
+ * - Price range filtering
+ * - Item sorting options
+ * - Configurable pagination or infinite scroll
+ * - Adjustable thumbnail size
+ * - Personalized recommendations for logged-in users
+ *
+ * @component
+ */
 import { ref, computed, onMounted, watch, nextTick, onBeforeUnmount } from 'vue'
 import CategoryGrid from '@/components/category/CategoryGrid.vue'
 import CategoryButton from '@/components/category/CategoryButton.vue'
@@ -159,6 +177,12 @@ const backendSortParam = computed(() => {
   }
 })
 
+/**
+ * Fetches items based on current filters and search parameters.
+ * Will use recommendations if the recommendation category is selected.
+ *
+ * @returns {Promise<void>}
+ */
 async function fetchItems() {
   isLoading.value = true
   error.value = null
@@ -209,7 +233,6 @@ async function fetchItems() {
       totalPages.value = response.totalPages ?? 1
     }
   } catch (err) {
-    console.error('Error fetching items:', err)
     error.value = 'Failed to load items. Please try again later.'
     items.value = []
     totalPages.value = 1
@@ -218,6 +241,12 @@ async function fetchItems() {
   }
 }
 
+/**
+ * Handles category selection/deselection.
+ *
+ * @param {string} categoryId - The ID of the clicked category
+ * @returns {void}
+ */
 function onCategoryClick(categoryId: string) {
   selectedCategoryId.value = selectedCategoryId.value === categoryId ? null : categoryId
 }
@@ -247,6 +276,12 @@ function onPageChange(page: number) {
     }
   }
 }
+
+/**
+ * Requests and stores the user's current geolocation.
+ *
+ * @returns {void}
+ */
 function fetchCurrentUserLocation() {
   if (!navigator.geolocation) {
     locationError.value = 'Geolocation is not supported by your browser.'
@@ -262,7 +297,6 @@ function fetchCurrentUserLocation() {
       locationError.value = null
     },
     err => {
-      console.error('Geolocation error:', err)
       currentLatitude.value = null
       currentLongitude.value = null
       isFetchingLocation.value = false
@@ -271,7 +305,6 @@ function fetchCurrentUserLocation() {
   )
 }
 
-// Horizontal scroll logic
 const categoryScrollContainer = ref<HTMLElement | null>(null)
 let cleanupScrollListener: (() => void) | null = null
 
