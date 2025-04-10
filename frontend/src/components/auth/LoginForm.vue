@@ -33,6 +33,16 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview LoginForm component for user authentication.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>User login with username and password</li>
+ *   <li>Form validation and error handling</li>
+ *   <li>Navigation to registration page</li>
+ * </ul>
+ */
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
@@ -40,16 +50,47 @@ import { isAxiosError } from 'axios'
 import TextInput from '@/components/input/TextInput.vue'
 import PasswordInput from '@/components/input/PasswordInput.vue';
 
+/**
+ * Username input field value
+ * @type {Ref<string>}
+ */
 const username = ref('')
+
+/**
+ * Password input field value
+ * @type {Ref<string>}
+ */
 const password = ref('')
-const error = ref('') // For login API errors
+
+/**
+ * Error message for login failures
+ * @type {Ref<string>}
+ */
+const error = ref('')
+
+/**
+ * Loading state indicator during authentication
+ * @type {Ref<boolean>}
+ */
 const isLoading = ref(false)
 
+/**
+ * User store for authentication operations
+ * @type {ReturnType<typeof useUserStore>}
+ */
 const userStore = useUserStore()
+
+/**
+ * Router instance for navigation
+ * @type {ReturnType<typeof useRouter>}
+ */
 const router = useRouter()
 
 /**
- * Handles the login process.
+ * Handles the login process
+ * <p>Validates inputs and attempts to authenticate the user</p>
+ * @async
+ * @returns {Promise<void>}
  */
 async function login() {
   error.value = ''
@@ -74,14 +115,16 @@ async function login() {
   }
 }
 
-// Kept the navigateToRegister function for the button
+/**
+ * Navigates to the registration page
+ * @returns {void}
+ */
 function navigateToRegister() {
   router.push('/register')
 }
 </script>
 
 <style scoped>
-/* Styles remain the same as the previous version */
 .form-container {
   max-width: 500px;
   margin: 2rem auto;

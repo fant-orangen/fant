@@ -1,6 +1,6 @@
 import './assets/main.css'
-import '@/assets/styles/categoryButtons.css'
-import '@/assets/styles/categoryGrid.css'
+import '@/assets/styles/buttons/categoryButtons.css'
+import '@/assets/styles/cards/categoryGrid.css'
 import '@/assets/styles/login/loginRegistration.css'
 import 'leaflet/dist/leaflet.css';
 import './global.js'

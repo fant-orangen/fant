@@ -1,10 +1,30 @@
 <script setup lang="ts">
+/**
+ * @fileoverview SearchBar component for filtering listings and search results.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Text-based search with real-time filtering</li>
+ *   <li>Advanced search options with collapsible UI</li>
+ *   <li>Price range filtering (min/max)</li>
+ *   <li>Distance-based location filtering</li>
+ *   <li>Sorting options for search results</li>
+ *   <li>Geolocation integration</li>
+ * </ul>
+ */
 import { ref } from 'vue'
 
+/**
+ * Props for component configuration
+ * @property {boolean} isLocationAvailable - Whether user location services are available
+ */
 const props = defineProps<{
   isLocationAvailable?: boolean
 }>()
 
+/**
+ * Event emitter for search parameter updates
+ * @type {Emitter}
+ */
 const emit = defineEmits<{
   (e: 'update:searchTerm', value: string): void
   (e: 'update:maxDistance', value: number | null): void
@@ -14,44 +34,98 @@ const emit = defineEmits<{
   (e: 'update:minPrice', value: number | null): void
 }>()
 
+/**
+ * Current search query text value
+ * @type {Ref<string>}
+ */
 const searchQuery = ref('')
+
+/**
+ * Maximum distance in kilometers for location-based filtering
+ * @type {Ref<number | null>}
+ */
 const maxDistanceKm = ref<number | null>(50)
+
+/**
+ * Minimum price filter value
+ * @type {Ref<number | null>}
+ */
 const minPriceValue = ref<number | null>(null)
+
+/**
+ * Maximum price filter value
+ * @type {Ref<number | null>}
+ */
 const maxPriceValue = ref<number | null>(null)
+
+/**
+ * Selected sort option for results ordering
+ * @type {Ref<string>}
+ */
 const sortOptionValue = ref<string>('default')
+
+/**
+ * Flag controlling visibility of advanced search options
+ * @type {Ref<boolean>}
+ */
 const showAdvanced = ref(false)
 
+/**
+ * Handles search text input and emits updated value
+ */
 function handleSearchInput() {
   emit('update:searchTerm', searchQuery.value)
 }
 
+/**
+ * Processes minimum price input, validates and emits updated value
+ * @param {Event} event - Input change event
+ */
 function handleMinPriceInput(event: Event) {
   const value = parseFloat((event.target as HTMLInputElement).value)
   minPriceValue.value = isNaN(value) || value < 0 ? null : value
   emit('update:minPrice', minPriceValue.value)
 }
 
+/**
+ * Processes maximum price input, validates and emits updated value
+ * @param {Event} event - Input change event
+ */
 function handleMaxPriceInput(event: Event) {
   const value = parseFloat((event.target as HTMLInputElement).value)
   maxPriceValue.value = isNaN(value) || value < 0 ? null : value
   emit('update:maxPrice', maxPriceValue.value)
 }
 
+/**
+ * Handles sort option changes and emits updated selection
+ * @param {Event} event - Select change event
+ */
 function handleSortChange(event: Event) {
   sortOptionValue.value = (event.target as HTMLSelectElement).value
   emit('update:sortOption', sortOptionValue.value)
 }
 
+/**
+ * Processes maximum distance input, validates and emits updated value
+ * @param {Event} event - Slider input event
+ */
 function handleDistanceInput(event: Event) {
   const value = parseInt((event.target as HTMLInputElement).value, 10)
   maxDistanceKm.value = isNaN(value) || value < 0 ? null : value
   emit('update:maxDistance', maxDistanceKm.value)
 }
 
+/**
+ * Emits event to trigger geolocation request
+ */
 function requestLocation() {
   emit('request-current-location')
 }
 
+/**
+ * Toggles visibility of advanced search options panel
+ */
 function toggleAdvancedSearch() {
   showAdvanced.value = !showAdvanced.value
 }

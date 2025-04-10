@@ -6,7 +6,6 @@
       </h1>
       <div class="form-divider"></div>
 
-      <!-- Title -->
       <TextInput
         id="briefDescription"
         :label="$t('APP_LISTING_CREATE_NEW_HEADER_LABEL')"
@@ -16,7 +15,6 @@
         class="form-field"
       />
 
-      <!-- Description -->
       <TextInput
         id="fullDescription"
         :label="$t('APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL')"
@@ -29,7 +27,6 @@
       />
 
       <div class="form-row">
-        <!-- Category -->
         <SelectInput
           id="category"
           :label="$t('APP_LISTING_CREATE_NEW_CATEGORY_LABEL')"
@@ -40,7 +37,6 @@
           class="form-field-half"
         />
 
-        <!-- Price -->
         <TextInput
           id="price"
           :label="$t('APP_LISTING_CREATE_NEW_PRICE_LABEL')"
@@ -52,7 +48,6 @@
         />
       </div>
 
-      <!-- Location -->
       <div class="form-field">
         <label class="location-label">{{ $t('APP_LISTING_CREATE_NEW_LOCATION') }}</label>
 
@@ -103,7 +98,6 @@
         </div>
       </div>
 
-      <!-- Image Upload -->
       <FileInput
         id="images"
         :label="$t('APP_LISTING_CREATE_NEW_IMAGES_UPLOAD_LABEL')"
@@ -113,7 +107,6 @@
         class="form-field"
       />
 
-      <!-- Submit -->
       <button type="submit" class="submit-button thumbnail--half-width-centered">
         {{ isEditMode ? $t('APP_LISTING_EDIT_SUBMIT') : $t('APP_LISTING_CREATE_NEW_SUBMIT_BUTTON') }}
       </button>
@@ -122,6 +115,18 @@
 </template>
 
 <script lang="ts" setup>
+/**
+ * @fileoverview EditAddItem component for creating and editing item listings.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Form for creating new or editing existing items</li>
+ *   <li>Support for text, selection, file uploads, and map location inputs</li>
+ *   <li>Two modes for location selection (map or coordinates)</li>
+ *   <li>Image management (upload, delete, preview)</li>
+ *   <li>Server communication through service layer</li>
+ * </ul>
+ */
+
 import '@/assets/styles/buttons/buttons.css';
 import '@/assets/styles/input/input.css'
 import '@/assets/styles/responsiveStyles.css';
@@ -136,14 +141,40 @@ import ImageService from '@/services/ImageService';
 import type { CreateItemType } from '@/models/Item';
 import type { Category } from '@/models/Category';
 
+/**
+ * Component props definition
+ */
 const props = defineProps<{
+
+  /**
+   * Existing item data for edit mode
+   * @type {Partial<CreateItemType>}
+   */
   existingItem?: Partial<CreateItemType>;
+
+  /**
+   * Whether the component is in edit mode
+   * @type {boolean}
+   */
   isEditMode?: boolean;
+
+  /**
+   * Submission handler function
+   * @type {Function}
+   * @returns {Promise<number>} Promise resolving to the created/updated item ID
+   */
   onSubmit: (item: CreateItemType) => Promise<number>;
 }>();
 
+/**
+ * Emitted when item creation/update is successful
+ */
 const emit = defineEmits(['success']);
 
+/**
+ * Form data for the item being created or edited
+ * @type {Ref<CreateItemType>}
+ */
 const formData = ref<CreateItemType>({
   categoryId: 0,
   briefDescription: '',
@@ -155,17 +186,63 @@ const formData = ref<CreateItemType>({
   ...(props.existingItem || {})
 });
 
+/**
+ * Selected category name for the dropdown
+ * @type {Ref<string>}
+ */
 const selectedCategoryName = ref('');
+
+/**
+ * Price input as string for binding to TextInput
+ * @type {Ref<string>}
+ */
 const priceInput = ref(formData.value.price.toString());
+
+/**
+ * Latitude input as string for binding to TextInput
+ * @type {Ref<string>}
+ */
 const latitudeInput = ref(formData.value.latitude?.toString() || '');
+
+/**
+ * Longitude input as string for binding to TextInput
+ * @type {Ref<string>}
+ */
 const longitudeInput = ref(formData.value.longitude?.toString() || '');
+
+/**
+ * Whether to show map or coordinate inputs for location
+ * @type {Ref<boolean>}
+ */
 const isMapMode = ref(true);
+
+/**
+ * Existing image URLs that are kept during editing
+ * @type {Ref<string[]>}
+ */
 const keptExistingUrls = ref<string[]>([]);
+
+/**
+ * New image files to be uploaded
+ * @type {Ref<File[]>}
+ */
 const newImageFiles = ref<File[]>([]);
 
+/**
+ * Available categories from the server
+ * @type {Ref<Category[]>}
+ */
 const categories = ref<Category[]>([]);
+
+/**
+ * Category names for the dropdown options
+ * @type {Ref<string[]>}
+ */
 const categoryOptions = ref<string[]>([]);
 
+/**
+ * Initialize component data on mount
+ */
 onMounted(async () => {
   try {
     const cats = await fetchCategories();
@@ -182,33 +259,76 @@ onMounted(async () => {
   }
 });
 
-// Watchers
+/**
+ * Watches category selection and updates the form data with corresponding category ID
+ * <p>Finds the matching category ID from selected category name</p>
+ * @param {string} name - Selected category name
+ */
 watch(selectedCategoryName, (name) => {
   const matched = categories.value.find((c) => c.name === name);
   formData.value.categoryId = matched ? Number(matched.id) : 0;
 });
+
+/**
+ * Watches price input string and converts to number in form data
+ * <p>Handles empty values by defaulting to zero</p>
+ * @param {string} val - Price input string
+ */
 watch(priceInput, (val) => {
   formData.value.price = val ? Number(val) : 0;
 });
+
+/**
+ * Watches latitude input string and converts to number in form data
+ * <p>Handles empty values by setting to undefined</p>
+ * @param {string} val - Latitude input string
+ */
 watch(latitudeInput, (val) => {
   formData.value.latitude = val ? Number(val) : undefined;
 });
+
+/**
+ * Watches longitude input string and converts to number in form data
+ * <p>Handles empty values by setting to undefined</p>
+ * @param {string} val - Longitude input string
+ */
 watch(longitudeInput, (val) => {
   formData.value.longitude = val ? Number(val) : undefined;
 });
+
+/**
+ * Watches form data latitude and updates the input field string
+ * <p>Ensures two-way synchronization between map and input fields</p>
+ * @param {number|undefined} val - Latitude numeric value
+ */
 watch(() => formData.value.latitude, (val) => {
   latitudeInput.value = val !== undefined ? val.toString() : '';
 });
+
+/**
+ * Watches form data longitude and updates the input field string
+ * <p>Ensures two-way synchronization between map and input fields</p>
+ * @param {number|undefined} val - Longitude numeric value
+ */
 watch(() => formData.value.longitude, (val) => {
   longitudeInput.value = val !== undefined ? val.toString() : '';
 });
 
-// File handler
+/**
+ * Handles file upload events from the FileInput component
+ * @param {Object} payload - Upload event data
+ * @param {File[]} payload.files - New files to upload
+ * @param {string[]} payload.existingUrls - URLs of existing images to keep
+ */
 function handleFileUpload({ files, existingUrls }: { files: File[], existingUrls: string[] }) {
   newImageFiles.value = files;
   keptExistingUrls.value = existingUrls;
 }
 
+/**
+ * Submits form data to create or update an item
+ * <p>Handles image uploads and deletions after item creation/update</p>
+ */
 async function handleSubmit() {
   try {
     // Create a copy of the form data for submission

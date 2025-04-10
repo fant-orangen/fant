@@ -32,40 +32,121 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview PasswordInput component with validation and visibility toggle.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Password input with toggle for visibility</li>
+ *   <li>Real-time validation with visual feedback</li>
+ *   <li>Internationalized error messages</li>
+ *   <li>Accessibility support with ARIA attributes</li>
+ *   <li>Customizable label and placeholder</li>
+ * </ul>
+ */
 import { ref, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n'; // Import useI18n
 import { validatePassword } from '@/utils/validation';
 
-// --- i18n setup ---
+/**
+ * i18n instance for translations
+ */
 const { t } = useI18n();
-// --- ---
 
+/**
+ * Component props definition
+ */
 const props = defineProps<{
+  /**
+   * HTML ID for the input element
+   * @type {string}
+   */
   id: string;
+
+  /**
+   * Label text for the password input
+   * @type {string}
+   */
   label: string;
+
+  /**
+   * Current password value (v-model)
+   * @type {string}
+   */
   modelValue: string;
+
+  /**
+   * Placeholder text for the input
+   * @type {string}
+   */
   placeholder?: string;
+
+  /**
+   * Whether the field is required
+   * @type {boolean}
+   * @default false
+   */
   required?: boolean;
 }>();
 
-const emit = defineEmits(['update:modelValue', 'update:isValid']);
+/**
+ * Event emitters definition
+ */
+const emit = defineEmits([
+  /**
+   * Update model value
+   * @param {string} value - New password value
+   */
+  'update:modelValue',
 
-const errorMessageKey = ref<string | null>(null); // Store the key now
+  /**
+   * Update validity state
+   * @param {boolean} isValid - Whether password meets requirements
+   */
+  'update:isValid']);
+
+/**
+ * Translation key for current error message
+ * @type {Ref<string|null>}
+ */
+const errorMessageKey = ref<string | null>(null);
+
+/**
+ * Whether the password meets all validation requirements
+ * @type {Ref<boolean>}
+ */
 const isValid = ref(false);
+
+/**
+ * Whether the password is currently visible
+ * @type {Ref<boolean>}
+ */
 const isPasswordVisible = ref(false);
 
-// Computed property to get the translated error message
+/**
+ * Translated error message based on the current error key
+ * @type {ComputedRef<string>}
+ */
 const translatedErrorMessage = computed(() => {
   return errorMessageKey.value ? t(errorMessageKey.value) : '';
 });
 
+/**
+ * Current input type (text or password) based on visibility state
+ * @type {ComputedRef<string>}
+ */
 const inputType = computed(() => (isPasswordVisible.value ? 'text' : 'password'));
 
+/**
+ * Toggles password visibility between shown and hidden
+ */
 function togglePasswordVisibility() {
   isPasswordVisible.value = !isPasswordVisible.value;
 }
 
-// Function to handle input and validation
+/**
+ * Handles input changes and validates password
+ * @param {Event} event - Input change event
+ */
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement;
   const currentValue = target.value;
@@ -81,7 +162,9 @@ function handleInput(event: Event) {
   emit('update:isValid', isValid.value);
 }
 
-// Validate initial modelValue and when it changes externally
+/**
+ * Watches for external model value changes and validates password
+ */
 watch(() => props.modelValue, (newValue) => {
   const validationResult = validatePassword(newValue);
   errorMessageKey.value = newValue.length > 0 ? validationResult.messageKey : null;

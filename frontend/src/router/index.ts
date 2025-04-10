@@ -1,3 +1,15 @@
+/**
+ * Main router configuration for the Fant marketplace application.
+ *
+ * This module provides:
+ * - Route definitions for all application views
+ * - Authentication and authorization guards
+ * - Nested routing for profile and admin sections
+ * - Route metadata for dynamic page titles
+ *
+ * @fileoverview Router configuration and navigation guards
+ */
+
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Import existing Views
@@ -22,6 +34,10 @@ import CategoryEdit from "@/components/administrator/CategoryEdit.vue";
 import AdminLayout from "@/views/Administrator/AdminLayout.vue";
 import type { RouteLocationNormalized } from 'vue-router';
 
+/**
+ * Route configuration array defining the application's navigation structure.
+ * Each route object specifies component mapping, metadata, and optional nested routes.
+ */
 const routes = [
   {
     path: '/',
@@ -158,6 +174,11 @@ const routes = [
   }
 ]
 
+/**
+ * Router instance configured with HTML5 history mode.
+ * Includes scroll behavior that restores position for back/forward
+ * navigation and scrolls to top for new navigations.
+ */
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
@@ -170,6 +191,12 @@ const router = createRouter({
   }
 });
 
+/**
+ * Navigation guard that runs before each route change.
+ * Enforces authentication requirements by checking for a valid token.
+ * Redirects unauthenticated users to login with return path preserved.
+ * Enforces admin-only access to protected routes based on user role.
+ */
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token');
   const userRole = localStorage.getItem('role');
@@ -184,6 +211,11 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+/**
+ * Hook that runs after each successful navigation.
+ * Updates the document title based on route metadata.
+ * Falls back to default title when route-specific title is not defined.
+ */
 router.afterEach((to) => {
   setTimeout(() => {
     document.title = to.meta.title as string || 'Fant';

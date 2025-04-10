@@ -1,45 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-// Currently unused
-// Initialize i18n and router
-const { t } = useI18n();
-const router = useRouter();
-
-/**
- * Define an array of card objects. Each object represents a section of the profile,
- * such as "My Favorites" or "My Listings". Each card has a title, description,
- * and the route name to navigate to when clicked.
- */
-const cards = ref([
-  {
-    title: t('MY_FAVORITES'),
-    description: t('PROFILE_MY_FAVORITES_DESC'),
-    routeName: 'profile-favorites'
-  },
-  {
-    title: t('PROFILE_MY_LISTINGS'),
-    description: t('PROFILE_MY_LISTINGS_DESC'),
-    routeName: 'profile-listings'
-  },
-  // Add additional cards as needed:
-  // {
-  //   title: t('PROFILE_SETTINGS'),
-  //   description: t('PROFILE_SETTINGS_DESC'),
-  //   routeName: 'profile-settings'
-  // },
-]);
-
-/**
- * Navigates to the route associated with the clicked card.
- * @param routeName - The name of the route to navigate to.
- */
-function navigateTo(routeName: string) {
-  router.push({ name: routeName });
-}
-</script>
-
 <template>
   <section class="profile-cards">
     <h2>{{ t('PROFILE_CARDS_TITLE') }}</h2>
@@ -57,6 +15,61 @@ function navigateTo(routeName: string) {
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+/**
+ * @fileoverview ProfileCard component for displaying user profile navigation options.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Grid-based layout of profile section cards</li>
+ *   <li>Clickable navigation to profile subsections</li>
+ *   <li>Internationalized card titles and descriptions</li>
+ *   <li>Visual feedback on hover with elevation effects</li>
+ * </ul>
+ */
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+/**
+ * I18n instance for internationalization
+ * @type {I18n}
+ */
+const { t } = useI18n();
+
+/**
+ * Router instance for navigation
+ * @type {Router}
+ */
+const router = useRouter();
+
+/**
+ * Define an array of card objects. Each object represents a section of the profile,
+ * such as "My Favorites" or "My Listings". Each card has a title, description,
+ * and the route name to navigate to when clicked.
+ * @type {Ref<CardItem[]>}
+ */
+const cards = ref([
+  {
+    title: t('MY_FAVORITES'),
+    description: t('PROFILE_MY_FAVORITES_DESC'),
+    routeName: 'profile-favorites'
+  },
+  {
+    title: t('PROFILE_MY_LISTINGS'),
+    description: t('PROFILE_MY_LISTINGS_DESC'),
+    routeName: 'profile-listings'
+  },
+]);
+
+/**
+ * Navigates to the route associated with the clicked card
+ * @param {string} routeName - The name of the route to navigate to
+ */
+function navigateTo(routeName: string) {
+  router.push({ name: routeName });
+}
+</script>
 
 <style scoped>
 .profile-cards {

@@ -51,6 +51,17 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview ItemList component for displaying grid of item previews.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Displaying a grid of item previews with responsive layout</li>
+ *   <li>Supporting both pagination and infinite scroll loading</li>
+ *   <li>Loading state and error handling</li>
+ *   <li>Empty state messaging with customization</li>
+ *   <li>Thumbnail size configuration</li>
+ * </ul>
+ */
 import {
   withDefaults,
   defineProps,
@@ -64,15 +75,62 @@ import {
 import ItemPreview from '@/components/item/ItemPreview.vue';
 import type { ItemPreviewType, PaginatedItemPreviewResponse } from '@/models/Item';
 
+/**
+ * Component props definition
+ */
 interface Props {
+  /**
+   * Array of item preview data to display
+   * @type {ItemPreviewType[]|null}
+   */
   items?: ItemPreviewType[] | null;
+
+  /**
+   * Whether items are currently being loaded
+   * @type {boolean}
+   */
   isLoading?: boolean;
+
+  /**
+   * Error message to display if loading fails
+   * @type {string|null}
+   */
   error?: string | null;
+
+  /**
+   * Current page number for pagination
+   * @type {number}
+   */
   currentPage?: number;
+
+  /**
+   * Total number of available pages
+   * @type {number}
+   */
   totalPages?: number;
+
+  /**
+   * Message to display when no items are available
+   * @type {string}
+   */
   emptyMessage?: string;
+
+  /**
+   * Whether to use pagination controls instead of infinite scroll
+   * @type {boolean}
+   */
   paginationEnabled?: boolean;
+
+  /**
+   * Whether to use smaller thumbnail size
+   * @type {boolean}
+   */
   smallThumbnails?: boolean;
+
+  /**
+   * Optional function to fetch paginated items
+   * @type {Function}
+   */
   fetchFunction?: (page: number, size: number, sort?: string) => Promise<PaginatedItemPreviewResponse>;
 }
 
@@ -88,18 +146,40 @@ const props = withDefaults(defineProps<Props>(), {
   fetchFunction: undefined
 });
 
+/**
+ * Event emitters definition
+ */
 const emit = defineEmits<{
+  /**
+   * Emitted when page should change
+   * @param {string} e - Event name
+   * @param {number} page - New page number
+   */
   (e: 'change-page', page: number): void;
 }>();
 
+/**
+ * Effective empty message to display when no items are available
+ * <p>Uses custom message or falls back to default</p>
+ * @type {ComputedRef<string>}
+ */
 const effectiveEmptyMessage = computed(() => props.emptyMessage || 'No items found.');
 
+/**
+ * Changes the current page when pagination controls are used
+ * <p>Ensures page is within valid range before emitting event</p>
+ * @param {number} page - Requested page number
+ */
 function changePage(page: number) {
   if (page >= 1 && page <= props.totalPages!) {
     emit('change-page', page);
   }
 }
 
+/**
+ * Handles scroll events for infinite scroll functionality
+ * <p>Triggers page change when user scrolls near bottom of page</p>
+ */
 function onScroll() {
   if (props.paginationEnabled) return;
 
@@ -130,6 +210,9 @@ function maybeLoadMoreItemsIfNotScrollable() {
   }
 }
 
+/**
+ * Sets up scroll event listener if infinite scroll is enabled
+ */
 onMounted(() => {
   if (!props.paginationEnabled) {
     window.addEventListener('scroll', onScroll)
@@ -137,11 +220,19 @@ onMounted(() => {
   }
 })
 
+/**
+ * Cleans up scroll event listener on component destruction
+ */
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
 });
 
 // Watch for pagination toggle to attach/remove scroll listener
+/**
+ * Updates scroll event listeners when pagination mode changes
+ * <p>Adds listener for infinite scroll, removes for pagination mode</p>
+ * @param {boolean} newVal - New pagination enabled value
+ */
 watch(() => props.paginationEnabled, (newVal) => {
   if (!newVal) {
     window.addEventListener('scroll', onScroll)

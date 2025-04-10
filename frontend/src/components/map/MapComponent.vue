@@ -1,4 +1,27 @@
+<template>
+  <div class="map-component-wrapper">
+    <div v-if="isLoading" class="loading-overlay">Loading map data...</div>
+    <div v-if="error" class="error-overlay">{{ error }}</div>
+    <div
+      ref="mapContainer"
+      class="map-container"
+      :style="{ height: height || '800px', width: width || '100%' }"
+    ></div>
+  </div>
+</template>
+
 <script setup lang="ts">
+/**
+ * @fileoverview MapComponent for interactive item location display and area-based searching.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Interactive map display with item markers</li>
+ *   <li>Circle-based area search with drawing tools</li>
+ *   <li>Dynamic marker updates based on search parameters</li>
+ *   <li>Item previews in popup windows</li>
+ *   <li>Integration with search filters</li>
+ * </ul>
+ */
 import { ref, onMounted, watch, computed, nextTick, onUnmounted } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css'; // Import leaflet-draw CSS
@@ -10,45 +33,145 @@ import type { MapComponentProps } from '@/models/MapComponent';
 import { fetchCategories } from '@/services/CategoryService'; // [cite: uploaded:frontend 6/frontend/src/services/CategoryService.ts]
 import type { Category } from '@/models/Category';
 
-// --- Define Emits ---
+/**
+ * Event emitters definition
+ */
 const emit = defineEmits<{
+  /**
+   * Emitted when user draws or modifies search area on the map
+   * @param {string} e - Event name
+   * @param {{ latitude: number; longitude: number; radiusKm: number }} payload - Search area details
+   */
   (e: 'update-search-area', payload: { latitude: number; longitude: number; radiusKm: number }): void
 }>();
 
-// --- Props ---
+/**
+ * Component props definition
+ */
 const props = defineProps<MapComponentProps & {
+  /**
+   * Category ID to filter items by
+   * @type {string|null}
+   */
   categoryId?: string | null;
+
+  /**
+   * Search term to filter items by
+   * @type {string|null}
+   */
   searchTerm?: string | null;
-  latitude?: number | null;    // Search center latitude (could be user's or drawn circle's)
-  longitude?: number | null;   // Search center longitude
-  maxDistance?: number | null; // Search radius in km
+
+  /**
+   * Search center latitude
+   * @type {number|null}
+   */
+  latitude?: number | null;
+
+  /**
+   * Search center longitude
+   * @type {number|null}
+   */
+  longitude?: number | null;
+
+  /**
+   * Search radius in kilometers
+   * @type {number|null}
+   */
+  maxDistance?: number | null;
+
+  /**
+   * Minimum price filter
+   * @type {number|null}
+   */
   minPrice?: number | null;
+
+  /**
+   * Maximum price filter
+   * @type {number|null}
+   */
   maxPrice?: number | null;
+
+  /**
+   * Sort option for item listing
+   * @type {string}
+   */
   sortOption?: string;
+
+  /**
+   * Trigger value to clear drawn area
+   * @type {number}
+   */
   clearDrawnAreaTrigger?: number; // Increment this number in parent to clear
+
+  /**
+   * optional item id indication which item is currently centered.
+   * @type {number|null}
+   */
   highlightedItemId?: string | null;
 }>();
 
-// --- Refs ---
+/**
+ * Reference to the map container HTML element
+ * @type {Ref<HTMLElement|null>}
+ */
 const mapContainer = ref<HTMLElement | null>(null);
+
+/**
+ * Reference to the Leaflet map instance
+ * @type {Ref<L.Map|null>}
+ */
 const map = ref<L.Map | null>(null);
+
+/**
+ * Array of marker references for cleanup
+ * @type {Ref<L.Marker[]>}
+ */
 const markers = ref<L.Marker[]>([]);
+
+/**
+ * Flag indicating whether data is being loaded
+ * @type {Ref<boolean>}
+ */
 const isLoading = ref(false);
+
+/**
+ * Error message to display if loading fails
+ * @type {Ref<string|null>}
+ */
 const error = ref<string | null>(null);
+
+/**
+ * Available item categories
+ * @type {Ref<Category[]>}
+ */
 const categories = ref<Category[]>([]);
 
-// Ensure that drawnItems is a valid Leaflet FeatureGroup.
+/**
+ * Leaflet feature group for managing drawn items
+ * @type {Ref<L.FeatureGroup|null>}
+ */
 const drawnItems = ref<L.FeatureGroup | null>(null);
-// Ref for draw control
+
+/**
+ * Draw control for circle-based area search
+ * @type {Ref<L.Control.Draw|null>}
+ */
 const drawControl = ref<L.Control.Draw | null>(null);
 
-// --- Computed ---
+/**
+ * Resolved category name based on categoryId prop
+ * @type {ComputedRef<string|null>}
+ */
 const categoryName = computed(() => {
   if (!props.categoryId) return null;
   const foundCategory = categories.value.find(cat => cat.id?.toString() === props.categoryId);
   return foundCategory ? foundCategory.name : null;
 });
 
+/**
+ * Converts UI sort option to backend format
+ * @type {ComputedRef<string|null>}
+ */
 const backendSortParam = computed(() => {
   if (!props.sortOption) return null;
   switch (props.sortOption) {
@@ -58,7 +181,10 @@ const backendSortParam = computed(() => {
   }
 });
 
-// --- Map Initialization & Drawing Setup ---
+/**
+ * Initializes the map and drawing tools
+ * <p>Sets up map view, layers, and drawing controls</p>
+ */
 function initializeMap() {
   if (!mapContainer.value || map.value) return;
   const initialLat = props.initialLatitude ?? 60.39;
@@ -120,7 +246,6 @@ function initializeMap() {
     if (createdEvent.layerType === 'circle' && createdEvent.layer instanceof L.Circle) {
       const center = createdEvent.layer.getLatLng();
       const radius = createdEvent.layer.getRadius(); // in meters
-      console.log(`Circle drawn: Center=${center}, Radius=${radius}m`);
       emit('update-search-area', {
         latitude: center.lat,
         longitude: center.lng,
@@ -136,7 +261,6 @@ function initializeMap() {
       if (layer instanceof L.Circle) {
         const center = layer.getLatLng();
         const radius = layer.getRadius();
-        console.log(`Circle edited: Center=${center}, Radius=${radius}m`);
         emit('update-search-area', {
           latitude: center.lat,
           longitude: center.lng,
@@ -158,12 +282,14 @@ function initializeMap() {
   loadItemsAndAddMarkers(); // Initial load of markers
 }
 
-// --- Data Loading and Marker Logic ---
+/**
+ * Loads items based on search parameters and adds markers to map
+ * <p>Fetches items from API and creates popups with item previews</p>
+ */
 async function loadItemsAndAddMarkers() {
   if (!map.value) return;
   isLoading.value = true;
   error.value = null;
-  console.log("MapComponent: Loading items with props:", props);
 
   // Clear existing markers
   markers.value.forEach(marker => marker.remove());
@@ -188,7 +314,6 @@ async function loadItemsAndAddMarkers() {
   try {
     const response = await searchItems(params);
     const items = response.content ?? [];
-    console.log(`MapComponent: Received ${items.length} items from search.`);
 
     let targetLatLng: L.LatLng | null = null;
 
@@ -237,15 +362,16 @@ async function loadItemsAndAddMarkers() {
     }
 
   } catch (err) {
-    console.error('MapComponent: Failed to load items:', err);
     error.value = 'Failed to load items for the map.';
   } finally {
     isLoading.value = false;
   }
 }
 
-// --- Watchers ---
-// Watch for changes in search parameters to reload items.
+/**
+ * Watches for changes in search parameters to reload map markers
+ * <p>Automatically refreshes markers when any search criteria changes</p>
+ */
 watch(
   [
     categoryName,
@@ -258,28 +384,31 @@ watch(
     backendSortParam,
   ],
   () => {
-    console.log("MapComponent: Search parameters changed, reloading items.");
     loadItemsAndAddMarkers();
   },
   { deep: true }
 );
 
-// Watcher to clear the drawn circle when triggered by parent.
+/**
+ * Watches for clear area trigger from parent component
+ * <p>Removes all drawn shapes when triggered</p>
+ */
 watch(() => props.clearDrawnAreaTrigger, () => {
   if (drawnItems.value) {
-    console.log("MapComponent: Clearing drawn search area via trigger.");
     drawnItems.value.clearLayers();
   }
 });
 
-// --- Lifecycle Hooks ---
+/**
+ * Initializes component when mounted
+ * <p>Loads categories, initializes map, and sets up resize observer</p>
+ */
 onMounted(async () => {
   await nextTick();
   try {
     categories.value = await fetchCategories();
     initializeMap();
   } catch (err) {
-    console.error("MapComponent: Failed to fetch categories or initialize map on mount:", err);
     error.value = "Failed to load initial map data.";
   }
 
@@ -293,25 +422,16 @@ onMounted(async () => {
   }
 });
 
+/**
+ * Cleans up resources when component is unmounted
+ * <p>Removes map instance to prevent memory leaks</p>
+ */
 onUnmounted(() => {
   // Cleanup map on component unmount.
   map.value?.remove();
   map.value = null;
-  console.log("MapComponent unmounted, map removed.");
 });
 </script>
-
-<template>
-  <div class="map-component-wrapper">
-    <div v-if="isLoading" class="loading-overlay">Loading map data...</div>
-    <div v-if="error" class="error-overlay">{{ error }}</div>
-    <div
-      ref="mapContainer"
-      class="map-container"
-      :style="{ height: height || '800px', width: width || '100%' }"
-    ></div>
-  </div>
-</template>
 
 <style scoped>
 .map-component-wrapper {

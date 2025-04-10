@@ -25,31 +25,104 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview RegistrationForm component for user registration.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>User registration with required and optional personal information</li>
+ *   <li>Password validation and requirements enforcement</li>
+ *   <li>Phone number validation with international format support</li>
+ *   <li>Form submission handling and error display</li>
+ *   <li>Navigation to login page</li>
+ * </ul>
+ */
+
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { isAxiosError } from 'axios';
 import TextInput from '@/components/input/TextInput.vue';
 import PasswordInput from '@/components/input/PasswordInput.vue';
-import PhoneNumberInput from '@/components/input/PhoneNumberInput.vue'; // Import PhoneNumberInput
+import PhoneNumberInput from '@/components/input/PhoneNumberInput.vue';
 
-// Form fields refs
+/**
+ * Username/display name input field value
+ * @type {Ref<string>}
+ */
 const displayName = ref('');
+
+/**
+ * Password input field value
+ * @type {Ref<string>}
+ */
 const password = ref('');
+
+/**
+ * Email input field value
+ * @type {Ref<string>}
+ */
 const email = ref('');
+
+/**
+ * First name input field value (optional)
+ * @type {Ref<string>}
+ */
 const firstName = ref('');
+
+/**
+ * Last name input field value (optional)
+ * @type {Ref<string>}
+ */
 const lastName = ref('');
+
+/**
+ * Phone number input field value (optional but validated when provided)
+ * @type {Ref<string>}
+ */
 const phoneNumber = ref('');
 
-// State refs
+/**
+ * Error message for registration failures
+ * @type {Ref<string>}
+ */
 const error = ref('');
+
+/**
+ * Loading state indicator during registration
+ * @type {Ref<boolean>}
+ */
 const isLoading = ref(false);
+
+/**
+ * Flag indicating if the password meets requirements
+ * @type {Ref<boolean>}
+ */
 const isPasswordComponentValid = ref(false);
+
+/**
+ * Flag indicating if phone number is valid (defaults to true as it's optional)
+ * @type {Ref<boolean>}
+ */
 const isPhoneNumberValid = ref(true); // Tracks phone validity, defaults true (empty is valid)
 
+/**
+ * User store for registration operations
+ * @type {ReturnType<typeof useUserStore>}
+ */
 const userStore = useUserStore();
+
+/**
+ * Router instance for navigation
+ * @type {ReturnType<typeof useRouter>}
+ */
 const router = useRouter();
 
+/**
+ * Handles user registration process
+ * <p>Validates form inputs and submits registration request to backend</p>
+ * @async
+ * @returns {Promise<void>}
+ */
 async function registerUser() {
   error.value = '';
   // Only block submission based on required fields (password)
@@ -81,6 +154,10 @@ async function registerUser() {
   }
 }
 
+/**
+ * Navigates to the login page
+ * @returns {void}
+ */
 function navigateToLogin() {
   router.push('/login');
 }

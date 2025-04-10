@@ -69,42 +69,117 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @fileoverview BidModal component for placing and updating bids on items.
+ * <p>This component provides functionality for:</p>
+ * <ul>
+ *   <li>Creating new bids on items</li>
+ *   <li>Updating existing bids</li>
+ *   <li>Displaying success and error states</li>
+ *   <li>Form validation</li>
+ * </ul>
+ */
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { placeBid, updateMyBid } from '@/services/BidService'; // Import updateMyBid
 import type { BidPayload, BidResponseType, BidUpdatePayload } from '@/models/Bid'; // Import BidUpdatePayload
 import { useUserStore } from '@/stores/UserStore';
 
 /**
- * Component props
+ * Component props definition
  */
 const props = defineProps<{
+  /**
+   * Controls modal visibility
+   * @type {boolean}
+   */
   isOpen: boolean;
+
+  /**
+   * ID of the item being bid on
+   * @type {string|number}
+   */
   itemId: string | number;
+
+  /**
+   * Title of the item being bid on
+   * @type {string}
+   */
   itemTitle: string;
-  currentPrice?: number | null; // Make optional as not needed for update
-  // --- Add prop for existing bid data ---
+
+  /**
+   * Current price of the item (optional)
+   * @type {number|null}
+   */
+  currentPrice?: number | null;
+
+  /**
+   * Existing bid data when updating (null when creating new bid)
+   * @type {BidResponseType|null}
+   */
   initialBid: BidResponseType | null;
 }>();
 
 /**
- * Component emits
+ * Event emitters definition
  */
 const emit = defineEmits<{
+  /**
+   * Emitted when modal should be closed
+   */
   (e: 'close'): void;
-  (e: 'bid-placed'): void; // Keep for placing
+
+  /**
+   * Emitted when a new bid is successfully placed
+   */
+  (e: 'bid-placed'): void;
+
+  /**
+   * Emitted when an existing bid is successfully updated
+   */
   (e: 'bid-updated'): void; // Add for updating
 }>();
 
-// Form state
+/**
+ * Form state for bid amount
+ * @type {Ref<number>}
+ */
 const bidAmount = ref<number>(0);
+
+/**
+ * Form state for bid comment
+ * @type {Ref<string>}
+ */
 const bidComment = ref<string>('');
+
+/**
+ * Loading state indicator
+ * @type {Ref<boolean>}
+ */
 const loading = ref<boolean>(false);
+
+/**
+ * Current status of the bid operation
+ * @type {Ref<'idle'|'loading'|'success'|'error'>}
+ */
 const bidStatus = ref<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+/**
+ * Error message when bid operation fails
+ * @type {Ref<string>}
+ */
 const errorMessage = ref<string>('');
 
-// --- Determine Mode ---
+
+/**
+ * Determines if modal is in update or create mode
+ * @type {ComputedRef<boolean>}
+ */
 const isUpdateMode = computed(() => !!props.initialBid);
 
+/**
+ * Watches for modal open state and initializes form
+ * <p>Pre-fills form with existing bid data when updating</p>
+ */
 watch(() => [props.isOpen, props.initialBid], ([newIsOpen, newInitialBid]) => {
   if (newIsOpen) {
     bidStatus.value = 'idle';
@@ -125,14 +200,19 @@ watch(() => [props.isOpen, props.initialBid], ([newIsOpen, newInitialBid]) => {
   }
 }, { immediate: true });
 
-// Close modal with escape key
+/**
+ * Handler for Escape key to close modal
+ * @param {KeyboardEvent} event - Keyboard event
+ */
 const handleEscKey = (event: KeyboardEvent) => {
   if (event.key === 'Escape' && props.isOpen) {
     closeModal();
   }
 };
 
-// Add/remove listener using watch on isOpen prop
+/**
+ * Sets up and cleans up escape key listener based on modal visibility
+ */
 watch(() => props.isOpen, (newIsOpen) => {
   if (newIsOpen) {
     document.addEventListener('keydown', handleEscKey);
@@ -141,18 +221,27 @@ watch(() => props.isOpen, (newIsOpen) => {
   }
 });
 
-// Cleanup listener on unmount just in case
+/**
+ * Cleans up event listeners when component is unmounted
+ */
 onUnmounted(() => {
   document.removeEventListener('keydown', handleEscKey);
 });
 
 
-// Computed properties
+/**
+ * Validates bid amount
+ * @type {ComputedRef<boolean>}
+ */
 const bidAmountValid = computed(() => {
   // Allow 0, but typically bids should be positive? Adjust if needed.
   return typeof bidAmount.value === 'number' && bidAmount.value >= 0;
 });
 
+/**
+ * Formats current price for display
+ * @type {ComputedRef<string|null>}
+ */
 const formattedPrice = computed(() => {
   if (props.currentPrice === null || props.currentPrice === undefined) {
     // Return null or empty string if not applicable or needed
@@ -161,11 +250,16 @@ const formattedPrice = computed(() => {
   return `${props.currentPrice.toLocaleString('no-NO')} kr`;
 });
 
-// Methods
+/**
+ * Closes the modal
+ */
 function closeModal() {
   emit('close');
 }
 
+/**
+ * Resets the form to initial state
+ */
 function resetForm() {
   bidStatus.value = 'idle';
   errorMessage.value = '';
@@ -179,6 +273,10 @@ function resetForm() {
   }
 }
 
+/**
+ * Submits the bid form
+ * <p>Handles both create and update operations</p>
+ */
 async function submitBid() {
   if (!bidAmountValid.value) {
     errorMessage.value = 'Please enter a valid bid amount (0 or more).';
