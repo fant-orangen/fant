@@ -264,6 +264,7 @@ onMounted(() => loadMyBids())
   margin-bottom: 1.5rem;
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.5rem;
+  color: var(--vt-c-text-dark-1);
 }
 
 .loading-indicator,
@@ -276,10 +277,10 @@ onMounted(() => loadMyBids())
 }
 
 .error-message {
-  color: red;
+  color: var(--vt-c-red-dark);
   font-weight: bold;
-  background-color: #ffebee;
-  border: 1px solid red;
+  background-color: var(--vt-c-red-light);
+  border: 1px solid var(--vt-c-red-soft);
   border-radius: 4px;
 }
 
@@ -305,16 +306,16 @@ onMounted(() => loadMyBids())
 }
 
 .bid-status-pending {
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid var(--vt-c-teal-soft);
 }
 
 .bid-status-accepted {
-  border-left: 4px solid #28a745;
-  background-color: #e9f5e9;
+  border-left: 4px solid var(--vt-c-teal-dark);
+  background-color: var(--vt-c-teal-light);
 }
 
 .bid-status-rejected {
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid var(--vt-c-red-dark);
   opacity: 0.8;
 }
 
@@ -332,9 +333,10 @@ onMounted(() => loadMyBids())
 }
 
 .item-link {
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--vt-c-text-dark-2);
   text-decoration: none;
   font-weight: 500;
+  background: none;
 }
 
 .item-link:hover {
@@ -373,29 +375,6 @@ onMounted(() => loadMyBids())
   cursor: not-allowed;
 }
 
-.edit-button {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
-  min-width: 90px;
-}
-
-.edit-button:hover:not(:disabled) {
-  background-color: #0056b3;
-  border-color: #0056b3;
-}
-
-.delete-button {
-  background-color: transparent;
-  color: #dc3545;
-  border-color: #dc3545;
-}
-
-.delete-button:hover:not(:disabled) {
-  background-color: #dc3545;
-  color: white;
-}
-
 .status-indicator {
   font-weight: bold;
   padding: 0.3em 0.6em;
@@ -404,15 +383,15 @@ onMounted(() => loadMyBids())
 }
 
 .status-indicator.accepted {
-  color: #155724;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
+  color: var(--vt-c-teal-dark);
+  background-color: var(--vt-c-teal-light);
+  border: 1px solid var(--vt-c-teal-soft);
 }
 
 .status-indicator.rejected {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
+  color: var(--vt-c-red-dark);
+  background-color: var(--vt-c-red-light);
+  border: 1px solid var(--vt-c-red-soft);
 }
 
 .bid-status-badge {
@@ -421,21 +400,21 @@ onMounted(() => loadMyBids())
   font-size: 0.8em;
   font-weight: bold;
   border-radius: 4px;
-  color: white;
+  color: var(--vt-c-white);
   vertical-align: middle;
 }
 
 .bid-status-pending .bid-status-badge {
-  background-color: #ffc107;
-  color: #333;
+  background-color: var(--vt-c-teal-soft);
+  color: var(--vt-c-white);
 }
 
 .bid-status-accepted .bid-status-badge {
-  background-color: #28a745;
+  background-color: var(--vt-c-teal-dark);
 }
 
 .bid-status-rejected .bid-status-badge {
-  background-color: #dc3545;
+  background-color: var(--vt-c-red-dark);
 }
 
 @media (max-width: 650px) {

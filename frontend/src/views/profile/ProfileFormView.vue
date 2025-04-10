@@ -123,14 +123,66 @@ async function handleProfileUpdate() {
 </script>
 
 <style scoped>
-/* Styles remain the same */
-.profile-form { display: flex; flex-direction: column; gap: 1.2rem; max-width: 600px; margin: 1rem auto; }
-button { padding: 0.8rem 1.5rem; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; align-self: flex-start; transition: background-color 0.2s ease; }
-button:disabled { background-color: #ccc; cursor: not-allowed; }
-button:hover:not(:disabled) { background-color: #0056b3; }
-.success-message { color: green; font-weight: bold; margin-top: 0.5rem; }
-.error-message { color: red; font-weight: bold; margin-top: 0.5rem; font-size: 0.9em; }
-.loading-message { padding: 1rem; text-align: center; color: #555; }
-small { font-size: 0.8em; color: #666; margin-top: -0.8rem; display: block; } /* Style for password hint */
-/* Removed separate small style for phone hint */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-width: 600px;
+  margin: 1rem auto;
+}
+
+button {
+  padding: 0.8rem 1.5rem;
+  background-color: var(--vt-c-teal-soft);
+  color: var(--vt-c-white);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  align-self: flex-start;
+  transition: background-color 0.2s ease;
+}
+
+button:disabled {
+  background-color: var(--color-background-mute);
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--vt-c-teal-dark);
+}
+
+.success-message {
+  color: var(--vt-c-teal-dark);
+  font-weight: bold;
+  margin-top: 0.5rem;
+  background-color: var(--vt-c-teal-light);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--vt-c-teal-soft);
+}
+
+.error-message {
+  color: var(--vt-c-red-dark);
+  font-weight: bold;
+  margin-top: 0.5rem;
+  font-size: 0.9em;
+  background-color: var(--vt-c-red-light);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--vt-c-red-soft);
+}
+
+.loading-message {
+  padding: 1rem;
+  text-align: center;
+  color: var(--vt-c-text-light-1);
+}
+
+small {
+  font-size: 0.8em;
+  color: var(--vt-c-text-light-2);
+  margin-top: -0.8rem;
+  display: block;
+}
 </style>
