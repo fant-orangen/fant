@@ -4,124 +4,62 @@
     <component
       :is="multiline ? 'textarea' : 'input'"
       :id="id"
-      :value="modelValue"
+      :value="inputValue"
       @input="handleInput"
       :required="required"
       :placeholder="placeholder"
       :rows="multiline ? rows : null"
-      class="text-input"
+      :class="['text-input']"
+      :type="!multiline ? type : undefined"
+      :inputmode="type === 'number' ? 'numeric' : undefined"
     />
   </div>
 </template>
 
 <script lang="ts">
-
-/**
- * @fileoverview TextInput component for single and multiline text fields.
- * <p>This component provides functionality for:</p>
- * <ul>
- *   <li>Single line or multiline text input field</li>
- *   <li>Dynamic component rendering based on input type</li>
- *   <li>Two-way binding with v-model</li>
- *   <li>Configurable placeholder and required state</li>
- *   <li>Adjustable number of rows for multiline inputs</li>
- * </ul>
- */
+import { defineComponent, ref, watch } from 'vue'
 import '@/assets/styles/input/input.css'
-export default {
 
-  /**
-   * Component props definition
-   */
+export default defineComponent({
   props: {
-
-    /**
-     * HTML ID for the input element
-     * @type {string}
-     */
-    id: {
-      type: String,
-      required: true,
-    },
-
-    /**
-     * Label text for the text input
-     * @type {string}
-     */
-    label: {
-      type: String,
-      required: true,
-    },
-
-    /**
-     * Current text value (v-model)
-     * @type {string}
-     */
-    modelValue: {
-      type: String,
-      required: true,
-    },
-
-    /**
-     * Placeholder text for the input
-     * @type {string}
-     * @default ''
-     */
-    placeholder: {
-      type: String,
-      default: '',
-    },
-
-    /**
-     * Whether the field is required
-     * @type {boolean}
-     * @default false
-     */
-    required: {
-      type: Boolean,
-      default: false,
-    },
-
-    /**
-     * Whether to render a multiline textarea
-     * @type {boolean}
-     * @default false
-     */
-    multiline: {
-      type: Boolean,
-      default: false,
-    },
-
-    /**
-     * Number of rows for multiline textarea
-     * @type {number}
-     * @default 3
-     */
-    rows: {
-      type: Number,
-      default: 3,
-    },
+    id: { type: String, required: true },
+    label: { type: String, required: true },
+    modelValue: { type: String, required: true },
+    placeholder: { type: String, default: '' },
+    required: { type: Boolean, default: false },
+    multiline: { type: Boolean, default: false },
+    rows: { type: Number, default: 3 },
+    type: { type: String, default: 'text' }, // NEW: input type
   },
-
-  /**
-   * Update model value
-   * @param {string} event - Event name
-   * @param {string} value - New input value
-   */
   emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    const inputValue = ref(props.modelValue)
 
-  /**
-   * Handles input changes on the text field
-   * <p>Emits the input value for v-model binding</p>
-   * @param {Event} event - Input change event
-   */
-  methods: {
-    handleInput(event: Event) {
-      const target = event.target as HTMLInputElement | HTMLTextAreaElement;
-      this.$emit('update:modelValue', target.value);
-    },
-  },
-};
+    // Sync prop updates into local input value
+    watch(() => props.modelValue, val => {
+      inputValue.value = val
+    })
+
+    function handleInput(event: Event) {
+      const target = event.target as HTMLInputElement | HTMLTextAreaElement
+      let value = target.value
+
+      if (props.type === 'number') {
+        // Remove non-digit characters
+        value = value.replace(/[^\d]/g, '')
+        target.value = value // prevent flickering
+      }
+
+      inputValue.value = value
+      emit('update:modelValue', value)
+    }
+
+    return {
+      inputValue,
+      handleInput,
+    }
+  }
+})
 </script>
 
 <style scoped>

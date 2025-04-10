@@ -332,6 +332,11 @@ function handleFileUpload({ files, existingUrls }: { files: File[], existingUrls
 async function handleSubmit() {
   try {
     // Create a copy of the form data for submission
+    const numericRegex = /^\d+$/;
+    if (!numericRegex.test(priceInput.value)) {
+      alert('Price must be a whole number.');
+      return;
+    }
     const submissionData = { ...formData.value };
 
     // Set images to null initially when sending to backend
