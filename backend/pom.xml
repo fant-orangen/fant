@@ -135,19 +135,18 @@
             <version>3.0.0</version>
         </dependency>
 
-      <!-- Cloudinary -->
-      <dependency>
-        <groupId>com.cloudinary</groupId>
-        <artifactId>cloudinary-http44</artifactId>
-        <version>1.33.0</version>
-      </dependency>
+        <!-- Cloudinary -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.33.0</version>
+        </dependency>
 
-      <!-- Spring boot starter actuator -->
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-actuator</artifactId>
-      </dependency>
-
+        <!-- Spring boot starter actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -230,7 +229,6 @@
                     </argLine>
                 </configuration>
             </plugin>
-
 
 
         </plugins>
