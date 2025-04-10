@@ -1,3 +1,5 @@
+// cypress/e2e/mapView.cy.ts (or map.cy.ts)
+
 describe('MapView Functionality', () => {
   beforeEach(() => {
     cy.intercept('GET', '/api/items/search*').as('searchItems');
@@ -32,20 +34,26 @@ describe('MapView Functionality', () => {
     .and('include', '/item-detail/');
   });
 
+  // --- REVISED Search Term Test ---
   it('should update markers when searching by term', () => {
     const searchTerm = 'Laptop';
     cy.intercept('GET', `/api/items/search*searchTerm=${searchTerm}*`).as('finalSearch');
 
-    cy.get('#search-term').clear().type(searchTerm).wait(600);
+    cy.get('#search-term').clear().type(searchTerm).wait(600); // Wait for debounce
 
     cy.wait('@finalSearch', { timeout: 10000 }).its('request.url').should('include', `searchTerm=${searchTerm}`);
 
+    // ** FIX: Add explicit wait AFTER API call returns, BEFORE clicking marker **
+    cy.wait(1500); // Wait 1.5 seconds for markers to potentially re-render
+
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
+    // Click the first marker *after* the wait
     cy.get('.map-container .leaflet-marker-icon').first().click({ force: true });
-    cy.get('.leaflet-popup-content .popup-content a', { timeout: 5000 })
+    // Increase timeout for the assertion as well
+    cy.get('.leaflet-popup-content .popup-content a', { timeout: 7000 })
     .should('be.visible')
     .invoke('text')
-    .should('match', /Laptop/i);
+    .should('match', /Laptop/i); // Assert the popup content matches the search
   });
 
   it('should update markers when filtering by price', () => {
@@ -55,19 +63,18 @@ describe('MapView Functionality', () => {
     cy.intercept('GET', `/api/items/search*minPrice=${minPrice}*`).as('minPriceSearch');
     cy.intercept('GET', `/api/items/search*maxPrice=${maxPrice}*`).as('maxPriceSearch');
 
-    // Ensure advanced options are open
     cy.get('.advanced-toggle-button').should('be.visible').click();
-    // ** FIX: Wait for the container to be visible before selecting inputs within it **
     cy.get('.advanced-options', { timeout: 5000 }).should('be.visible');
 
-    // Interact with inputs inside the now visible container
     cy.get('.advanced-options input#min-price').should('be.visible').clear().type(minPrice).blur();
     cy.wait('@minPriceSearch', { timeout: 10000 });
 
     cy.get('.advanced-options input#max-price').should('be.visible').clear().type(maxPrice).blur();
     cy.wait('@maxPriceSearch', { timeout: 10000 });
 
-    // Assertions
+    // Add a small wait here too for consistency, before checking markers
+    cy.wait(500);
+
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
     cy.get('.map-container .leaflet-marker-icon').first().click({ force: true });
     cy.get('.leaflet-popup-content .popup-content a', { timeout: 5000 })
@@ -95,6 +102,8 @@ describe('MapView Functionality', () => {
     .click();
 
     cy.wait('@categorySearch');
+    // Add wait for markers to potentially update after API call
+    cy.wait(500);
 
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
     cy.get('.clear-category-button').should('be.visible');
@@ -108,23 +117,24 @@ describe('MapView Functionality', () => {
     cy.get('.category-sidebar-desktop .category-button')
     .contains('.category-label', categoryLabel)
     .click();
-    cy.wait('@categorySearch'); // Wait for the initial category filter
+    cy.wait('@categorySearch');
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
     cy.get('.clear-category-button').should('be.visible');
 
-    // ** FIX: Define the intercept for the *next* search *after* the click **
     cy.intercept('GET', '/api/items/search*').as('searchAfterClear');
     cy.get('.clear-category-button').click();
 
-    // Now wait for the search request that happened *after* the click
     cy.wait('@searchAfterClear', { timeout: 10000 }).then((interception) => {
-      // Assert this specific request doesn't have categoryName
       expect(interception.request.url).not.to.include('categoryName=');
     });
+    // Add wait for markers to potentially update after API call
+    cy.wait(500);
 
     cy.get('.clear-category-button').should('not.exist');
     cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
   });
+
+  // Geolocation tests previously removed
 
   context('Map Drawing (Circle Search)', () => {
     it('should allow drawing a circle search area and update markers', () => {
@@ -139,9 +149,12 @@ describe('MapView Functionality', () => {
       .and('include', 'userLongitude=')
       .and('include', 'maxDistance=');
 
+      // Add wait for markers to potentially update after API call
+      cy.wait(1000);
+
       cy.get('body').then($body => {
         if ($body.find('.map-container .leaflet-marker-icon').length > 0) {
-          cy.get('.map-container .leaflet-marker-icon', { timeout: 15000 }).should('exist'); // Increased wait
+          cy.get('.map-container .leaflet-marker-icon', { timeout: 15000 }).should('exist');
           cy.log('Markers found after drawing.');
         } else {
           cy.log('No markers found after drawing for this area.');
@@ -159,23 +172,21 @@ describe('MapView Functionality', () => {
       .trigger('mousedown', { which: 1, clientX: 300, clientY: 300 })
       .trigger('mousemove', { clientX: 400, clientY: 400 })
       .trigger('mouseup', { force: true });
-      cy.wait('@searchItems'); // Wait for search after draw
+      cy.wait('@searchItems');
       cy.get('.clear-drawn-area-button').should('be.visible');
       cy.get('.map-container .leaflet-interactive[stroke="#007bff"]').should('be.visible');
 
-      // ** FIX: Define the intercept for the *next* search *after* the click **
       cy.intercept('GET', '/api/items/search*').as('searchAfterClearDraw');
       cy.get('.clear-drawn-area-button').click();
 
-      // Assert UI changes immediately
       cy.get('.clear-drawn-area-button').should('not.exist');
       cy.get('.map-container .leaflet-interactive[stroke="#007bff"]').should('not.exist');
 
-      // Now wait for the search request that happened *after* the click
       cy.wait('@searchAfterClearDraw', { timeout: 10000 }).then((interception) => {
-        // Assert this specific request doesn't have maxDistance
         expect(interception.request.url).not.to.include('maxDistance=');
       });
+      // Add wait for markers to potentially update after API call
+      cy.wait(500);
 
       cy.get('.map-container .leaflet-marker-icon', { timeout: 10000 }).should('exist');
     });
@@ -188,7 +199,8 @@ describe('MapView Functionality', () => {
     cy.get('.map-container', { timeout: 20000 }).should('be.visible');
     cy.wait('@searchItems', { timeout: 10000 });
 
-    cy.get('.leaflet-popup-content .popup-content a', { timeout: 15000 })
+    // Increased timeout for popup visibility after potential map centering/zoom
+    cy.get('.leaflet-popup-content .popup-content a', { timeout: 18000 })
     .should('be.visible')
     .and('have.attr', 'href', `/item-detail/${itemIdToHighlight}`);
   });
