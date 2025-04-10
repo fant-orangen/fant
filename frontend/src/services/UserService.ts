@@ -1,4 +1,4 @@
-import api from '@/services/api/axiosInstance' // Keep using axios instance
+import api from '@/services/api/axiosInstance'
 import axiosInstance from '@/axiosConfig'
 
 
@@ -34,8 +34,7 @@ interface UserCreatePayload {
  * @param userData - Object containing user registration details matching UserCreatePayload.
  * @returns Axios response promise.
  */
-export async function register(userData: UserCreatePayload) { // Use the defined interface
-                                                              // The payload sent to the backend must match the UserCreateDto structure
+export async function register(userData: UserCreatePayload) {
   return await axiosInstance.post('/auth/register', userData)
 }
 
@@ -46,16 +45,15 @@ export async function register(userData: UserCreatePayload) { // Use the defined
  * as returned by the backend API (matching backend User.java entity).
  */
 interface BackendUser {
-  id: number | string; // Assuming ID is number or string
+  id: number | string;
   email: string;
   displayName: string;
-  role: 'USER' | 'ADMIN'; // Matches the Role enum from backend
-  firstName: string | null; // Nullable fields
-  lastName: string | null;  // Nullable fields
-  phone: string | null;     // Nullable fields
-  createdAt: string; // Assuming ISO date string
-  updatedAt: string; // Assuming ISO date string
-  // passwordHash is NOT included as it's sensitive and usually omitted
+  role: 'USER' | 'ADMIN';
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /**
@@ -63,16 +61,15 @@ interface BackendUser {
  * when serialized to JSON.
  */
 interface SpringPage<T> {
-  content: T[];           // The list of items on the current page
-  totalPages: number;     // Total number of pages available
-  totalElements: number;  // Total number of items across all pages
-  size: number;           // The number of items per page
-  number: number;         // The current page number (0-based index)
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
   first: boolean;         // True if this is the first page
   last: boolean;          // True if this is the last page
   empty: boolean;         // True if the content list is empty
-  // Spring Page includes other fields like sort, pageable, numberOfElements,
-  // but these are often sufficient for frontend pagination.
+
 }
 
 /**
@@ -86,8 +83,7 @@ type PaginatedUserResponse = SpringPage<BackendUser>;
  */
 interface AdminUserUpdatePayload {
   email: string;
-  password?: string; // Include password if the admin PUT endpoint requires/allows setting it.
-                     // If not required, make it optional or remove if backend ignores it for updates.
+  password?: string;
   displayName: string;
   firstName: string | null;
   lastName: string | null;
@@ -105,13 +101,12 @@ export async function fetchAdminUsers(page: number, size: number, params: Record
   try {
     // Make the GET request to the admin endpoint
     const response = await api.get<PaginatedUserResponse>('/admin/users', {
-      params: { page, size, ...params } // Pass pagination and any filter params
+      params: { page, size, ...params }
     });
-    // The response.data should already match the PaginatedUserResponse structure
     return response.data;
   } catch (error) {
     console.error('Error fetching admin users:', error);
-    throw error; // Re-throw to allow calling component to handle it
+    throw error;
   }
 }
 
@@ -124,15 +119,11 @@ export async function fetchAdminUsers(page: number, size: number, params: Record
  */
 export async function updateAdminUser(id: number | string, userData: AdminUserUpdatePayload): Promise<BackendUser> {
   try {
-    // Ensure password handling matches backend expectation for admin updates
     if (!userData.password) {
-      // If backend requires password for validation even on admin updates,
-      // you might need a strategy here (e.g., prompt admin, or disallow updates without it).
       console.warn("Attempting admin user update without password. Backend might require it.");
     }
     // Make the PUT request to the admin endpoint
     const response = await api.put<BackendUser>(`/admin/users/${id}`, userData);
-    // The response.data should match the BackendUser structure
     return response.data;
   } catch (error) {
     console.error(`Error updating user ${id} via admin:`, error);
@@ -154,38 +145,21 @@ export async function deleteAdminUser(id: number | string): Promise<void> {
   }
 }
 
-interface UserResponseDto {
-  displayName: string;
-  createdAt: string; // Assuming these are the fields based on UserResponseDto.java
-  // Add email, firstName, lastName, phone if they are *also* in UserResponseDto
-  email?: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  phone?: string | null;
-  // NOTE: 'role' and 'id' might NOT be in the public DTO.
-  id?: number | string; // Add if available
-  role?: 'USER' | 'ADMIN'; // Add if available
-}
-
-
-export async function fetchAdminUserById(id: number | string): Promise<BackendUser> { // Keep returning BackendUser for now, or adjust
+export async function fetchAdminUserById(id: number | string): Promise<BackendUser> {
   try {
-    // *** Change the URL from /admin/users/{id} to /users/{id} ***
-    const response = await api.get<UserResponseDto>(`/users/${id}`); // <-- CALL PUBLIC ENDPOINT
+    const response = await api.get<BackendUser>(`/admin/users/${id}`);
     console.warn("Using public /users/{id} endpoint. Data might be limited (UserResponseDto).");
 
-    // You might need to map UserResponseDto to BackendUser if structures differ significantly
-    // For example, 'role' might be missing.
     const user: BackendUser = {
-      id: response.data.id ?? id, // Use response ID if available, else prop ID
-      email: response.data.email ?? '', // Get from DTO if available
+      id: response.data.id ?? id,
+      email: response.data.email ?? '',
       displayName: response.data.displayName,
-      role: response.data.role ?? 'USER', // Role might be missing, default or handle
+      role: response.data.role ?? 'USER',
       firstName: response.data.firstName ?? null,
       lastName: response.data.lastName ?? null,
       phone: response.data.phone ?? null,
       createdAt: response.data.createdAt,
-      updatedAt: '', // Not available in UserResponseDto
+      updatedAt: '',
     };
     return user;
 

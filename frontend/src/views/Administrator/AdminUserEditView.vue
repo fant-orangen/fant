@@ -119,16 +119,23 @@ async function handleSubmit() {
   isSubmitting.value = true;
   submitError.value = null;
   console.log('Submitting update for user ID:', props.id);
-  const payload: AdminUserUpdatePayload = { ...formData };
+  const payload: Omit<AdminUserUpdatePayload, 'role'> = {
+    email: formData.email,
+    displayName: formData.displayName,
+    firstName: formData.firstName || null,
+    lastName: formData.lastName || null,
+    phone: formData.phone || null,
+  };
   if (!payload.password || payload.password.trim() === '') {
     delete payload.password;
     console.log("Password field is empty, sending update without it.");
   }
+  console.log('Submitting payload:', JSON.stringify(payload, null, 2));
 
   try {
     await updateAdminUser(props.id, payload);
     alert(t('ADMIN_USER_UPDATE_SUCCESS'));
-    router.push({ name: 'admin-user-management' });
+    router.push({ name: 'admin-users' });
   } catch (err) {
     console.error("Failed to update user:", err);
     const errorMsg = err instanceof Error ? err.message : t('ERROR_UNKNOWN');
@@ -139,7 +146,7 @@ async function handleSubmit() {
 }
 
 function cancelEdit() {
-  router.push({ name: 'admin-user-management' });
+  router.push({ name: 'admin-users' });
 }
 
 onMounted(fetchUserData);
