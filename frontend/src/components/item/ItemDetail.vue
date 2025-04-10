@@ -2,13 +2,13 @@
   <div class="item-details-page">
     <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
-      <p>Loading item details...</p>
+      <p>{{ $t('APP_LISTING_LOADING_ITEM_DETAILS') }}</p>
     </div>
 
     <div v-else-if="error" class="error-state">
-      <h2>Unable to load item</h2>
+      <h2>{{ $t('APP_LISTING_UNABLE_TO_LOAD_ITEM_DETAILS') }}</h2>
       <p>{{ errorMessage }}</p>
-      <button @click="retryLoading" class="retry-button">Try Again</button>
+      <button @click="retryLoading" class="retry-button">{{ $t('RETRY') }}</button>
     </div>
 
     <div v-else-if="item" class="item-detail-container">
@@ -20,7 +20,7 @@
         />
         <div v-else class="no-image-placeholder">
           <span class="placeholder-icon">📷</span>
-          <p>No Images Available</p>
+          <p>{{ $t('APP_LISTING_NO_IMAGES_AVAILABLE') }}</p>
         </div>
       </div>
 
@@ -36,12 +36,12 @@
         <p class="item-price">{{ formatPrice(item.price) }}</p>
 
         <div class="item-description">
-          <h3>Description</h3>
+          <h3>{{ $t('APP_LISTING_CREATE_NEW_DESCRIPTION_LABEL' )}}</h3>
           <p>{{ item.description || 'No description provided.' }}</p>
         </div>
 
         <div class="seller-info">
-          <h3>Contact Information</h3>
+          <h3>{{ $t('APP_CONTACT_INFORMATION' )}}</h3>
           <p v-if="item.contact"><strong>Seller:</strong> {{ item.contact }}</p>
           <p v-else class="no-info">Contact information unavailable</p>
         </div>
@@ -52,7 +52,7 @@
             class="edit-button"
             :disabled="!canContactSeller || startingConversation"
           >
-            {{ startingConversation ? 'Starting...' : 'Contact Seller' }}
+            {{ startingConversation ? $t('APP_CONVERSATION_STARTING') : $t('APP_ITEM_CONTACT_SELLER') }}
           </button>
 
           <button
@@ -60,26 +60,26 @@
             class="edit-button"
             :disabled="!isUserLoggedIn || isUserSeller"
           >
-            Place Bid
+            {{ $t('APP_LISTING_PLACE_BID') }}
           </button>
           <div v-if="isAdmin" class="admin-actions">  <button @click="confirmAdminDeleteItem" class="delete-button">
-            Admin Delete Item
+            {{ $t('APP_ADMIN_DELETE_ITEM') }}
           </button>
           </div>
         </div>
 
         <div v-if="isUserSeller" class="seller-notice">
-          You cannot bid on or contact the seller for your own item.
+          {{ $t('ERROR_BID_OWN_ITEM') }}
         </div>
         <div v-else-if="!isUserLoggedIn" class="login-notice">
-          Please log in to place a bid or contact the seller.
+          {{ $t('ERROR_LOG_IN_TO_BID') }}
         </div>
       </div>
     </div>
 
     <div v-else class="not-found-state">
-      <h2>Item Not Found</h2>
-      <p>The requested item could not be found or may have been removed.</p>
+      <h2>{{ $t('NOT_FOUND') }}</h2>
+      <p>{{ $t('NOT_FOUND_ITEM_EXTENSION')}}</p>
       <router-link to="/" class="home-link">Browse Other Items</router-link>
     </div>
 
