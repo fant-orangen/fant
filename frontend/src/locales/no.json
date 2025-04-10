@@ -90,6 +90,12 @@
     "travel": "Reise",
     "recommended": "Dine anbefalinger"
 },
+  "THUMBNAIL_SETTING_SMALL": "Små",
+  "THUMBNAIL_SETTING_LARGE": "Store",
+
+
+  "SCROLL_SETTING_SCROLL": "Scroll",
+  "SCROLL_SETTING_PAGE": "Side",
 
 "MAP": "Kart",
 "COORDINATES": "Kordinater",

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// --- Script remains the same as the previous version ---
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const props = defineProps<{
   isLocationAvailable?: boolean
@@ -13,65 +12,48 @@ const emit = defineEmits<{
   (e: 'update:sortOption', value: string): void
   (e: 'update:maxPrice', value: number | null): void
   (e: 'update:minPrice', value: number | null): void
-}>();
+}>()
 
-const searchQuery = ref('');
-const maxDistanceKm = ref<number | null>(50);
-const minPriceValue = ref<number | null>(null);
-const maxPriceValue = ref<number | null>(null);
-const sortOptionValue = ref<string>('default');
-const showAdvanced = ref(false);
+const searchQuery = ref('')
+const maxDistanceKm = ref<number | null>(50)
+const minPriceValue = ref<number | null>(null)
+const maxPriceValue = ref<number | null>(null)
+const sortOptionValue = ref<string>('default')
+const showAdvanced = ref(false)
 
-function handleSearchInput() { emit('update:searchTerm', searchQuery.value); }
+function handleSearchInput() {
+  emit('update:searchTerm', searchQuery.value)
+}
 
 function handleMinPriceInput(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const value = parseFloat(target.value);
-  if (!isNaN(value) && value >= 0) {
-    minPriceValue.value = value;
-    emit('update:minPrice', minPriceValue.value);
-  } else {
-    minPriceValue.value = null;
-    emit('update:minPrice', null);
-  }
+  const value = parseFloat((event.target as HTMLInputElement).value)
+  minPriceValue.value = isNaN(value) || value < 0 ? null : value
+  emit('update:minPrice', minPriceValue.value)
 }
 
 function handleMaxPriceInput(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const value = parseFloat(target.value);
-  if (!isNaN(value) && value >= 0) {
-    maxPriceValue.value = value;
-    emit('update:maxPrice', maxPriceValue.value);
-  } else {
-    maxPriceValue.value = null;
-    emit('update:maxPrice', null);
-  }
+  const value = parseFloat((event.target as HTMLInputElement).value)
+  maxPriceValue.value = isNaN(value) || value < 0 ? null : value
+  emit('update:maxPrice', maxPriceValue.value)
 }
 
 function handleSortChange(event: Event) {
-  const target = event.target as HTMLSelectElement;
-  sortOptionValue.value = target.value;
-  emit('update:sortOption', sortOptionValue.value);
+  sortOptionValue.value = (event.target as HTMLSelectElement).value
+  emit('update:sortOption', sortOptionValue.value)
 }
 
 function handleDistanceInput(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const value = parseInt(target.value, 10);
-  if (!isNaN(value) && value >= 0) {
-    maxDistanceKm.value = value;
-    emit('update:maxDistance', maxDistanceKm.value);
-  } else {
-    maxDistanceKm.value = null;
-    emit('update:maxDistance', null);
-  }
+  const value = parseInt((event.target as HTMLInputElement).value, 10)
+  maxDistanceKm.value = isNaN(value) || value < 0 ? null : value
+  emit('update:maxDistance', maxDistanceKm.value)
 }
 
 function requestLocation() {
-  emit('request-current-location');
+  emit('request-current-location')
 }
 
 function toggleAdvancedSearch() {
-  showAdvanced.value = !showAdvanced.value;
+  showAdvanced.value = !showAdvanced.value
 }
 </script>
 
@@ -79,7 +61,6 @@ function toggleAdvancedSearch() {
   <div class="search-controls-container">
     <div class="main-search-group">
       <div class="control-group search-term-group">
-        <!-- Use translation key for label -->
         <label for="search-term">{{ $t('SEARCH_LABEL') }}</label>
         <input
           id="search-term"
@@ -87,7 +68,7 @@ function toggleAdvancedSearch() {
           v-model="searchQuery"
           @input="handleSearchInput"
           :placeholder="$t('SEARCH_PLACEHOLDER')"
-          class="search-input"
+          class="text-input"
         />
       </div>
       <button
@@ -95,7 +76,6 @@ function toggleAdvancedSearch() {
         class="advanced-toggle-button"
         :title="$t('ADVANCED_TOGGLE_TITLE')"
       >
-        <!-- Toggle text for advanced search -->
         {{ showAdvanced ? $t('ADVANCED_LESS') : $t('ADVANCED_MORE') }}
       </button>
     </div>
@@ -111,9 +91,10 @@ function toggleAdvancedSearch() {
           :placeholder="$t('MIN_PRICE_PLACEHOLDER')"
           min="0"
           step="10"
-          class="number-input"
+          class="text-input"
         />
       </div>
+
       <div class="control-group">
         <label for="max-price">{{ $t('MAX_PRICE_LABEL') }}</label>
         <input
@@ -124,24 +105,24 @@ function toggleAdvancedSearch() {
           :placeholder="$t('MAX_PRICE_PLACEHOLDER')"
           min="0"
           step="10"
-          class="number-input"
+          class="text-input"
         />
       </div>
+
       <div class="control-group">
         <label for="sort-select">{{ $t('SORT_LABEL') }}</label>
         <select
           id="sort-select"
           v-model="sortOptionValue"
           @change="handleSortChange"
-          class="select-input"
         >
           <option value="default">{{ $t('SORT_DEFAULT') }}</option>
           <option value="price_asc">{{ $t('SORT_PRICE_LOW_HIGH') }}</option>
           <option value="price_desc">{{ $t('SORT_PRICE_HIGH_LOW') }}</option>
         </select>
       </div>
+
       <div class="control-group location-group">
-        <!-- Example with dynamic placeholder using interpolation -->
         <label for="distance-slider">
           {{ $t('MAX_DISTANCE_LABEL', { distance: maxDistanceKm ?? 0 }) }}
         </label>
@@ -166,12 +147,11 @@ function toggleAdvancedSearch() {
 </template>
 
 <style scoped>
-
 .search-controls-container {
   padding: 1rem 1.5rem;
-  background-color: var(--vt-c-white-soft); /* #f8f8f8 */
+  background-color: var(--vt-c-white-soft);
   border-radius: 6px;
-  border: 1px solid var(--vt-c-divider-light-2); /* Subtle light border */
+  border: 1px solid var(--vt-c-divider-light-2);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -181,7 +161,6 @@ function toggleAdvancedSearch() {
   box-sizing: border-box;
 }
 
-/* --- Main Search Group (Input + Toggle) --- */
 .main-search-group {
   display: flex;
   align-items: flex-end;
@@ -193,14 +172,9 @@ function toggleAdvancedSearch() {
   flex-grow: 1;
 }
 
-.search-input {
-  width: 100%;
-}
-
-/* --- Toggle Button --- */
 .advanced-toggle-button {
   padding: 0.6rem 0.8rem;
-  background-color: var(--vt-c-white-soft); /* Using light background */
+  background-color: var(--vt-c-white-soft);
   border: 1px solid var(--vt-c-divider-light-1);
   border-radius: 4px;
   cursor: pointer;
@@ -210,12 +184,10 @@ function toggleAdvancedSearch() {
   transition: background-color 0.2s;
   flex-shrink: 0;
 }
-
 .advanced-toggle-button:hover {
-  background-color: var(--vt-c-white-mute); /* Slightly darker muted white */
+  background-color: var(--vt-c-white-mute);
 }
 
-/* --- Advanced Options Container --- */
 .advanced-options {
   display: flex;
   flex-wrap: wrap;
@@ -227,7 +199,6 @@ function toggleAdvancedSearch() {
   justify-content: flex-start;
 }
 
-/* --- Individual Control Groups --- */
 .control-group {
   display: flex;
   flex-direction: column;
@@ -235,33 +206,20 @@ function toggleAdvancedSearch() {
   min-width: 120px;
 }
 
-/* --- Input Styles --- */
-.search-input,
-.number-input,
-.select-input {
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--vt-c-divider-light-1);
-  border-radius: 4px;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-  width: 100%;
-  background-color: var(--vt-c-white);
+/* Contrast override for text-input and select */
+.text-input,
+select {
+  border: 1px solid var(--vt-c-divider-light-1); /* Stronger contrast */
+  background-color: var(--vt-c-white-soft);
   color: var(--vt-c-text-dark-2);
 }
 
-.number-input {
-  -moz-appearance: textfield;
-}
-.number-input::-webkit-outer-spin-button,
-.number-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+/* Prevent cutoff in select options */
+select {
+  padding-right: 48px;
+  background-position: right 14px center;
 }
 
-/*
-  --- Location Specific ---
-  Force column layout at all screen sizes so the button is always below the slider.
-*/
 .location-group {
   display: flex;
   flex-direction: column;
@@ -281,26 +239,19 @@ function toggleAdvancedSearch() {
 
 .location-button {
   padding: 0.6rem 1rem;
-  background-color: var(--vt-c-teal-soft); /* Using medium soft teal */
+  background-color: var(--vt-c-teal-soft);
   color: var(--vt-c-white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.95rem;
   transition: background-color 0.2s ease;
-  width: 100%; /* full width in a column layout */
+  width: 100%;
   text-align: center;
 }
-
 .location-button:hover {
-  background-color: var(--vt-c-teal-dark); /* Darker teal for hover */
+  background-color: var(--vt-c-teal-dark);
 }
-
-
-/* --- Responsive Adjustments (Optional) ---
-   If you don't want any layout changes for the location group at larger screens,
-   simply omit the rules that switch to row layout.
-*/
 
 @media (min-width: 768px) {
   .advanced-options {
@@ -309,34 +260,20 @@ function toggleAdvancedSearch() {
   .control-group {
     width: auto;
   }
-  .advanced-options .number-input {
+  .advanced-options input[type="number"] {
     width: 110px;
   }
-  .advanced-options .select-input {
+  .advanced-options select {
     width: 170px;
   }
-  /*
-    If you previously had .location-group set to row layout,
-    remove or comment it out to keep the button below:
-
-    .location-group {
-      flex-direction: row; // Remove or comment out
-      ...
-    }
-  */
 }
 
 @media (min-width: 992px) {
-  .advanced-options .number-input {
+  .advanced-options input[type="number"] {
     width: 120px;
   }
-  .advanced-options .select-input {
+  .advanced-options select {
     width: 180px;
   }
-  /*
-    .location-group {
-      max-width: 320px; // optional
-    }
-  */
 }
 </style>

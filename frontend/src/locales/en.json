@@ -101,6 +101,12 @@
         "recommended": "Your recommendations"
     },
 
+    "THUMBNAIL_SETTING_SMALL": "Small",
+    "THUMBNAIL_SETTING_LARGE": "Large",
+
+    "SCROLL_SETTING_SCROLL": "Scroll",
+    "SCROLL_SETTING_PAGE": "Page",
+
     "MAP": "Map",
     "COORDINATES": "Coordinates",
     "LATITUDE": "Latitude",
