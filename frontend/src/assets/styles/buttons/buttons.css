@@ -56,22 +56,28 @@
   /* Accept/Reject Buttons */
 
   .accept-button {
-    background-color: #28a745;
-    color: var(--vt-c-white);
-    border-color: #28a745;
-    padding: 0.4rem 0.8rem;
+    background-color: var(--vt-c-green-soft);
+    color: var(--vt-c-green-dark);
     font-size: 0.9rem;
     font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--vt-c-green-dark);
     border-radius: 4px;
     cursor: pointer;
-    min-width: 70px;
+    transition: background-color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+    width: auto;
+    min-width: 90px;
     text-align: center;
-    transition: background-color 0.2s ease;
   }
 
-  .accept-button:hover:not(:disabled) {
-    background-color: #218838;
-    border-color: #218838;
+  .accept-button {
+    background-color: var(--vt-c-green-light);
+    border-color: var(--vt-c-green-dark);
+  }
+
+  .accept-button{
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   .reject-button {
@@ -187,6 +193,31 @@
 
   .add-to-list-option label {
     cursor: pointer;
+  }
+
+  .bid-button {
+    background-color: var(--vt-c-green-dark);
+    color: var(--vt-c-green-soft);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--vt-c-green-dark);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+    width: auto;
+    min-width: 90px;
+    text-align: center;
+  }
+
+  .bid-button:hover:not(:disabled) {
+    background-color: var(--vt-c-teal-dark);
+    border-color: var(--vt-c-teal-dark);
+  }
+
+  .bid-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   /* Responsive adjustments */

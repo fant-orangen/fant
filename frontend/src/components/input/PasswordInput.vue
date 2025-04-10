@@ -93,7 +93,7 @@ watch(() => props.modelValue, (newValue) => {
 
 <style scoped>
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   position: relative;
   width: 100%;
 }
@@ -102,7 +102,7 @@ label {
   display: block;
   font-weight: 500;
   margin-bottom: 6px;
-  color: #2c3e50;
+  color: var(--vt-c-black-soft);
   font-size: 0.9rem;
 }
 
@@ -113,39 +113,39 @@ label {
 }
 
 .text-input {
-  flex-grow: 1;
-  width: auto;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 10px 12px;
-  padding-right: 70px; /* Adjust if button text width changes significantly */
-  border: 1px solid #ddd;
+  padding-right: 70px; /* Space for toggle button */
+  border: 1px solid var(--vt-c-white);
   border-radius: 6px;
   font-size: 1rem;
-  color: #333;
-  background-color: #fff;
+  color: var(--vt-c-text-dark-2);
+  background-color: var(--vt-c-white-soft);
   transition: all 0.2s ease;
   font-family: inherit;
   height: 42px;
-  box-sizing: border-box;
 }
 
 .text-input:hover {
-  border-color: #3498db;
+  border-color: var(--vt-c-teal-light);
 }
 
 .text-input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  border-color: var(--vt-c-teal-soft);
+  box-shadow: 0 0 4px var(--vt-c-teal-light);
 }
 
 .text-input::placeholder {
-  color: #999;
+  color: var(--vt-c-text-light-2);
   opacity: 0.7;
 }
 
 .text-input.input-error {
-  border-color: red;
-  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+  border-color: var(--vt-c-red-soft);
+  box-shadow: 0 0 4px var(--vt-c-red-light);
 }
 
 .validity-icon {
@@ -158,11 +158,11 @@ label {
 }
 
 .icon-valid {
-  color: green;
+  color: var(--vt-c-teal-dark);
 }
 
 .icon-invalid {
-  color: red;
+  color: var(--vt-c-red-dark);
 }
 
 .toggle-visibility {
@@ -173,7 +173,7 @@ label {
   background: none;
   border: none;
   cursor: pointer;
-  color: #555;
+  color: var(--vt-c-text-light-2);
   font-size: 0.8em;
   padding: 4px;
   min-width: 35px;
@@ -181,11 +181,11 @@ label {
 }
 
 .toggle-visibility:hover {
-  color: #000;
+  color: var(--vt-c-black-soft);
 }
 
 .error-message {
-  color: red;
+  color: var(--vt-c-red-dark);
   font-size: 0.8em;
   margin-top: 4px;
 }

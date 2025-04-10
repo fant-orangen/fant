@@ -49,7 +49,7 @@
         <div class="action-buttons">
           <button
             @click="startConversation"
-            class="contact-button"
+            class="edit-button"
             :disabled="!canContactSeller || startingConversation"
           >
             {{ startingConversation ? 'Starting...' : 'Contact Seller' }}
@@ -57,17 +57,14 @@
 
           <button
             @click="openBidModal"
-            class="bid-button"
+            class="edit-button"
             :disabled="!isUserLoggedIn || isUserSeller"
           >
             Place Bid
           </button>
-          <div class="details-column">
-            <div v-if="isAdmin" class="admin-actions">  <button @click="confirmAdminDeleteItem" class="admin-delete-button">
-              Admin Delete Item
-            </button>
-            </div>
-
+          <div v-if="isAdmin" class="admin-actions">  <button @click="confirmAdminDeleteItem" class="delete-button">
+            Admin Delete Item
+          </button>
           </div>
         </div>
 
@@ -389,12 +386,12 @@ onMounted(() => {
 .loading-state {
   text-align: center;
   padding: 4rem;
-  color: #666;
+  color: var(--vt-c-text-light-1);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px; /* Ensure it takes some space */
+  min-height: 300px;
 }
 
 .loading-spinner {
@@ -418,18 +415,18 @@ onMounted(() => {
 .error-state, .not-found-state {
   text-align: center;
   padding: 3rem 1rem;
-  background-color: #f8f9fa; /* Light grey background */
-  border: 1px solid #e9ecef; /* Subtle border */
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   margin-bottom: 2rem;
-  color: #dc3545; /* Reddish color for errors */
+  color: var(--vt-c-red-dark);
 }
 .not-found-state {
-  color: #6c757d; /* Grey color for not found */
+  color: var(--vt-c-text-light-2);
 }
 .error-state h2, .not-found-state h2 {
   margin-bottom: 0.5rem;
-  color: #343a40; /* Darker heading */
+  color: var(--color-heading);
 }
 
 .retry-button, .home-link {
@@ -456,7 +453,7 @@ onMounted(() => {
 .gallery-column {
   border-radius: 8px;
   overflow: hidden;
-  background-color: #f8f9fa; /* Light background for gallery area */
+  background-color: var(--vt-c-white); /* Light background for gallery area */
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   max-height: 500px; /* Adjust as needed */
   display: flex; /* Center placeholder content */
@@ -511,8 +508,8 @@ onMounted(() => {
   flex-direction: column;
   gap: 1.5rem; /* Spacing between sections */
   padding: 1.5rem;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  background-color: var(--vt-c-white);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
@@ -556,8 +553,23 @@ onMounted(() => {
 .item-price {
   font-size: 1.6em;
   font-weight: bold;
-  color: #007bff; /* Blue price */
+  color: var(--vt-c-teal-dark);
   margin: 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-buttons button {
+  flex: 1 1 150px;
+  min-width: 150px;
+  height: 48px;
+  font-size: 1.1rem;
+  padding: 12px 18px;
 }
 
 /**
@@ -589,7 +601,6 @@ onMounted(() => {
   color: #999;
   font-style: italic;
 }
-
 /**
  * Action buttons styling
  */
@@ -599,44 +610,6 @@ onMounted(() => {
   margin-top: 1rem; /* More space above buttons */
   flex-wrap: wrap; /* Allow wrapping on small screens */
 }
-
-.contact-button, .bid-button {
-  flex: 1 1 150px; /* Allow shrinking but prefer equal width, base width 150px */
-  padding: 0.8rem 1rem;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-  border: none;
-  min-width: 150px; /* Prevent buttons becoming too narrow */
-}
-
-.contact-button {
-  background-color: #007bff; /* Blue */
-  color: white;
-}
-
-.bid-button {
-  background-color: #28a745; /* Green */
-  color: white;
-}
-
-.contact-button:hover:not(:disabled), .bid-button:hover:not(:disabled) {
-  opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.contact-button:disabled, .bid-button:disabled {
-  background-color: #cccccc;
-  color: #666666;
-  cursor: not-allowed;
-  box-shadow: none;
-  opacity: 0.7;
-}
-
 /**
  * Login and seller notices styling
  */

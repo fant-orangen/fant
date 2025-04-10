@@ -87,15 +87,89 @@ function navigateToLogin() {
 </script>
 
 <style scoped>
-.form-container { max-width: 500px; margin: 2rem auto; padding: 1.5rem; border: 1px solid #eee; border-radius: 8px; background-color: #fff; }
-.form { display: flex; flex-direction: column; gap: 1rem; }
-.error { color: red; margin-top: 1rem; text-align: center; font-size: 0.9em; }
-button { padding: 0.8rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; margin-top: 0.5rem; width: 100%; box-sizing: border-box; }
-.button-primary { background-color: #007bff; color: white; }
-.button-primary:hover:not(:disabled) { background-color: #0056b3; }
-.button-primary:disabled { background-color: #ccc; cursor: not-allowed; }
-.button-secondary { background-color: #f8f9fa; color: #007bff; border: 1px solid #dee2e6; margin-top: 0.8rem; }
-.button-secondary:hover:not(:disabled) { background-color: #e2e6ea; border-color: #ced4da; }
-.button-secondary:disabled { background-color: #e9ecef; color: #6c757d; border-color: #dee2e6; cursor: not-allowed; }
-h1 { text-align: center; margin-bottom: 1.5rem; color: #333; }
+.form-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-background-soft);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.form > * {
+  width: 100%;
+  max-width: 400px;
+}
+
+.error {
+  color: var(--vt-c-red-dark);
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 500;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button[type="submit"] {
+  background-color: var(--vt-c-teal-dark);
+  color: var(--vt-c-white);
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+button[type="submit"]:disabled {
+  background-color: var(--vt-c-text-light-2);
+  cursor: not-allowed;
+  color: var(--vt-c-white-soft);
+}
+
+.button-secondary {
+  background-color: var(--color-background-mute);
+  color: var(--vt-c-teal-dark);
+  border: 1px solid var(--color-border);
+  margin-top: 0.8rem;
+}
+
+.button-secondary:hover:not(:disabled) {
+  background-color: var(--color-background);
+  border-color: var(--vt-c-teal-light);
+}
+
+.button-secondary:disabled {
+  background-color: var(--color-background-mute);
+  color: var(--vt-c-text-light-2);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-heading);
+}
 </style>
