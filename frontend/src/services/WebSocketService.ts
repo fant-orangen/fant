@@ -189,15 +189,6 @@ export class WebSocketService {
       this.messageHandlers[userId] = this.messageHandlers[userId].filter((h) => h !== handler)
     }
   }
-
-  /**
-   * Checks if WebSocket connection is currently established.
-   *
-   * @returns {boolean} True if connected, false otherwise
-   */
-  isConnected(): boolean {
-    return this.connected.value
-  }
 }
 
 // Create and export a singleton instance
