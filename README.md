@@ -21,6 +21,10 @@ The project is divided into two parts; a frontend application using Vue, and a b
 
 - [Frontend](frontend)
 - [Backend](backend)
+
+## Running tests
+As mentioned above, visit the sub-repositories on instructions on how to run their respective tests.
+
 ## Run Locally
 ### Prerequisites
 - Docker
