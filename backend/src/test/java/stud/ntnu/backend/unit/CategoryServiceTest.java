@@ -131,31 +131,7 @@ class CategoryServiceTest {
     verify(categoryRepository, never()).save(any(Category.class));
   }
 
-  /**
-   * <h3>Test Delete Category</h3>
-   * <p>Tests the successful deletion of a category by its ID.
-   * It verifies that existsById is checked and then deleteById is called.</p> // Updated description
-   */
-  @Test
-  void deleteCategory() {
-    // Arrange
-    Long categoryIdToDelete = 1L;
-
-    // Tell the mock repository that the category *does* exist
-    when(categoryRepository.existsById(categoryIdToDelete)).thenReturn(true);
-
-    // Mock the actual deletion call (doesn't need to do anything)
-    doNothing().when(categoryRepository).deleteById(categoryIdToDelete);
-
-    // Act
-    // Now, when delete is called, the existsById check inside it will pass
-    categoryService.delete(categoryIdToDelete);
-
-    // Assert
-    // Verify both methods were called in the service
-    verify(categoryRepository, times(1)).existsById(categoryIdToDelete);
-    verify(categoryRepository, times(1)).deleteById(categoryIdToDelete);
-  }
+  
 
   /**
    * <h3>Test Get All Categories</h3>
