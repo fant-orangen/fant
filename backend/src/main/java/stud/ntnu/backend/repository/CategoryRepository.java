@@ -2,36 +2,37 @@ package stud.ntnu.backend.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying; // Import Modifying
+import org.springframework.data.jpa.repository.Query; // Import Query
+import org.springframework.data.repository.query.Param; // Import Param
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional; // Import Transactional
 import stud.ntnu.backend.model.Category;
 
 /**
- * <h2>CategoryRepository</h2>
- * <p>Repository interface for accessing and managing {@link Category} entities in the database.</p>
- * <p>Extends Spring Data JPA's {@link JpaRepository} to provide basic CRUD operations and allows
- * for the definition of custom query methods.</p>
+ * Repository interface for accessing and managing {@link Category} entities.
  */
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long> { //
+
+  Optional<Category> findByName(String name); //
+
+  boolean existsByName(String name); //
 
   /**
-   * <h3>Find By Name</h3>
-   * <p>Retrieves a {@link Category} entity from the database based on its exact name.</p>
+   * Updates the details of a Category directly in the database.
    *
-   * @param name the category name to search for. This name is case-sensitive based on the database
-   *             collation.
-   * @return {@link Optional} containing the matching {@link Category} entity if found; otherwise,
-   * an empty {@code Optional}.
+   * @param id        The ID of the category to update.
+   * @param name      The new name for the category.
+   * @param imageUrl  The new image URL for the category.
+   * @param parent    The new parent Category entity (can be null).
+   * @return The number of rows affected (should be 1 if successful).
    */
-  Optional<Category> findByName(String name);
-
-  /**
-   * <h3>Exists By Name</h3>
-   * <p>Checks if a {@link Category} entity with the given name exists in the database.</p>
-   *
-   * @param name the category name to check for existence. This name is case-sensitive based on the
-   *             database collation.
-   * @return {@code true} if a category with the given name exists; {@code false} otherwise.
-   */
-  boolean existsByName(String name);
+  @Modifying // Indicates this query modifies data
+  @Transactional // Recommended for modifying queries within repository
+  @Query("UPDATE Category c SET c.name = :name, c.imageUrl = :imageUrl, c.parent = :parent WHERE c.id = :id")
+  int updateCategoryDetails(@Param("id") Long id,
+      @Param("name") String name,
+      @Param("imageUrl") String imageUrl,
+      @Param("parent") Category parent); // Pass the parent entity or null
 }

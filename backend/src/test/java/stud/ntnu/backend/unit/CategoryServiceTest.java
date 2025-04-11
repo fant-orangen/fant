@@ -138,13 +138,22 @@ class CategoryServiceTest {
   @Test
   void deleteCategory() {
     // Arrange
-    doNothing().when(categoryRepository).deleteById(1L);
+    Long categoryIdToDelete = 1L; // Use a variable for clarity
+
+    // Mock the existsById check to return true, otherwise the service throws EntityNotFoundException
+    when(categoryRepository.existsById(categoryIdToDelete)).thenReturn(true);
+
+    // Mock the actual deletion call (this doesn't throw an exception on its own)
+    doNothing().when(categoryRepository).deleteById(categoryIdToDelete);
 
     // Act
-    categoryService.delete(1L);
+    categoryService.delete(categoryIdToDelete);
 
     // Assert
-    verify(categoryRepository, times(1)).deleteById(1L);
+    // Verify existsById was called
+    verify(categoryRepository, times(1)).existsById(categoryIdToDelete);
+    // Verify deleteById was called
+    verify(categoryRepository, times(1)).deleteById(categoryIdToDelete);
   }
 
   /**
