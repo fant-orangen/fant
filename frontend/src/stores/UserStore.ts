@@ -12,6 +12,7 @@ import { register } from '@/services/api/authService';
 import { computed, ref } from 'vue';
 import api from '@/services/api/axiosInstance';
 
+
 /**
  * Interface representing the data required for user registration.
  *
@@ -85,7 +86,10 @@ export const useUserStore = defineStore("user", () => {
 
       // Extract role and userId from token and save to localStorage
       const tokenParts = tokenStr.split('.');
+      // **** START CORRECTION ****
+      // Check if the token looks like a valid JWT (3 parts) before parsing
       if (tokenParts.length === 3) {
+        // **** END CORRECTION ****
         try {
           const payload = JSON.parse(atob(tokenParts[1]));
           role.value = payload.role;
@@ -93,12 +97,20 @@ export const useUserStore = defineStore("user", () => {
           if (payload.role) localStorage.setItem('role', payload.role);
           if (payload.userId) localStorage.setItem('userId', payload.userId.toString()); // Store as string
         } catch (error) {
-          console.error("Error parsing token during login:", error);
-          // Handle error, maybe clear invalid token?
+          console.error("Error parsing token payload during login:", error); // Changed console message
+          // Handle error, maybe clear invalid token? Could clear role/userId here.
+          role.value = null;
+          userId.value = null;
+          localStorage.removeItem('role');
+          localStorage.removeItem('userId');
         }
       } else {
-        console.error("Invalid token format received during login.");
-        // Handle invalid token format
+        console.error("Invalid token format received during login."); // Keep this log
+        // Handle invalid token format - Ensure role/userId are cleared
+        role.value = null;
+        userId.value = null;
+        localStorage.removeItem('role');
+        localStorage.removeItem('userId');
       }
 
       localStorage.setItem('token', tokenStr);
@@ -122,7 +134,7 @@ export const useUserStore = defineStore("user", () => {
     try {
       console.log(`Starting login for user: ${userEmail}`);
       // Use userEmail for the 'username' field expected by fetchToken
-      const response = await fetchToken({ username: userEmail, password: password }); // [cite: uploaded:project V 2/frontend/src/services/api/authService.ts]
+      const response = await fetchToken({ username: userEmail, password: password });
       console.log("Login response:", response.data);
 
       const tokenStr = response.data.token;
@@ -199,8 +211,8 @@ export const useUserStore = defineStore("user", () => {
    */
     // The payload for update must match UserCreateDto, so it needs password and displayName
   interface UpdatePayload extends UserProfile {
-    password?: string;
-    currentPassword?: string; // Password might be optional if backend handles it, but DTO requires it
+    password?: string; // New password (optional)
+    currentPassword?: string; // Current password for verification (required by backend endpoint logic)
   }
 
   /**
@@ -214,30 +226,27 @@ export const useUserStore = defineStore("user", () => {
    */
   async function updateProfile(updatedProfile: UpdatePayload) { // Use the extended payload type
     try {
-      // Construct the payload matching UserCreateDto
-      // Crucially includes displayName and password
+      // Construct the payload matching UserUpdateDto (or similar backend DTO)
       const payload = {
         email: updatedProfile.email,
-        password: updatedProfile.password,
+        password: updatedProfile.password, // Send new password if provided
         firstName: updatedProfile.firstName,
         lastName: updatedProfile.lastName,
         phone: updatedProfile.phone,
         displayName: updatedProfile.displayName, // <-- Include displayName
-        currentPassword: updatedProfile.currentPassword       // <-- Include password
+        currentPassword: updatedProfile.currentPassword // <-- Include currentPassword
       };
 
-      // Check if password is provided, if not, handle error or send a dummy (as per backend requirement)
+      // Check if current password is provided, backend requires it for verification
       if (!payload.currentPassword) {
-        // Option A: Throw an error asking user for password
-        throw new Error("Password is required to update profile.");
-        // Option B: Send a dummy password (ONLY if backend validation is the ONLY reason)
-        // payload.password = "DUMMY_PASSWORD_FOR_VALIDATION"; // Use with caution!
+        throw new Error("Current password is required to update profile.");
       }
 
 
       const response = await api.put('/users/profile', payload);
 
       // Update local profile state with the response from the backend
+      // Ensure mapping matches UserProfile interface
       profile.value = {
         email: response.data.email || '',
         firstName: response.data.firstName || '',
