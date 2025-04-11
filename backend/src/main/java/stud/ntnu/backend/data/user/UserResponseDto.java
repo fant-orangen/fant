@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 /**
  * <h2>UserResponseDto</h2>
  * <p>Public-facing data transfer object for user information.</p>
+ * <p>MODIFIED: Now includes email.</p>
  */
 @Data
 @AllArgsConstructor
@@ -25,4 +26,12 @@ public class UserResponseDto {
    * <p>Date and time when the user account was created.</p>
    */
   private LocalDateTime createdAt;
+
+  /**
+   * <h3>Email</h3>
+   * <p>User's unique email address.</p>
+   * <p>Added for display on public profile.</p>
+   */
+  private String email;
+
 }

@@ -223,4 +223,5 @@ public class UserService {
   public Long getCurrentUserId(Principal principal) {
     return getCurrentUser(principal).getId();
   }
+
 }

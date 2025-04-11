@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * <p>Data transfer object for searching items with various filter criteria.</p>
  */
 @Data
-public class ItemSearchDto {
+public class ItemSearchDto { //
 
   /**
    * <h3>Search Term</h3>
@@ -67,4 +67,11 @@ public class ItemSearchDto {
    */
   @DecimalMin(value = "0.0", message = "Maximum distance cannot be negative")
   private Double maxDistance; // in kilometers
+
+  // --- NEW ---
+  /**
+   * Optional seller ID to filter items by a specific seller.
+   */
+  private Long sellerId;
+  // --- END NEW ---
 }
