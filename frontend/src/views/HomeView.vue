@@ -363,7 +363,6 @@ function fetchCurrentUserLocation() {
 const categoryScrollContainer = ref<HTMLElement | null>(null)
 let cleanupScrollListener: (() => void) | null = null
 
-
 /**
  * Sets up horizontal wheel scrolling for category grid
  * Returns cleanup function to remove event listener
@@ -377,9 +376,11 @@ function enableHorizontalScrollOnWheel(wrapper: HTMLElement) {
   if (!scrollTarget) return () => {}
 
   const handler = (e: WheelEvent) => {
-    if (e.deltaY !== 0 && scrollTarget.scrollWidth > scrollTarget.clientWidth) {
+    // Check if there's horizontal overflow to scroll
+    if (scrollTarget.scrollWidth > scrollTarget.clientWidth) {
       e.preventDefault()
       scrollTarget.scrollLeft += e.deltaY
+      scrollTarget.scrollLeft += e.deltaX
     }
   }
 
