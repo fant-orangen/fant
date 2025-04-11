@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import stud.ntnu.backend.data.user.AdminUserUpdateDto;
 import stud.ntnu.backend.data.user.UserCreateDto;
 import stud.ntnu.backend.data.user.UserResponseDto;

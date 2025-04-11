@@ -43,8 +43,7 @@ public class RecommendationService {
 
     Map<String, Double> distribution = new HashMap<>();
     if (totalViews > 0) {
-      categoryCounts.forEach((key, count) ->
-          distribution.put(key, (double) count / totalViews));
+      categoryCounts.forEach((key, count) -> distribution.put(key, (double) count / totalViews));
     }
 
     return new CategoryRecommendationDto(distribution);

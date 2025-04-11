@@ -31,6 +31,7 @@ import stud.ntnu.backend.service.UserService;
 
 /**
  * <h2>AdminController</h2>
+ *
  * <p>REST controller for administrative operations requiring elevated privileges.</p>
  */
 @RestController

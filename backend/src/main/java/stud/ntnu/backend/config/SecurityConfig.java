@@ -48,6 +48,12 @@ public class SecurityConfig {
    */
   private final JwtAuthFilter jwtAuthFilter;
 
+  /**
+   * <h3>Logging Filter</h3>
+   * <p>Custom filter for logging incoming requests.</p>
+   *
+   * @see LoggingFilter
+   */
   private final LoggingFilter loggingFilter;
 
   /**
