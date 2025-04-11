@@ -33,6 +33,7 @@ import AdminUserEditView from "@/views/Administrator/AdminUserEditView.vue";
 import CategoryEdit from "@/components/administrator/CategoryEdit.vue";
 import AdminLayout from "@/views/Administrator/AdminLayout.vue";
 import type { RouteLocationNormalized } from 'vue-router';
+import PublicProfileView from "@/views/profile/PublicProfileView.vue";
 
 /**
  * Route configuration array defining the application's navigation structure.
@@ -44,6 +45,13 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { title: 'Home - Fant' }
+  },
+  {
+    path: '/user/:userId', // Define the route path with a parameter
+    name: 'public-profile',
+    component: PublicProfileView,
+    props: true, // Pass route params as props to the component
+    meta: { title: 'User Profile - Fant' } // Set a dynamic title
   },
   {
     path: '/item-detail/:id',

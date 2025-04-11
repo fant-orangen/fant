@@ -6,8 +6,19 @@
  *
  * @module UserService
  */
-import api from '@/services/api/axiosInstance'
-import axiosInstance from '@/axiosConfig'
+import api from '@/services/api/axiosInstance' //
+import axiosInstance from '@/axiosConfig' //
+
+/**
+ * Public-facing data transfer object for user information.
+ * Matches backend UserResponseDto.java
+ */
+export interface UserResponseDto {
+  displayName: string;
+  createdAt: string;
+  email?: string;
+}
+
 
 /**
  * Fetches the currently authenticated user's ID from the server.
@@ -16,14 +27,34 @@ import axiosInstance from '@/axiosConfig'
  * @returns A promise resolving to the user's ID
  * @throws Error if the request fails
  */
-export async function fetchCurrentUserId(): Promise<number> {
+export async function fetchCurrentUserId(): Promise<number> { //
   try {
-    const response = await api.get<number>('/users/id');
+    const response = await api.get<number>('/users/id'); //
     return response.data;
   } catch (error) {
     throw error;
   }
 }
+
+// --- NEW: Function to fetch public user profile ---
+/**
+ * Fetches public user information by user ID.
+ * Uses the backend endpoint GET /api/users/{id}.
+ *
+ * @param {string | number} userId - The ID of the user to fetch.
+ * @returns {Promise<UserResponseDto>} Promise resolving to the public user data.
+ * @throws {Error} If the request fails (e.g., user not found).
+ */
+export async function fetchUserById(userId: string | number): Promise<UserResponseDto> {
+  try {
+    const response = await api.get<UserResponseDto>(`/users/${userId}`); //
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch user profile for ID ${userId}:`, error);
+    throw error; // Re-throw to be handled by the component
+  }
+}
+// --- END NEW ---
 
 /**
  * Represents the payload structure required for user registration.
@@ -31,7 +62,7 @@ export async function fetchCurrentUserId(): Promise<number> {
  *
  * @interface UserCreatePayload
  */
-interface UserCreatePayload {
+interface UserCreatePayload { //
   email: string;
   password: string;
   displayName: string;
@@ -50,8 +81,8 @@ interface UserCreatePayload {
  * @returns {Promise<any>} Promise resolving to the response from the registration endpoint
  * @throws {Error} If registration fails due to validation issues or network errors
  */
-export async function register(userData: UserCreatePayload) {
-  return await axiosInstance.post('/auth/register', userData)
+export async function register(userData: UserCreatePayload) { //
+  return await axiosInstance.post('/auth/register', userData) //
 }
 
 /**
@@ -64,7 +95,7 @@ export async function register(userData: UserCreatePayload) {
  * @returns {Promise<any>} Promise resolving to the response from the registration endpoint
  * @throws {Error} If registration fails due to validation issues or network errors
  */
-interface BackendUser {
+interface BackendUser { //
   id: number | string;
   email: string;
   displayName: string;
@@ -85,7 +116,7 @@ interface BackendUser {
  * @interface SpringPage
  * @template T - The type of objects contained in the content array
  */
-interface SpringPage<T> {
+interface SpringPage<T> { //
   content: T[];
   totalPages: number;
   totalElements: number;
@@ -103,7 +134,7 @@ interface SpringPage<T> {
  *
  * @typedef {SpringPage<BackendUser>} PaginatedUserResponse
  */
-type PaginatedUserResponse = SpringPage<BackendUser>;
+type PaginatedUserResponse = SpringPage<BackendUser>; //
 
 /**
  * Payload structure for updating user information via admin endpoints.
@@ -111,7 +142,7 @@ type PaginatedUserResponse = SpringPage<BackendUser>;
  *
  * @interface AdminUserUpdatePayload
  */
-interface AdminUserUpdatePayload {
+interface AdminUserUpdatePayload { //
   email: string;
   password?: string;
   displayName: string;
@@ -132,10 +163,10 @@ interface AdminUserUpdatePayload {
  * @returns {Promise<PaginatedUserResponse>} Promise resolving to paginated user data
  * @throws {Error} If the request fails due to authorization issues or network errors
  */
-export async function fetchAdminUsers(page: number, size: number, params: Record<string, any> = {}): Promise<PaginatedUserResponse> {
+export async function fetchAdminUsers(page: number, size: number, params: Record<string, any> = {}): Promise<PaginatedUserResponse> { //
   try {
     // Make the GET request to the admin endpoint
-    const response = await api.get<PaginatedUserResponse>('/admin/users', {
+    const response = await api.get<PaginatedUserResponse>('/admin/users', { //
       params: { page, size, ...params }
     });
     return response.data;
@@ -155,12 +186,12 @@ export async function fetchAdminUsers(page: number, size: number, params: Record
  * @returns {Promise<BackendUser>} Promise resolving to the updated user data
  * @throws {Error} If the update fails due to validation or authorization issues
  */
-export async function updateAdminUser(id: number | string, userData: AdminUserUpdatePayload): Promise<BackendUser> {
+export async function updateAdminUser(id: number | string, userData: AdminUserUpdatePayload): Promise<BackendUser> { //
   try {
     if (!userData.password) {
     }
     // Make the PUT request to the admin endpoint
-    const response = await api.put<BackendUser>(`/admin/users/${id}`, userData);
+    const response = await api.put<BackendUser>(`/admin/users/${id}`, userData); //
     return response.data;
   } catch (error) {
     throw error;
@@ -176,9 +207,9 @@ export async function updateAdminUser(id: number | string, userData: AdminUserUp
  * @returns {Promise<void>} Promise that resolves when deletion is successful
  * @throws {Error} If deletion fails due to authorization issues or network errors
  */
-export async function deleteAdminUser(id: number | string): Promise<void> {
+export async function deleteAdminUser(id: number | string): Promise<void> { //
   try {
-    await api.delete(`/admin/users/${id}`);
+    await api.delete(`/admin/users/${id}`); //
   } catch (error) {
     throw error;
   }
@@ -194,11 +225,11 @@ export async function deleteAdminUser(id: number | string): Promise<void> {
  * @returns {Promise<BackendUser>} Promise resolving to the user's profile data
  * @throws {Error} If the fetch fails due to authorization issues or network errors
  */
-export async function fetchAdminUserById(id: number | string): Promise<BackendUser> {
+export async function fetchAdminUserById(id: number | string): Promise<BackendUser> { //
   try {
-    const response = await api.get<BackendUser>(`/admin/users/${id}`);
+    const response = await api.get<BackendUser>(`/admin/users/${id}`); //
 
-    const user: BackendUser = {
+    const user: BackendUser = { //
       id: response.data.id ?? id,
       email: response.data.email ?? '',
       displayName: response.data.displayName,
@@ -215,4 +246,5 @@ export async function fetchAdminUserById(id: number | string): Promise<BackendUs
     throw error;
   }
 }
+
 

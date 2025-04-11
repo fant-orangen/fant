@@ -9,7 +9,7 @@ import stud.ntnu.backend.model.enums.ItemStatus;
 import java.math.BigDecimal;
 
 @Data
-public class ItemSearchDto {
+public class ItemSearchDto { //
 
   @Size(max = 255, message = "Search term must be less than 255 characters")
   private String searchTerm;
@@ -31,4 +31,11 @@ public class ItemSearchDto {
 
   @DecimalMin(value = "0.0", message = "Maximum distance cannot be negative")
   private Double maxDistance; // in kilometers
+
+  // --- NEW ---
+  /**
+   * Optional seller ID to filter items by a specific seller.
+   */
+  private Long sellerId;
+  // --- END NEW ---
 }
