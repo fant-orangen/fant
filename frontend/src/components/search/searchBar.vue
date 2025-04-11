@@ -305,6 +305,7 @@ select {
   width: 100%;
   cursor: pointer;
   height: 20px;
+  accent-color: var(--vt-c-teal-soft);
 }
 .distance-slider:disabled {
   cursor: not-allowed;
