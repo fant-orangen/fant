@@ -24,6 +24,7 @@
 
           <div class="item-actions">
             <button class="edit-button" @click="goToEditItem">{{ $t('EDIT') }} {{ $t('ITEM') }}</button>
+            <button class="edit-button" @click="goToItemDetail">{{ $t('VIEW') }} {{ $t('ITEM') }}</button>
             <button class="delete-button" @click="openDeleteModal">{{ $t('DELETE') }} {{ $t('ITEM') }}</button>
             <ConfirmDeleteModal
               :isOpen="isDeleteModalOpen"
@@ -88,37 +89,10 @@
 </template>
 
 <script setup lang="ts">
-/**
- * Manage My Item View component.
- *
- * This component allows users to manage their marketplace items, including viewing item details,
- * handling received bids, editing item information, and deleting the item.
- *
- * Features:
- * - Display detailed item information with images
- * - View and manage received bids (accept/reject)
- * - Navigate to item edit form
- * - Delete item with confirmation
- * - Sort bids by status and amount
- * - Display bid statuses with visual indicators
- * - Error handling for API failures
- * - Responsive layout for different screen sizes
- *
- * @component ManageMyItemView
- * @requires vue
- * @requires vue-router
- * @requires vue-i18n
- * @requires @/services/ItemService
- * @requires @/services/BidService
- * @requires @/models/Item
- * @requires @/models/Bid
- * @requires @/components/modals/ConfirmDeleteModal
- * @displayName ManageMyItemView
- */
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchItem, deleteItem } from '@/services/ItemService';
-import { fetchBidsForItem, acceptBid, rejectBid } from '@/services/BidService'; // Import bid services
+import { fetchBidsForItem, acceptBid, rejectBid } from '@/services/BidService';
 import type { ItemDetailsType } from '@/models/Item';
 import type { BidResponseType } from '@/models/Bid';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue';
@@ -134,20 +108,12 @@ const bids = ref<BidResponseType[]>([]);
 
 const itemLoading = ref(false);
 const bidsLoading = ref(false);
-const actionLoading = ref<string | number | null>(null); // Track which bid action is loading
+const actionLoading = ref<string | number | null>(null);
 
 const itemError = ref<string | null>(null);
 const bidsError = ref<string | null>(null);
-const actionError = ref<string | null>(null); // For accept/reject errors
+const actionError = ref<string | null>(null);
 
-
-/**
- * Fetches and loads the item details from the API.
- * Updates component state with the results or error information.
- *
- * @param {string|number} id - The ID of the item to load
- * @returns {Promise<void>}
- */
 async function loadItemDetails(id: string | number) {
   itemLoading.value = true;
   itemError.value = null;
@@ -155,78 +121,51 @@ async function loadItemDetails(id: string | number) {
     item.value = await fetchItem(id);
   } catch (error: any) {
     itemError.value = error.message || "Could not load item details.";
-    item.value = null; // Clear item on error
+    item.value = null;
   } finally {
     itemLoading.value = false;
   }
 }
 
-/**
- * Fetches bids for the current item from the API.
- * Updates component state with the results or error information.
- *
- * @param {string|number} id - The ID of the item to load bids for
- * @returns {Promise<void>}
- */
 async function loadBids(id: string | number) {
   bidsLoading.value = true;
   bidsError.value = null;
-  actionError.value = null; // Clear previous action errors
+  actionError.value = null;
   try {
     bids.value = (await fetchBidsForItem(id)).content;
-    console.log('[Frontend check] Raw bids:', bids.value);
-    console.log('[Frontend check] Sorted bids:', sortedBids.value);
-    console.log('[Frontend check] sortedBids.length:', sortedBids.value.length);
   } catch (error: any) {
     bidsError.value = error.message || "Could not load bids for this item.";
-    bids.value = []; // Clear bids on error
+    bids.value = [];
   } finally {
     bidsLoading.value = false;
   }
 }
 
-/**
- * Handles the accept bid action for a specific bid.
- * Sends acceptance to API and updates local state.
- *
- * @param {BidResponseType} bidToAccept - The bid object to accept
- * @returns {Promise<void>}
- */
 async function handleAcceptBid(bidToAccept: BidResponseType) {
   if (!itemId.value || actionLoading.value) return;
-  actionLoading.value = bidToAccept.id; // Set loading for this specific bid
+  actionLoading.value = bidToAccept.id;
   actionError.value = null;
   try {
     await acceptBid(bidToAccept.bidderId, itemId.value);
-    // Update bid status locally or reload bids
-    // Reloading is simpler for now
     await loadBids(itemId.value);
   } catch (error: any) {
     actionError.value = error.message || "Failed to accept bid.";
   } finally {
-    actionLoading.value = null; // Clear loading state
+    actionLoading.value = null;
   }
 }
 
-/**
- * Handles the reject bid action for a specific bid.
- * Sends rejection to API and updates local state.
- *
- * @param {BidResponseType} bidToReject - The bid object to reject
- * @returns {Promise<void>}
- */
 async function handleRejectBid(bidToReject: BidResponseType) {
   if (!itemId.value || actionLoading.value) return;
-  actionLoading.value = bidToReject.id; // Set loading
+  actionLoading.value = bidToReject.id;
   actionError.value = null;
   try {
     await rejectBid(bidToReject.bidderId, itemId.value);
-    // Update bid status locally or reload bids
     await loadBids(itemId.value);
   } catch (error: any) {
     actionError.value = error.message || "Failed to reject bid.";
   } finally {
-    actionLoading.value = null; // Clear loading state
+    actionLoading.value = null;
   }
 }
 
@@ -239,32 +178,22 @@ const sortedBids = computed(() => {
   });
 });
 
-/**
- * Navigates to the edit item page for the current item.
- *
- * @returns {void}
- */
 function goToEditItem() {
   if(itemId.value) {
     router.push({ name: 'edit-listing', params: { itemId: itemId.value }});
   }
 }
 
-/**
- * Opens the delete confirmation modal.
- *
- * @returns {void}
- */
+function goToItemDetail() {
+  if (itemId.value) {
+    router.push({ name: 'item-detail', params: { id: itemId.value }});
+  }
+}
+
 function openDeleteModal() {
   isDeleteModalOpen.value = true;
 }
 
-/**
- * Handles the confirmation of item deletion.
- * Deletes the item and navigates back to listings.
- *
- * @returns {Promise<void>}
- */
 async function handleDeleteConfirm() {
   isDeleteModalOpen.value = false;
   if (itemId.value !== null) {
@@ -273,18 +202,10 @@ async function handleDeleteConfirm() {
   router.push('/profile/listings');
 }
 
-/**
- * Handles the cancellation of item deletion.
- * Closes the confirmation modal.
- *
- * @returns {void}
- */
 function handleDeleteCancel() {
   isDeleteModalOpen.value = false;
 }
 
-
-// Lifecycle hook
 onMounted(() => {
   const idFromRoute = route.params.id;
   if (idFromRoute) {
@@ -296,44 +217,28 @@ onMounted(() => {
   }
 });
 
-/**
- * Formats a price value to the Norwegian currency format.
- *
- * @param {number|null|undefined} price - The price to format
- * @returns {string} The formatted price string
- */
 function formatPrice(price: number | null | undefined): string {
   if (price === null || price === undefined) return 'N/A';
   return price.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' });
 }
 
-/**
- * Formats a date-time string to a localized short format.
- *
- * @param {string|undefined} dateTimeString - The date-time string to format
- * @returns {string} The formatted date-time string
- */
 function formatDateTime(dateTimeString: string | undefined): string {
   if (!dateTimeString) return 'N/A';
   try {
     const date = new Date(dateTimeString);
     return date.toLocaleString('no-NO', { dateStyle: 'short', timeStyle: 'short' });
   } catch (e) {
-    return dateTimeString; // Fallback to original string if parsing fails
+    return dateTimeString;
   }
 }
 
-/**
- * Handles image loading errors by replacing with placeholder.
- *
- * @param {Event} event - The error event from the image element
- * @returns {void}
- */
 function handleImageError(event: Event) {
   const imgElement = event.target as HTMLImageElement;
   imgElement.src = 'placeholderImage';
 }
 </script>
+
+
 
 <style scoped>
 .manage-item-view {
