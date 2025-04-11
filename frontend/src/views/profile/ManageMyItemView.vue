@@ -141,10 +141,6 @@ const bidsError = ref<string | null>(null);
 const actionError = ref<string | null>(null); // For accept/reject errors
 
 
-interface BidsResponse {
-  content: BidResponseType[];
-}
-
 /**
  * Fetches and loads the item details from the API.
  * Updates component state with the results or error information.
@@ -177,7 +173,8 @@ async function loadBids(id: string | number) {
   bidsError.value = null;
   actionError.value = null; // Clear previous action errors
   try {
-    bids.value = ((await fetchBidsForItem(id)) as BidsResponse).content;
+    bids.value = (await fetchBidsForItem(id)).content;
+    console.log('[Frontend check] Raw bids:', bids.value);
     console.log('[Frontend check] Sorted bids:', sortedBids.value);
     console.log('[Frontend check] sortedBids.length:', sortedBids.value.length);
   } catch (error: any) {
