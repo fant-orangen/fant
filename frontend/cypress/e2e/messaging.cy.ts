@@ -226,7 +226,7 @@ describe('Messaging E2E Tests', () => {
     cy.wait('@getMessages');
 
     // Find and click the back link
-    cy.get('.back-link').contains('Back to Inbox', { matchCase: false }).click(); // [cite: project V e2e 4/frontend/src/views/ConversationView.vue]
+    cy.get('.back-link').contains('Back to Inbox', { matchCase: false }).click();
 
     // Assert navigation to inbox
     cy.url().should('eq', Cypress.config().baseUrl + '/messages');
@@ -246,14 +246,14 @@ describe('Messaging E2E Tests', () => {
     cy.wait('@getMessages');
 
     // Find and click the item title link in the header
-    cy.get('.item-preview-header .item-title-link') // [cite: project V e2e 4/frontend/src/views/ConversationView.vue]
+    cy.get('.item-preview-header .item-title-link')
     .should('contain.text', itemListedByDifferentUser.title)
     .click();
 
     // Assert navigation to the item detail page
     cy.url().should('include', `/item-detail/${itemListedByDifferentUser.id}`);
     cy.wait('@getItemDetails'); // Wait for item details to load on the new page
-    cy.contains('h1.item-title', itemListedByDifferentUser.title).should('be.visible'); // Verify item title on detail page [cite: project V e2e 4/frontend/src/views/ItemDetail.vue]
+    cy.contains('h1.item-title', itemListedByDifferentUser.title).should('be.visible'); // Verify item title on detail page
   });
 
 });
