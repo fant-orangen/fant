@@ -1,5 +1,3 @@
-// cypress/e2e/admin.cy.ts
-
 describe('Admin Panel Functionality', () => {
   const adminUser = {
     email: 'jakob@mail.com', // From data.sql
