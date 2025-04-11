@@ -1,0 +1,472 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "title": "Item 1 is the best item and is not going anywhere eeeeeeee eeeee eeeeeeeee eeeee eeeeeee eeeeee eeeee eeeeee eeee",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 100,
+      "categoryId": "3",
+      "latitude": 59.9139,
+      "longitude": 10.7522
+    },
+    {
+      "id": "2",
+      "title": "Item 2gggggg ggggg ggggg gggg ggg",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 200,
+      "categoryId": "1",
+      "latitude": 60.3913,
+      "longitude": 5.3221
+    },
+    {
+      "id": "3",
+      "title": "Item 3",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg",
+      "price": 150,
+      "categoryId": "1",
+      "latitude": 63.3913,
+      "longitude": 8.3221
+    },
+    {
+      "id": "4",
+      "title": "Item 4",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 250,
+      "categoryId": "1"
+    },
+    {
+      "id": "5",
+      "title": "Item 5",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 300,
+      "categoryId": "1"
+    },
+    {
+      "id": "6",
+      "title": "Item 1",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 100,
+      "categoryId": "3"
+    },
+    {
+      "id": "7",
+      "title": "Item 2",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 200,
+      "categoryId": "1"
+    },
+    {
+      "id": "8",
+      "title": "Item 3",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2Ld2-jqasWZCNTmx0oWiYdrSz8XSpUzAeQQ&s",
+      "price": 150,
+      "categoryId": "4"
+    },
+    {
+      "id": "9",
+      "title": "Item 4",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 250,
+      "categoryId": "1"
+    },
+    {
+      "id": "10",
+      "title": "Item 5",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s",
+      "price": 300,
+      "categoryId": "1"
+    }
+  ],
+  "item-detail": [
+    {
+      "id": "1",
+      "title": "Item 1",
+      "description": "This is a detailed description of Item 1.",
+      "categoryId": "3",
+      "price": 100,
+      "location": "New York, USA",
+      "contact": "+1 234 567 890",
+      "imageUrls": [
+        "https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Item 2",
+      "description": "This is a detailed description of Item 2.",
+      "categoryId": "1",
+      "price": 200,
+      "location": "Los Angeles, USA",
+      "contact": "+1 987 654 321",
+      "imageUrls": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Item 3",
+      "description": "This is a detailed description of Item 3.",
+      "categoryId": "1",
+      "price": 150,
+      "location": "London, UK",
+      "contact": "+44 20 7946 0958",
+      "imageUrls": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmmKsSJQM7-pvAYClePZmpp6oLWKHCn4rujA&s"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Item 4",
+      "description": "This is a detailed description of Item 4.",
+      "categoryId": "1",
+      "price": 180,
+      "location": "Tokyo, Japan",
+      "contact": "+81 3-1234-5678",
+      "imageUrls": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg"
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Item 5",
+      "description": "This is a detailed description of Item 5.",
+      "categoryId": "1",
+      "price": 220,
+      "location": "Sydney, Australia",
+      "contact": "+61 2 1234 5678",
+      "imageUrls": [
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg"
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "label": "travel",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M18.5837%205.41645C18.1592%204.99196%2017.6263%205.04801%2017.3863%205.28808L13.5703%209.10406L7.61668%207.89819L7.46932%208.04555L12.2107%2010.4636L7.75852%2014.9158L4.80697%2014.2876L4.57689%2014.5177L7.50724%2016.4929L9.48244%2019.4233L9.71253%2019.1932L9.08434%2016.2416L13.5366%2011.7894L15.9546%2016.5308L16.102%2016.3835L14.8961%2010.4299L18.7121%206.6139C18.9522%206.37383%2019.0082%205.84094%2018.5837%205.41645ZM16.3256%204.22742C17.2617%203.29127%2018.7508%203.46226%2019.6444%204.35579C20.5379%205.24932%2020.7089%206.73841%2019.7727%207.67456L16.5261%2010.9212L17.7319%2016.8748L15.556%2019.0508L13.1379%2014.3094L10.7211%2016.7262L11.3493%2019.6778L9.256%2021.771L6.42666%2017.5735L2.22913%2014.7442L4.32239%2012.6509L7.27393%2013.2791L9.69075%2010.8623L4.94935%208.4442L7.12534%206.26821L13.0789%207.47408L16.3256%204.22742Z'%20fill='%23080341'/%3e%3c/svg%3e",
+      "id": "1"
+    },
+    {
+      "label": "appliance",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M21,1H3A2,2,0,0,0,1,3V21a2,2,0,0,0,2,2H21a2,2,0,0,0,2-2V3A2,2,0,0,0,21,1ZM3,3H21V6.556H3ZM21,21H3V8.556H21Zm-9-1.223a5,5,0,1,0-5-5A5.074,5.074,0,0,0,12,19.777ZM9.846,16.848a12.55,12.55,0,0,0,2.6-.953,11.685,11.685,0,0,1,2.536-.951A2.983,2.983,0,0,1,9.846,16.848ZM12,11.777a2.991,2.991,0,0,1,2.43,1.255,13.666,13.666,0,0,0-2.877,1.073,10.585,10.585,0,0,1-2.532.88c-.005-.07-.021-.136-.021-.208A3,3,0,0,1,12,11.777ZM20,5a1,1,0,0,1-1,1H17a1,1,0,0,1,0-2h2A1,1,0,0,1,20,5Z'/%3e%3c/svg%3e",
+      "id": "2"
+    },
+    {
+      "label": "boat",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M22,12H13V11h5a1,1,0,0,0,1-1,6.619,6.619,0,0,0-6-6.926V3a1,1,0,0,0-2,0v9H2a1,1,0,0,0-1,1,9.011,9.011,0,0,0,9,9h4a9.011,9.011,0,0,0,9-9A1,1,0,0,0,22,12ZM13,5.108A4.523,4.523,0,0,1,16.929,9H13ZM14,20H10a7.011,7.011,0,0,1-6.929-6H20.929A7.011,7.011,0,0,1,14,20Z'/%3e%3c/svg%3e",
+      "id": "3"
+    },
+    {
+      "label": "book",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M20,23a1,1,0,0,0,1-1V2a1,1,0,0,0-1-1H6A3,3,0,0,0,3,4V20a3,3,0,0,0,3,3ZM5,4A1,1,0,0,1,6,3H19V16H5ZM5,20V18H19v3H6A1,1,0,0,1,5,20Z'/%3e%3c/svg%3e",
+      "id": "4"
+    },
+    {
+      "label": "camera",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M22,5H18.344l-.386-1.287A1,1,0,0,0,17,3H7.6a1,1,0,0,0-.958.713L6.256,5H2A1,1,0,0,0,1,6V20a1,1,0,0,0,1,1H22a1,1,0,0,0,1-1V6A1,1,0,0,0,22,5ZM21,19H3V7H7a1,1,0,0,0,.958-.713L8.344,5h7.912l.386,1.287A1,1,0,0,0,17.6,7H21ZM12,7a5,5,0,1,0,5,5A5.006,5.006,0,0,0,12,7Zm0,8a3,3,0,1,1,3-3A3,3,0,0,1,12,15Z'/%3e%3c/svg%3e",
+      "id": "5"
+    },
+    {
+      "label": "car",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M20,10h-.341L17.18,4.214A2,2,0,0,0,15.341,3H4.754A2.008,2.008,0,0,0,2.831,4.451L1.038,10.726a1.019,1.019,0,0,0-.005.111A.889.889,0,0,0,1,11v5a2,2,0,0,0,2,2h.142a3.981,3.981,0,0,0,7.716,0h2.284a3.981,3.981,0,0,0,7.716,0H21a2,2,0,0,0,2-2V13A3,3,0,0,0,20,10ZM12,5h3.341l2.142,5H12ZM4.754,5H10v5H3.325ZM7,19a2,2,0,1,1,2-2A2,2,0,0,1,7,19Zm10,0a2,2,0,1,1,2-2A2,2,0,0,1,17,19Zm4-3h-.142a3.981,3.981,0,0,0-7.716,0H10.858a3.981,3.981,0,0,0-7.716,0H3V12H20a1,1,0,0,1,1,1Z'/%3e%3c/svg%3e",
+      "id": "6"
+    },
+    {
+      "label": "clothes",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M2,13H5v9a1,1,0,0,0,1,1H18a1,1,0,0,0,1-1V13h3a1,1,0,0,0,1-1V4a1,1,0,0,0-.553-.895l-4-2A1,1,0,0,0,18,1H15a1,1,0,0,0-1,1,2,2,0,0,1-4,0A1,1,0,0,0,9,1H6a1,1,0,0,0-.447.1l-4,2A1,1,0,0,0,1,4v8A1,1,0,0,0,2,13Zm5,8V19H17v2ZM3,4.618,6.236,3h1.89a4,4,0,0,0,7.748,0h1.89L21,4.618V11H19V8a1,1,0,0,0-2,0v9H7V8A1,1,0,0,0,5,8v3H3Z'/%3e%3c/svg%3e",
+      "id": "7"
+    },
+    {
+      "label": "computer",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M3,4v9.86L1.039,20.725A1,1,0,0,0,2,22H22a1,1,0,0,0,.961-1.275L21,13.86V4a2,2,0,0,0-2-2H5A2,2,0,0,0,3,4Zm.326,16,1.428-5H19.246l1.428,5ZM19,13H5V4H19Z'/%3e%3c/svg%3e",
+      "id": "8"
+    },
+    {
+      "label": "furniture",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M3,23H8a1,1,0,0,0,1-1V19h6v3a1,1,0,0,0,1,1h5a1,1,0,0,0,1-1V3a2,2,0,0,0-2-2H4A2,2,0,0,0,2,3V22A1,1,0,0,0,3,23ZM4,3H20V7H4ZM4,9H20v4H4Zm0,6H20v6H17V18a1,1,0,0,0-1-1H8a1,1,0,0,0-1,1v3H4Zm11-4a1,1,0,0,1-1,1H10a1,1,0,0,1,0-2h4A1,1,0,0,1,15,11Zm0-6a1,1,0,0,1-1,1H10a1,1,0,0,1,0-2h4A1,1,0,0,1,15,5Z'/%3e%3c/svg%3e",
+      "id": "9"
+    },
+    {
+      "label": "motorcycle",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M16,3a1,1,0,0,0-.707,1.707,1.81,1.81,0,0,1,.591.9,5.958,5.958,0,0,0-5.184-.94A2.519,2.519,0,0,0,9,6.95C8.95,7.976,8.659,8,8.219,8.046A4.542,4.542,0,0,1,5.1,7.072L2.6,5.2A1,1,0,0,0,1,6V9a1.006,1.006,0,0,0,.168.555l1.713,2.569A4.989,4.989,0,1,0,10.9,16.988a17,17,0,0,0,2.2-.044,5,5,0,1,0,8.438-4.478C23,11.216,23,8.91,23,8,23,4.045,18.421,3,16,3ZM6,19a3,3,0,1,1,3-3A3,3,0,0,1,6,19Zm12,0a3,3,0,0,1-3-3v-.021A3,3,0,1,1,18,19Zm1.478-7.752a4.912,4.912,0,0,0-6.352,3.666,14.66,14.66,0,0,1-2.228.08A5.009,5.009,0,0,0,6,11a4.952,4.952,0,0,0-1.33.2L3,8.7V8l.9.671a6.519,6.519,0,0,0,4.515,1.366c1.625-.156,2.5-1.161,2.588-2.987.009-.175.049-.375.419-.517a4.287,4.287,0,0,1,3.875,1.174,1,1,0,0,0,1.154.188,2.706,2.706,0,0,0,1.412-1.86,2.368,2.368,0,0,0-.01-.814C19.273,5.527,21,6.258,21,8,21,9.839,20.731,11.023,19.478,11.248Z'/%3e%3c/svg%3e",
+      "id": "10"
+    },
+    {
+      "label": "phone",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M17,23a2,2,0,0,0,2-2V3a2,2,0,0,0-2-2H7A2,2,0,0,0,5,3V21a2,2,0,0,0,2,2ZM7,3H9.5L10,4h4l.5-1H17V21H7Zm6,16a1,1,0,1,1-1-1A1,1,0,0,1,13,19Z'/%3e%3c/svg%3e",
+      "id": "11"
+    },
+    {
+      "label": "art",
+      "icon": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20fill='%23000000'%20width='800px'%20height='800px'%20viewBox='0%200%2024%2024'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M22,3a1,1,0,0,0-1-1H3A1,1,0,0,0,2,3V21a1,1,0,0,0,1,1H21a1,1,0,0,0,1-1ZM20,20H4V17.481L7.926,14.34l2.367,2.367a1,1,0,0,0,1.414,0l4.367-4.367L20,15.481Zm0-7.081-3.375-2.7a1,1,0,0,0-1.332.074L11,14.586,8.707,12.293a1,1,0,0,0-1.332-.074L4,14.919V4H20ZM6,8a2,2,0,1,1,2,2A2,2,0,0,1,6,8Z'/%3e%3c/svg%3e",
+      "id": "12"
+    },
+    {
+      "label": "cats",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg",
+      "id": "13"
+    },
+    {
+      "id": "14",
+      "label": "planes",
+      "icon": "https://static1.simpleflyingimages.com/wordpress/wp-content/uploads/2023/09/oskar_bider_1913_bern-1.jpg?q=50&fit=crop&w=1140&h=&dpr=1.5"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "username": "alice"
+    },
+    {
+      "id": "2",
+      "username": "jakob"
+    },
+    {
+      "id": "3",
+      "username": "charlie"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg1",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "peter"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Hi Peter, is the iPhone still available?",
+      "sentDate": "2025-04-01T10:00:00Z"
+    },
+    {
+      "id": "msg2",
+      "sender": {
+        "id": "2",
+        "username": "jakob"
+      },
+      "receiver": {
+        "id": "1",
+        "username": "alice"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Hi Alice! Yes, it is.",
+      "sentDate": "2025-04-01T10:05:00Z"
+    },
+    {
+      "id": "msg3",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "jakob"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Great! I'm willing to bid $300",
+      "sentDate": "2025-04-01T10:06:00Z"
+    },
+    {
+      "id": "msg4",
+      "sender": {
+        "id": "2",
+        "username": "jakob"
+      },
+      "receiver": {
+        "id": "1",
+        "username": "alice"
+      },
+      "item": {
+        "id": "1",
+        "title": "Item 1"
+      },
+      "messageContent": "Sure, sounds good.",
+      "sentDate": "2025-04-01T10:15:00Z"
+    },
+    {
+      "id": "msg5",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "charlie"
+      },
+      "messageContent": "Hey Charlie, how's it going?",
+      "sentDate": "2025-04-02T11:00:00Z"
+    },
+    {
+      "id": "msg6",
+      "sender": {
+        "id": "3",
+        "username": "charlie"
+      },
+      "receiver": {
+        "id": "1",
+        "username": "alice"
+      },
+      "messageContent": "Hey Alice! All good here, you?",
+      "sentDate": "2025-04-02T11:02:00Z"
+    },
+    {
+      "id": "0d56",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
+      "messageContent": "?",
+      "sentDate": "2025-04-02T15:18:12.467Z"
+    },
+    {
+      "id": "0d56",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
+      "messageContent": "Hello",
+      "sentDate": "2025-04-02T17:15:12.467Z"
+    },
+    {
+      "id": "eb97",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
+      "messageContent": "Hello",
+      "sentDate": "2025-04-03T07:21:54.689Z"
+    },
+    {
+      "id": "bd25",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
+      "messageContent": "kjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjdkjhsdfkhsdkfjhsdkjfhksdjhfkjsdhfkjhsdkjfhskjdhfksjhfdskjdshkfjd",
+      "sentDate": "2025-04-03T07:30:23.008Z"
+    },
+    {
+      "id": "0259",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "3",
+        "username": "User 3"
+      },
+      "messageContent": "Hello?",
+      "sentDate": "2025-04-03T08:32:30.484Z"
+    },
+    {
+      "id": "a148",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "User 2"
+      },
+      "messageContent": "What?",
+      "sentDate": "2025-04-03T08:34:35.482Z"
+    },
+    {
+      "id": "5529",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "User 2"
+      },
+      "messageContent": "Hello",
+      "sentDate": "2025-04-03T08:42:37.365Z"
+    },
+    {
+      "id": "9fa2",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "User 2"
+      },
+      "messageContent": "asd",
+      "sentDate": "2025-04-03T08:58:20.687Z"
+    },
+    {
+      "id": "aba3",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "User 2"
+      },
+      "messageContent": "asdasd",
+      "sentDate": "2025-04-03T09:00:08.660Z"
+    },
+    {
+      "id": "5eb7",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "User 2"
+      },
+      "messageContent": "jj",
+      "sentDate": "2025-04-03T09:09:59.775Z"
+    },
+    {
+      "id": "3fdd",
+      "sender": {
+        "id": "1",
+        "username": "alice"
+      },
+      "receiver": {
+        "id": "2",
+        "username": "User 2"
+      },
+      "messageContent": "Hei",
+      "sentDate": "2025-04-04T08:15:26.194Z"
+    }
+  ]
+}

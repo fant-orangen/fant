@@ -12,6 +12,11 @@
     }
   ],
   "compilerOptions": {
-    "module": "NodeNext"
+    "module": "NodeNext",
+    "types": [
+      "node",
+      "vue",
+      "vitest/globals"
+    ]
   }
 }
