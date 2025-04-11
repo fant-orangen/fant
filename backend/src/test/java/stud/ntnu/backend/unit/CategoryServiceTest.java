@@ -133,26 +133,27 @@ class CategoryServiceTest {
 
   /**
    * <h3>Test Delete Category</h3>
-   * <p>Tests the successful deletion of a category by its ID. It verifies that the {@link CategoryRepository}'s {@code deleteById} method is called with the correct ID.</p>
+   * <p>Tests the successful deletion of a category by its ID.
+   * It verifies that existsById is checked and then deleteById is called.</p> // Updated description
    */
   @Test
   void deleteCategory() {
     // Arrange
-    Long categoryIdToDelete = 1L; // Use a variable for clarity
+    Long categoryIdToDelete = 1L;
 
-    // Mock the existsById check to return true, otherwise the service throws EntityNotFoundException
+    // Tell the mock repository that the category *does* exist
     when(categoryRepository.existsById(categoryIdToDelete)).thenReturn(true);
 
-    // Mock the actual deletion call (this doesn't throw an exception on its own)
+    // Mock the actual deletion call (doesn't need to do anything)
     doNothing().when(categoryRepository).deleteById(categoryIdToDelete);
 
     // Act
+    // Now, when delete is called, the existsById check inside it will pass
     categoryService.delete(categoryIdToDelete);
 
     // Assert
-    // Verify existsById was called
+    // Verify both methods were called in the service
     verify(categoryRepository, times(1)).existsById(categoryIdToDelete);
-    // Verify deleteById was called
     verify(categoryRepository, times(1)).deleteById(categoryIdToDelete);
   }
 
