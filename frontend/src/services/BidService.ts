@@ -68,12 +68,10 @@ export async function fetchPagedUserBids(
  * @returns {Promise<BidResponseType[]>} A promise resolving to an array of bids for the item
  * @throws {Error} If the request fails (e.g., 403 Forbidden if not owner, 404 if item not found)
  */
-export async function fetchBidsForItem(itemId: string | number): Promise<BidResponseType[]> {
+export async function fetchBidsForItem(itemId: string | number): Promise<PaginatedBidResponse> {
   try {
-    // This endpoint already returns BidResponseDto from backend (based on previous fixes)
-    // So no transformation needed here, assuming backend fix was applied OR
-    // this endpoint was designed to return the DTO from the start.
-    const response = await api.get<BidResponseType[]>(`/orders/item/${itemId}`)
+    // The endpoint returns a paginated response, not directly an array of bids
+    const response = await api.get<PaginatedBidResponse>(`/orders/item/${itemId}`)
     return response.data
   } catch (error: any) {
     const status = error.response?.status || 500
@@ -81,7 +79,7 @@ export async function fetchBidsForItem(itemId: string | number): Promise<BidResp
     if (status === 403) {
       message = 'You are not authorized to view bids for this item.'
     } else if (status === 404) {
-      message = 'Item or bids not found.' // Adjusted message slightly
+      message = 'Item or bids not found.'
     }
     throw new Error(message)
   }
