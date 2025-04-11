@@ -177,12 +177,13 @@ async function handleSubmit() {
   isSubmitting.value = true;
   submitError.value = null;
   console.log('Submitting update for user ID:', props.id);
-  const payload: Omit<AdminUserUpdatePayload, 'role'> = {
+  const payload: AdminUserUpdatePayload = {
     email: formData.email,
     displayName: formData.displayName,
     firstName: formData.firstName || null,
     lastName: formData.lastName || null,
     phone: formData.phone || null,
+    role: formData.role, // <-- Add this line
   };
   if (!payload.password || payload.password.trim() === '') {
     delete payload.password;

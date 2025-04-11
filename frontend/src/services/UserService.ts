@@ -118,6 +118,7 @@ interface AdminUserUpdatePayload {
   firstName: string | null;
   lastName: string | null;
   phone: string | null;
+  role?: 'USER' | 'ADMIN';
 }
 
 /**
