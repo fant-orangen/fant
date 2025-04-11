@@ -154,7 +154,7 @@ const handleLogout = () => {
 <style scoped>
 .hamburger-menu {
   position: relative;
-  z-index: 1000;
+  z-index: 1200;
 }
 
 /* Hamburger button styling */
