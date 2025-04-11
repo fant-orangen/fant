@@ -65,7 +65,7 @@ import HamburgerDropDownMenu from './HamburgerDropDownMenu.vue';
   height: 2px;
   bottom: -4px;
   left: 0;
-  background-color: #333;
+  background-color: var(--vt-c-teal-dark);
   transition: width 0.2s ease-in-out;
 }
 
