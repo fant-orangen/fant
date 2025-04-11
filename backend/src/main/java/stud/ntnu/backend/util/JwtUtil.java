@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.function.Function;
 import stud.ntnu.backend.repository.UserRepository;
 
-// TODO: remove everything related to claims that's unnecessary
 
 /**
  * <h2>JwtUtil</h2>
@@ -27,7 +26,6 @@ public class JwtUtil {
    * <p>This key should be stored securely and not hardcoded in production.</p>
    */
   private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-  // TODO: secure secret key (env?)
 
   private final UserRepository userRepository;
 

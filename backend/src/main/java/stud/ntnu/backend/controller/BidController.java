@@ -204,8 +204,7 @@ public class BidController {
   @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(type = "string")))
   public ResponseEntity<Page<BidResponseDto>> getBid(
       @Parameter(description = "ID of the item associated with the bid to update", required = true)
-      @Positive @PathVariable Long itemId,
-      @Parameter(hidden = true) Principal principal,
+      @Positive @PathVariable Long itemId, @Parameter(hidden = true) Principal principal,
       @Parameter(description = "Pagination information (page number, size, sort)")
       Pageable pageable) {
     return ResponseEntity.ok(

@@ -1,7 +1,6 @@
 package stud.ntnu.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional; // Import Optional
 
